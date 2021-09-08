@@ -5,6 +5,7 @@
         <p>Cliquez sur la grille pour avoir la position de la souris</p>
         <p *ngIf="mousePosition.x !== 0">X : {{ mousePosition.x }}</p>
         <p *ngIf="mousePosition.y !== 0">Y : {{ mousePosition.y }}</p>
+        <p *ngIf="gridPosition.x >= 0 || gridPosition.y >= 0">Case : ({{ gridPosition.x }}, {{ gridPosition.y }})</p>
         <hr />
         <p>Appuyez sur une touche du clavier pour la détecter</p>
         <p *ngIf="buttonPressed !== ''">Touche : {{ buttonPressed }}</p>

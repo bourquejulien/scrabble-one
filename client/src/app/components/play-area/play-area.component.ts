@@ -5,6 +5,7 @@ import { GridService } from '@app/services/grid.service';
 // TODO : Avoir un fichier séparé pour les constantes!
 export const DEFAULT_WIDTH = 500;
 export const DEFAULT_HEIGHT = 500;
+export const DEFAULT_GRID_SIZE = 15;
 
 // TODO : Déplacer ça dans un fichier séparé accessible par tous
 export enum MouseButton {
@@ -24,14 +25,20 @@ export class PlayAreaComponent implements AfterViewInit {
     @ViewChild('gridCanvas', { static: false }) private gridCanvas!: ElementRef<HTMLCanvasElement>;
 
     mousePosition: Vec2 = { x: 0, y: 0 };
+    gridPosition: Vec2 = { x: -1, y: -1 };
     buttonPressed = '';
     private canvasSize = { x: DEFAULT_WIDTH, y: DEFAULT_HEIGHT };
+    private gridSize = DEFAULT_GRID_SIZE;
 
     constructor(private readonly gridService: GridService) {}
 
     @HostListener('keydown', ['$event'])
     buttonDetect(event: KeyboardEvent) {
         this.buttonPressed = event.key;
+
+        if (this.gridPosition.x >= 0 || this.gridPosition.y >= 0) {
+            this.gridService.drawLetter(event.key, {x: this.gridPosition.x, y: this.gridPosition.y});
+        }
     }
 
     ngAfterViewInit(): void {
@@ -52,7 +59,14 @@ export class PlayAreaComponent implements AfterViewInit {
     // TODO : déplacer ceci dans un service de gestion de la souris!
     mouseHitDetect(event: MouseEvent) {
         if (event.button === MouseButton.Left) {
-            this.mousePosition = { x: event.offsetX, y: event.offsetY };
+            let position: Vec2 = { x: event.offsetX, y: event.offsetY };
+
+            this.mousePosition = position;
+            this.refreshGridPositon(position);
         }
     }
+
+    private refreshGridPositon = (position: Vec2) => this.gridPosition = { x: this.computeGridPosition(position.x), y: this.computeGridPosition(position.y) };
+
+    private computeGridPosition = (position: number): number => Math.floor((position / this.width) * this.gridSize);
 }
