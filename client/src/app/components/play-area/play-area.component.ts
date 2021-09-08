@@ -44,6 +44,17 @@ export class PlayAreaComponent implements AfterViewInit {
     ngAfterViewInit(): void {
         this.gridService.gridContext = this.gridCanvas.nativeElement.getContext('2d') as CanvasRenderingContext2D;
 
+        let canvas = this.gridCanvas.nativeElement;
+        let scaleFactor = window.devicePixelRatio;
+        
+        canvas.style.width = canvas.style.width || canvas.width + 'px';
+        canvas.style.height = canvas.style.height || canvas.height + 'px';
+
+        canvas.width = Math.ceil(canvas.width * scaleFactor);
+        canvas.height = Math.ceil(canvas.height * scaleFactor);
+        let ctx = canvas.getContext('2d');
+        ctx?.scale(scaleFactor, scaleFactor);
+
         this.gridService.drawGrid();
         this.gridCanvas.nativeElement.focus();
     }
