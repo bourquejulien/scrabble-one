@@ -32,8 +32,8 @@ export class PlayAreaComponent implements AfterViewInit {
     buttonDetect(event: KeyboardEvent) {
         this.buttonPressed = event.key;
 
-        if (this.gridPosition.x >= 0 || this.gridPosition.y >= 0) {
-            this.gridService.drawLetter(event.key, { x: this.gridPosition.x, y: this.gridPosition.y });
+        if (this.gridPosition.x >= 1 && this.gridPosition.y >= 1) {
+            this.gridService.drawSymbol(event.key, { x: this.gridPosition.x, y: this.gridPosition.y });
         }
     }
 
@@ -78,6 +78,6 @@ export class PlayAreaComponent implements AfterViewInit {
     }
 
     private computeGridPosition(position: number): number {
-        return Math.floor((position / this.width) * this.gridSize);
+        return Math.floor((position / this.width) * (this.gridSize + 1));
     }
 }

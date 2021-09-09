@@ -31,20 +31,20 @@ describe('GridService', () => {
 
     it(' drawLetter should call fillText on the canvas', () => {
         const fillTextSpy = spyOn(service.gridContext, 'fillText').and.callThrough();
-        service.drawLetter('t', { x: 0, y: 0 });
+        service.drawSymbol('t', { x: 0, y: 0 });
         expect(fillTextSpy).toHaveBeenCalled();
     });
 
     it(' drawLetter should not call fillText if word is empty', () => {
         const fillTextSpy = spyOn(service.gridContext, 'fillText').and.callThrough();
-        service.drawLetter('', { x: 0, y: 0 });
+        service.drawSymbol('', { x: 0, y: 0 });
         expect(fillTextSpy).toHaveBeenCalledTimes(0);
     });
 
     it(' drawLetter should color pixels on the canvas', () => {
         let imageData = service.gridContext.getImageData(0, 0, service.width, service.height).data;
         const beforeSize = imageData.filter((x) => x !== 0).length;
-        service.drawLetter('t', { x: 0, y: 0 });
+        service.drawSymbol('t', { x: 0, y: 0 });
         imageData = service.gridContext.getImageData(0, 0, service.width, service.height).data;
         const afterSize = imageData.filter((x) => x !== 0).length;
         expect(afterSize).toBeGreaterThan(beforeSize);
