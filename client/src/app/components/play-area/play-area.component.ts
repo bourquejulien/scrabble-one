@@ -23,8 +23,8 @@ export class PlayAreaComponent implements AfterViewInit {
     mousePosition: Vec2 = { x: 0, y: 0 };
     gridPosition: Vec2 = { x: -1, y: -1 };
     buttonPressed = '';
-    private canvasSize = Constants.Grid.CANVAS_SIZE;
-    private gridSize = Constants.Grid.GRID_SIZE;
+    private canvasSize = Constants.grid.canvasSize;
+    private gridSize = Constants.grid.gridSize;
 
     constructor(private readonly gridService: GridService) {}
 

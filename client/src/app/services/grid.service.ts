@@ -7,17 +7,15 @@ import { Constants } from '@app/constants/global.constants';
 })
 export class GridService {
     gridContext: CanvasRenderingContext2D;
-    private canvasSize: Vec2 = Constants.Grid.CANVAS_SIZE;
-    private gridSize: number = Constants.Grid.GRID_SIZE;
+    private canvasSize: Vec2 = Constants.grid.canvasSize;
+    private gridSize: number = Constants.grid.gridSize;
 
-    // TODO : pas de valeurs magiques!! Faudrait avoir une meilleure manière de le faire
-    /* eslint-disable @typescript-eslint/no-magic-numbers */
     drawGrid() {
-        this.fillBoard(Constants.Grid.DEFAULT_BACKGROUND_COLOR);
+        this.fillBoard(Constants.grid.backgroundColor);
 
         this.gridContext.beginPath();
-        this.gridContext.strokeStyle = Constants.Grid.STROKE_STYLE;
-        this.gridContext.lineWidth = Constants.Grid.DEFAULT_LINE_WIDTH;
+        this.gridContext.strokeStyle = Constants.grid.strokeStyle;
+        this.gridContext.lineWidth = Constants.grid.lineWidth;
 
         for (let i = 0; i < this.gridSize + 1; i++) {
             this.drawRow(i);
@@ -35,7 +33,7 @@ export class GridService {
 
         const canvasPosition: Vec2 = this.computeCanvasCoord(gridPosition);
 
-        //TODO Improve text scaling
+        // TODO Improve text scaling
         this.gridContext.fillStyle = 'black';
         this.gridContext.font = '35px system-ui';
         this.gridContext.textBaseline = 'middle';

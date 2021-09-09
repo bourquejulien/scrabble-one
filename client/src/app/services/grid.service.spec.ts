@@ -22,11 +22,11 @@ describe('GridService', () => {
     });
 
     it(' width should return the width of the grid canvas', () => {
-        expect(service.width).toEqual(Constants.Grid.canvasSize.x);
+        expect(service.width).toEqual(Constants.grid.canvasSize.x);
     });
 
     it(' height should return the height of the grid canvas', () => {
-        expect(service.width).toEqual(Constants.Grid.canvasSize.y);
+        expect(service.width).toEqual(Constants.grid.canvasSize.y);
     });
 
     it(' drawLetter should call fillText on the canvas', () => {
