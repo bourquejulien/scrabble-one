@@ -1,10 +1,7 @@
 import { AfterViewInit, Component, ElementRef, HostListener, ViewChild } from '@angular/core';
 import { Vec2 } from '@app/classes/vec2';
+import { Constants } from '@app/constants/global.constants';
 import { GridService } from '@app/services/grid.service';
-
-// TODO : Avoir un fichier séparé pour les constantes!
-export const DEFAULT_WIDTH = 500;
-export const DEFAULT_HEIGHT = 500;
 
 // TODO : Déplacer ça dans un fichier séparé accessible par tous
 export enum MouseButton {
@@ -24,20 +21,37 @@ export class PlayAreaComponent implements AfterViewInit {
     @ViewChild('gridCanvas', { static: false }) private gridCanvas!: ElementRef<HTMLCanvasElement>;
 
     mousePosition: Vec2 = { x: 0, y: 0 };
+    gridPosition: Vec2 = { x: -1, y: -1 };
     buttonPressed = '';
-    private canvasSize = { x: DEFAULT_WIDTH, y: DEFAULT_HEIGHT };
+    private canvasSize = Constants.grid.canvasSize;
+    private gridSize = Constants.grid.gridSize;
 
     constructor(private readonly gridService: GridService) {}
 
     @HostListener('keydown', ['$event'])
     buttonDetect(event: KeyboardEvent) {
         this.buttonPressed = event.key;
+
+        if (this.gridPosition.x >= 1 && this.gridPosition.y >= 1) {
+            this.gridService.drawSymbol(event.key, { x: this.gridPosition.x, y: this.gridPosition.y });
+        }
     }
 
     ngAfterViewInit(): void {
         this.gridService.gridContext = this.gridCanvas.nativeElement.getContext('2d') as CanvasRenderingContext2D;
+
+        const canvas = this.gridCanvas.nativeElement;
+        const scaleFactor = window.devicePixelRatio;
+
+        canvas.style.width = canvas.style.width || canvas.width + 'px';
+        canvas.style.height = canvas.style.height || canvas.height + 'px';
+
+        canvas.width = Math.ceil(canvas.width * scaleFactor);
+        canvas.height = Math.ceil(canvas.height * scaleFactor);
+        const context = canvas.getContext('2d');
+        context?.scale(scaleFactor, scaleFactor);
+
         this.gridService.drawGrid();
-        this.gridService.drawWord('Scrabble');
         this.gridCanvas.nativeElement.focus();
     }
 
@@ -52,7 +66,18 @@ export class PlayAreaComponent implements AfterViewInit {
     // TODO : déplacer ceci dans un service de gestion de la souris!
     mouseHitDetect(event: MouseEvent) {
         if (event.button === MouseButton.Left) {
-            this.mousePosition = { x: event.offsetX, y: event.offsetY };
+            const position: Vec2 = { x: event.offsetX, y: event.offsetY };
+
+            this.mousePosition = position;
+            this.refreshGridPositon(position);
         }
+    }
+
+    private refreshGridPositon(position: Vec2) {
+        this.gridPosition = { x: this.computeGridPosition(position.x), y: this.computeGridPosition(position.y) };
+    }
+
+    private computeGridPosition(position: number): number {
+        return Math.floor((position / this.width) * (this.gridSize + 1));
     }
 }
