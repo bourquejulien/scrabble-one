@@ -3,7 +3,17 @@ import { Vec2 } from './vec2';
 import { BoardOverflowError } from '@app/exceptions/board-overflow-error';
 import { Bonus } from './bonus';
 
-export class Board {
+export interface IBoard {
+    readonly size: number;
+
+    getSquare(position: Vec2): Square;
+    up(square: Square): Square | null;
+    down(square: Square): Square | null;
+    left(square: Square): Square | null;
+    right(square: Square): Square | null;
+}
+
+export class Board implements IBoard {
     readonly size: number;
     private readonly board: Square[][];
 
@@ -27,18 +37,10 @@ export class Board {
         return this.board[position.x][position.y];
     }
 
-    setSquare(position: Vec2, square: Square): void {
-        this.positionGuard(position);
-        this.board[position.x][position.y] = square;
-    }
-
-    replaceSquare(position: Vec2, square: Square): Square {
-        this.positionGuard(position);
-
-        const replacedSquare = this.getSquare(position);
-        this.setSquare(position, square);
-
-        return replacedSquare;
+    merge(letters: [string, Vec2][]): void {
+        for (const [letter, position] of letters) {
+            this.setLetter(letter, position);
+        }
     }
 
     up(square: Square): Square | null {
@@ -67,6 +69,13 @@ export class Board {
         if (column > this.size - 1) return null;
 
         return this.board[column][square.position.x];
+    }
+
+    private setLetter(letter: string, position: Vec2): void {
+        this.positionGuard(position);
+
+        const replacedSquare = this.getSquare(position);
+        this.board[position.x][position.y] = { letter, bonus: replacedSquare.bonus, position: replacedSquare.position };
     }
 
     private positionGuard(position: Vec2) {
