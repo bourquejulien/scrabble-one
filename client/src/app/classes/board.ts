@@ -4,17 +4,17 @@ import { BoardOverflowError } from '@app/exceptions/board-overflow-error';
 import { Bonus } from './bonus';
 
 export class Board {
-    readonly size: Vec2;
+    readonly size: number;
     private readonly board: Square[][];
 
-    constructor(size: Vec2, bonus: Record<string, Bonus>) {
+    constructor(size: number, bonus: { [key: string]: Bonus }) {
         this.size = size;
         this.board = new Array<Square[]>();
 
-        for (let x = 0; x <= size.x; x++) {
+        for (let x = 0; x <= size; x++) {
             const column: Square[] = new Array<Square>();
 
-            for (let y = 0; y <= size.y; y++) {
+            for (let y = 0; y <= size; y++) {
                 column.push({ letter: '', bonus: bonus[`${x.toString()}${y.toString()}`], position: { x, y } });
             }
 
@@ -50,7 +50,7 @@ export class Board {
 
     down(square: Square): Square | null {
         const row = square.position.y + 1;
-        if (row > this.size.y - 1) return null;
+        if (row > this.size - 1) return null;
 
         return this.board[square.position.y][row];
     }
@@ -64,7 +64,7 @@ export class Board {
 
     right(square: Square): Square | null {
         const column = square.position.x + 1;
-        if (column > this.size.x - 1) return null;
+        if (column > this.size - 1) return null;
 
         return this.board[column][square.position.x];
     }
