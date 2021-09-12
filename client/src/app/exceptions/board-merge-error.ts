@@ -1,8 +1,8 @@
 import { BoardError } from './board-error';
 
-export class BoardOverflowError extends BoardError {
+export class BoardMergeError extends BoardError {
     constructor(message: string) {
         super(message);
-        this.name = 'BoardOverflowError';
+        this.name = 'BoardMergeError';
     }
 }
