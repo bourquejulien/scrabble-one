@@ -1,8 +1,8 @@
 import { TestBed } from '@angular/core/testing';
 
-import { ReserveService } from './reserve-service.service';
+import { ReserveService } from './reserve.service';
 
-describe('ReserveServiceService', () => {
+describe('ReserveService', () => {
     let service: ReserveService;
 
     beforeEach(() => {
