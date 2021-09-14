@@ -21,10 +21,14 @@ export class ReserveService {
         this.reserve.splice(letterIndex, 0, letterToExchange);
     }
 
-    drawLetter(): number {
+    drawLetter(): string {
         const randomLetterIndex = Math.floor(Math.random() * (this.reserve.length));
         this.reserve.splice(randomLetterIndex, 1);
 
-        return randomLetterIndex;
+        return this.reserve[randomLetterIndex];
+    }
+
+    getLength(): number {
+        return this.reserve.length;
     }
 }
