@@ -1,0 +1,17 @@
+<mat-grid-list cols="1" >
+    <!-- Message list -->
+        <mat-card *ngFor="let message of messages" style="margin:8px">
+            <span class="user-id">Joueur {{ message.userId }}: </span>{{ message.body }}
+        </mat-card>
+</mat-grid-list>
+<!-- Command input -->
+<mat-form-field class="command-field" appearance="fill">
+    <mat-label>Saisissez une commande</mat-label>
+    <input matInput type="text" [(ngModel)]="value" />
+    <!-- Erase text button -->
+    <button *ngIf="value" matSuffix mat-icon-button aria-label="Clear" (click)="value = ''">
+        <mat-icon>close</mat-icon>
+    </button>
+    <!-- Submit button -->
+    <button mat-button type="submit" (keydown.enter)="send(value)" (click)="send(value)">Envoyer</button>
+</mat-form-field>

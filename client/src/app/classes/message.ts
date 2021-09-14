@@ -1,4 +1,13 @@
+export const enum MessageType {
+    SyntaxError,
+    UndoableActionError,
+    InvalidInputError,
+    Log,
+    Messaging,
+}
 export interface Message {
-    title: string;
     body: string;
+    messageType: MessageType;
+    userId: number;
+    timestamp: number;
 }
