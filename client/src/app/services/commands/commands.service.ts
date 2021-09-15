@@ -1,5 +1,4 @@
 import { Injectable } from '@angular/core';
-import { MessageType } from '@app/classes/message';
 import { MessagesService } from '@app/services/messages/messages.service';
 
 @Injectable({
@@ -9,9 +8,9 @@ export class CommandsService {
     // TODO: create dependency to the reserve service
     // TODO: create dependency to messages
 
-    readonly placeWordCommandRegex: string = '/([a-o])([1-15])([hv])/$';
-    readonly wordRegex: string = '^[a-zA-Z]{0-15}$/'; // At least one letter
-    readonly messageRegex: string = '^[a-zA-Z0-9 ].$'; // TODO: read the project prompt
+    readonly placeWordCommandRegex: RegExp = /^([a-o]){1}([1-9]|1[0-5]){1}([hv])+$/;
+    readonly wordRegex: RegExp = /^[a-zA-Z]{1,15}$/;
+    readonly messageRegex: RegExp = /^[a-zA-Z0-9 [:punct:]]*$/;
 
     constructor(public messagesService: MessagesService) {} // TODO: Inject: Messages + User
 
@@ -26,35 +25,58 @@ export class CommandsService {
         switch (args[0]) {
             case '!aide': {
                 this.messagesService.sendMessage({
-                    body: '!aide',
-                    messageType: MessageType.Log,
+                    body: 'Vous avez appelé aide!',
+                    messageType: 'Log',
                     userId: 1,
                     timestamp: Date.now(),
                 });
                 break;
             }
             case '!placer': {
-                // Format: <row><column><word direction><space><word to be placed>
-                const command = args[1].match(this.placeWordCommandRegex); // TODO: what if null?
-                if (command && command[1]) {
-                    command[1].match(this.placeWordCommandRegex);
+                // Arguments: COMMAND OPTIONS WORD
+                const options = args[1].match(this.placeWordCommandRegex); // TODO: what if null?
+                if (options && options[1] && args[2]) {
+                    options[1].match(this.placeWordCommandRegex);
+                    this.messagesService.sendMessage({
+                        body: `Placé ${args[2]}`,
+                        messageType: 'Log',
+                        userId: 1,
+                        timestamp: Date.now(),
+                    });
+                } else {
+                    this.messagesService.sendMessage({
+                        body: 'Invalide: mot non fourni ou options invalides',
+                        messageType: 'Error',
+                        userId: 1,
+                        timestamp: Date.now(),
+                    });
                 }
                 // TODO: how are errors sent to the message box dialog
                 break;
             }
             case '!reserver': {
-                this.messagesService.sendMessage({
-                    body: `!reserver ${input}`,
-                    messageType: MessageType.Log,
-                    userId: 1,
-                    timestamp: Date.now(),
-                });
+                const word = args[1].match(this.wordRegex);
+                if (word && word[0]) {
+                    this.messagesService.sendMessage({
+                        body: `Mot réservé ${word[0]}`,
+                        messageType: 'Log',
+                        userId: 1,
+                        timestamp: Date.now(),
+                    });
+                } else {
+                    this.messagesService.sendMessage({
+                        body: 'Mot invalide',
+                        messageType: 'Error',
+                        userId: 1,
+                        timestamp: Date.now(),
+                    });
+                }
                 break;
             }
             case '!debug': {
                 this.messagesService.sendMessage({
                     body: this.messagesService.debuggingMode ? 'Affichages de débogages activés' : 'Affichages de débogages désactivés',
-                    messageType: MessageType.Log,
+                    messageType: 'Log',
                     userId: 1,
                     timestamp: Date.now(),
                 });
@@ -64,18 +86,16 @@ export class CommandsService {
             // If not a command, it is probably a message
             default: {
                 if (input.match(this.messageRegex)) {
-                    // TODO: send message
                     this.messagesService.sendMessage({
-                        body: 'MessageBoxComponent ngOnInit Called',
-                        messageType: MessageType.Log,
+                        body: `${input}`,
+                        messageType: 'Log',
                         userId: 1,
                         timestamp: Date.now(),
                     });
                 } else {
-                    // TODO: log error
                     this.messagesService.sendMessage({
-                        body: 'La saisie est invalide!',
-                        messageType: MessageType.InvalidInputError,
+                        body: 'MEssage passse pas = ' + input,
+                        messageType: 'Error',
                         userId: 1,
                         timestamp: Date.now(),
                     });

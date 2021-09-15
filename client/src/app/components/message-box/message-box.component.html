@@ -1,6 +1,9 @@
 <mat-grid-list cols="1" >
     <!-- Message list -->
-        <mat-card *ngFor="let message of messages" style="margin:8px">
+        <mat-card *ngFor="let message of messages" style="margin:8px" [ngClass]="{
+            'error-message':message.messageType === 'Error',
+            'log-message':message.messageType === 'Log'
+        }">
             <span class="user-id">Joueur {{ message.userId }}: </span>{{ message.body }}
         </mat-card>
 </mat-grid-list>

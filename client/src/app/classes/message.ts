@@ -1,13 +1,6 @@
-export const enum MessageType {
-    SyntaxError,
-    UndoableActionError,
-    InvalidInputError,
-    Log,
-    Messaging,
-}
 export interface Message {
     body: string;
-    messageType: MessageType;
+    messageType: 'Error' | 'Message' | 'UndoableAction' | 'Syntax' | 'Log';
     userId: number;
     timestamp: number;
 }
