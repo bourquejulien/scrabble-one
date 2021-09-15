@@ -3,26 +3,39 @@ import { Board, ImmutableBoard } from './board';
 import { Square } from './square';
 import { ValidationResponse } from './validation-response';
 import { Vec2 } from './vec2';
-
-enum Direction {
-    Horizontal,
-    Vertical,
-    None,
-}
+import { Direction, reverseDirection } from './direction';
+import { getBonusValue, isLetterBonus } from './bonus';
 
 export class BoardValidator {
-    constructor(private board: ImmutableBoard, private lookup: (word: string) => boolean, letterValues: { [key: string]: number }) { }
+    constructor(private board: ImmutableBoard, private lookup: (word: string) => boolean, private letterValues: { [key: string]: number }) { }
 
-    private static validateIfSquareFilled(square: Square | null): boolean {
+    private static validateSquare(square: Square | null): boolean {
         return square != null && square.letter !== '';
     }
 
     private static sortLetters(letters: [string, Vec2][], direction: Direction): [string, Vec2][] {
-        if (direction === Direction.Horizontal) {
+        if (direction === Direction.Right) {
             return letters.sort((l1, l2) => l1[1].x - l2[1].x);
         } else {
             return letters.sort((l1, l2) => l1[1].y - l2[1].y);
         }
+    }
+
+    private static ensureCoherence(clonedBoard: Board, sortedPositions: Vec2[], direction: Direction): boolean {
+        const finalPosition = sortedPositions[sortedPositions.length - 1];
+        const initialPosition = sortedPositions[0];
+
+        let square = clonedBoard.getRelative(initialPosition, direction);
+
+        while (square != null && square.letter !== '') {
+            if (square.position === finalPosition) {
+                return true;
+            }
+
+            square = clonedBoard.getRelative(square.position, direction);
+        }
+
+        return false;
     }
 
     validate(letters: [string, Vec2][]): ValidationResponse {
@@ -31,7 +44,7 @@ export class BoardValidator {
         }
 
         const positions: Vec2[] = letters.map((e) => e[1]);
-        const clonedBoard = this.board.clone();
+        const clonedBoard: Board = this.board.clone();
 
         try {
             clonedBoard.merge(letters);
@@ -43,12 +56,6 @@ export class BoardValidator {
             throw error;
         }
 
-        if (this.board.filledSquare === 0) {
-            if (!this.validateFirstPlacement(letters)) return { isSuccess: false, description: 'Invalid first word', points: 0 };
-        } else if (!this.ensureCoherence(positions)) {
-            return { isSuccess: false, description: 'Invalid coherence', points: 0 };
-        }
-
         const direction: Direction = this.retrieveDirection(positions);
 
         if (direction === Direction.None) {
@@ -56,27 +63,49 @@ export class BoardValidator {
         }
 
         const sortedLetters = BoardValidator.sortLetters(letters, direction);
+        const sortedPositions = sortedLetters.map((e) => e[1]);
 
-        return this.validateWords(clonedBoard, sortedLetters, direction);
+        if (this.board.filledSquare === 0) {
+            if (!this.validateFirstPlacement(letters)) return { isSuccess: false, description: 'Invalid first word', points: 0 };
+        } else if (!this.ensureAggregation(positions)) {
+            return { isSuccess: false, description: 'No aggregation', points: 0 };
+        }
+
+        if (!BoardValidator.ensureCoherence(clonedBoard, sortedPositions, direction)) {
+            return { isSuccess: false, description: 'Invalid coherence', points: 0 };
+        }
+
+        return this.validateWords(clonedBoard, sortedPositions, direction);
+    }
+
+    getLetterValue(letter: string): number {
+        if (letter.length !== 1) {
+            return 0;
+        }
+
+        return this.letterValues[letter];
     }
 
     private validateFirstPlacement(letters: [string, Vec2][]): boolean {
         if (letters.length < 2) {
             return false;
         }
+
+        const halfBoardSize = Math.floor(this.board.size / 2);
         for (const [, position] of letters) {
-            if (position.x === 0 && position.y === 0) return true;
+            if (position.x === halfBoardSize && position.y === halfBoardSize) return true;
         }
+
         return false;
     }
 
-    private ensureCoherence(positions: Vec2[]): boolean {
+    private ensureAggregation(positions: Vec2[]): boolean {
         for (const position of positions) {
             if (
-                BoardValidator.validateIfSquareFilled(this.board.left(position)) ||
-                BoardValidator.validateIfSquareFilled(this.board.right(position)) ||
-                BoardValidator.validateIfSquareFilled(this.board.up(position)) ||
-                BoardValidator.validateIfSquareFilled(this.board.down(position))
+                BoardValidator.validateSquare(this.board.getRelative(position, Direction.Left)) ||
+                BoardValidator.validateSquare(this.board.getRelative(position, Direction.Right)) ||
+                BoardValidator.validateSquare(this.board.getRelative(position, Direction.Up)) ||
+                BoardValidator.validateSquare(this.board.getRelative(position, Direction.Down))
             ) {
                 return true;
             }
@@ -85,7 +114,7 @@ export class BoardValidator {
     }
 
     private retrieveDirection(positions: Vec2[]): Direction {
-        if (positions.length < 2) return Direction.None;
+        if (positions.length < 2) return Direction.Right;
 
         const firstPosition: Vec2 = positions[0];
         const secondPosition: Vec2 = positions[1];
@@ -93,18 +122,18 @@ export class BoardValidator {
         let direction: Direction;
 
         if (firstPosition.x === secondPosition.x) {
-            direction = Direction.Vertical;
+            direction = Direction.Down;
         } else if (firstPosition.y === secondPosition.y) {
-            direction = Direction.Horizontal;
+            direction = Direction.Right;
         } else {
             return Direction.None;
         }
 
         for (let i = 2; i < positions.length; i++) {
             if (positions[i - 1].x === positions[i].x) {
-                if (direction !== Direction.Vertical) return Direction.None;
+                if (direction !== Direction.Down) return Direction.None;
             } else if (positions[i - 1].y === positions[i].y) {
-                if (direction !== Direction.Horizontal) return Direction.None;
+                if (direction !== Direction.Right) return Direction.None;
             } else {
                 return Direction.None;
             }
@@ -113,7 +142,68 @@ export class BoardValidator {
         return direction;
     }
 
-    private validateWords(clonedBoard: Board, sortedLetters: [string, Vec2][], direction: Direction): ValidationResponse {
-        // TODO
+    private validateWords(clonedBoard: Board, sortedPositions: Vec2[], direction: Direction): ValidationResponse {
+        let totalPoint = 0;
+
+        let response = this.validateWord(clonedBoard, sortedPositions[0], direction);
+        if (!response.isSuccess) {
+            return response;
+        }
+        totalPoint += response.points;
+
+        for (const position of sortedPositions) {
+            response = this.validateWord(clonedBoard, position, direction === Direction.Down ? Direction.Right : Direction.Down);
+            if (!response.isSuccess) {
+                return response;
+            }
+
+            totalPoint += response.points;
+        }
+
+        return { isSuccess: true, description: '', points: totalPoint };
+    }
+
+    private validateWord(clonedBoard: Board, initialPosition: Vec2, direction: Direction): ValidationResponse {
+        const firstPosition = this.getFirstPosition(clonedBoard, initialPosition, direction);
+
+        let square: Square | null = clonedBoard.getSquare(firstPosition);
+        let word = '';
+        let totalPoint = 0;
+        let multiplier = 1;
+
+        while (square != null && square.letter !== '') {
+            word += square.letter;
+
+            if (isLetterBonus(square.bonus)) {
+                totalPoint += this.getLetterValue(square.letter) * getBonusValue(square.bonus);
+            } else {
+                totalPoint += this.getLetterValue(square.letter);
+                multiplier *= getBonusValue(square.bonus);
+            }
+
+            square = clonedBoard.getRelative(square.position, direction);
+        }
+
+        if (word.length < 2) {
+            return { isSuccess: true, description: '', points: 0 };
+        }
+
+        if (this.lookup(word)) {
+            return { isSuccess: true, description: '', points: totalPoint * multiplier };
+        } else {
+            return { isSuccess: false, description: `Word: (${word}) cannot be found in dictionary`, points: 0 };
+        }
+    }
+
+    private getFirstPosition(clonedBoard: Board, initialPosition: Vec2, direction: Direction): Vec2 {
+        let square = clonedBoard.getRelative(initialPosition, reverseDirection(direction));
+        let position = initialPosition;
+
+        while (square != null && square.letter !== '') {
+            position = square.position;
+            square = clonedBoard.getRelative(square.position, reverseDirection(direction));
+        }
+
+        return position;
     }
 }

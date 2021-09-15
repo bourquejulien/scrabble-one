@@ -1,20 +1,20 @@
 export enum Bonus {
-    None = 'None',
-    LetterDouble = 'L2',
-    WordDouble = 'W2',
-    LetterTriple = 'L3',
-    WordTriple = 'W3',
+    None,
+    L2,
+    W2,
+    L3,
+    W3,
 }
 
 export const getBonusValue = (bonus: Bonus): number => {
     switch (bonus) {
-        case Bonus.LetterDouble:
+        case Bonus.L2:
             return 2;
-        case Bonus.LetterTriple:
+        case Bonus.L3:
             return 3;
-        case Bonus.WordDouble:
+        case Bonus.W2:
             return 2;
-        case Bonus.WordTriple:
+        case Bonus.W3:
             return 3;
         default:
             return 1;
@@ -23,11 +23,11 @@ export const getBonusValue = (bonus: Bonus): number => {
 
 export const isLetterBonus = (bonus: Bonus): boolean => {
     switch (bonus) {
-        case Bonus.LetterDouble:
-        case Bonus.LetterTriple:
+        case Bonus.L2:
+        case Bonus.L3:
             return true;
-        case Bonus.WordDouble:
-        case Bonus.WordTriple:
+        case Bonus.W2:
+        case Bonus.W3:
         default:
             return false;
     }

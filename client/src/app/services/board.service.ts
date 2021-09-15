@@ -7,6 +7,7 @@ import { Vec2 } from '@app/classes/vec2';
 import { Constants } from '@app/constants/global.constants';
 import JsonBonuses from '@assets/bonus.json';
 import JsonLetters from '@assets/letters.json';
+import { DictionaryService } from './dictionary.service';
 
 @Injectable({
     providedIn: 'root',
@@ -15,9 +16,9 @@ export class BoardService {
     private readonly board: Board;
     private readonly boardValidator: BoardValidator;
 
-    constructor() {
+    constructor(dictionary: DictionaryService) {
         this.board = new Board(Constants.grid.gridSize, this.retrieveBonuses());
-        this.boardValidator = new BoardValidator(this.board, this.lookup, this.retrieveLetterValues());
+        this.boardValidator = new BoardValidator(this.board, dictionary.lookup, this.retrieveLetterValues());
     }
 
     get gameBoard(): ImmutableBoard {
@@ -56,10 +57,5 @@ export class BoardService {
         }
 
         return letterValues;
-    }
-
-    // TODO Implement dictionary service
-    private lookup(word: string): boolean {
-        return word === 'test';
     }
 }

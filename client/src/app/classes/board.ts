@@ -5,15 +5,13 @@ import { Vec2 } from './vec2';
 import { BoardOverflowError } from '@app/exceptions/board-overflow-error';
 import { Bonus } from './bonus';
 import { BoardMergeError } from '@app/exceptions/board-merge-error';
+import { Direction } from './direction';
 
 export interface ImmutableBoard {
     readonly size: number;
 
     getSquare(position: Vec2): Square;
-    up(position: Vec2): Square | null;
-    down(position: Vec2): Square | null;
-    left(position: Vec2): Square | null;
-    right(position: Vec2): Square | null;
+    getRelative(position: Vec2, direction: Direction): Square | null;
     clone(): Board;
     get filledSquare(): number;
 }
@@ -24,7 +22,7 @@ export class Board implements ImmutableBoard {
 
     private _filledSquare: number = 0;
 
-    constructor(size: number, bonuses: [Vec2, Bonus][]) {
+    constructor(size: number, bonuses: [Vec2, Bonus][] = new Array()) {
         this.size = size;
         this.board = new Array<Square[]>();
 
@@ -32,14 +30,14 @@ export class Board implements ImmutableBoard {
             const column: Square[] = new Array<Square>();
 
             for (let y = 0; y <= size; y++) {
-                column.push({ letter: '', bonus: Bonus.None });
+                column.push({ letter: '', bonus: Bonus.None, position: { x, y } });
             }
 
             this.board.push(column);
         }
 
         for (const [position, bonus] of bonuses) {
-            this.board[position.x][position.y] = { letter: '', bonus };
+            this.board[position.x][position.y] = { letter: '', bonus, position };
         }
     }
 
@@ -60,44 +58,35 @@ export class Board implements ImmutableBoard {
         }
     }
 
-    up(position: Vec2): Square | null {
+    getRelative(position: Vec2, direction: Direction): Square | null {
         this.positionGuard(position);
 
-        const row = position.y - 1;
-        if (row < 0) return null;
+        let row = position.y;
+        let column = position.x;
 
-        return this.board[position.x][row];
-    }
+        if (direction === Direction.Down || direction === Direction.Up) {
+            row = direction === Direction.Down ? row - 1 : row + 1;
+        } else if (direction === Direction.Left || direction === Direction.Right) {
+            column = direction === Direction.Left ? column - 1 : column + 1;
+        } else {
+            return null;
+        }
 
-    down(position: Vec2): Square | null {
-        this.positionGuard(position);
+        if (row < 0 || column < 0 || row > this.size - 1 || column > this.size - 1) return null;
 
-        const row = position.y + 1;
-        if (row > this.size - 1) return null;
-
-        return this.board[position.x][row];
-    }
-
-    left(position: Vec2): Square | null {
-        this.positionGuard(position);
-
-        const column = position.x - 1;
-        if (column < 0) return null;
-
-        return this.board[column][position.y];
-    }
-
-    right(position: Vec2): Square | null {
-        this.positionGuard(position);
-
-        const column = position.x + 1;
-        if (column > this.size - 1) return null;
-
-        return this.board[column][position.y];
+        return this.board[column][row];
     }
 
     clone(): Board {
-        return { ...this };
+        const clonedBoard = new Board(this.size);
+
+        for (let x = 0; x <= this.size; x++) {
+            for (let y = 0; y <= this.size; y++) {
+                clonedBoard.board[x][y] = this.board[x][y];
+            }
+        }
+
+        return clonedBoard;
     }
 
     get filledSquare(): number {
@@ -106,7 +95,7 @@ export class Board implements ImmutableBoard {
 
     private setLetter(letter: string, position: Vec2): void {
         const replacedSquare = this.getSquare(position);
-        this.board[position.x][position.y] = { letter, bonus: replacedSquare.bonus };
+        this.board[position.x][position.y] = { letter, bonus: replacedSquare.bonus, position };
         this._filledSquare++;
     }
 
