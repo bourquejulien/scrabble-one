@@ -1,10 +1,10 @@
 import { BoardError } from '@app/exceptions/board-error';
-import { Board, ImmutableBoard } from './board';
-import { Square } from './square';
+import { Board, ImmutableBoard } from '@app/classes/board/board';
+import { Square } from '@app/classes/board/square';
 import { ValidationResponse } from './validation-response';
-import { Vec2 } from './vec2';
-import { Direction, reverseDirection } from './direction';
-import { Bonus, getBonusValue, isLetterBonus } from './bonus';
+import { Vec2 } from '@app/classes/vec2';
+import { Direction, reverseDirection } from '@app/classes/board/direction';
+import { Bonus, getBonusValue, isLetterBonus } from '@app/classes/board/bonus';
 
 // TODO
 // Add placement class

@@ -1,7 +1,7 @@
 // TODO validate _ for private members
 /* eslint-disable no-underscore-dangle */
-import { Square } from '@app/classes/square';
-import { Vec2 } from './vec2';
+import { Square } from './square';
+import { Vec2 } from '@app/classes/vec2';
 import { BoardOverflowError } from '@app/exceptions/board-overflow-error';
 import { Bonus } from './bonus';
 import { BoardMergeError } from '@app/exceptions/board-merge-error';

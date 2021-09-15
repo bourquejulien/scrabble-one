@@ -1,5 +1,5 @@
-import { Bonus } from '@app/classes/bonus';
-import { Vec2 } from './vec2';
+import { Bonus } from './bonus';
+import { Vec2 } from '@app/classes/vec2';
 
 export interface Square {
     readonly letter: string;

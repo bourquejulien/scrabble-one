@@ -1,5 +1,5 @@
 import { TestBed } from '@angular/core/testing';
-import { Direction } from '@app/classes/direction';
+import { Direction } from '@app/classes/board/direction';
 import { Vec2 } from '@app/classes/vec2';
 
 import { BoardService } from './board.service';

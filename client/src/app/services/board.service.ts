@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
-import { Board, ImmutableBoard } from '@app/classes/board';
-import { BoardValidator } from '@app/classes/board-validator';
-import { Bonus } from '@app/classes/bonus';
-import { ValidationResponse } from '@app/classes/validation-response';
+import { Board, ImmutableBoard } from '@app/classes/board/board';
+import { BoardValidator } from '@app/classes/validation/board-validator';
+import { Bonus } from '@app/classes/board/bonus';
+import { ValidationResponse } from '@app/classes/validation/validation-response';
 import { Vec2 } from '@app/classes/vec2';
 import { Constants } from '@app/constants/global.constants';
 import JsonBonuses from '@assets/bonus.json';
