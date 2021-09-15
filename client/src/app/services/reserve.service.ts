@@ -4,7 +4,6 @@ import { letterDefinitions } from '@app/classes/letter';
 @Injectable({
     providedIn: 'root',
 })
-
 export class ReserveService {
     private reserve: string[];
 
@@ -22,7 +21,7 @@ export class ReserveService {
     }
 
     drawLetter(): number {
-        const randomLetterIndex = Math.floor(Math.random() * (this.reserve.length));
+        const randomLetterIndex = Math.floor(Math.random() * this.reserve.length);
         this.reserve.splice(randomLetterIndex, 1);
 
         return randomLetterIndex;

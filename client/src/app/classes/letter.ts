@@ -31,4 +31,4 @@ export const letterDefinitions = new Map<string, LetterData>([
     ['Y', { points: 10, maxQuantity: 1 }],
     ['Z', { points: 10, maxQuantity: 1 }],
     ['*', { points: 0, maxQuantity: 2 }],
-]); 
+]);
