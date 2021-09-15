@@ -1,16 +1,13 @@
-.user-id{
-    font: bold;
-}
-
 .command-field {
     width: 90%;
     margin: 16px;
 }
 
-.error-message {
-    background: #FF4500;
+.syntax-error .input-error .action-error .log-message {
+    background-color: #ff7b7b;
 }
 
-.log-message {
-    background: #b6b6b6;
+.message-viewport {
+    height: 300px;
+    width: 100%;
 }
