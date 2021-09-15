@@ -8,6 +8,7 @@ export class ReserveService {
     private reserve: string[];
 
     constructor() {
+        this.reserve = new Array<string>();
         for (const element of letterDefinitions) {
             for (let i = 0; i < element[1].maxQuantity; i++) {
                 this.reserve.push(element[0]);
