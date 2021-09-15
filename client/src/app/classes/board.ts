@@ -64,12 +64,21 @@ export class Board implements ImmutableBoard {
         let row = position.y;
         let column = position.x;
 
-        if (direction === Direction.Down || direction === Direction.Up) {
-            row = direction === Direction.Down ? row - 1 : row + 1;
-        } else if (direction === Direction.Left || direction === Direction.Right) {
-            column = direction === Direction.Left ? column - 1 : column + 1;
-        } else {
-            return null;
+        switch (direction) {
+            case Direction.Down:
+                row += 1;
+                break;
+            case Direction.Up:
+                row -= 1;
+                break;
+            case Direction.Right:
+                column += 1;
+                break;
+            case Direction.Left:
+                column -= 1;
+                break;
+            default:
+                break;
         }
 
         if (row < 0 || column < 0 || row > this.size - 1 || column > this.size - 1) return null;

@@ -4,10 +4,15 @@ import { Square } from './square';
 import { ValidationResponse } from './validation-response';
 import { Vec2 } from './vec2';
 import { Direction, reverseDirection } from './direction';
-import { getBonusValue, isLetterBonus } from './bonus';
+import { Bonus, getBonusValue, isLetterBonus } from './bonus';
+
+// TODO
+// Add placement class
+// Add letter class
+// Better handling of bonuses (split tables?)
 
 export class BoardValidator {
-    constructor(private board: ImmutableBoard, private lookup: (word: string) => boolean, private letterValues: { [key: string]: number }) { }
+    constructor(private board: ImmutableBoard, private lookup: (word: string) => boolean, private letterPoints: { [key: string]: number }) {}
 
     private static validateSquare(square: Square | null): boolean {
         return square != null && square.letter !== '';
@@ -78,12 +83,12 @@ export class BoardValidator {
         return this.validateWords(clonedBoard, sortedPositions, direction);
     }
 
-    getLetterValue(letter: string): number {
+    getLetterPoints(letter: string): number {
         if (letter.length !== 1) {
             return 0;
         }
 
-        return this.letterValues[letter];
+        return this.letterPoints[letter];
     }
 
     private validateFirstPlacement(letters: [string, Vec2][]): boolean {
@@ -166,22 +171,29 @@ export class BoardValidator {
     private validateWord(clonedBoard: Board, initialPosition: Vec2, direction: Direction): ValidationResponse {
         const firstPosition = this.getFirstPosition(clonedBoard, initialPosition, direction);
 
-        let square: Square | null = clonedBoard.getSquare(firstPosition);
+        let nextSquare: Square | null = clonedBoard.getSquare(firstPosition);
         let word = '';
         let totalPoint = 0;
         let multiplier = 1;
 
-        while (square != null && square.letter !== '') {
-            word += square.letter;
+        while (nextSquare != null && nextSquare.letter !== '') {
+            const currentSquare = nextSquare;
+            const isBonus = currentSquare.bonus !== Bonus.None && this.board.getSquare(currentSquare.position).letter === '';
 
-            if (isLetterBonus(square.bonus)) {
-                totalPoint += this.getLetterValue(square.letter) * getBonusValue(square.bonus);
-            } else {
-                totalPoint += this.getLetterValue(square.letter);
-                multiplier *= getBonusValue(square.bonus);
+            nextSquare = clonedBoard.getRelative(currentSquare.position, direction);
+            word += currentSquare.letter;
+
+            if (!isBonus) {
+                totalPoint += this.getLetterPoints(currentSquare.letter);
+                continue;
             }
 
-            square = clonedBoard.getRelative(square.position, direction);
+            if (isLetterBonus(currentSquare.bonus)) {
+                totalPoint += this.getLetterPoints(currentSquare.letter) * getBonusValue(currentSquare.bonus);
+            } else {
+                totalPoint += this.getLetterPoints(currentSquare.letter);
+                multiplier *= getBonusValue(currentSquare.bonus);
+            }
         }
 
         if (word.length < 2) {
