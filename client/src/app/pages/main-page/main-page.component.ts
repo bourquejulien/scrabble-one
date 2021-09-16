@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { Message } from '@app/classes/message';
 import { CommunicationService } from '@app/services/communication.service';
+import { PlayerService } from '@app/services/player.service';
 import { BehaviorSubject } from 'rxjs';
 import { map } from 'rxjs/operators';
 
@@ -13,7 +14,7 @@ export class MainPageComponent {
     readonly title: string = 'LOG2990';
     message: BehaviorSubject<string> = new BehaviorSubject<string>('');
 
-    constructor(private readonly communicationService: CommunicationService) {}
+    constructor(private readonly communicationService: CommunicationService, private playerService: PlayerService) {}
 
     sendTimeToServer(): void {
         const newTimeMessage: Message = {
@@ -34,5 +35,9 @@ export class MainPageComponent {
                 }),
             )
             .subscribe(this.message);
+    }
+    //TODO: to remove after testing
+    onPlayerClick(): void {
+        this.playerService.skipTurn();
     }
 }
