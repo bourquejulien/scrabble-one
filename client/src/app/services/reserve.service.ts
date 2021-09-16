@@ -8,9 +8,9 @@ export class ReserveService {
     private reserve: string[] = [];
 
     constructor() {
-        for (const element of letterDefinitions) {
-            for (let i = 0; i < element[1].maxQuantity; i++) {
-                this.reserve.push(element[0]);
+        for (const [letter, letterData] of letterDefinitions) {
+            for (let i = 0; i < letterData.maxQuantity; i++) {
+                this.reserve.push(letter);
             }
         }
     }
