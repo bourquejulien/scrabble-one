@@ -7,17 +7,8 @@
     },
     "html.format.indentInnerHtml": true,
     "typescript.format.insertSpaceAfterOpeningAndBeforeClosingEmptyBraces": false,
-    "eslint.workingDirectories": [
-        "./client",
-        "./server"
-    ],
-    "eslint.probe": [
-        "javascript",
-        "typescript",
-        "html",
-        "vue",
-        "markdown"
-    ],
+    "eslint.workingDirectories": ["./client", "./server"],
+    "eslint.probe": ["javascript", "typescript", "html", "vue", "markdown"],
     "eslint.validate": [
         "javascript",
         "typescript",
@@ -25,6 +16,9 @@
         "vue",
         "markdown"
     ],
+    "[typescript]": {
+        "editor.defaultFormatter": "vscode.typescript-language-features"
+    },
     "[json]": {
         "editor.defaultFormatter": "vscode.json-language-features"
     }
