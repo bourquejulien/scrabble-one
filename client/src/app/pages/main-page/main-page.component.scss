@@ -23,7 +23,7 @@
     text-decoration: none;
     outline: none;
     color: black;
-    background-color: white;
+    background-color: #eae7dc;
     border: none;
     border-radius: 1px;
     box-shadow: 0 5px rgb(212, 212, 212);
@@ -43,7 +43,7 @@
 .team-name {
     margin-top: 0.25em;
     margin-bottom: 0.25em;
-    color: white;
+    color: #eae7dc;
 }
 
 .header-item {
@@ -56,10 +56,10 @@
 }
 
 .footer-item p :nth-child(even) {
-    color: white;
+    color: #eae7dc;
 }
 .footer-item p :nth-child(odd) {
-    color: white;
+    color: #eae7dc;
 }
 
 .server-message {
@@ -70,6 +70,7 @@
 
 h1{
     color:#eae7dc;
+    text-align: center;
 }
 
 h2{

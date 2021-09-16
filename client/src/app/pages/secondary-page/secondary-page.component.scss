@@ -43,7 +43,7 @@
 .team-name {
     margin-top: 0.25em;
     margin-bottom: 0.25em;
-    color: white;
+    color: #eae7dc;
 }
 
 .header-item {
@@ -56,10 +56,10 @@
 }
 
 .footer-item p :nth-child(even) {
-    color: white;
+    color: #eae7dc;
 }
 .footer-item p :nth-child(odd) {
-    color: white;
+    color: #eae7dc;
 }
 
 .server-message {
@@ -70,6 +70,7 @@
 
 h1{
     color:#eae7dc;
+    text-align: center;
 }
 
 h2{
@@ -136,30 +137,13 @@ p{
     position: relative;
     display: inline-block;
 }
-  
-.dropdown-content1 {
-    display: none;
-    position: absolute;
-    right:200px;
-    background-color: #8e8d8a;
-    min-width: 200px;
-    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
-    padding: 12px 16px;
-    z-index: 1;
-    border-radius: 10px;
-}
-  
-.dropdown:hover .dropdown-content1 {
-    display: block;
-}
 
 .dropdown-content2 {
     display: none;
     position: absolute;
-    left:200px;
+    left:100px;
     background-color: #8e8d8a;
-    
-    min-width: 200px;
+    min-width: 150px;
     box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
     padding: 12px 16px;
     z-index: 1;
