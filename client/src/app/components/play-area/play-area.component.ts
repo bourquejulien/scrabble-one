@@ -69,11 +69,11 @@ export class PlayAreaComponent implements AfterViewInit {
             const position: Vec2 = { x: event.offsetX, y: event.offsetY };
 
             this.mousePosition = position;
-            this.refreshGridPositon(position);
+            this.refreshGridPosition(position);
         }
     }
 
-    private refreshGridPositon(position: Vec2) {
+    private refreshGridPosition(position: Vec2) {
         this.gridPosition = { x: this.computeGridPosition(position.x), y: this.computeGridPosition(position.y) };
     }
 
