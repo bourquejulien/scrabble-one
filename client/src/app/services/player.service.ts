@@ -1,6 +1,8 @@
 import { Injectable } from '@angular/core';
 import { ReserveService } from './reserve.service';
-
+/**
+ * const turn = of('1', '2');
+ */
 
 @Injectable({
   providedIn: 'root'
