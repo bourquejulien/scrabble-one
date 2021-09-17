@@ -1,4 +1,5 @@
 #container {
+    position: absolute;
     font-family: 'Poppins', sans-serif;
     display: flex;
     flex-direction: column;
@@ -36,7 +37,7 @@
 }
 
 #inputBox {
-    position: relative;
+    position: absolute;
     float: left;
     min-width: 300px;
     width: 150px;
