@@ -21,7 +21,6 @@ export class GameService {
                 this.isNameValidator(),
             ]),
         });
-        console.log(nameForm);
         this.nameForm = nameForm;
         if (nameForm.valid) {
             const randBool = Math.floor(Math.random());
