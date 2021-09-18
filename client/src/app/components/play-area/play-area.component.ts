@@ -19,12 +19,13 @@ export enum MouseButton {
 })
 export class PlayAreaComponent implements AfterViewInit {
     @ViewChild('gridCanvas', { static: false }) private gridCanvas!: ElementRef<HTMLCanvasElement>;
+    @ViewChild('squareCanvas', { static: false }) private squareCanvas!: ElementRef<HTMLCanvasElement>;
 
     mousePosition: Vec2 = { x: 0, y: 0 };
     gridPosition: Vec2 = { x: -1, y: -1 };
     buttonPressed = '';
-    private canvasSize = Constants.grid.canvasSize;
-    private gridSize = Constants.grid.gridSize;
+    private canvasSize = Constants.grid.CANVAS_SIZE;
+    private gridSize = Constants.grid.GRID_SIZE;
 
     constructor(private readonly gridService: GridService) {}
 
@@ -32,27 +33,31 @@ export class PlayAreaComponent implements AfterViewInit {
     buttonDetect(event: KeyboardEvent) {
         this.buttonPressed = event.key;
 
-        if (this.gridPosition.x >= 1 && this.gridPosition.y >= 1) {
-            this.gridService.drawSymbol(event.key, { x: this.gridPosition.x, y: this.gridPosition.y });
-        }
+        // if (this.gridPosition.x >= 1 && this.gridPosition.y >= 1) {
+        //     this.gridService.drawSymbol(event.key, { x: this.gridPosition.x, y: this.gridPosition.y });
+        // }
     }
 
     ngAfterViewInit(): void {
         this.gridService.gridContext = this.gridCanvas.nativeElement.getContext('2d') as CanvasRenderingContext2D;
+        this.gridService.squareContext = this.squareCanvas.nativeElement.getContext('2d') as CanvasRenderingContext2D;
 
-        const canvas = this.gridCanvas.nativeElement;
+        this.scale();
+
+        this.gridService.drawGridCanvas();
+        this.gridService.drawSquareCanvas();
+        this.squareCanvas.nativeElement.focus();
+    }
+
+    scale(): void {
+        const gridCanvas = this.gridCanvas.nativeElement;
+        const squareCanvas = this.squareCanvas.nativeElement;
         const scaleFactor = window.devicePixelRatio;
 
-        canvas.style.width = canvas.style.width || canvas.width + 'px';
-        canvas.style.height = canvas.style.height || canvas.height + 'px';
-
-        canvas.width = Math.ceil(canvas.width * scaleFactor);
-        canvas.height = Math.ceil(canvas.height * scaleFactor);
-        const context = canvas.getContext('2d');
-        context?.scale(scaleFactor, scaleFactor);
-
-        this.gridService.drawGrid();
-        this.gridCanvas.nativeElement.focus();
+        squareCanvas.width = gridCanvas.width = Math.ceil(gridCanvas.width * scaleFactor);
+        squareCanvas.height = gridCanvas.height = Math.ceil(gridCanvas.height * scaleFactor);
+        this.gridService.gridContext.scale(scaleFactor, scaleFactor);
+        this.gridService.squareContext.scale(scaleFactor, scaleFactor);
     }
 
     get width(): number {

@@ -22,11 +22,11 @@ describe('GridService', () => {
     });
 
     it(' width should return the width of the grid canvas', () => {
-        expect(service.width).toEqual(Constants.grid.canvasSize.x);
+        expect(service.width).toEqual(Constants.grid.CANVAS_SIZE.x);
     });
 
     it(' height should return the height of the grid canvas', () => {
-        expect(service.width).toEqual(Constants.grid.canvasSize.y);
+        expect(service.width).toEqual(Constants.grid.CANVAS_SIZE.y);
     });
 
     it(' drawLetter should call fillText on the canvas', () => {
@@ -54,7 +54,7 @@ describe('GridService', () => {
         const expectedCallTimes = 32;
         const moveToSpy = spyOn(service.gridContext, 'moveTo').and.callThrough();
         const lineToSpy = spyOn(service.gridContext, 'lineTo').and.callThrough();
-        service.drawGrid();
+        service.drawGridCanvas();
         expect(moveToSpy).toHaveBeenCalledTimes(expectedCallTimes);
         expect(lineToSpy).toHaveBeenCalledTimes(expectedCallTimes);
     });
@@ -62,7 +62,7 @@ describe('GridService', () => {
     it(' drawGrid should color pixels on the canvas', () => {
         let imageData = service.gridContext.getImageData(0, 0, service.width, service.height).data;
         const beforeSize = imageData.filter((x) => x !== 0).length;
-        service.drawGrid();
+        service.drawGridCanvas();
         imageData = service.gridContext.getImageData(0, 0, service.width, service.height).data;
         const afterSize = imageData.filter((x) => x !== 0).length;
         expect(afterSize).toBeGreaterThan(beforeSize);

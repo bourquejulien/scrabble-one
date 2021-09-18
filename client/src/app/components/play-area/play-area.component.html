@@ -1,8 +1,12 @@
 <div id="grid-container">
-    <p>Scrabble!</p>
-    <canvas id="canvas" #gridCanvas (click)="mouseHitDetect($event)" [attr.width]="width" [attr.height]="height"></canvas>
+    <div id="board" [style.width.px]="width" [style.height.px]="height">
+        <canvas id="gridCanvas" #gridCanvas [style.width.px]="width" [style.height.px]="height" [attr.width]="width" [attr.height]="height"></canvas>
+        <canvas id="squareCanvas" #squareCanvas [style.width.px]="width" [style.height.px]="height" (click)="mouseHitDetect($event)" [attr.width]="width"
+            [attr.height]="height"></canvas>
+    </div>
+
     <div id="mouse-position-display">
-        <p>Cliquez sur la grille pour avoir la position de la souris</p>
+        <p [attr.height]="height">Cliquez sur la grille pour avoir la position de la souris</p>
         <p *ngIf="mousePosition.x !== 0">X : {{ mousePosition.x }}</p>
         <p *ngIf="mousePosition.y !== 0">Y : {{ mousePosition.y }}</p>
         <p *ngIf="gridPosition.x >= 0 || gridPosition.y >= 0">Case : ({{ gridPosition.x }}, {{ gridPosition.y }})</p>
