@@ -20,7 +20,6 @@ export class ReserveService {
         this.reserve.splice(letterIndex, 0, letterToExchange);
     }
 
-    // test edge case for out of bounds index???
     drawLetter(): string {
         const randomLetterIndex = Math.floor(Math.random() * this.reserve.length);
         this.reserve.splice(randomLetterIndex, 1);
@@ -30,5 +29,12 @@ export class ReserveService {
 
     get length(): number {
         return this.reserve.length;
+    }
+    
+    // For testing
+    setReserve(mockReserve: string[]): void {
+        for (let letter of mockReserve){
+            this.reserve.push(letter);
+        }
     }
 }

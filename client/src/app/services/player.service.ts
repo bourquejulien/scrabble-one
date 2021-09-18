@@ -14,19 +14,19 @@ export class PlayerService {
     //TODO: Place lettres sur le board; récupérer lettres du UIchevalet
 
     // Empty reserve
-    if (this.reserveService.getLength() === 0)
+    if (this.reserveService.length === 0)
       return false;
 
     // Less letters in reserve than letters placed
-    if (this.reserveService.getLength() <= lettersToPlace.length) {
-      for (let i = 0; i < this.reserveService.getLength(); i++) {
+    if (this.reserveService.length <= lettersToPlace.length) {
+      for (let i = 0; i < this.reserveService.length; i++) {
         this.rack.push(this.reserveService.drawLetter());
       }
       return true;
     }
 
     // More letters in reserve than letters placed
-    if (this.reserveService.getLength() <= lettersToPlace.length) {
+    if (this.reserveService.length <= lettersToPlace.length) {
       for (let i = 0; i < lettersToPlace.length; i++) {
         this.rack.push(this.reserveService.drawLetter());
       }
@@ -37,7 +37,7 @@ export class PlayerService {
   }
 
   exchangeLetters(lettersToExchange: string[]): boolean {
-    if (this.reserveService.getLength() < 7) {
+    if (this.reserveService.length < 7) {
       return false;
     }
 
