@@ -62,7 +62,9 @@ describe('ReserveService', () => {
     /*it('should chack that Math.random has been called', () => {
         expect(Math.random).toHaveBeenCalledWith();
     });*/
-
+/**
+ * check if index = -1 to make sure that nothing is added
+ */
     it('should return last index from reserve', () => {
         spyOn(Math, 'random').and.returnValue(1);
         expect(service.drawLetter()).toBe('C');
