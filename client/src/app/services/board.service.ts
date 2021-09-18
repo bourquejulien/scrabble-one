@@ -1,13 +1,15 @@
 import { Injectable } from '@angular/core';
 import { Board, ImmutableBoard } from '@app/classes/board/board';
 import { BoardValidator } from '@app/classes/validation/board-validator';
+import { DictionaryService } from './dictionary.service';
+import { Square } from '@app/classes/board/square';
 import { Bonus } from '@app/classes/board/bonus';
 import { ValidationResponse } from '@app/classes/validation/validation-response';
 import { Vec2 } from '@app/classes/vec2';
+import { Direction } from '@app/classes/board/direction';
 import { Constants } from '@app/constants/global.constants';
 import JsonBonuses from '@assets/bonus.json';
 import JsonLetters from '@assets/letters.json';
-import { DictionaryService } from './dictionary.service';
 
 @Injectable({
     providedIn: 'root',
@@ -17,7 +19,7 @@ export class BoardService {
     private readonly boardValidator: BoardValidator;
 
     constructor(dictionary: DictionaryService) {
-        this.board = new Board(Constants.grid.gridSize, this.retrieveBonuses());
+        this.board = new Board(Constants.grid.GRID_SIZE, this.retrieveBonuses());
         this.boardValidator = new BoardValidator(this.board, dictionary.lookup, this.retrieveLetterValues());
     }
 
@@ -25,11 +27,11 @@ export class BoardService {
         return this.board;
     }
 
-    validateWord(letters: [string, Vec2][]): ValidationResponse {
+    validateLetters(letters: [string, Vec2][]): ValidationResponse {
         return this.boardValidator.validate(letters);
     }
 
-    addWord(letters: [string, Vec2][]): ValidationResponse {
+    placeLetters(letters: [string, Vec2][]): ValidationResponse {
         const response = this.boardValidator.validate(letters);
 
         if (!response.isSuccess) return response;
@@ -37,6 +39,22 @@ export class BoardService {
         this.board.merge(letters);
 
         return response;
+    }
+
+    retrieveNewLetters(word: string, initialPosition: Vec2, direction: Direction): [string, Vec2][] {
+        const newLetters: [string, Vec2][] = [];
+        let lastSquare: Square | null = this.board.getSquare(initialPosition);
+
+        for (const letter of word) {
+            if (lastSquare === null) return [];
+
+            if (lastSquare.letter === '') {
+                newLetters.push([letter, lastSquare.position]);
+            }
+            lastSquare = this.board.getRelative(lastSquare.position, direction);
+        }
+
+        return newLetters;
     }
 
     private retrieveBonuses(): [Vec2, Bonus][] {

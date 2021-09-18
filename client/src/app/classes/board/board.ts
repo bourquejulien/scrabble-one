@@ -1,5 +1,3 @@
-// TODO validate _ for private members
-/* eslint-disable no-underscore-dangle */
 import { Square } from './square';
 import { Vec2 } from '@app/classes/vec2';
 import { BoardOverflowError } from '@app/exceptions/board-overflow-error';
@@ -20,7 +18,7 @@ export class Board implements ImmutableBoard {
     readonly size: number;
     private readonly board: Square[][];
 
-    private _filledSquare: number = 0;
+    private filledSquareCount: number = 0;
 
     constructor(size: number, bonuses: [Vec2, Bonus][] = new Array()) {
         this.size = size;
@@ -99,13 +97,13 @@ export class Board implements ImmutableBoard {
     }
 
     get filledSquare(): number {
-        return this._filledSquare;
+        return this.filledSquareCount;
     }
 
     private setLetter(letter: string, position: Vec2): void {
         const replacedSquare = this.getSquare(position);
         this.board[position.x][position.y] = { letter, bonus: replacedSquare.bonus, position };
-        this._filledSquare++;
+        this.filledSquareCount++;
     }
 
     private positionGuard(position: Vec2) {
