@@ -1,6 +1,7 @@
 export interface Message {
+    title: string;
     body: string;
-    messageType: 'Error' | 'Message' | 'UndoableAction' | 'Syntax' | 'Log';
+    messageType: 'UserMessage' | 'ActionError' | 'SyntaxError' | 'InputError' | 'Log';
     userId: number;
     timestamp: number;
 }

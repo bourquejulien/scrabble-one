@@ -1,7 +1,7 @@
 <mat-grid-list cols="1" >
     <!-- Message list -->
     <cdk-virtual-scroll-viewport itemSize="5" class="message-viewport">
-        <div *cdkVirtualFor="let message of messagesService.getMessages()">
+        <div *cdkVirtualFor="let message of messages">
             <mat-card style="margin:8px" [ngClass]="{
                 'action-error': message.messageType === 'ActionError',
                 'input-error': message.messageType === 'InputError',
@@ -19,11 +19,11 @@
 <!-- Command input -->
 <mat-form-field class="command-field" appearance="fill">
     <mat-label>Saisissez une commande</mat-label>
-    <input autofocus matInput type="text" (keydown.enter)="send(value)" [(ngModel)]="value" />
+    <input autofocus matInput type="text" (keydown.enter)="send(inputValue)" [(ngModel)]="inputValue" />
     <!-- Erase text button -->
-    <button *ngIf="value" matSuffix mat-icon-button aria-label="Clear" (click)="value = ''">
+    <button *ngIf="inputValue" matSuffix mat-icon-button aria-label="Clear" (click)="inputValue = ''">
         <mat-icon>close</mat-icon>
     </button>
     <!-- Submit button -->
-    <button mat-button type="submit" (keydown.enter)="send(value)" (click)="send(value)">Envoyer</button>
+    <button mat-button type="submit" (keydown.enter)="send(inputValue)" (click)="send(inputValue)">Envoyer</button>
 </mat-form-field>

@@ -1,18 +1,18 @@
 import { Injectable } from '@angular/core';
-import { MessagesService } from '@app/services/messages/messages.service';
+import { MessagingService } from '@app/services/messaging/messaging.service';
 
 @Injectable({
     providedIn: 'root',
 })
 export class CommandsService {
+    debuggingMode: boolean;
     // TODO: create dependency to the reserve service
-    // TODO: create dependency to messages
 
     readonly placeWordCommandRegex: RegExp = /^([a-o]){1}([1-9]|1[0-5]){1}([hv])+$/;
     readonly wordRegex: RegExp = /^[a-zA-Z]{1,15}$/;
-    readonly messageRegex: RegExp = /^[a-zA-Z0-9 [:punct:]]*$/;
+    readonly messageRegex: RegExp = /^[a-zA-Z0-9 [:punct:]]{1,512}$/;
 
-    constructor(public messagesService: MessagesService) {} // TODO: Inject: Messages + User
+    constructor(public messagingService: MessagingService) {} // TODO: Inject: + User
 
     /**
      * Parse the user' input and call the relevant functions
@@ -24,8 +24,9 @@ export class CommandsService {
         const args = input.split(' ');
         switch (args[0]) {
             case '!aide': {
-                this.messagesService.sendMessage({
-                    body: 'Vous avez appelé aide!',
+                this.messagingService.sendMessage({
+                    title: "Capsule d'aide",
+                    body: "Vous avez appelé à l'aide aide!",
                     messageType: 'Log',
                     userId: 1,
                     timestamp: Date.now(),
@@ -37,36 +38,39 @@ export class CommandsService {
                 const options = args[1].match(this.placeWordCommandRegex); // TODO: what if null?
                 if (options && options[1] && args[2]) {
                     options[1].match(this.placeWordCommandRegex);
-                    this.messagesService.sendMessage({
+                    this.messagingService.sendMessage({
+                        title: '',
                         body: `Placé ${args[2]}`,
                         messageType: 'Log',
                         userId: 1,
                         timestamp: Date.now(),
                     });
                 } else {
-                    this.messagesService.sendMessage({
+                    this.messagingService.sendMessage({
+                        title: '',
                         body: 'Invalide: mot non fourni ou options invalides',
-                        messageType: 'Error',
+                        messageType: 'InputError',
                         userId: 1,
                         timestamp: Date.now(),
                     });
                 }
-                // TODO: how are errors sent to the message box dialog
                 break;
             }
             case '!reserver': {
                 const word = args[1].match(this.wordRegex);
                 if (word && word[0]) {
-                    this.messagesService.sendMessage({
+                    this.messagingService.sendMessage({
+                        title: '',
                         body: `Mot réservé ${word[0]}`,
                         messageType: 'Log',
                         userId: 1,
                         timestamp: Date.now(),
                     });
                 } else {
-                    this.messagesService.sendMessage({
+                    this.messagingService.sendMessage({
+                        title: '',
                         body: 'Mot invalide',
-                        messageType: 'Error',
+                        messageType: 'InputError',
                         userId: 1,
                         timestamp: Date.now(),
                     });
@@ -74,45 +78,48 @@ export class CommandsService {
                 break;
             }
             case '!debug': {
-                this.messagesService.sendMessage({
-                    body: this.messagesService.debuggingMode ? 'Affichages de débogages activés' : 'Affichages de débogages désactivés',
+                this.messagingService.sendMessage({
+                    title: '',
+                    body: this.debuggingMode ? 'Affichages de débogages activés' : 'Affichages de débogages désactivés',
                     messageType: 'Log',
                     userId: 1,
                     timestamp: Date.now(),
                 });
-                this.messagesService.debuggingMode = !this.messagesService.debuggingMode;
+                this.debuggingMode = !this.debuggingMode;
+                break;
+            }
+            case '!echanger': {
+                // drawLetter
+                this.messagingService.sendMessage({
+                    title: '',
+                    body: 'Échanger',
+                    messageType: 'Log',
+                    userId: 1,
+                    timestamp: Date.now(),
+                });
                 break;
             }
             // If not a command, it is probably a message
             default: {
                 if (input.match(this.messageRegex)) {
-                    this.messagesService.sendMessage({
+                    this.messagingService.sendMessage({
+                        title: '',
                         body: `${input}`,
                         messageType: 'Log',
                         userId: 1,
                         timestamp: Date.now(),
                     });
                 } else {
-                    this.messagesService.sendMessage({
+                    this.messagingService.sendMessage({
+                        title: '',
                         body: 'MEssage passse pas = ' + input,
-                        messageType: 'Error',
+                        messageType: 'InputError',
                         userId: 1,
                         timestamp: Date.now(),
                     });
-                    // TODO: show pop-up
                 }
                 break;
             }
         }
     }
-
-    // TODO: Swap letters (command)
-
-    // TODO: Place letters
-
-    // TODO: Show help menu -- Sprint 3
-
-    // TODO: Reserve -- Sprint 2
-
-    // TODO: Chat -- Sprint 2
 }
