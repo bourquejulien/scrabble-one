@@ -36,8 +36,9 @@ export class MainPageComponent {
             )
             .subscribe(this.message);
     }
+
     //TODO: to remove after testing
     onPlayerClick(): void {
-        this.playerService.skipTurn();
+        this.playerService.completeTurn();
     }
 }
