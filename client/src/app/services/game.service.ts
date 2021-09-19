@@ -15,7 +15,6 @@ export class GameService {
     onTurn = new BehaviorSubject<boolean>(false);
 
     botNameChange(firstPlayerName: string): void {
-        console.log('executed');
         while (firstPlayerName === this.secondPlayerName) {
             this.secondPlayerName = this.randomizeBotName(Constants.botNames);
         }
