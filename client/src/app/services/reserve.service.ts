@@ -30,10 +30,10 @@ export class ReserveService {
     get length(): number {
         return this.reserve.length;
     }
-    
+
     // For testing
     setReserve(mockReserve: string[]): void {
-        for (let letter of mockReserve){
+        for (const letter of mockReserve) {
             this.reserve.push(letter);
         }
     }

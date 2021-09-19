@@ -1,30 +1,29 @@
 import { Injectable } from '@angular/core';
-import { Direction } from '@app/classes/board/direction';
-import { Vec2 } from '@app/classes/vec2';
-//import { skip } from 'rxjs/operators';
+// import { Direction } from '@app/classes/board/direction';
+// import { Vec2 } from '@app/classes/vec2';
+// import { skip } from 'rxjs/operators';
 import { BoardService } from './board.service';
-//import { GameService } from './game.service';
+// import { GameService } from './game.service';
 import { ReserveService } from './reserve.service';
 
 @Injectable({
   providedIn: 'root',
 })
-
 export class PlayerService {
   rack: string[] = [];
 
-  constructor(private reserveService: ReserveService, /*private gameService: GameService,*/ private boardService: BoardService) {}
+  constructor(private reserveService: ReserveService /* private gameService: GameService, private boardService: BoardService*/) {}
 
-  boardValidation(word: string): string {
+  boardValidation(): string {
     let board: BoardService | undefined;
     if (board === undefined) {
-      return 'There was a problem with board service. Try again.'
+      return 'There was a problem with board service. Try again.';
     }
     return '';
   }
 
   checkIfLettersInRack(lettersToPlace: string): string {
-    for (let letter of lettersToPlace) {
+    for (const letter of lettersToPlace) {
       if (this.rack.indexOf(letter) === -1) {
         return 'You are not in possession of the letter ' + letter + '. Cheating is bad.';
       }
@@ -33,8 +32,7 @@ export class PlayerService {
   }
 
   updateReserve(lettersToPlace: string): string {
-    if (this.reserveService.length === 0)
-      return 'The reserve is empty. You cannot draw any letters.';
+    if (this.reserveService.length === 0) return 'The reserve is empty. You cannot draw any letters.';
 
     if (this.reserveService.length <= lettersToPlace.length) {
       for (let i = 0; i < this.reserveService.length; i++) {
@@ -44,41 +42,40 @@ export class PlayerService {
     }
 
     if (this.reserveService.length > lettersToPlace.length) {
-      for (let i = 0; i < lettersToPlace.length; i++) {
+      for (const _ of lettersToPlace) {
         this.rack.push(this.reserveService.drawLetter());
       }
       return '';
     }
 
-    return 'There was a problem with reserve service. Try again.'
+    return 'There was a problem with reserve service. Try again.';
   }
 
   updateRack(lettersToPlace: string): void {
-    for (let letter of lettersToPlace) {
-      let letterIndex = this.rack.indexOf(letter);
+    for (const letter of lettersToPlace) {
+      const letterIndex = this.rack.indexOf(letter);
       this.rack.splice(letterIndex, 1);
     }
   }
 
-  placeLetters(word: string, position: Vec2, direction: Direction): string {
-    const boardMessage = this.boardValidation(word);
-    if (boardMessage !== '')
-      return boardMessage;
+  placeLetters(/* word: string, position: Vec2, direction: Direction*/): string {
+    const boardMessage = this.boardValidation();
+    if (boardMessage !== '') return boardMessage;
 
     /*
-    const lettersToPlace = board.retrieveNewLetters(word, position, direction);
-    const rackMessage = this.checkIfLettersInRack(lettersToPlace);
-    if(rackMessage !== '')
-      return rackMessage;
-  
-    const validationData = this.boardService.validateWord(lettersToPlace);
+const lettersToPlace = board.retrieveNewLetters(word, position, direction);
+const rackMessage = this.checkIfLettersInRack(lettersToPlace);
+if(rackMessage !== '')
+return rackMessage;
+ 
+const validationData = this.boardService.validateWord(lettersToPlace);
 
-    if (!validationData.isSuccess)
-      return validationData.description;
+if (!validationData.isSuccess)
+return validationData.description;
 
-    this.updateRack(lettersToPlace);
-    this.updateReserve(lettersToPlace);
-    */
+this.updateRack(lettersToPlace);
+this.updateReserve(lettersToPlace);
+*/
 
     this.completeTurn();
 
@@ -92,11 +89,11 @@ export class PlayerService {
       return 'There are not enough letters in the reserve. You may not use this command.';
     }
 
-    for (let _ of lettersToExchange) {
+    for (const _ of lettersToExchange) {
       this.rack.push(this.reserveService.drawLetter());
     }
 
-    for (let letter of lettersToExchange) {
+    for (const letter of lettersToExchange) {
       this.reserveService.putBackLetter(letter);
     }
 
@@ -107,8 +104,11 @@ export class PlayerService {
 
   completeTurn(): void {
     // this.gameService.onTurn.pipe(skip(1)).subscribe(x => console.log('player ' + (Number(x) + 1) + ' has completed their turn!'));
-
     // let isTurn = this.gameService.onTurn.getValue();
     // this.gameService.onTurn.next(!isTurn);
   }
 }
+
+// timerListener(): void{
+//   this.gameService.playerTime.subscribe(());
+// }

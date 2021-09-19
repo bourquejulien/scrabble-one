@@ -1,19 +1,18 @@
 import { Injectable } from '@angular/core';
-//import { Observable } from 'rxjs';
+// import { Observable } from 'rxjs';
 import { BehaviorSubject } from 'rxjs';
 
 @Injectable({
-  providedIn: 'root'
+    providedIn: 'root',
 })
 export class FakeGameService {
-  constructor() {}
+    onTurn = new BehaviorSubject<boolean>(false);
 
-  onTurn = new BehaviorSubject<boolean>(false);
+    randomizeTurn(): boolean {
+        const boolInterval = 0.5;
+        const turn = Math.random() < boolInterval;
 
-  randomizeTurn(): boolean {
-    let turn =  Math.random() < 0.5;
-    this.onTurn.next(turn);
-    return false;
-  }
-  
+        this.onTurn.next(turn);
+        return false;
+    }
 }
