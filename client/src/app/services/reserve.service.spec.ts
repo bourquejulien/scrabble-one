@@ -21,7 +21,7 @@ describe('ReserveService', () => {
 
     it('should have added letter in reserve at the correct index', () => {
         service.putBackLetter(letterToExchange);
-        // Before putBackLetter, reserve[3] should contain a 'B'
+        // eslint-disable-next-line dot-notation -- reserve is private and we need access for the test
         expect(service['reserve'][3]).toBe('A');
     });
 
@@ -52,18 +52,10 @@ describe('ReserveService', () => {
         expect(service.drawLetter()).toBe('B');
     });
 
-    // it('should check that Math.floor has been called', () => {
-    //     expect(Math.floor).toHaveBeenCalledWith(3);
-    // });
-
     it('should return letter at first index in reserve', () => {
         spyOn(Math, 'random').and.returnValue(0);
         expect(service.drawLetter()).toBe('A');
     });
-
-    /* it('should chack that Math.random has been called', () => {
-        expect(Math.random).toHaveBeenCalledWith();
-    });*/
 
     it('should return letter at last index in reserve', () => {
         spyOn(Math, 'random').and.returnValue(1);
@@ -71,6 +63,7 @@ describe('ReserveService', () => {
     });
 
     it('should return reserve length', () => {
+        // eslint-disable-next-line dot-notation -- reserve is private and we need access for the test
         expect(service.length).toBe(service['reserve'].length);
     });
 });
