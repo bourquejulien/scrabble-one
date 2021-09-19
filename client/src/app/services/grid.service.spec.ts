@@ -19,7 +19,7 @@ const BOARD: Board = new Board(Constants.grid.GRID_SIZE, [
 @Injectable({
     providedIn: 'root',
 })
-class BoardServiceStub extends BoardService {
+class BoardServiceStub {
     get gameBoard(): ImmutableBoard {
         return BOARD;
     }
