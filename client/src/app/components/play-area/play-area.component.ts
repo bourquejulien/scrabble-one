@@ -50,14 +50,14 @@ export class PlayAreaComponent implements AfterViewInit, OnChanges {
 
         this.scale();
 
-        this.gridService.drawGridCanvas(this.gridContext);
-        this.gridService.drawSquareCanvas(this.squareContext);
+        this.gridService.drawGrid(this.gridContext);
+        this.gridService.drawSquares(this.squareContext);
         this.squareCanvas.nativeElement.focus();
     }
 
     ngOnChanges(changes: SimpleChanges): void {
         if (!changes.selectedPlayer.isFirstChange && changes.selectedPlayer.currentValue !== changes.selectedPlayer.previousValue) {
-            this.gridService.drawSquareCanvas(this.squareContext);
+            this.gridService.drawSquares(this.squareContext);
         }
     }
 

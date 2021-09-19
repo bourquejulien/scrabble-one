@@ -1,3 +1,4 @@
+import { Injectable } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { Direction } from '@app/classes/board/direction';
 import { Vec2 } from '@app/classes/vec2';
@@ -5,7 +6,7 @@ import { Vec2 } from '@app/classes/vec2';
 import { BoardService } from './board.service';
 import { DictionaryService } from './dictionary.service';
 
-const words: string[] = ['pomme', 'orange', 'poire', 'raisin', 'peche', 'banane'];
+const words: string[] = ['pomme', 'orange', 'poire', 'raisin', 'peche', 'banane', 'bananes'];
 const mockedDictionary: Set<string> = new Set(words);
 
 const generatePlacement = (word: string, initialPosition: Vec2, direction: Direction): [string, Vec2][] => {
@@ -48,6 +49,9 @@ const generatePlacement = (word: string, initialPosition: Vec2, direction: Direc
     return letters;
 };
 
+@Injectable({
+    providedIn: 'root',
+})
 class StubDictionaryService extends DictionaryService {
     lookup(word: string): boolean {
         return mockedDictionary.has(word);
@@ -142,5 +146,18 @@ describe('BoardService', () => {
     it('should fail if word conflicts', () => {
         expect(service.placeLetters(generatePlacement(words[0], centerPosition, Direction.Right)).isSuccess).toBe(true);
         expect(service.placeLetters(generatePlacement(words[0], centerPosition, Direction.Right)).isSuccess).toBe(false);
+    });
+
+    it('should retrieve only new letters', () => {
+        service.placeLetters(generatePlacement(words[5], centerPosition, Direction.Right));
+
+        let newLetters = service.retrieveNewLetters(words[6], centerPosition, Direction.Right);
+        expect(newLetters).toEqual([['s', { x: centerPosition.x + words[6].length - 1, y: centerPosition.y }]]);
+
+        newLetters = service.retrieveNewLetters(words[5], centerPosition, Direction.Right);
+        expect(newLetters).toEqual([]);
+
+        newLetters = service.retrieveNewLetters(words[5] + words[5], centerPosition, Direction.Right);
+        expect(newLetters).toEqual([]);
     });
 });
