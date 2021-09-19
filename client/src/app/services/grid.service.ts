@@ -12,13 +12,12 @@ import { BoardService } from './board.service';
 export class GridService {
     gridContext: CanvasRenderingContext2D;
     squareContext: CanvasRenderingContext2D;
-    letterFontFace = Constants.grid.FONT_FACE;
 
     private readonly board: ImmutableBoard;
 
     private readonly canvasSize: Vec2 = Constants.grid.CANVAS_SIZE;
     private readonly playGridSize: number = Constants.grid.GRID_SIZE;
-    private readonly boardGridSize: number = Constants.grid.GRID_SIZE + 1;
+    private readonly letterFontFace = Constants.grid.FONT_FACE;
 
     constructor(boardService: BoardService) {
         this.board = boardService.gameBoard;
@@ -45,14 +44,12 @@ export class GridService {
             this.drawSymbol(String.fromCharCode('A'.charCodeAt(0) + i - 1), { x: 0, y: i }, this.gridContext);
         }
 
-        for (let x = 0; x < this.playGridSize + 1; x++) {
-            for (let y = 0; y < this.playGridSize + 1; y++) {
+        for (let x = 0; x < this.playGridSize; x++) {
+            for (let y = 0; y < this.playGridSize; y++) {
                 const square = this.board.getSquare({ x, y });
                 this.fillSquare(Constants.grid.BONUS_COLORS.get(square.bonus) ?? 'white', { x: x + 1, y: y + 1 }, { x: 1, y: 1 });
             }
         }
-
-        this.drawImage('/assets/img/star.svg', { x: 8, y: 8 }, this.gridContext);
 
         this.gridContext.beginPath();
         this.gridContext.strokeStyle = Constants.grid.STROKE_STYLE;
@@ -70,8 +67,8 @@ export class GridService {
     }
 
     drawSquareCanvas() {
-        for (let x = 0; x < this.playGridSize + 1; x++) {
-            for (let y = 0; y < this.playGridSize + 1; y++) {
+        for (let x = 0; x < this.playGridSize; x++) {
+            for (let y = 0; y < this.playGridSize; y++) {
                 const square = this.board.getSquare({ x, y });
                 if (square.letter !== '') {
                     this.drawSymbol(square.letter, { x: x + 1, y: y + 1 }, this.squareContext);
@@ -80,7 +77,12 @@ export class GridService {
                 }
             }
         }
-        this.drawImage('/assets/img/star.png', { x: 8, y: 8 }, this.gridContext);
+
+        const centerSquare = Math.floor(this.playGridSize / 2);
+
+        if (this.board.getSquare({ x: centerSquare, y: centerSquare }).letter === '') {
+            this.drawImage('/assets/img/star.svg', { x: centerSquare + 1, y: centerSquare + 1 }, this.squareContext);
+        }
     }
 
     get width(): number {
@@ -183,6 +185,10 @@ export class GridService {
 
     private get squareHeight(): number {
         return this.canvasSize.y / this.boardGridSize;
+    }
+
+    private get boardGridSize(): number {
+        return this.playGridSize + 1;
     }
 
     private get bonusFontFace(): FontFace {

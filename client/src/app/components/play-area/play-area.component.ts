@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, ElementRef, HostListener, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, HostListener, ViewChild, Input, SimpleChanges, OnChanges } from '@angular/core';
 import { Vec2 } from '@app/classes/vec2';
 import { Constants } from '@app/constants/global.constants';
 import { GridService } from '@app/services/grid.service';
@@ -17,7 +17,9 @@ export enum MouseButton {
     templateUrl: './play-area.component.html',
     styleUrls: ['./play-area.component.scss'],
 })
-export class PlayAreaComponent implements AfterViewInit {
+export class PlayAreaComponent implements AfterViewInit, OnChanges {
+    @Input() selectedPlayer: string;
+
     @ViewChild('gridCanvas', { static: false }) private gridCanvas!: ElementRef<HTMLCanvasElement>;
     @ViewChild('squareCanvas', { static: false }) private squareCanvas!: ElementRef<HTMLCanvasElement>;
 
@@ -47,6 +49,12 @@ export class PlayAreaComponent implements AfterViewInit {
         this.gridService.drawGridCanvas();
         this.gridService.drawSquareCanvas();
         this.squareCanvas.nativeElement.focus();
+    }
+
+    ngOnChanges(changes: SimpleChanges): void {
+        if (!changes.selectedPlayer.isFirstChange && changes.selectedPlayer.currentValue !== changes.selectedPlayer.previousValue) {
+            this.gridService.drawSquareCanvas();
+        }
     }
 
     scale(): void {
