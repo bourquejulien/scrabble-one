@@ -33,11 +33,12 @@ export class RackComponent implements OnInit {
   }
 
   drawLetterTile(letter: string): void {
-    if (this.retrievePoints(letter) === -1)
+    /*if (this.retrievePoints(letter) === -1)
       return;
 
-    var canvas = document.getElementById('letter') as HTMLCanvasElement;
-    let ctx = canvas.getContext('2d');
+    let cvs = document.getElementsByTagName('canvas');
+    //var canvas = document.getElementById('letter') as HTMLCanvasElement;
+    let ctx = cvs.getContext('2d');
 
     if (ctx === null) {
       return;
@@ -45,7 +46,7 @@ export class RackComponent implements OnInit {
 
     ctx.strokeRect(50, 50, 50, 50);
 
-
+*/
   }
 
   /**
