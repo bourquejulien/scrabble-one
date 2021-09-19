@@ -26,8 +26,12 @@ export class PlayAreaComponent implements AfterViewInit, OnChanges {
     mousePosition: Vec2 = { x: 0, y: 0 };
     gridPosition: Vec2 = { x: -1, y: -1 };
     buttonPressed = '';
-    private canvasSize = Constants.grid.CANVAS_SIZE;
-    private gridSize = Constants.grid.GRID_SIZE;
+
+    private gridContext: CanvasRenderingContext2D;
+    private squareContext: CanvasRenderingContext2D;
+
+    private readonly canvasSize = Constants.grid.CANVAS_SIZE;
+    private readonly gridSize = Constants.grid.GRID_SIZE;
 
     constructor(private readonly gridService: GridService) {}
 
@@ -41,19 +45,19 @@ export class PlayAreaComponent implements AfterViewInit, OnChanges {
     }
 
     ngAfterViewInit(): void {
-        this.gridService.gridContext = this.gridCanvas.nativeElement.getContext('2d') as CanvasRenderingContext2D;
-        this.gridService.squareContext = this.squareCanvas.nativeElement.getContext('2d') as CanvasRenderingContext2D;
+        this.gridContext = this.gridCanvas.nativeElement.getContext('2d') as CanvasRenderingContext2D;
+        this.squareContext = this.squareCanvas.nativeElement.getContext('2d') as CanvasRenderingContext2D;
 
         this.scale();
 
-        this.gridService.drawGridCanvas();
-        this.gridService.drawSquareCanvas();
+        this.gridService.drawGridCanvas(this.gridContext);
+        this.gridService.drawSquareCanvas(this.squareContext);
         this.squareCanvas.nativeElement.focus();
     }
 
     ngOnChanges(changes: SimpleChanges): void {
         if (!changes.selectedPlayer.isFirstChange && changes.selectedPlayer.currentValue !== changes.selectedPlayer.previousValue) {
-            this.gridService.drawSquareCanvas();
+            this.gridService.drawSquareCanvas(this.squareContext);
         }
     }
 
@@ -64,8 +68,8 @@ export class PlayAreaComponent implements AfterViewInit, OnChanges {
 
         squareCanvas.width = gridCanvas.width = Math.ceil(gridCanvas.width * scaleFactor);
         squareCanvas.height = gridCanvas.height = Math.ceil(gridCanvas.height * scaleFactor);
-        this.gridService.gridContext.scale(scaleFactor, scaleFactor);
-        this.gridService.squareContext.scale(scaleFactor, scaleFactor);
+        this.gridContext.scale(scaleFactor, scaleFactor);
+        this.squareContext.scale(scaleFactor, scaleFactor);
     }
 
     get width(): number {

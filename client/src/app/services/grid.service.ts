@@ -10,9 +10,6 @@ import { BoardService } from './board.service';
     providedIn: 'root',
 })
 export class GridService {
-    gridContext: CanvasRenderingContext2D;
-    squareContext: CanvasRenderingContext2D;
-
     private readonly board: ImmutableBoard;
 
     private readonly canvasSize: Vec2 = Constants.grid.CANVAS_SIZE;
@@ -38,42 +35,43 @@ export class GridService {
         }
     }
 
-    drawGridCanvas() {
+    drawGridCanvas(gridContext: CanvasRenderingContext2D) {
         for (let i = 1; i < this.playGridSize + 1; i++) {
-            this.drawSymbol(i.toString(), { x: i, y: 0 }, this.gridContext);
-            this.drawSymbol(String.fromCharCode('A'.charCodeAt(0) + i - 1), { x: 0, y: i }, this.gridContext);
+            this.drawSymbol(i.toString(), { x: i, y: 0 }, gridContext);
+            this.drawSymbol(String.fromCharCode('A'.charCodeAt(0) + i - 1), { x: 0, y: i }, gridContext);
         }
 
         for (let x = 0; x < this.playGridSize; x++) {
             for (let y = 0; y < this.playGridSize; y++) {
                 const square = this.board.getSquare({ x, y });
-                this.fillSquare(Constants.grid.BONUS_COLORS.get(square.bonus) ?? 'white', { x: x + 1, y: y + 1 }, { x: 1, y: 1 });
+                const squareColor = Constants.grid.BONUS_COLORS.get(square.bonus) ?? 'white';
+                this.fillSquare(squareColor, { x: x + 1, y: y + 1 }, { x: 1, y: 1 }, gridContext);
             }
         }
 
-        this.gridContext.beginPath();
-        this.gridContext.strokeStyle = Constants.grid.STROKE_STYLE;
-        this.gridContext.lineWidth = Constants.grid.LINE_WIDTH;
+        gridContext.beginPath();
+        gridContext.strokeStyle = Constants.grid.STROKE_STYLE;
+        gridContext.lineWidth = Constants.grid.LINE_WIDTH;
 
         for (let i = 1; i < this.boardGridSize + 1; i++) {
-            this.drawRow(i);
+            this.drawRow(i, gridContext);
         }
 
         for (let i = 1; i < this.boardGridSize + 1; i++) {
-            this.drawColumn(i);
+            this.drawColumn(i, gridContext);
         }
 
-        this.gridContext.stroke();
+        gridContext.stroke();
     }
 
-    drawSquareCanvas() {
+    drawSquareCanvas(squareContext: CanvasRenderingContext2D) {
         for (let x = 0; x < this.playGridSize; x++) {
             for (let y = 0; y < this.playGridSize; y++) {
                 const square = this.board.getSquare({ x, y });
                 if (square.letter !== '') {
-                    this.drawSymbol(square.letter, { x: x + 1, y: y + 1 }, this.squareContext);
+                    this.drawSymbol(square.letter, { x: x + 1, y: y + 1 }, squareContext);
                 } else if (square.bonus !== Bonus.None) {
-                    this.drawBonus(square.bonus, { x: x + 1, y: y + 1 });
+                    this.drawBonus(square.bonus, { x: x + 1, y: y + 1 }, squareContext);
                 }
             }
         }
@@ -81,36 +79,11 @@ export class GridService {
         const centerSquare = Math.floor(this.playGridSize / 2);
 
         if (this.board.getSquare({ x: centerSquare, y: centerSquare }).letter === '') {
-            this.drawImage('/assets/img/star.svg', { x: centerSquare + 1, y: centerSquare + 1 }, this.squareContext);
+            this.drawImage('/assets/img/star.svg', { x: centerSquare + 1, y: centerSquare + 1 }, squareContext);
         }
     }
 
-    get width(): number {
-        return this.canvasSize.x;
-    }
-
-    get height(): number {
-        return this.canvasSize.y;
-    }
-
-    private drawBonus(bonus: Bonus, gridPosition: Vec2) {
-        if (bonus === Bonus.None) return;
-
-        const canvasPosition: Vec2 = this.computeCanvasCoord(gridPosition);
-        const { kind, multiplier } = GridService.getBonusText(bonus);
-
-        this.fitTextSize(kind, this.bonusFontFace, this.squareContext);
-        this.squareContext.fillStyle = Constants.grid.TEXT_STYLE;
-        this.squareContext.textAlign = 'center';
-
-        this.squareContext.textBaseline = 'top';
-        this.squareContext.fillText(kind, canvasPosition.x, canvasPosition.y);
-
-        this.squareContext.textBaseline = 'alphabetic';
-        this.squareContext.fillText(multiplier, canvasPosition.x, canvasPosition.y, this.squareWidth);
-    }
-
-    private drawSymbol(letter: string, gridPosition: Vec2, context: CanvasRenderingContext2D) {
+    drawSymbol(letter: string, gridPosition: Vec2, context: CanvasRenderingContext2D) {
         if (letter.length === 0) return;
 
         const canvasPosition: Vec2 = this.computeCanvasCoord(gridPosition);
@@ -121,6 +94,31 @@ export class GridService {
         context.textBaseline = 'middle';
         context.textAlign = 'center';
         context.fillText(letter, canvasPosition.x, canvasPosition.y);
+    }
+
+    get width(): number {
+        return this.canvasSize.x;
+    }
+
+    get height(): number {
+        return this.canvasSize.y;
+    }
+
+    private drawBonus(bonus: Bonus, gridPosition: Vec2, context: CanvasRenderingContext2D) {
+        if (bonus === Bonus.None) return;
+
+        const canvasPosition: Vec2 = this.computeCanvasCoord(gridPosition);
+        const { kind, multiplier } = GridService.getBonusText(bonus);
+
+        this.fitTextSize(kind, this.bonusFontFace, context);
+        context.fillStyle = Constants.grid.TEXT_STYLE;
+        context.textAlign = 'center';
+
+        context.textBaseline = 'top';
+        context.fillText(kind, canvasPosition.x, canvasPosition.y);
+
+        context.textBaseline = 'alphabetic';
+        context.fillText(multiplier, canvasPosition.x, canvasPosition.y, this.squareWidth);
     }
 
     private fitTextSize(text: string, fontFace: FontFace, context: CanvasRenderingContext2D): FontFace {
@@ -142,30 +140,25 @@ export class GridService {
         image.onload = () => context.drawImage(image, centeredPosition.x, centeredPosition.y, this.squareWidth, this.squareHeight);
     }
 
-    private drawRow(pos: number) {
-        const height: number = ((this.height - this.gridContext.lineWidth) * pos) / this.boardGridSize + this.gridContext.lineWidth / 2;
-        this.gridContext.moveTo(this.width / this.boardGridSize + this.gridContext.lineWidth / 2, height);
-        this.gridContext.lineTo(this.width + this.gridContext.lineWidth / 2, height);
+    private drawRow(pos: number, context: CanvasRenderingContext2D) {
+        const height: number = ((this.height - context.lineWidth) * pos) / this.boardGridSize + context.lineWidth / 2;
+        context.moveTo(this.width / this.boardGridSize + context.lineWidth / 2, height);
+        context.lineTo(this.width + context.lineWidth / 2, height);
     }
 
-    private drawColumn(pos: number) {
-        const width: number = ((this.width - this.gridContext.lineWidth) * pos) / this.boardGridSize + this.gridContext.lineWidth / 2;
-        this.gridContext.moveTo(width, this.height / this.boardGridSize);
-        this.gridContext.lineTo(width, this.height + this.gridContext.lineWidth / 2);
+    private drawColumn(pos: number, context: CanvasRenderingContext2D) {
+        const width: number = ((this.width - context.lineWidth) * pos) / this.boardGridSize + context.lineWidth / 2;
+        context.moveTo(width, this.height / this.boardGridSize);
+        context.lineTo(width, this.height + context.lineWidth / 2);
     }
 
-    private fillSquare(color: string, initialPosition: Vec2, size: Vec2) {
+    private fillSquare(color: string, initialPosition: Vec2, size: Vec2, context: CanvasRenderingContext2D) {
         const canvasPosition = this.computeCanvasCoord(initialPosition);
         const squareWidth = this.squareWidth;
         const squareHeight = this.squareHeight;
 
-        this.gridContext.fillStyle = color;
-        this.gridContext.fillRect(
-            canvasPosition.x - squareWidth / 2,
-            canvasPosition.y - squareHeight / 2,
-            squareWidth * size.x,
-            squareHeight * size.y,
-        );
+        context.fillStyle = color;
+        context.fillRect(canvasPosition.x - squareWidth / 2, canvasPosition.y - squareHeight / 2, squareWidth * size.x, squareHeight * size.y);
     }
 
     private computeCanvasCoord(gridPosition: Vec2): Vec2 {
