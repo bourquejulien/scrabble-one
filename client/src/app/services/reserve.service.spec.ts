@@ -4,10 +4,10 @@ import { ReserveService } from './reserve.service';
 describe('ReserveService', () => {
     let letterToExchange: string;
     let service: ReserveService;
-    const mockReserve = ['A', 'A', 'A', 'B', 'B', 'C'];
 
     beforeEach(() => {
         letterToExchange = 'A';
+        const mockReserve = ['A', 'A', 'A', 'B', 'B', 'C'];
 
         TestBed.configureTestingModule({ providers: [] });
         service = TestBed.inject(ReserveService);
@@ -19,16 +19,17 @@ describe('ReserveService', () => {
         expect(service).toBeTruthy();
     });
 
-    it('should increase length by one of reserve letterToExchange successfully added', () => {
-        const currentLength = service.length;
+    it('should have added letter in reserve at the correct index', () => {
         service.putBackLetter(letterToExchange);
-        expect(service.length).toBe(currentLength + 1);
+        // Before putBackLetter, reserve[3] should contain a 'B'
+        expect(service['reserve'][3]).toBe('A');
     });
 
-    it('should increase array size by one if letterToExchange successfully added at the right index', () => {
-        const lastIndex = service.length + 1;
+    it('should increase length of reserve by one if letterToExchange successfully added', () => {
+        const currentLength = service.length;
         service.putBackLetter(letterToExchange);
-        expect(service.reserve[lastIndex]).toBe('C');
+
+        expect(service.length).toBe(currentLength + 1);
     });
 
     it('should not add anything to reserve if empty letterToExchange', () => {
@@ -39,22 +40,23 @@ describe('ReserveService', () => {
         expect(service.length).toBe(currentLength);
     });
 
-    it('should decrease length by in reserve if letter succesfully drawn', () => {
+    it('should decrease length of reserve if letter succesfully drawn', () => {
         const currentLength = service.length;
         service.drawLetter();
+
         expect(service.length).toBe(currentLength - 1);
     });
 
-    it('should successfully return a letter from reserve', () => {
+    it('should successfully return the drawn letter from reserve', () => {
         spyOn(Math, 'floor').and.returnValue(3);
         expect(service.drawLetter()).toBe('B');
     });
 
-    it('should chack that Math.floor has been called', () => {
-        expect(Math.floor).toHaveBeenCalledWith(3);
-    });
+    // it('should check that Math.floor has been called', () => {
+    //     expect(Math.floor).toHaveBeenCalledWith(3);
+    // });
 
-    it('should return first index from reserve', () => {
+    it('should return letter at first index in reserve', () => {
         spyOn(Math, 'random').and.returnValue(0);
         expect(service.drawLetter()).toBe('A');
     });
@@ -62,15 +64,13 @@ describe('ReserveService', () => {
     /* it('should chack that Math.random has been called', () => {
         expect(Math.random).toHaveBeenCalledWith();
     });*/
-    /**
-     * check if index = -1 to make sure that nothing is added
-     */
-    it('should return last index from reserve', () => {
+
+    it('should return letter at last index in reserve', () => {
         spyOn(Math, 'random').and.returnValue(1);
         expect(service.drawLetter()).toBe('C');
     });
 
     it('should return reserve length', () => {
-        expect(service.length).toBe(service.reserve.length);
+        expect(service.length).toBe(service['reserve'].length);
     });
 });

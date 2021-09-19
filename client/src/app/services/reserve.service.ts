@@ -17,14 +17,14 @@ export class ReserveService {
 
     putBackLetter(letterToExchange: string): void {
         const letterIndex = this.reserve.indexOf(letterToExchange);
-        this.reserve.splice(letterIndex, 0, letterToExchange);
+        if (letterIndex !== -1) {
+            this.reserve.splice(letterIndex, 0, letterToExchange);
+        }
     }
 
     drawLetter(): string {
-        const randomLetterIndex = Math.floor(Math.random() * this.reserve.length);
-        this.reserve.splice(randomLetterIndex, 1);
-
-        return this.reserve[randomLetterIndex];
+        const randomLetterIndex = Math.floor(Math.random() * (this.reserve.length - 1));
+        return this.reserve.splice(randomLetterIndex, 1)[0];
     }
 
     get length(): number {
@@ -33,6 +33,8 @@ export class ReserveService {
 
     // For testing
     setReserve(mockReserve: string[]): void {
+        this.reserve = [];
+
         for (const letter of mockReserve) {
             this.reserve.push(letter);
         }
