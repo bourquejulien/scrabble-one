@@ -1,18 +1,14 @@
 import { Component } from '@angular/core';
-import { MatDialog } from '@angular/material/dialog';
+//import { MatDialog } from '@angular/material/dialog';
 
-export interface DialogData {
-    animal: string;
-    name: string;
-}
 
 @Component({
-    selector: 'app-secondary-page',
+    selector: 'app-gameMode-page',
     templateUrl: './gameMode-page.component.html',
     styleUrls: ['./gameMode-page.component.scss'],
 })
 export class GameModePageComponent {
-    constructor(public dialog: MatDialog) {}
+    //constructor(public dialog: MatDialog) {}
 
     // name:string;
     // gameType:string;

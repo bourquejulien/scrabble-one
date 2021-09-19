@@ -1,19 +1,19 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { SecondaryPageComponent } from './secondary-page.component';
+import { GameModePageComponent } from './gameMode-page.component';
 
-describe('SecondaryPageComponent', () => {
-    let component: SecondaryPageComponent;
-    let fixture: ComponentFixture<SecondaryPageComponent>;
+describe('GameModePageComponent', () => {
+    let component: GameModePageComponent;
+    let fixture: ComponentFixture<GameModePageComponent>;
 
     beforeEach(async () => {
         await TestBed.configureTestingModule({
-            declarations: [SecondaryPageComponent],
+            declarations: [GameModePageComponent],
         }).compileComponents();
     });
 
     beforeEach(() => {
-        fixture = TestBed.createComponent(SecondaryPageComponent);
+        fixture = TestBed.createComponent(GameModePageComponent);
         component = fixture.componentInstance;
         fixture.detectChanges();
     });
