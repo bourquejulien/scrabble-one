@@ -37,6 +37,7 @@ export class GameService {
         if (nameForm.valid) {
             this.randomizeTurn();
             this.firstPlayerName = name;
+            this.botNameChange(this.firstPlayerName);
             return true;
         }
         return false;

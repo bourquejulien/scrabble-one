@@ -23,7 +23,7 @@
     <div *ngIf="this.game.nameForm !== undefined && this.game.nameForm.get('control')?.hasError('minLength')" class="alert">
         *Le nom doit contenir au moins 3 caractères.
     </div>
-    <div *ngIf="this.game.nameForm !== undefined && this.game.nameForm.get('control')?.hasError('maxLenghth')" class="alert">
+    <div *ngIf="this.game.nameForm !== undefined && this.game.nameForm.get('control')?.hasError('maxLength')" class="alert">
         *Le nom doit au maximum contenir 16 lettres.
     </div>
     <div *ngIf="this.game.nameForm !== undefined && this.game.nameForm.get('control')?.hasError('startsWithLowerLetter')" class="alert">
