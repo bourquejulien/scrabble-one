@@ -1,6 +1,6 @@
 <p>rack works!</p>
 
-<div *ngFor="let currentLetter of rack">
-    <canvas id='letter' width="100" height="100" *ngIf="currentLetter">
+<div>
+    <canvas *ngFor="let letter of rack" onload="drawLetter()">
     </canvas>
 </div>
