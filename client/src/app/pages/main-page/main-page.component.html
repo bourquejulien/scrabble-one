@@ -3,6 +3,7 @@
     <img src="https://bit.ly/3m206ss" width="400" height="80" alt="Logo Scrabble" />
     <section id="server-message">
         <p>Petit message du serveur : {{ message.getValue() }}</p>
+        <app-rack></app-rack>
         <div class="justified">
             <button class="button" (click)="getMessagesFromServer()">Récupérer un message du serveur</button>
             <button class="button" (click)="sendTimeToServer()">Envoyer un message au serveur</button>
