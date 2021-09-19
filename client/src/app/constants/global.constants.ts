@@ -8,4 +8,5 @@ export class Constants {
     static readonly botNames = ['Maurice', 'Claudette', 'Alphonse'];
     static readonly maxSizeName = 16;
     static readonly minSizeName = 3;
+    static readonly half = 0.5;
 }

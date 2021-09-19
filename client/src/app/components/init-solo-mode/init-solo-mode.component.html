@@ -14,11 +14,20 @@
         <p class="flex-items-joueurs">VS</p>
         <input class="inputBox flex-items-joueurs" placeholder="Joueur 2" value="{{ this.game.secondPlayerName }}" />
     </div>
-    <!--
-    <div *ngIf="this.game.nameForm.errors?.required">Name is required.</div>
-    <div *ngIf="this.game.nameForm.errors?.minlength">Name must be at least 4 characters long.</div>
-    <div *ngIf="this.game.nameForm.errors?.minlength">Name must be at Maximum 16 characters long.</div>
-    <div *ngIf="this.game.nameForm.errors?.containsOnlyLetters">Name cannot be Bob.</div>
-    -->
-    <button (click)="game.confirmInitialization(this.game.firstPlayerName)" class="">Confirmer</button>
+    <div *ngIf="this.game.nameForm !== undefined && this.game.nameForm.get('control')?.hasError('containsOnlyLetters')" class="alert">
+        *Le nom doit seulement être composé de lettres.
+    </div>
+    <div *ngIf="this.game.nameForm !== undefined && this.game.nameForm.get('control')?.hasError('required')" class="alert">
+        *Un nom doit être entré.
+    </div>
+    <div *ngIf="this.game.nameForm !== undefined && this.game.nameForm.get('control')?.hasError('minLength')" class="alert">
+        *Le nom doit contenir au moins 3 caractères.
+    </div>
+    <div *ngIf="this.game.nameForm !== undefined && this.game.nameForm.get('control')?.hasError('maxLenghth')" class="alert">
+        *Le nom doit au maximum contenir 16 lettres.
+    </div>
+    <div *ngIf="this.game.nameForm !== undefined && this.game.nameForm.get('control')?.hasError('startsWithLowerLetter')" class="alert">
+        *Le nom doit débuter par une majuscule.
+    </div>
+    <button (click)="this.game.confirmInitialization(this.game.firstPlayerName)" id="confirm">Confirmer</button>
 </div>

@@ -4,7 +4,7 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    height: 45%;
+    height: 50%;
     width: 30%;
     font-size: 1.5rem;
     background-color: #a19c9c;
@@ -60,4 +60,30 @@
     margin: 0px 10px 0px 10px;
     font-size: medium;
     align-items: center;
+}
+
+#confirm {
+    padding: 15px 20px;
+    font-size: 14px;
+    cursor: pointer;
+    text-align: center;
+    text-decoration: none;
+    outline: none;
+    color: black;
+    background-color: white;
+    border: none;
+    border-radius: 1px;
+    box-shadow: 0 5px rgb(212, 212, 212);
+    margin: 25px;
+}
+
+#confirm:hover {
+    background-color: #a8a8a8;
+    box-shadow: 0 5px #666;
+}
+
+.alert {
+    font-size: 14px;
+    color: darkred;
+    margin-top: 10px;
 }

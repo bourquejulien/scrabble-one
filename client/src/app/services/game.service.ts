@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { FormControl, FormGroup, ValidatorFn, Validators } from '@angular/forms';
 import { Constants } from '@app/constants/global.constants';
+import { BehaviorSubject } from 'rxjs';
 
 @Injectable({
     providedIn: 'root',
@@ -10,8 +11,20 @@ export class GameService {
     gameType: string;
     firstPlayerName: string;
     secondPlayerName: string;
-    turn: boolean;
     nameForm: FormGroup;
+    onTurn = new BehaviorSubject<boolean>(false);
+
+    botNameChange(firstPlayerName: string): void {
+        console.log('executed');
+        while (firstPlayerName === this.secondPlayerName) {
+            this.secondPlayerName = this.randomizeBotName(Constants.botNames);
+        }
+    }
+    randomizeTurn(): boolean {
+        const turn = Math.random() < Constants.half;
+        this.onTurn.next(turn);
+        return false;
+    }
     confirmInitialization(name: string): boolean {
         const nameForm = new FormGroup({
             control: new FormControl(name, [
@@ -23,12 +36,8 @@ export class GameService {
         });
         this.nameForm = nameForm;
         if (nameForm.valid) {
-            const randBool = Math.floor(Math.random());
-            this.turn = randBool as unknown as boolean;
+            this.randomizeTurn();
             this.firstPlayerName = name;
-            while (name === this.secondPlayerName) {
-                this.secondPlayerName = this.randomizeBotName(Constants.botNames);
-            }
             return true;
         }
         return false;
@@ -46,14 +55,15 @@ export class GameService {
     private nameValidatorFunction(control: FormControl): { [key: string]: boolean } | null {
         // On transforme any en string
         const playerName = control.value as string;
-        for (let index = 0; index < playerName.length; index++) {
-            if (!/[a-zA-Z]/.test(playerName.charAt(index))) return { ['containsOnlyLetters']: false };
+        if (playerName !== null) {
+            for (let index = 0; index < playerName.length; index++) {
+                if (!/[a-zA-Z]/.test(playerName.charAt(index))) return { ['containsOnlyLetters']: true };
+            }
+            const firstLetter = playerName[0];
+            if (firstLetter !== firstLetter.toUpperCase()) {
+                return { ['startsWithLowerLetter']: true };
+            }
         }
-        const firstLetter = playerName[0];
-        if (firstLetter !== firstLetter.toUpperCase()) {
-            return { ['startsWithLetter']: false };
-        }
-
         return null;
     }
 }
