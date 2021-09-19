@@ -1,7 +1,6 @@
 import { Component } from '@angular/core';
 import { Message } from '@app/classes/message';
 import { CommunicationService } from '@app/services/communication.service';
-import { PlayerService } from '@app/services/player.service';
 import { BehaviorSubject } from 'rxjs';
 import { map } from 'rxjs/operators';
 
@@ -14,7 +13,7 @@ export class MainPageComponent {
     readonly title: string = 'LOG2990';
     message: BehaviorSubject<string> = new BehaviorSubject<string>('');
 
-    constructor(private readonly communicationService: CommunicationService, private playerService: PlayerService) {}
+    constructor(private readonly communicationService: CommunicationService) {}
 
     sendTimeToServer(): void {
         const newTimeMessage: Message = {
