@@ -53,7 +53,7 @@ export class GameService {
     }
 
     private nameValidatorFunction(control: FormControl): { [key: string]: boolean } | null {
-        // On transforme any en string
+        // We make sure that player name is considered as a string
         const playerName = control.value as string;
         if (playerName !== null) {
             for (let index = 0; index < playerName.length; index++) {

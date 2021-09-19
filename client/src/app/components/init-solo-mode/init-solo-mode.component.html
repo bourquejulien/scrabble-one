@@ -8,11 +8,11 @@
     <select name="timePerTurn" id="selecter">
         <option *ngFor="let turnLength of turnLengthList" [value]="turnLength">{{ turnLength }}</option>
     </select>
-    <p class="containerInput" class="inputPresentationText">Nom Des Joueurs</p>
-    <div class="joueursFlex">
-        <input class="inputBox flex-items-joueurs" placeholder="Joueur 1" name="name" [(ngModel)]="this.game.firstPlayerName" />
-        <p class="flex-items-joueurs">VS</p>
-        <input class="inputBox flex-items-joueurs" placeholder="Joueur 2" value="{{ this.game.secondPlayerName }}" />
+    <p class="containerInput" class="inputPresentationText">Nom Des players</p>
+    <div class="playersFlex">
+        <input class="inputBox flex-items-players" placeholder="Joueur 1" name="name" [(ngModel)]="this.game.firstPlayerName" />
+        <p class="flex-items-players">VS</p>
+        <input class="inputBox flex-items-players" placeholder="Joueur 2" value="{{ this.game.secondPlayerName }}" />
     </div>
     <div *ngIf="this.game.nameForm !== undefined && this.game.nameForm.get('control')?.hasError('containsOnlyLetters')" class="alert">
         *Le nom doit seulement être composé de lettres.

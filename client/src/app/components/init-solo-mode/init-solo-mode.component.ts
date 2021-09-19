@@ -11,7 +11,8 @@ export class InitSoloModeComponent implements OnInit {
     readonly gameTypesList = Constants.gameTypesList;
     readonly turnLengthList = Constants.turnLengthList;
     readonly botNames = Constants.botNames;
-    game = new GameService();
+
+    constructor(public game: GameService) {}
 
     ngOnInit(): void {
         this.game.secondPlayerName = this.game.randomizeBotName(this.botNames);
