@@ -27,11 +27,11 @@ export class BoardService {
         return this.board;
     }
 
-    validateLetters(letters: [string, Vec2][]): ValidationResponse {
+    validateLetters(letters: { letter: string; position: Vec2 }[]): ValidationResponse {
         return this.boardValidator.validate(letters);
     }
 
-    placeLetters(letters: [string, Vec2][]): ValidationResponse {
+    placeLetters(letters: { letter: string; position: Vec2 }[]): ValidationResponse {
         const response = this.boardValidator.validate(letters);
 
         if (!response.isSuccess) return response;
@@ -41,15 +41,15 @@ export class BoardService {
         return response;
     }
 
-    retrieveNewLetters(word: string, initialPosition: Vec2, direction: Direction): [string, Vec2][] {
-        const newLetters: [string, Vec2][] = [];
+    retrieveNewLetters(word: string, initialPosition: Vec2, direction: Direction): { letter: string; position: Vec2 }[] {
+        const newLetters: { letter: string; position: Vec2 }[] = [];
         let lastSquare: Square | null = this.board.getSquare(initialPosition);
 
         for (const letter of word) {
             if (lastSquare === null) return [];
 
             if (lastSquare.letter === '') {
-                newLetters.push([letter, lastSquare.position]);
+                newLetters.push({ letter, position: lastSquare.position });
             }
             lastSquare = this.board.getRelative(lastSquare.position, direction);
         }

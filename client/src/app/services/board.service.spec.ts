@@ -9,8 +9,8 @@ import { DictionaryService } from './dictionary.service';
 const WORDS: string[] = ['pomme', 'orange', 'poire', 'raisin', 'peche', 'banane', 'bananes'];
 const mockedDictionary: Set<string> = new Set(WORDS);
 
-const generatePlacement = (word: string, initialPosition: Vec2, direction: Direction): [string, Vec2][] => {
-    const letters = new Array<[string, Vec2]>();
+const generatePlacement = (word: string, initialPosition: Vec2, direction: Direction): { letter: string; position: Vec2 }[] => {
+    const letters: { letter: string; position: Vec2 }[] = [];
 
     let xIncr: number;
     let yIncr: number;
@@ -43,7 +43,7 @@ const generatePlacement = (word: string, initialPosition: Vec2, direction: Direc
     }
 
     for (let i = 0; i < word.length; i++) {
-        letters.push([word[i], { x: initialPosition.x + xIncr * i, y: initialPosition.y + yIncr * i }]);
+        letters.push({ letter: word[i], position: { x: initialPosition.x + xIncr * i, y: initialPosition.y + yIncr * i } });
     }
 
     return letters;
@@ -110,11 +110,11 @@ describe('BoardService', () => {
     it('should succeed and return correct score on valid combination', () => {
         // eslint-disable-next-line @typescript-eslint/no-magic-numbers -- Need to set expected score
         const expectedScores = [10, 24];
-        const combinedWord: [string, Vec2][] = [
-            ['p', { x: 11, y: 3 }],
-            ['e', { x: 11, y: 4 }],
-            ['c', { x: 11, y: 5 }],
-            ['h', { x: 11, y: 6 }],
+        const combinedWord: { letter: string; position: Vec2 }[] = [
+            { letter: 'p', position: { x: 11, y: 3 } },
+            { letter: 'e', position: { x: 11, y: 4 } },
+            { letter: 'c', position: { x: 11, y: 5 } },
+            { letter: 'h', position: { x: 11, y: 6 } },
         ];
         const responses = [service.placeLetters(generatePlacement('pomme', centerPosition, Direction.Right)), service.placeLetters(combinedWord)];
         for (let i = 0; i < responses.length; i++) {
@@ -152,7 +152,7 @@ describe('BoardService', () => {
         service.placeLetters(generatePlacement(WORDS[5], centerPosition, Direction.Right));
 
         let newLetters = service.retrieveNewLetters(WORDS[6], centerPosition, Direction.Right);
-        expect(newLetters).toEqual([['s', { x: centerPosition.x + WORDS[6].length - 1, y: centerPosition.y }]]);
+        expect(newLetters).toEqual([{ letter: 's', position: { x: centerPosition.x + WORDS[6].length - 1, y: centerPosition.y } }]);
 
         newLetters = service.retrieveNewLetters(WORDS[5], centerPosition, Direction.Right);
         expect(newLetters).toEqual([]);

@@ -32,7 +32,7 @@ describe('GridService', () => {
     const CANVAS_WIDTH = 500;
     const CANVAS_HEIGHT = 500;
 
-    BOARD.merge([['s', { x: 4, y: 4 }]]);
+    BOARD.merge([{ letter: 's', position: { x: 4, y: 4 } }]);
 
     beforeEach(() => {
         TestBed.configureTestingModule({

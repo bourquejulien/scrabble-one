@@ -20,7 +20,7 @@ export class Board implements ImmutableBoard {
 
     private filledSquareCount: number = 0;
 
-    constructor(size: number, bonuses: [Vec2, Bonus][] = new Array()) {
+    constructor(size: number, bonuses: [Vec2, Bonus][] = []) {
         this.size = size;
         this.board = new Array<Square[]>();
 
@@ -44,8 +44,8 @@ export class Board implements ImmutableBoard {
         return this.board[position.x][position.y];
     }
 
-    merge(letters: [string, Vec2][]): void {
-        for (const [letter, position] of letters) {
+    merge(letters: { letter: string; position: Vec2 }[]): void {
+        for (const { letter, position } of letters) {
             this.positionGuard(position);
 
             if (this.board[position.x][position.y].letter !== '') {

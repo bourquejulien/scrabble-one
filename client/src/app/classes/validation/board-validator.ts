@@ -18,11 +18,11 @@ export class BoardValidator {
         return square != null && square.letter !== '';
     }
 
-    private static sortLetters(letters: [string, Vec2][], direction: Direction): [string, Vec2][] {
+    private static sortLetters(letters: { letter: string; position: Vec2 }[], direction: Direction): { letter: string; position: Vec2 }[] {
         if (direction === Direction.Right) {
-            return letters.sort((l1, l2) => l1[1].x - l2[1].x);
+            return letters.sort((l1, l2) => l1.position.x - l2.position.x);
         } else {
-            return letters.sort((l1, l2) => l1[1].y - l2[1].y);
+            return letters.sort((l1, l2) => l1.position.y - l2.position.y);
         }
     }
 
@@ -43,12 +43,12 @@ export class BoardValidator {
         return false;
     }
 
-    validate(letters: [string, Vec2][]): ValidationResponse {
+    validate(letters: { letter: string; position: Vec2 }[]): ValidationResponse {
         if (letters.length === 0) {
             return { isSuccess: false, description: 'Empty placement', points: 0 };
         }
 
-        const positions: Vec2[] = letters.map((e) => e[1]);
+        const positions: Vec2[] = letters.map((e) => e.position);
         const clonedBoard: Board = this.board.clone();
 
         try {
@@ -68,7 +68,7 @@ export class BoardValidator {
         }
 
         const sortedLetters = BoardValidator.sortLetters(letters, direction);
-        const sortedPositions = sortedLetters.map((e) => e[1]);
+        const sortedPositions = sortedLetters.map((e) => e.position);
 
         if (this.board.filledSquare === 0) {
             if (!this.validateFirstPlacement(letters)) return { isSuccess: false, description: 'Invalid first word', points: 0 };
@@ -91,13 +91,13 @@ export class BoardValidator {
         return this.letterPoints[letter];
     }
 
-    private validateFirstPlacement(letters: [string, Vec2][]): boolean {
+    private validateFirstPlacement(letters: { letter: string; position: Vec2 }[]): boolean {
         if (letters.length < 2) {
             return false;
         }
 
         const halfBoardSize = Math.floor(this.board.size / 2);
-        for (const [, position] of letters) {
+        for (const { position } of letters) {
             if (position.x === halfBoardSize && position.y === halfBoardSize) return true;
         }
 
