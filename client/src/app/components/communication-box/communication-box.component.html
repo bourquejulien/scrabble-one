@@ -1,15 +1,8 @@
 <mat-grid-list cols="1" >
     <!-- Message list -->
     <cdk-virtual-scroll-viewport itemSize="5" class="message-viewport">
-        <div *cdkVirtualFor="let message of messages">
-            <mat-card style="margin:8px" [ngClass]="{
-                'action-error': message.messageType === 'ActionError',
-                'input-error': message.messageType === 'InputError',
-                'syntax-error': message.messageType === 'SyntaxError',
-                'log-message':message.messageType === 'Log',
-                'my-player': message.userId === 0,
-                'other-player': message.userId === 1
-            }">
+        <div id="messages" *ngFor="let message of messages">
+            <mat-card style="margin:8px" [style.backgroung-color]="message.messageType">
                 <span><b *ngIf="message.title !== ''">{{ message.title }}<br></b></span>
                 {{ message.body }}
             </mat-card>

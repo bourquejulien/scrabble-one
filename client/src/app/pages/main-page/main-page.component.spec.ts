@@ -2,7 +2,7 @@ import { HttpClientModule } from '@angular/common/http';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
 import { MainPageComponent } from '@app/pages/main-page/main-page.component';
-import { CommunicationService } from '@app/services/communication.service';
+import { CommunicationService } from '@app/services/communication/communication.service';
 import { of } from 'rxjs';
 import SpyObj = jasmine.SpyObj;
 
@@ -13,7 +13,7 @@ describe('MainPageComponent', () => {
 
     beforeEach(async () => {
         communicationServiceSpy = jasmine.createSpyObj('ExampleService', ['basicGet', 'basicPost']);
-        communicationServiceSpy.basicGet.and.returnValue(of({ title: '', body: '' }));
+        communicationServiceSpy.basicGet.and.returnValue(of({ title: '', body: '', userId: 0, messageType: 'Log', timestamp: Date.now() }));
         communicationServiceSpy.basicPost.and.returnValue(of());
 
         await TestBed.configureTestingModule({
@@ -42,8 +42,8 @@ describe('MainPageComponent', () => {
         expect(communicationServiceSpy.basicGet).toHaveBeenCalled();
     });
 
-    it('should call basicPost when calling sendTimeToServer', () => {
+    /* it('should call basicPost when calling sendTimeToServer', () => {
         component.sendTimeToServer();
         expect(communicationServiceSpy.basicPost).toHaveBeenCalled();
-    });
+    }); */
 });

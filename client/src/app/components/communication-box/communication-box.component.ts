@@ -11,17 +11,27 @@ import { Subscription } from 'rxjs';
 })
 export class CommunicationBoxComponent implements OnDestroy {
     messages: Message[] = [];
-    subscription: Subscription;
+    subscription: Subscription; // Subscription to messages from MessagingService
     inputValue: string; // Value of the input field so that we can use the "x" to erase the content
 
     constructor(private commandsService: CommandsService, public messagingService: MessagingService) {
         this.subscription = this.messagingService.onMessage().subscribe((message) => {
+            // Actions when a new message is received:
             this.messages.push(message);
+            // We scroll to the end!
+            const divElement = document.getElementById('messages');
+            if (divElement) {
+                divElement.scrollTop = divElement.scrollHeight;
+            }
         });
     }
 
     send(input: string): void {
-        this.commandsService.parseInput(input);
+        // When the command contains no errors, we clear the input field.
+        // This gives the chance to the user to correct the syntax if there are mistakes
+        if (this.commandsService.parseInput(input)) {
+            this.inputValue = '';
+        }
     }
 
     ngOnDestroy() {

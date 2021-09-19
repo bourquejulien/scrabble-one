@@ -9,7 +9,6 @@ import { AppMaterialModule } from '@app/modules/material.module';
 // Components
 import { PlayAreaComponent } from '@app/components/play-area/play-area.component';
 import { SidebarComponent } from '@app/components/sidebar/sidebar.component';
-import { AdminPageComponent } from '@app/pages/admin-page/admin-page.component';
 // Page components
 import { AppComponent } from '@app/pages/app/app.component';
 import { GamePageComponent } from '@app/pages/game-page/game-page.component';
@@ -23,7 +22,7 @@ import { CommunicationBoxComponent } from './components/communication-box/commun
  * Otherwise Angular Cli will not know in which module to put new component
  */
 @NgModule({
-    declarations: [AppComponent, GamePageComponent, MainPageComponent, AdminPageComponent, PlayAreaComponent, SidebarComponent, CommunicationBoxComponent],
+    declarations: [AppComponent, GamePageComponent, MainPageComponent, PlayAreaComponent, SidebarComponent, CommunicationBoxComponent],
     imports: [AppMaterialModule, AppRoutingModule, BrowserAnimationsModule, BrowserModule, FormsModule, HttpClientModule],
     providers: [],
     bootstrap: [AppComponent],
