@@ -1,15 +1,9 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:cc="http://creativecommons.org/ns#" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" width="899" height="855" viewBox="-952.0075728 -1001 1904.0151456 1810.8260114">
-  <title>3D (Nautical) Star</title>
-  <metadata><rdf:RDF><cc:Work rdf:about="">
-    <dc:format>image/svg+xml</dc:format>
-    <dc:type rdf:resource="http://purl.org/dc/dcmitype/StillImage"/>
-    <dc:title>3D (Nautical) Star</dc:title>
-  </cc:Work></rdf:RDF></metadata>
-  <path d="M0,-1000L-587.7852523,809.0169944L951.0565163,-309.0169944H-951.0565163L587.7852523,809.0169944Z"/>
-  <path style="fill:#ffffff" id="Trng" d="M0,0V-909.15L-204.1168925,-280.9428004Z"/>
-  <use xlink:href="#Trng" transform="rotate(72)"/>
-  <use xlink:href="#Trng" transform="rotate(144)"/>
-  <use xlink:href="#Trng" transform="rotate(216)"/>
-  <use xlink:href="#Trng" transform="rotate(288)"/>
+<svg width="400" height="408" xmlns="http://www.w3.org/2000/svg">
+
+ <g>
+  <title>star</title>
+  <path id="svg_1" d="m0,155.84257l152.78749,0l47.21252,-155.84257l47.21254,155.84257l152.78746,0l-123.60745,96.31489l47.21495,155.84257l-123.6075,-96.31752l-123.60748,96.31752l47.21496,-155.84257l-123.60749,-96.31489z" stroke="#000" fill="#ffffff"/>
+  <path stroke="#000" id="svg_4" d="m78.00001,178.49178l94.34628,0l29.15373,-95.49177l29.15374,95.49177l94.34626,0l-76.3276,59.01648l29.15523,95.49177l-76.32763,-59.0181l-76.32762,59.0181l29.15524,-95.49177l-76.32763,-59.01648z" fill="#666666"/>
+  <path stroke="#000000" id="svg_5" d="m129.00001,196.6213l55.38547,0l17.11454,-54.62129l17.11454,54.62129l55.38546,0l-44.80771,33.75743l17.11542,54.6213l-44.80771,-33.75835l-44.80772,33.75835l17.11543,-54.6213l-44.80772,-33.75743z" fill="#191919"/>
+ </g>
 </svg>

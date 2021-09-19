@@ -135,9 +135,21 @@ export class GridService {
     private drawImage(imagePath: string, gridPosition: Vec2, context: CanvasRenderingContext2D) {
         const image = new Image();
         const canvasPosition = this.computeCanvasCoord(gridPosition);
-        const centeredPosition = { x: canvasPosition.x - this.squareWidth / 2, y: canvasPosition.y - this.squareHeight / 2 };
+        const halfLineWidth = Constants.grid.LINE_WIDTH / 2;
+        const centeredPosition = {
+            x: canvasPosition.x - this.squareWidth / 2 + halfLineWidth,
+            y: canvasPosition.y - this.squareHeight / 2 + halfLineWidth,
+        };
+
         image.src = imagePath;
-        image.onload = () => context.drawImage(image, centeredPosition.x, centeredPosition.y, this.squareWidth, this.squareHeight);
+        image.onload = () =>
+            context.drawImage(
+                image,
+                centeredPosition.x,
+                centeredPosition.y,
+                this.squareWidth - Constants.grid.LINE_WIDTH,
+                this.squareHeight - Constants.grid.LINE_WIDTH,
+            );
     }
 
     private drawRow(pos: number, context: CanvasRenderingContext2D) {
