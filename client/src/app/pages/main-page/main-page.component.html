@@ -2,7 +2,6 @@
     <h1 class="header-item">Bienvenue au cours {{ title }}</h1>
     <img src="https://bit.ly/3m206ss" width="400" height="80" alt="Logo Scrabble" />
     <section id="server-message">
-        <button (click)="onPlayerClick()">Click me to skip your turn!</button>
         <p>Petit message du serveur : {{ message.getValue() }}</p>
         <div class="justified">
             <button class="button" (click)="getMessagesFromServer()">Récupérer un message du serveur</button>

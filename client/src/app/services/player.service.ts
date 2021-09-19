@@ -88,9 +88,8 @@ this.updateReserve(lettersToPlace);
     exchangeLetters(lettersToExchange: string): string {
         const minLettersInReserve = 7;
         const lettersToExchangeLength = lettersToExchange.length;
-        /**
-         * call checkifletterinrack to make sure player exchanges letters that are in their possession.
-         */
+
+        // call checkifletterinrack to make sure player exchanges letters that are in their possession.
 
         if (this.reserveService.length < minLettersInReserve) {
             return 'There are not enough letters in the reserve. You may not use this command.';
@@ -115,7 +114,3 @@ this.updateReserve(lettersToPlace);
         // this.gameService.onTurn.next(!isTurn);
     }
 }
-
-// timerListener(): void{
-//   this.gameService.playerTime.subscribe(());
-// }
