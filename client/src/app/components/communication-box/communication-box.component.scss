@@ -1,0 +1,24 @@
+.command-field {
+    width: 95%;
+    margin: 16px;
+}
+
+
+.syntax-error .input-error .action-error .log-message {
+    background-color: #ff7b7b !important;
+}
+
+// TODO: perhaps put colors into variables so we can use them in other components as well
+.my-player {
+    background-color: blanchedalmond;
+}
+
+.other-player {
+    background-color: aliceblue;
+}
+
+.message-viewport {
+    height: 300px;
+    width: 100%;
+}
+
