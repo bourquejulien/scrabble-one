@@ -30,6 +30,7 @@ export class GridService {
                 return { kind: 'Mot', multiplier: 'X2' };
             case Bonus.W3:
                 return { kind: 'Mot', multiplier: 'X3' };
+            case Bonus.Star:
             default:
                 return { kind: '', multiplier: '' };
         }
