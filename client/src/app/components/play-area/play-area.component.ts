@@ -1,4 +1,5 @@
 import { AfterViewInit, Component, ElementRef, ViewChild, Input, SimpleChanges, OnChanges } from '@angular/core';
+import { PlayerType } from '@app/classes/player-type';
 import { Constants } from '@app/constants/global.constants';
 import { GridService } from '@app/services/grid.service';
 import { MouseHandlingService } from '@app/services/mouse-handling.service';
@@ -9,7 +10,7 @@ import { MouseHandlingService } from '@app/services/mouse-handling.service';
     styleUrls: ['./play-area.component.scss'],
 })
 export class PlayAreaComponent implements AfterViewInit, OnChanges {
-    @Input() selectedPlayer: string;
+    @Input() playerType: PlayerType;
 
     @ViewChild('gridCanvas', { static: false }) private gridCanvas!: ElementRef<HTMLCanvasElement>;
     @ViewChild('squareCanvas', { static: false }) private squareCanvas!: ElementRef<HTMLCanvasElement>;
@@ -31,7 +32,7 @@ export class PlayAreaComponent implements AfterViewInit, OnChanges {
     }
 
     ngOnChanges(changes: SimpleChanges): void {
-        if (!changes.selectedPlayer.isFirstChange && changes.selectedPlayer.currentValue !== changes.selectedPlayer.previousValue) {
+        if (!changes.playerType.isFirstChange && changes.playerType.currentValue !== changes.playerType.previousValue) {
             this.gridService.drawSquares(this.squareContext);
         }
     }
