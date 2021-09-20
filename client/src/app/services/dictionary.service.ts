@@ -1,5 +1,7 @@
+import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import JsonDictionary from '@assets/dictionary.json';
+import { Dictionary } from '@app/classes/dictionary';
+import { Constants } from '@app/constants/global.constants';
 
 @Injectable({
     providedIn: 'root',
@@ -7,20 +9,20 @@ import JsonDictionary from '@assets/dictionary.json';
 export class DictionaryService {
     // TODO Replace with a trie
     private dictionary: Set<string>;
-    constructor() {
-        this.dictionary = this.getDictionary();
+
+    constructor(private http: HttpClient) {
+        this.dictionary = new Set<string>();
+        this.retrieveDictionary();
     }
 
     lookup(word: string): boolean {
         return this.dictionary.has(word);
     }
 
-    private getDictionary(): Set<string> {
-        const dictionary: Set<string> = new Set<string>();
-        for (const word of JsonDictionary.words) {
-            dictionary.add(word);
-        }
-
-        return dictionary;
+    private retrieveDictionary(): void {
+        this.http.get(Constants.dictionary.DICTIONARY_PATH).subscribe((jsonData) => {
+            const jsonDictionary = jsonData as Dictionary;
+            jsonDictionary.words.forEach((word) => this.dictionary.add(word));
+        });
     }
 }
