@@ -1,6 +1,17 @@
-<p>rack works!</p>
+<link rel="stylesheet" type="text/css" href="//fonts.googleapis.com/css?family=Crimson+Text" />
 
-<div>
-    <canvas *ngFor="let letter of rack" onload="drawLetter()">
-    </canvas>
-</div>
+<mat-card class='rack'>
+    <mat-card  class='letterInRack' id='tile' *ngFor="let letter of rack">
+        {{letter}}
+        <sub class='letterPoint'>
+            {{retrievePoints(letter)}}
+        </sub>
+    </mat-card>
+</mat-card>
+
+<!--
+    <sub class='letterPoint'>
+                {{retrievePoints(letter)}}
+            </sub>
+-->
+  

@@ -1,1 +1,36 @@
-canvas { border: 1px solid black; flex-direction: row;}
+.rack{
+    box-shadow: 7px 7px 7px rgba(10, 10, 10, 0.5);
+    width: 500px;
+    background-image: url('~src/assets/img/rack-texture.png');
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#tile{
+    display: inline-flex;
+    box-shadow: 5px 5px 5px rgba(10, 10, 10, 0.5);
+    flex-direction: row;
+    width: 32px;
+    background-image: url('~src/assets/img/tile-texture.jpeg');
+    margin-right: 5px;
+}
+
+.letterPoint{
+    position: absolute;
+    font-size: 1rem;
+    margin-left: 2.5rem;
+    top: 2rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.letterInRack{
+    font-size: 2.7rem;
+    font-weight: 900;
+    font-family: Crimson Text;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+}
