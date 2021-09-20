@@ -104,6 +104,10 @@ export class GridService {
         return this.canvasSize.y;
     }
 
+    get boardGridSize(): number {
+        return this.playGridSize + 1;
+    }
+
     private drawBonus(bonus: Bonus, gridPosition: Vec2, context: CanvasRenderingContext2D) {
         if (bonus === Bonus.None) return;
 
@@ -190,10 +194,6 @@ export class GridService {
 
     private get squareHeight(): number {
         return this.canvasSize.y / this.boardGridSize;
-    }
-
-    private get boardGridSize(): number {
-        return this.playGridSize + 1;
     }
 
     private get bonusFontFace(): FontFace {
