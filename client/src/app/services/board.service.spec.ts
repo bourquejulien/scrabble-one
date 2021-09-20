@@ -76,27 +76,27 @@ describe('BoardService', () => {
     });
 
     it('should accept a valid word', () => {
-        const response = service.validateLetters(generatePlacement(WORDS[0], centerPosition, Direction.Right));
+        const response = service.lookupLetters(generatePlacement(WORDS[0], centerPosition, Direction.Right));
         expect(response.isSuccess).toBeTrue();
     });
 
     it('should fail to add an invalid word', () => {
-        const response = service.validateLetters(generatePlacement('thisisnotaword', centerPosition, Direction.Right));
+        const response = service.lookupLetters(generatePlacement('thisisnotaword', centerPosition, Direction.Right));
         expect(response.isSuccess).toBeFalse();
     });
 
     it('should fail to add a word written from right to left', () => {
-        const response = service.validateLetters(generatePlacement(WORDS[0], centerPosition, Direction.Left));
+        const response = service.lookupLetters(generatePlacement(WORDS[0], centerPosition, Direction.Left));
         expect(response.isSuccess).toBeFalse();
     });
 
     it('should fail to overflow the board', () => {
-        const response = service.validateLetters(generatePlacement('aaaaaaaaaaaaaaa', centerPosition, Direction.Right));
+        const response = service.lookupLetters(generatePlacement('aaaaaaaaaaaaaaa', centerPosition, Direction.Right));
         expect(response.isSuccess).toBeFalse();
     });
 
     it('should fail to add an un-centered first word', () => {
-        const response = service.validateLetters(generatePlacement(WORDS[0], { x: 0, y: 0 }, Direction.Right));
+        const response = service.lookupLetters(generatePlacement(WORDS[0], { x: 0, y: 0 }, Direction.Right));
         expect(response.isSuccess).toBeFalse();
     });
 

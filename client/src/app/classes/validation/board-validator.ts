@@ -5,6 +5,7 @@ import { ValidationResponse } from './validation-response';
 import { Vec2 } from '@app/classes/vec2';
 import { Direction, reverseDirection } from '@app/classes/board/direction';
 import { Bonus, getBonusValue, isLetterBonus } from '@app/classes/board/bonus';
+import { DictionaryLookup } from '@app/classes/dictionary/dictionary-lookup';
 
 // TODO
 // Add placement class
@@ -12,7 +13,11 @@ import { Bonus, getBonusValue, isLetterBonus } from '@app/classes/board/bonus';
 // Better handling of bonuses (split tables?)
 
 export class BoardValidator {
-    constructor(private board: ImmutableBoard, private lookup: (word: string) => boolean, private letterPoints: { [key: string]: number }) {}
+    constructor(
+        private readonly board: ImmutableBoard,
+        private readonly dictionaryLookup: DictionaryLookup,
+        private letterPoints: { [key: string]: number },
+    ) {}
 
     private static validateSquare(square: Square | null): boolean {
         return square != null && square.letter !== '';
@@ -200,7 +205,7 @@ export class BoardValidator {
             return { isSuccess: true, description: '', points: 0 };
         }
 
-        if (this.lookup(word)) {
+        if (this.dictionaryLookup.lookup(word)) {
             return { isSuccess: true, description: '', points: totalPoint * multiplier };
         } else {
             return { isSuccess: false, description: `Word: (${word}) cannot be found in dictionary`, points: 0 };
