@@ -4,7 +4,7 @@ import { Bonus } from '@app/classes/board/bonus';
 import { Vec2 } from '@app/classes/vec2';
 import { FontFace } from '@app/classes/font-face';
 import { Constants } from '@app/constants/global.constants';
-import { BoardService } from './board.service';
+import { BoardService } from '@app/services/board/board.service';
 
 @Injectable({
     providedIn: 'root',

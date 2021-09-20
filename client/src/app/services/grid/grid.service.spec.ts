@@ -5,7 +5,7 @@ import { CanvasTestHelper } from '@app/classes/canvas-test-helper';
 
 import { GridService } from '@app/services/grid/grid.service';
 import { Constants } from '@app/constants/global.constants';
-import { BoardService } from '@app/services/board.service';
+import { BoardService } from '@app/services/board/board.service';
 import { Injectable } from '@angular/core';
 import { Board, ImmutableBoard } from '@app/classes/board/board';
 import { Bonus } from '@app/classes/board/bonus';

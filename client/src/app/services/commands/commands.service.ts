@@ -1,5 +1,7 @@
 import { Injectable } from '@angular/core';
 import { MessagingService } from '@app/services/messaging/messaging.service';
+import { PlayerService } from '@app/services/player/player.service';
+import { ReserveService } from '@app/services/reserve/reserve.service';
 
 @Injectable({
     providedIn: 'root',
@@ -9,14 +11,14 @@ export class CommandsService {
     readonly wordRegex: RegExp = /^[a-zA-Z]{1,15}$/;
     readonly messageRegex: RegExp = /^[a-zA-Z0-9 [:punct:]]{1,512}$/;
 
-    constructor(public messagingService: MessagingService) {} // TODO: Inject: Reserve + Player
-
+    constructor(public messagingService: MessagingService, private playerService: PlayerService, private reserveService: ReserveService) {}
     /**
      * Parse the user' input and call the relevant functions
      *
      * @param input the user's input
      * @return if the operation is successful (so the text input knows if it must clear its value)
      */
+    // TODO: this method seems too long to me... each message object take a few lines...
     parseInput(input: string): boolean {
         // If the input starts with an exclamation mark, then it is interpreted as a command
         const args = input.split(' ');
@@ -35,25 +37,9 @@ export class CommandsService {
                 // Arguments: [COMMAND, OPTIONS, WORD]
                 const options = args[1].match(this.placeWordCommandRegex); // Retrieve the parameters: column, row and direction
                 if (options && options[1] && this.messageRegex.test(args[2])) {
-                    // Call the placeSthFun
+                    this.playerService.placeLetters();
                 } else {
                     // Invalid syntax
-                    return false;
-                }
-                break;
-            }
-            case '!reserver': {
-                const word = args[1].match(this.wordRegex);
-                if (word && word[0]) {
-                    // TODO: call the right function
-                } else {
-                    this.messagingService.sendMessage({
-                        title: '',
-                        body: 'Le mot saisi ne respecte pas le bon format...',
-                        messageType: 'InputError',
-                        userId: 1,
-                        timestamp: Date.now(),
-                    });
                     return false;
                 }
                 break;
@@ -70,33 +56,24 @@ export class CommandsService {
                 break;
             }
             case '!echanger': {
-                // Reserve.drawLetter()
+                // TODO: validation !echanger
+                this.reserveService.drawLetter();
                 break;
             }
             case '!passer': {
-                // Player.completeTurn()
+                this.playerService.completeTurn();
                 break;
             }
             // If not a command, then it is probably a message
             default: {
-                if (this.messageRegex.test(input)) {
-                    this.messagingService.sendMessage({
-                        title: '',
-                        body: `${input}`,
-                        messageType: 'UserMessage',
-                        userId: 1,
-                        timestamp: Date.now(),
-                    });
-                } else {
-                    this.messagingService.sendMessage({
-                        title: '',
-                        body: 'Le format du message est invalide',
-                        messageType: 'InputError',
-                        userId: 0,
-                        timestamp: Date.now(),
-                    });
-                    return false;
-                }
+                // TODO: if (this.messageRegex.test(input)) {
+                this.messagingService.sendMessage({
+                    title: '',
+                    body: `${input}`,
+                    messageType: 'UserMessage',
+                    userId: 1,
+                    timestamp: Date.now(),
+                });
             }
         }
         return true;

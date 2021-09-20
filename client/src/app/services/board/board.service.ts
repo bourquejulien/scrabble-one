@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Board, ImmutableBoard } from '@app/classes/board/board';
 import { BoardValidator } from '@app/classes/validation/board-validator';
-import { DictionaryService } from './dictionary.service';
+import { DictionaryService } from '@app/services/dictionary/dictionary.service';
 import { Square } from '@app/classes/board/square';
 import { Bonus } from '@app/classes/board/bonus';
 import { ValidationResponse } from '@app/classes/validation/validation-response';

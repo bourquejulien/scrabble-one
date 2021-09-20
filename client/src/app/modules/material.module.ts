@@ -1,7 +1,5 @@
 import { NgModule } from '@angular/core';
 
-import { ScrollingModule } from '@angular/cdk/scrolling';
-
 // import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatButtonModule } from '@angular/material/button';
 // import { MatButtonToggleModule } from '@angular/material/button-toggle';
@@ -34,7 +32,6 @@ import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatTooltipModule } from '@angular/material/tooltip';
 
 const modules = [
-    ScrollingModule,
     // MatAutocompleteModule,
     MatButtonModule,
     // MatButtonToggleModule,

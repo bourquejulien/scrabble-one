@@ -34,6 +34,7 @@ export class CommunicationBoxComponent implements OnDestroy {
 
     scroll(): void {
         if (this.messageContainer) {
+            // TODO: make it works!!
             this.messageContainer.nativeElement.scrollTop = this.messageContainer.nativeElement.scrollHeight;
         }
     }

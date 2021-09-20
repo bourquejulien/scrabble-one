@@ -2,9 +2,9 @@ import { Injectable } from '@angular/core';
 // import { Direction } from '@app/classes/board/direction';
 // import { Vec2 } from '@app/classes/vec2';
 // import { skip } from 'rxjs/operators';
-import { BoardService } from './board.service';
+import { BoardService } from '@app/services/board/board.service';
 // import { GameService } from './game.service';
-import { ReserveService } from './reserve.service';
+import { ReserveService } from '@app/services/reserve/reserve.service';
 
 @Injectable({
     providedIn: 'root',
@@ -70,7 +70,7 @@ const lettersToPlace = board.retrieveNewLetters(word, position, direction);
 const rackMessage = this.checkIfLettersInRack(lettersToPlace);
 if(rackMessage !== '')
 return rackMessage;
- 
+
 const validationData = this.boardService.validateWord(lettersToPlace);
 
 if (!validationData.isSuccess)
