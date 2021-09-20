@@ -4,7 +4,6 @@ import { CommunicationService } from '@app/services/communication.service';
 import { BehaviorSubject } from 'rxjs';
 import { map } from 'rxjs/operators';
 
-
 @Component({
     selector: 'app-main-page',
     templateUrl: './main-page.component.html',
@@ -15,8 +14,6 @@ export class MainPageComponent {
     message: BehaviorSubject<string> = new BehaviorSubject<string>('');
 
     constructor(private readonly communicationService: CommunicationService) {}
-
-
 
     sendTimeToServer(): void {
         const newTimeMessage: Message = {
