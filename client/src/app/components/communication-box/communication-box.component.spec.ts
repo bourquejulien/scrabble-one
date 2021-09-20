@@ -30,7 +30,7 @@ describe('CommunicationBoxComponent', () => {
             messageType: 'Log',
             timestamp: Date.now(),
             userId: 1,
-        }
+        };
         component.send('!aide');
         expect(component.messages).toContain(message);
     });
