@@ -1,13 +1,11 @@
-<mat-grid-list cols="1" >
+<mat-grid-list cols="1">
     <!-- Message list -->
-    <cdk-virtual-scroll-viewport itemSize="5" class="message-viewport">
-        <div id="messages" *ngFor="let message of messages">
-            <mat-card style="margin:8px" [style.backgroung-color]="message.messageType">
-                <span><b *ngIf="message.title !== ''">{{ message.title }}<br></b></span>
-                {{ message.body }}
-            </mat-card>
-        </div>
-    </cdk-virtual-scroll-viewport>
+    <div #messageContainer *ngFor="let message of messages">
+        <mat-card style="margin:8px" [style.background-color]="getMessageColor(message)">
+            <span><b *ngIf="message.title !== ''">{{ message.title }}<br></b></span>
+            {{ message.body }}
+        </mat-card>
+    </div>
 </mat-grid-list>
 <!-- Command input -->
 <mat-form-field class="command-field" appearance="fill">

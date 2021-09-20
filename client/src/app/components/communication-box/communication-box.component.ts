@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, OnDestroy } from '@angular/core';
+import { ChangeDetectionStrategy, Component, ElementRef, OnDestroy, ViewChild } from '@angular/core';
 import { Message } from '@app/classes/message';
 import { CommandsService } from '@app/services/commands/commands.service';
 import { MessagingService } from '@app/services/messaging/messaging.service';
@@ -10,6 +10,7 @@ import { Subscription } from 'rxjs';
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CommunicationBoxComponent implements OnDestroy {
+    @ViewChild('messageContainer') messageContainer: ElementRef;
     messages: Message[] = [];
     subscription: Subscription; // Subscription to messages from MessagingService
     inputValue: string; // Value of the input field so that we can use the "x" to erase the content
@@ -19,10 +20,7 @@ export class CommunicationBoxComponent implements OnDestroy {
             // Actions when a new message is received:
             this.messages.push(message);
             // We scroll to the end!
-            const divElement = document.getElementById('messages');
-            if (divElement) {
-                divElement.scrollTop = divElement.scrollHeight;
-            }
+            this.scroll();
         });
     }
 
@@ -32,6 +30,16 @@ export class CommunicationBoxComponent implements OnDestroy {
         if (this.commandsService.parseInput(input)) {
             this.inputValue = '';
         }
+    }
+
+    scroll(): void {
+        if (this.messageContainer) {
+            this.messageContainer.nativeElement.scrollTop = this.messageContainer.nativeElement.scrollHeight;
+        }
+    }
+
+    getMessageColor(message: Message): string {
+        return message.userId === 0 ? 'aliceblue' : 'blanchealmond';
     }
 
     ngOnDestroy() {

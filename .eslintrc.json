@@ -114,7 +114,7 @@
                 "@typescript-eslint/no-magic-numbers": [
                     "error",
                     {
-                        "ignore": [0, 1, 2, 3],
+                        "ignore": [-1, 0, 1, 2, 3],
                         "ignoreArrayIndexes": true,
                         "ignoreEnums": true
                     }
