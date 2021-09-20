@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { GameModePageComponent } from './gameMode-page.component';
+import { GameModePageComponent } from './game-mode-page.component';
 
 describe('GameModePageComponent', () => {
     let component: GameModePageComponent;

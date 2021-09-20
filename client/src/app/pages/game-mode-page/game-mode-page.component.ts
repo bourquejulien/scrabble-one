@@ -3,25 +3,19 @@ import { Component } from '@angular/core';
 
 
 @Component({
-    selector: 'app-gameMode-page',
-    templateUrl: './gameMode-page.component.html',
-    styleUrls: ['./gameMode-page.component.scss'],
+    selector: 'app-game-mode-page',
+    templateUrl: './game-mode-page.component.html',
+    styleUrls: ['./game-mode-page.component.scss'],
 })
 export class GameModePageComponent {
-    //constructor(public dialog: MatDialog) {}
-
+    // constructor(public dialog: MatDialog) {}
     // name:string;
     // gameType:string;
     // time:number;
-
     // openDialog(): void {
     //     const dialogRef = this.dialog.open(DialogOverviewExampleDialog, {
     //       width: '250px',
     //       data: {name: this.name, gameType: this.gameType, time:this.time}
     //     });
     // }
-    
-
-    
-    
 }
