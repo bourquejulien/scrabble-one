@@ -75,7 +75,7 @@ export class BoardValidator {
         const sortedLetters = BoardValidator.sortLetters(letters, direction);
         const sortedPositions = sortedLetters.map((e) => e.position);
 
-        if (this.board.filledSquare === 0) {
+        if (this.board.positions.length === 0) {
             if (!this.validateFirstPlacement(letters)) return { isSuccess: false, description: 'Invalid first word', points: 0 };
         } else if (!this.ensureAggregation(positions)) {
             return { isSuccess: false, description: 'No aggregation', points: 0 };
