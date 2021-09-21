@@ -2,7 +2,7 @@
     <mat-grid-list cols="1">
         <!-- Message list -->
         <div #messageContainer *ngFor="let message of messages">
-            <mat-card class="message-card"style="margin:8px" [style.background-color]="getMessageColor(message)">
+            <mat-card class="message-card" [style.background-color]="getMessageColor(message)">
                 <mat-icon class="card-icon">dangerous</mat-icon>
                 <span><b *ngIf="message.title !== ''">{{ message.title }}<br></b></span>
                 {{ message.body }}

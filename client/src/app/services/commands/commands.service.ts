@@ -30,7 +30,7 @@ export class CommandsService {
                 this.messagingService.sendMessage({
                     title: "Capsule d'aide",
                     body: "Vous avez appelé à l'aide!",
-                    messageType: 'Log',
+                    messageType: 'UserMessage',
                     userId: 1,
                     timestamp: Date.now(),
                 });
