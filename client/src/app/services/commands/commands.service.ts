@@ -1,4 +1,6 @@
 import { Injectable } from '@angular/core';
+import { Direction } from '@app/classes/board/direction';
+import { Vec2 } from '@app/classes/vec2';
 import { MessagingService } from '@app/services/messaging/messaging.service';
 import { PlayerService } from '@app/services/player/player.service';
 import { ReserveService } from '@app/services/reserve/reserve.service';
@@ -36,9 +38,18 @@ export class CommandsService {
             }
             case '!placer': {
                 // Arguments: [COMMAND, OPTIONS, WORD]
+                // Options: [X, Y, DIRECTION]
+                const word = args[2];
                 const options = args[1].match(this.placeWordCommandRegex); // Retrieve the parameters: column, row and direction
-                if (options && options[1] && this.messageRegex.test(args[2])) {
-                    this.playerService.placeLetters();
+                if (options && options[1] && this.messageRegex.test(word)) {
+                    // N.B.: the letter 'a' has value 97, hence the magic number
+                    // eslint-disable-next-line @typescript-eslint/no-magic-numbers
+                    const xCoordinate: number = (options[0].charCodeAt(0) - 97) as number;
+                    // TODO: review
+                    const yCoordinate: number = options[1] as unknown as number;
+                    const direction: Direction = options[2] === 'v' ? Direction.Down : Direction.Right;
+                    const vecCoordinate: Vec2 = { x: xCoordinate, y: yCoordinate };
+                    this.playerService.placeLetters(word, vecCoordinate, direction);
                 } else {
                     // Invalid syntax
                     return false;

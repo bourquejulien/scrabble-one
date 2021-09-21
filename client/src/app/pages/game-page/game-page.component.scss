@@ -1,9 +1,26 @@
 
+.local > .mat-toolbar.mat-primary {
+    background:  #45cb85 ;
+    color: #fff;
+}
+
+.remote > .mat-toolbar.mat-primary {
+    background: #57E2E5 ;
+    color: #fff;
+}
+
+.virtual > .mat-toolbar.mat-primary {
+    background: #b03a2e;
+    color: #fff;
+}
+
+mat-drawer-container {
+    height: 100%;
+}
+
 .play-area-container {
-    overflow: auto;
     flex: 1 1 auto;
     align-items: center;
-    height: 100%;
 }
 
 .play-area {
@@ -19,18 +36,17 @@
 
 .comm-box-sidenav-content {
     display: flex;
-    height: 100%;
     align-items: center;
 }
 
 .comm-box-sidenav {
-    width: 25%;
+    width: 25%; // the drawer takes 25% of the screen when open
 }
 
 .button-bar {
     padding: 8px;
     display: block;
-    align-items: flex-start;
+    align-items: center;
     width: min-content;
 }
 
@@ -42,17 +58,3 @@
     justify-content: space-between;
 }
 
-.local > .mat-toolbar.mat-primary {
-    background:  #45cb85 ;
-    color: #fff;
-}
-
-.remote > .mat-toolbar.mat-primary {
-    background: #57E2E5 ;
-    color: #fff;
-}
-
-.virtual > .mat-toolbar.mat-primary {
-    background: #b03a2e;
-    color: #fff;
-}

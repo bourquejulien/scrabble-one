@@ -10,6 +10,8 @@ export class MessagingService {
     private subject = new Subject<Message>();
 
     sendMessage(message: Message) {
+        this.subject.next(message);
+        /*
         if (this.debuggingMode) {
             // Every message passes through when debugging is on
             this.subject.next(message);
@@ -19,6 +21,7 @@ export class MessagingService {
                 this.subject.next(message);
             }
         }
+        */
     }
 
     onMessage(): Observable<Message> {

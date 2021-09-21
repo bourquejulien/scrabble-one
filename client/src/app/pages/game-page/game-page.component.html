@@ -1,4 +1,9 @@
 <mat-drawer-container autosize>
+    <mat-toolbar [ngClass]="playerType" class="mat-app-background" color="primary" class="toolbar">
+        <span>Scrabble</span>
+        <span>Joueur1 contre Joueur2</span>
+        <span>Minuteur</span>
+    </mat-toolbar>
     <mat-drawer #drawer class="comm-box-sidenav" mode="side" opened>
         <app-communication-box></app-communication-box>
     </mat-drawer>
