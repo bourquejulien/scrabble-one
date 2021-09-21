@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { letterDefinitions } from '@app/classes/letter';
 import { ReserveService } from '@app/services/reserve.service';
+//import { PlayerService } from '@app/services/player.service';
 
 @Component({
     selector: 'app-rack',
@@ -10,7 +11,7 @@ import { ReserveService } from '@app/services/reserve.service';
 export class RackComponent implements OnInit {
     rack: string[] = [];
 
-    constructor(private reserveService: ReserveService) {}
+    constructor(private reserveService: ReserveService/*, private playerService: PlayerService*/) {}
 
     ngOnInit() {
         const initNbTiles = 7;
@@ -18,6 +19,12 @@ export class RackComponent implements OnInit {
         for (let tile = 0; tile < initNbTiles; tile++) {
             this.rack.push(this.reserveService.drawLetter());
         }
+
+        /**
+         * for (letter of playerService.rack){
+         *      this.rack.push(letter);
+         * }
+         */
     }
 
     retrievePoints(letter: string): number {
