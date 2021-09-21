@@ -4,6 +4,7 @@ export enum Bonus {
     W2,
     L3,
     W3,
+    Star,
 }
 
 export const getBonusValue = (bonus: Bonus): number => {
@@ -16,6 +17,8 @@ export const getBonusValue = (bonus: Bonus): number => {
             return 2;
         case Bonus.W3:
             return 3;
+        case Bonus.Star:
+            return 2;
         default:
             return 1;
     }
@@ -28,6 +31,7 @@ export const isLetterBonus = (bonus: Bonus): boolean => {
             return true;
         case Bonus.W2:
         case Bonus.W3:
+        case Bonus.Star:
         default:
             return false;
     }

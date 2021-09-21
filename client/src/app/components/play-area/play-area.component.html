@@ -6,7 +6,7 @@
             #squareCanvas
             [style.width.px]="width"
             [style.height.px]="height"
-            (click)="mouseHitDetect($event)"
+            (click)="mouseHandlingService.mouseHitDetect($event)"
             [attr.width]="width"
             [attr.height]="height"
         ></canvas>
