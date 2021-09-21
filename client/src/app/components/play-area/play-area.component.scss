@@ -1,16 +1,16 @@
 #board {
     position: relative;
 }
-#grid-container{
+#grid-container {
     position: relative;
 }
-#gridCanvas{
+#gridCanvas {
     z-index: 0;
 }
-#squareCanvas{
+#squareCanvas {
     z-index: 1;
 }
-canvas{
+canvas {
     position: absolute;
     left: 0;
     top: 0;
