@@ -128,10 +128,5 @@
         "Letter": "z",
         "Quantity": 1,
         "Value": 10
-    },
-    {
-        "Letter": "*",
-        "Quantity": 2,
-        "Value": 0
     }
 ]

@@ -18,5 +18,6 @@ export class Grid {
         [Bonus.L3, '#6571ff'],
         [Bonus.W2, '#ffcccb'],
         [Bonus.W3, '#ff7d7a'],
+        [Bonus.Star, '#ffcccb'],
     ]);
 }
