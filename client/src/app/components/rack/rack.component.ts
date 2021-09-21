@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { letterDefinitions } from '@app/classes/letter';
 import { ReserveService } from '@app/services/reserve.service';
-//import { PlayerService } from '@app/services/player.service';
+// import { PlayerService } from '@app/services/player.service';
 
 @Component({
     selector: 'app-rack',
@@ -11,7 +11,7 @@ import { ReserveService } from '@app/services/reserve.service';
 export class RackComponent implements OnInit {
     rack: string[] = [];
 
-    constructor(private reserveService: ReserveService/*, private playerService: PlayerService*/) {}
+    constructor(private reserveService: ReserveService /* , private playerService: PlayerService*/) {}
 
     ngOnInit() {
         const initNbTiles = 7;
@@ -22,7 +22,7 @@ export class RackComponent implements OnInit {
 
         /**
          * for (letter of playerService.rack){
-         *      this.rack.push(letter);
+         * this.rack.push(letter);
          * }
          */
     }
