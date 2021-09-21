@@ -12,6 +12,8 @@ export class GameService {
     firstPlayerName: string;
     secondPlayerName: string;
     nameForm: FormGroup;
+    minutes: number;
+    seconds: number;
     onTurn = new BehaviorSubject<boolean>(false);
 
     botNameChange(firstPlayerName: string): void {
@@ -38,6 +40,7 @@ export class GameService {
             this.randomizeTurn();
             this.firstPlayerName = name;
             this.botNameChange(this.firstPlayerName);
+            this.time = Number(this.minutes * Constants.timeConstant) + Number(this.seconds);
             return true;
         }
         return false;
@@ -55,7 +58,7 @@ export class GameService {
     private nameValidatorFunction(control: FormControl): { [key: string]: boolean } | null {
         // We make sure that player name is considered as a string
         const playerName = control.value as string;
-        if (playerName !== null) {
+        if (playerName !== undefined && playerName !== null) {
             for (let index = 0; index < playerName.length; index++) {
                 if (!/[a-zA-Z]/.test(playerName.charAt(index))) return { ['containsOnlyLetters']: true };
             }

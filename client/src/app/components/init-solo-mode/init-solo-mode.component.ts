@@ -11,6 +11,8 @@ export class InitSoloModeComponent implements OnInit {
     readonly gameTypesList = Constants.gameTypesList;
     readonly turnLengthList = Constants.turnLengthList;
     readonly botNames = Constants.botNames;
+    readonly minutesList = Constants.turnLengthMinutes;
+    readonly secondsList = Constants.turnLengthSeconds;
 
     constructor(public game: GameService) {}
 
