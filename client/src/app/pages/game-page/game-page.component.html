@@ -1,6 +1,13 @@
-<div class="container">
-    <app-sidebar></app-sidebar>
-    <section class="play-area-container">
-        <app-play-area class="play-area" tabindex="0"></app-play-area>
-    </section>
-</div>
+<main [ngClass]="playerType" class="mat-app-background">
+    <mat-toolbar color="primary" class="toolbar">
+        <span>Scrabble</span>
+        <span>Joueur1 contre Joueur2</span>
+        <span>Minuteur</span>
+    </mat-toolbar>
+    <div class="container">
+        <app-sidebar style="display:block;"></app-sidebar>
+        <section class="play-area-container">
+            <app-play-area class="play-area" tabindex="0" [playerType]="playerType"></app-play-area>
+        </section>
+    </div>
+</main>

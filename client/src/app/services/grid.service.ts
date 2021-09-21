@@ -30,6 +30,7 @@ export class GridService {
                 return { kind: 'Mot', multiplier: 'X2' };
             case Bonus.W3:
                 return { kind: 'Mot', multiplier: 'X3' };
+            case Bonus.Star:
             default:
                 return { kind: '', multiplier: '' };
         }
@@ -102,6 +103,10 @@ export class GridService {
 
     get height(): number {
         return this.canvasSize.y;
+    }
+
+    get boardGridSize(): number {
+        return this.playGridSize + 1;
     }
 
     private drawBonus(bonus: Bonus, gridPosition: Vec2, context: CanvasRenderingContext2D) {
@@ -190,10 +195,6 @@ export class GridService {
 
     private get squareHeight(): number {
         return this.canvasSize.y / this.boardGridSize;
-    }
-
-    private get boardGridSize(): number {
-        return this.playGridSize + 1;
     }
 
     private get bonusFontFace(): FontFace {

@@ -101,7 +101,7 @@ describe('BoardService', () => {
     });
 
     it('should succeed and return correct score on valid placement', () => {
-        const expectedScore = 9;
+        const expectedScore = 18;
         const response = service.placeLetters(generatePlacement(WORDS[5], centerPosition, Direction.Down));
         expect(response.isSuccess).toBeTrue();
         expect(response.points).toEqual(expectedScore);
@@ -109,7 +109,7 @@ describe('BoardService', () => {
 
     it('should succeed and return correct score on valid combination', () => {
         // eslint-disable-next-line @typescript-eslint/no-magic-numbers -- Need to set expected score
-        const expectedScores = [10, 24];
+        const expectedScores = [20, 24];
         const combinedWord: { letter: string; position: Vec2 }[] = [
             { letter: 'p', position: { x: 11, y: 3 } },
             { letter: 'e', position: { x: 11, y: 4 } },
