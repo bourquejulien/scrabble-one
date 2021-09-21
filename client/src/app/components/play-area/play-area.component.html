@@ -1,13 +1,18 @@
 <div id="grid-container">
     <div id="board" [style.width.px]="width" [style.height.px]="height">
         <canvas id="gridCanvas" #gridCanvas [style.width.px]="width" [style.height.px]="height" [attr.width]="width" [attr.height]="height"></canvas>
-        <canvas id="squareCanvas" #squareCanvas [style.width.px]="width" [style.height.px]="height" (click)="mouseHandlingService.mouseHitDetect($event)" [attr.width]="width"
-            [attr.height]="height"></canvas>
+        <canvas
+            id="squareCanvas"
+            #squareCanvas
+            [style.width.px]="width"
+            [style.height.px]="height"
+            (click)="mouseHandlingService.mouseHitDetect($event)"
+            [attr.width]="width"
+            [attr.height]="height"
+        ></canvas>
     </div>
+</div>
 
-    <div id="mouse-position-display">
-        <p [attr.height]="height">Cliquez sur la grille pour avoir la position de la souris sur la grille</p>
-        <p *ngIf="mouseHandlingService.position.x !== -1">X : {{ mouseHandlingService.position.x}}</p>
-        <p *ngIf="mouseHandlingService.position.y !== -1">Y : {{ mouseHandlingService.position.y }}</p>
-    </div>
+<div class="rack">
+    <app-rack></app-rack>
 </div>
