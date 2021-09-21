@@ -88,8 +88,9 @@ this.updateReserve(lettersToPlace);
     exchangeLetters(lettersToExchange: string): string {
         const minLettersInReserve = 7;
         const lettersToExchangeLength = lettersToExchange.length;
+        const rackMessage = this.checkIfLettersInRack(lettersToExchange);
 
-        // call checkifletterinrack to make sure player exchanges letters that are in their possession.
+        if (rackMessage !== '') return rackMessage;
 
         if (this.reserveService.length < minLettersInReserve) {
             return 'There are not enough letters in the reserve. You may not use this command.';
