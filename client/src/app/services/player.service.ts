@@ -12,7 +12,13 @@ import { ReserveService } from './reserve.service';
 export class PlayerService {
     rack: string[] = [];
 
-    constructor(private reserveService: ReserveService /* private gameService: GameService, private boardService: BoardService*/) {}
+    constructor(private reserveService: ReserveService /* private gameService: GameService, private boardService: BoardService*/) {
+        const initNbTiles = 7;
+
+        for (let tile = 0; tile < initNbTiles; tile++) {
+            this.rack.push(this.reserveService.drawLetter());
+        }
+    }
 
     boardValidation(): string {
         let board: BoardService | undefined;
@@ -57,6 +63,8 @@ export class PlayerService {
     updateRack(lettersToPlace: string): void {
         for (const letter of lettersToPlace) {
             const letterIndex = this.rack.indexOf(letter);
+            if (letterIndex === -1)
+                return;
             this.rack.splice(letterIndex, 1);
         }
     }
@@ -100,9 +108,11 @@ this.updateReserve(lettersToPlace);
             this.rack.push(this.reserveService.drawLetter());
         }
 
+        // we forgot to add update rack here
         for (const letter of lettersToExchange) {
             this.reserveService.putBackLetter(letter);
         }
+        this.updateRack(lettersToExchange);
 
         this.completeTurn();
 
@@ -113,5 +123,19 @@ this.updateReserve(lettersToPlace);
         // this.gameService.onTurn.pipe(skip(1)).subscribe(x => console.log('player ' + (Number(x) + 1) + ' has completed their turn!'));
         // let isTurn = this.gameService.onTurn.getValue();
         // this.gameService.onTurn.next(!isTurn);
+    }
+
+    // For testing
+    setRack(mockRack: string[]): void {
+        this.rack = [];
+
+        for (const letter of mockRack) {
+            this.rack.push(letter);
+        }
+    }
+
+    // For testing
+    get length(): number {
+        return this.rack.length;
     }
 }

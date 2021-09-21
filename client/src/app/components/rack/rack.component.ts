@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { letterDefinitions } from '@app/classes/letter';
-import { ReserveService } from '@app/services/reserve.service';
-// import { PlayerService } from '@app/services/player.service';
+import { PlayerService } from '@app/services/player.service';
+//import { ReserveService } from '@app/services/reserve.service';
 
 @Component({
     selector: 'app-rack',
@@ -11,21 +11,15 @@ import { ReserveService } from '@app/services/reserve.service';
 export class RackComponent implements OnInit {
     rack: string[] = [];
 
-    constructor(private reserveService: ReserveService /* , private playerService: PlayerService*/) {}
+    constructor(private playerService: PlayerService) {}
 
     ngOnInit() {
-        const initNbTiles = 7;
-
-        for (let tile = 0; tile < initNbTiles; tile++) {
-            this.rack.push(this.reserveService.drawLetter());
+        for (let letter of this.playerService.rack) {
+            this.rack.push(letter);
         }
-
-        /**
-         * for (letter of playerService.rack){
-         * this.rack.push(letter);
-         * }
-         */
     }
+
+
 
     retrievePoints(letter: string): number {
         const currentLetterData = letterDefinitions.get(letter);
@@ -34,4 +28,22 @@ export class RackComponent implements OnInit {
 
         return currentLetterData.points;
     }
+
+    // For testing purposes only; to check if UI rack updates removed letters
+    clickToPop(): void {
+        this.playerService.updateRack('E');
+
+        for (let letter of this.playerService.rack)
+            console.log(letter);
+    }
 }
+
+/**
+ * Note to self: from the function above, i noticed that there may be a problem with update rack;
+ * if, for example, we have rack : K E N A S L E, update rack only removes one E. All subsequent calls
+ * to the function seem to be uneffective. Could it be because of the indexOf?
+ *
+ * update: i have changed absolutely nothing and now update rack does jack shit i hate it here
+ *
+ * nvm im just fkg stupid i just selected the wrong rack ;w;
+ */
