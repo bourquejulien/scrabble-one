@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { BehaviorSubject } from 'rxjs';
 // import { Direction } from '@app/classes/board/direction';
 // import { Vec2 } from '@app/classes/vec2';
 // import { skip } from 'rxjs/operators';
@@ -11,6 +12,7 @@ import { ReserveService } from './reserve.service';
 })
 export class PlayerService {
     rack: string[] = [];
+    rackUpdated: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(true);
 
     constructor(private reserveService: ReserveService /* private gameService: GameService, private boardService: BoardService*/) {
         const initNbTiles = 7;
@@ -66,6 +68,7 @@ export class PlayerService {
             if (letterIndex === -1) return;
             this.rack.splice(letterIndex, 1);
         }
+        this.rackUpdated.next(!this.rackUpdated.getValue());
     }
 
     placeLetters(/* word: string, position: Vec2, direction: Direction*/): string {
