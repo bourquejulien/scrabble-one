@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { letterDefinitions } from '@app/classes/letter';
 import { PlayerService } from '@app/services/player.service';
-//import { ReserveService } from '@app/services/reserve.service';
+// import { ReserveService } from '@app/services/reserve.service';
 
 @Component({
     selector: 'app-rack',
@@ -14,12 +14,10 @@ export class RackComponent implements OnInit {
     constructor(private playerService: PlayerService) {}
 
     ngOnInit() {
-        for (let letter of this.playerService.rack) {
+        for (const letter of this.playerService.rack) {
             this.rack.push(letter);
         }
     }
-
-
 
     retrievePoints(letter: string): number {
         const currentLetterData = letterDefinitions.get(letter);
@@ -33,8 +31,7 @@ export class RackComponent implements OnInit {
     clickToPop(): void {
         this.playerService.updateRack('E');
 
-        for (let letter of this.playerService.rack)
-            console.log(letter);
+        // for (const letter of this.playerService.rack) console.log(letter);
     }
 }
 
