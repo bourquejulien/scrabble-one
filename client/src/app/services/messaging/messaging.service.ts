@@ -15,7 +15,7 @@ export class MessagingService {
             this.subject.next(message);
         } else {
             // If debugging is turned off, then we only show user messages
-            if (this.isSystemMessage(message)) {
+            if (!this.isSystemMessage(message)) {
                 this.subject.next(message);
             }
         }

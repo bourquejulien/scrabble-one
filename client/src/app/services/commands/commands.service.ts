@@ -11,6 +11,7 @@ export class CommandsService {
     readonly wordRegex: RegExp = /^[a-zA-Z]{1,15}$/;
     readonly messageRegex: RegExp = /^[a-zA-Z0-9 [:punct:]]{1,512}$/;
 
+    // TODO: retrieve user id from Player
     constructor(public messagingService: MessagingService, private playerService: PlayerService, private reserveService: ReserveService) {}
     /**
      * Parse the user' input and call the relevant functions

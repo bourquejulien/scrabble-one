@@ -10,7 +10,7 @@ import { Subscription } from 'rxjs';
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CommunicationBoxComponent implements OnDestroy {
-    @ViewChild('messageContainer') messageContainer: ElementRef;
+    @ViewChild('messageContainer', { static: false }) private messageContainer: ElementRef<HTMLDivElement>;
     messages: Message[] = [];
     subscription: Subscription; // Subscription to messages from MessagingService
     inputValue: string; // Value of the input field so that we can use the "x" to erase the content
@@ -25,8 +25,9 @@ export class CommunicationBoxComponent implements OnDestroy {
     }
 
     send(input: string): void {
-        // When the command contains no errors, we clear the input field.
+        if (input === '') return;
         // This gives the chance to the user to correct the syntax if there are mistakes
+        // When the command contains no errors, we clear the input field.
         if (this.commandsService.parseInput(input)) {
             this.inputValue = '';
         }
@@ -34,7 +35,6 @@ export class CommunicationBoxComponent implements OnDestroy {
 
     scroll(): void {
         if (this.messageContainer) {
-            // TODO: make it works!!
             this.messageContainer.nativeElement.scrollTop = this.messageContainer.nativeElement.scrollHeight;
         }
     }
