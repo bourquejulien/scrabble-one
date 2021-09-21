@@ -1,7 +1,6 @@
 import { Component } from '@angular/core';
 // import { MatDialog } from '@angular/material/dialog';
 
-
 @Component({
     selector: 'app-game-mode-page',
     templateUrl: './game-mode-page.component.html',
