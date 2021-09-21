@@ -1,3 +1,4 @@
+import { Injectable } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { Direction } from '@app/classes/board/direction';
 import { Vec2 } from '@app/classes/vec2';
@@ -5,11 +6,11 @@ import { Vec2 } from '@app/classes/vec2';
 import { BoardService } from './board.service';
 import { DictionaryService } from './dictionary.service';
 
-const words: string[] = ['pomme', 'orange', 'poire', 'raisin', 'peche', 'banane'];
-const mockedDictionary: Set<string> = new Set(words);
+const WORDS: string[] = ['pomme', 'orange', 'poire', 'raisin', 'peche', 'banane', 'bananes'];
+const mockedDictionary: Set<string> = new Set(WORDS);
 
-const generatePlacement = (word: string, initialPosition: Vec2, direction: Direction): [string, Vec2][] => {
-    const letters = new Array<[string, Vec2]>();
+const generatePlacement = (word: string, initialPosition: Vec2, direction: Direction): { letter: string; position: Vec2 }[] => {
+    const letters: { letter: string; position: Vec2 }[] = [];
 
     let xIncr: number;
     let yIncr: number;
@@ -42,13 +43,16 @@ const generatePlacement = (word: string, initialPosition: Vec2, direction: Direc
     }
 
     for (let i = 0; i < word.length; i++) {
-        letters.push([word[i], { x: initialPosition.x + xIncr * i, y: initialPosition.y + yIncr * i }]);
+        letters.push({ letter: word[i], position: { x: initialPosition.x + xIncr * i, y: initialPosition.y + yIncr * i } });
     }
 
     return letters;
 };
 
-class MockDictionaryService extends DictionaryService {
+@Injectable({
+    providedIn: 'root',
+})
+class StubDictionaryService {
     lookup(word: string): boolean {
         return mockedDictionary.has(word);
     }
@@ -60,7 +64,7 @@ describe('BoardService', () => {
 
     beforeEach(() => {
         TestBed.configureTestingModule({
-            providers: [{ provide: DictionaryService, useClass: MockDictionaryService }],
+            providers: [{ provide: DictionaryService, useClass: StubDictionaryService }],
         });
         service = TestBed.inject(BoardService);
         const halfBoardSize = Math.floor(service.gameBoard.size / 2);
@@ -72,47 +76,47 @@ describe('BoardService', () => {
     });
 
     it('should accept a valid word', () => {
-        const response = service.validateWord(generatePlacement(words[0], centerPosition, Direction.Right));
+        const response = service.validateLetters(generatePlacement(WORDS[0], centerPosition, Direction.Right));
         expect(response.isSuccess).toBeTrue();
     });
 
     it('should fail to add an invalid word', () => {
-        const response = service.validateWord(generatePlacement('thisisnotaword', centerPosition, Direction.Right));
+        const response = service.validateLetters(generatePlacement('thisisnotaword', centerPosition, Direction.Right));
         expect(response.isSuccess).toBeFalse();
     });
 
     it('should fail to add a word written from right to left', () => {
-        const response = service.validateWord(generatePlacement(words[0], centerPosition, Direction.Left));
+        const response = service.validateLetters(generatePlacement(WORDS[0], centerPosition, Direction.Left));
         expect(response.isSuccess).toBeFalse();
     });
 
     it('should fail to overflow the board', () => {
-        const response = service.validateWord(generatePlacement('aaaaaaaaaaaaaaa', centerPosition, Direction.Right));
+        const response = service.validateLetters(generatePlacement('aaaaaaaaaaaaaaa', centerPosition, Direction.Right));
         expect(response.isSuccess).toBeFalse();
     });
 
     it('should fail to add an un-centered first word', () => {
-        const response = service.validateWord(generatePlacement(words[0], { x: 0, y: 0 }, Direction.Right));
+        const response = service.validateLetters(generatePlacement(WORDS[0], { x: 0, y: 0 }, Direction.Right));
         expect(response.isSuccess).toBeFalse();
     });
 
     it('should succeed and return correct score on valid placement', () => {
-        const expectedScore = 9;
-        const response = service.addWord(generatePlacement(words[5], centerPosition, Direction.Down));
+        const expectedScore = 18;
+        const response = service.placeLetters(generatePlacement(WORDS[5], centerPosition, Direction.Down));
         expect(response.isSuccess).toBeTrue();
         expect(response.points).toEqual(expectedScore);
     });
 
     it('should succeed and return correct score on valid combination', () => {
         // eslint-disable-next-line @typescript-eslint/no-magic-numbers -- Need to set expected score
-        const expectedScores = [10, 24];
-        const combinedWord: [string, Vec2][] = [
-            ['p', { x: 11, y: 3 }],
-            ['e', { x: 11, y: 4 }],
-            ['c', { x: 11, y: 5 }],
-            ['h', { x: 11, y: 6 }],
+        const expectedScores = [20, 24];
+        const combinedWord: { letter: string; position: Vec2 }[] = [
+            { letter: 'p', position: { x: 11, y: 3 } },
+            { letter: 'e', position: { x: 11, y: 4 } },
+            { letter: 'c', position: { x: 11, y: 5 } },
+            { letter: 'h', position: { x: 11, y: 6 } },
         ];
-        const responses = [service.addWord(generatePlacement('pomme', centerPosition, Direction.Right)), service.addWord(combinedWord)];
+        const responses = [service.placeLetters(generatePlacement('pomme', centerPosition, Direction.Right)), service.placeLetters(combinedWord)];
         for (let i = 0; i < responses.length; i++) {
             expect(responses[i].isSuccess).toBe(true);
             expect(responses[i].points).toEqual(expectedScores[i]);
@@ -121,8 +125,8 @@ describe('BoardService', () => {
 
     it('should fail if word combination is invalid', () => {
         const responses = [
-            service.addWord(generatePlacement(words[0], centerPosition, Direction.Right)),
-            service.addWord(generatePlacement(words[1], { x: centerPosition.x + words[1].length, y: centerPosition.y - 1 }, Direction.Down)),
+            service.placeLetters(generatePlacement(WORDS[0], centerPosition, Direction.Right)),
+            service.placeLetters(generatePlacement(WORDS[1], { x: centerPosition.x + WORDS[1].length, y: centerPosition.y - 1 }, Direction.Down)),
         ];
 
         expect(responses[0].isSuccess).toBe(true);
@@ -131,8 +135,8 @@ describe('BoardService', () => {
 
     it('should fail if all words are not connected', () => {
         const responses = [
-            service.addWord(generatePlacement(words[0], centerPosition, Direction.Right)),
-            service.addWord(generatePlacement(words[1], { x: centerPosition.x + words[1].length + 1, y: centerPosition.y - 1 }, Direction.Down)),
+            service.placeLetters(generatePlacement(WORDS[0], centerPosition, Direction.Right)),
+            service.placeLetters(generatePlacement(WORDS[1], { x: centerPosition.x + WORDS[1].length + 1, y: centerPosition.y - 1 }, Direction.Down)),
         ];
 
         expect(responses[0].isSuccess).toBe(true);
@@ -140,7 +144,20 @@ describe('BoardService', () => {
     });
 
     it('should fail if word conflicts', () => {
-        expect(service.addWord(generatePlacement(words[0], centerPosition, Direction.Right)).isSuccess).toBe(true);
-        expect(service.addWord(generatePlacement(words[0], centerPosition, Direction.Right)).isSuccess).toBe(false);
+        expect(service.placeLetters(generatePlacement(WORDS[0], centerPosition, Direction.Right)).isSuccess).toBe(true);
+        expect(service.placeLetters(generatePlacement(WORDS[0], centerPosition, Direction.Right)).isSuccess).toBe(false);
+    });
+
+    it('should retrieve only new letters', () => {
+        service.placeLetters(generatePlacement(WORDS[5], centerPosition, Direction.Right));
+
+        let newLetters = service.retrieveNewLetters(WORDS[6], centerPosition, Direction.Right);
+        expect(newLetters).toEqual([{ letter: 's', position: { x: centerPosition.x + WORDS[6].length - 1, y: centerPosition.y } }]);
+
+        newLetters = service.retrieveNewLetters(WORDS[5], centerPosition, Direction.Right);
+        expect(newLetters).toEqual([]);
+
+        newLetters = service.retrieveNewLetters(WORDS[5] + WORDS[5], centerPosition, Direction.Right);
+        expect(newLetters).toEqual([]);
     });
 });

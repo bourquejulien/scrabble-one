@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-magic-numbers */
+import { Dictionary } from './dictionary.constants';
 import { Grid } from './grid.constants';
 
 export class Constants {
@@ -12,4 +13,5 @@ export class Constants {
     static readonly minSizeName = 3;
     static readonly half = 0.5;
     static readonly timeConstant: number = 60;
+    static readonly dictionary = new Dictionary();
 }

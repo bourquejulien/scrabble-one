@@ -1,83 +1,58 @@
-import { AfterViewInit, Component, ElementRef, HostListener, ViewChild } from '@angular/core';
-import { Vec2 } from '@app/classes/vec2';
+import { AfterViewInit, Component, ElementRef, ViewChild, Input, SimpleChanges, OnChanges } from '@angular/core';
+import { PlayerType } from '@app/classes/player-type';
 import { Constants } from '@app/constants/global.constants';
 import { GridService } from '@app/services/grid.service';
-
-// TODO : Déplacer ça dans un fichier séparé accessible par tous
-export enum MouseButton {
-    Left = 0,
-    Middle = 1,
-    Right = 2,
-    Back = 3,
-    Forward = 4,
-}
+import { MouseHandlingService } from '@app/services/mouse-handling.service';
 
 @Component({
     selector: 'app-play-area',
     templateUrl: './play-area.component.html',
     styleUrls: ['./play-area.component.scss'],
 })
-export class PlayAreaComponent implements AfterViewInit {
+export class PlayAreaComponent implements AfterViewInit, OnChanges {
+    @Input() playerType: PlayerType;
+
     @ViewChild('gridCanvas', { static: false }) private gridCanvas!: ElementRef<HTMLCanvasElement>;
+    @ViewChild('squareCanvas', { static: false }) private squareCanvas!: ElementRef<HTMLCanvasElement>;
 
-    mousePosition: Vec2 = { x: 0, y: 0 };
-    gridPosition: Vec2 = { x: -1, y: -1 };
-    buttonPressed = '';
-    private canvasSize = Constants.grid.canvasSize;
-    private gridSize = Constants.grid.gridSize;
+    private gridContext: CanvasRenderingContext2D;
+    private squareContext: CanvasRenderingContext2D;
 
-    constructor(private readonly gridService: GridService) {}
-
-    @HostListener('keydown', ['$event'])
-    buttonDetect(event: KeyboardEvent) {
-        this.buttonPressed = event.key;
-
-        if (this.gridPosition.x >= 1 && this.gridPosition.y >= 1) {
-            this.gridService.drawSymbol(event.key, { x: this.gridPosition.x, y: this.gridPosition.y });
-        }
-    }
+    constructor(private readonly gridService: GridService, readonly mouseHandlingService: MouseHandlingService) {}
 
     ngAfterViewInit(): void {
-        this.gridService.gridContext = this.gridCanvas.nativeElement.getContext('2d') as CanvasRenderingContext2D;
+        this.gridContext = this.gridCanvas.nativeElement.getContext('2d') as CanvasRenderingContext2D;
+        this.squareContext = this.squareCanvas.nativeElement.getContext('2d') as CanvasRenderingContext2D;
 
-        const canvas = this.gridCanvas.nativeElement;
-        const scaleFactor = window.devicePixelRatio;
+        this.scale();
 
-        canvas.style.width = canvas.style.width || canvas.width + 'px';
-        canvas.style.height = canvas.style.height || canvas.height + 'px';
+        this.gridService.drawGrid(this.gridContext);
+        this.gridService.drawSquares(this.squareContext);
+        this.squareCanvas.nativeElement.focus();
+    }
 
-        canvas.width = Math.ceil(canvas.width * scaleFactor);
-        canvas.height = Math.ceil(canvas.height * scaleFactor);
-        const context = canvas.getContext('2d');
-        context?.scale(scaleFactor, scaleFactor);
-
-        this.gridService.drawGrid();
-        this.gridCanvas.nativeElement.focus();
+    ngOnChanges(changes: SimpleChanges): void {
+        if (!changes.playerType.isFirstChange && changes.playerType.currentValue !== changes.playerType.previousValue) {
+            this.gridService.drawSquares(this.squareContext);
+        }
     }
 
     get width(): number {
-        return this.canvasSize.x;
+        return Constants.grid.CANVAS_SIZE.x;
     }
 
     get height(): number {
-        return this.canvasSize.y;
+        return Constants.grid.CANVAS_SIZE.y;
     }
 
-    // TODO : déplacer ceci dans un service de gestion de la souris!
-    mouseHitDetect(event: MouseEvent) {
-        if (event.button === MouseButton.Left) {
-            const position: Vec2 = { x: event.offsetX, y: event.offsetY };
+    scale(): void {
+        const gridCanvas = this.gridCanvas.nativeElement;
+        const squareCanvas = this.squareCanvas.nativeElement;
+        const scaleFactor = window.devicePixelRatio;
 
-            this.mousePosition = position;
-            this.refreshGridPosition(position);
-        }
-    }
-
-    private refreshGridPosition(position: Vec2) {
-        this.gridPosition = { x: this.computeGridPosition(position.x), y: this.computeGridPosition(position.y) };
-    }
-
-    private computeGridPosition(position: number): number {
-        return Math.floor((position / this.width) * (this.gridSize + 1));
+        squareCanvas.width = gridCanvas.width = Math.ceil(gridCanvas.width * scaleFactor);
+        squareCanvas.height = gridCanvas.height = Math.ceil(gridCanvas.height * scaleFactor);
+        this.gridContext.scale(scaleFactor, scaleFactor);
+        this.squareContext.scale(scaleFactor, scaleFactor);
     }
 }
