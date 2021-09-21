@@ -11,6 +11,7 @@ import { AppComponent } from '@app/pages/app/app.component';
 import { GamePageComponent } from '@app/pages/game-page/game-page.component';
 import { MainPageComponent } from '@app/pages/main-page/main-page.component';
 import { MaterialPageComponent } from '@app/pages/material-page/material-page.component';
+import { InitSoloModeComponent } from './components/init-solo-mode/init-solo-mode.component';
 import { GameModePageComponent } from './pages/game-mode-page/game-mode-page.component';
 
 /**
@@ -27,6 +28,7 @@ import { GameModePageComponent } from './pages/game-mode-page/game-mode-page.com
         MaterialPageComponent,
         PlayAreaComponent,
         SidebarComponent,
+        InitSoloModeComponent,
         GameModePageComponent,
     ],
     imports: [AppMaterialModule, AppRoutingModule, BrowserAnimationsModule, BrowserModule, FormsModule, HttpClientModule],
