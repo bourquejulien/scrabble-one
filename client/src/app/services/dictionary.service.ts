@@ -20,7 +20,7 @@ export class DictionaryService implements DictionaryLookup {
         return this.dictionary.contains(word);
     }
 
-    lookUpStart(word: string): boolean {
+    lookUpStart(word: string): { isWord: boolean; isOther: boolean } {
         return this.dictionary.startsWith(word);
     }
 
