@@ -1,5 +1,4 @@
 import { NgModule } from '@angular/core';
-
 // import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatButtonModule } from '@angular/material/button';
 // import { MatButtonToggleModule } from '@angular/material/button-toggle';
@@ -19,6 +18,8 @@ import { MatInputModule } from '@angular/material/input';
 // import { MatProgressBarModule } from '@angular/material/progress-bar';
 // import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatRadioModule } from '@angular/material/radio';
+import { MatSelectModule } from '@angular/material/select';
+// import { MatSidenavModule } from '@angular/material/sidenav';
 // import { MatSelectModule } from '@angular/material/select';
 import { MatSidenavModule } from '@angular/material/sidenav';
 // import { MatSlideToggleModule } from '@angular/material/slide-toggle';
@@ -52,6 +53,8 @@ const modules = [
     // MatProgressBarModule,
     // MatProgressSpinnerModule,
     MatRadioModule,
+    MatSelectModule,
+    // MatSidenavModule,
     // MatSelectModule,
     MatSidenavModule,
     // MatSliderModule,
