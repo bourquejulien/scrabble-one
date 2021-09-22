@@ -41,13 +41,13 @@ export class CommandsService {
                 // Options: [X, Y, DIRECTION]
                 const word = args[2];
                 const options = args[1].match(this.placeWordCommandRegex); // Retrieve the parameters: column, row and direction
-                if (options && options[1] && this.messageRegex.test(word)) {
+                if (options && options[1] && this.wordRegex.test(word)) {
                     // N.B.: the letter 'a' has value 97, hence the magic number
                     // eslint-disable-next-line @typescript-eslint/no-magic-numbers
-                    const xCoordinate: number = (options[0].charCodeAt(0) - 97) as number;
+                    const xCoordinate: number = (options[1].charCodeAt(0) - 96) as number;
                     // TODO: review
-                    const yCoordinate: number = options[1] as unknown as number;
-                    const direction: Direction = options[2] === 'v' ? Direction.Down : Direction.Right;
+                    const yCoordinate = Number(options[2].toString());
+                    const direction: Direction = options[3] === 'v' ? Direction.Down : Direction.Right;
                     const vecCoordinate: Vec2 = { x: xCoordinate, y: yCoordinate };
                     this.playerService.placeLetters(word, vecCoordinate, direction);
                 } else {
