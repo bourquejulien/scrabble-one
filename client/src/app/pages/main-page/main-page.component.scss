@@ -15,10 +15,35 @@
     text-align: center;
 }
 
+.button-group .button1 {
+    padding: 15px 25px;
+    font-size: 24px;
+    cursor: pointer;
+    text-align: center;
+    text-decoration: none;
+    outline: none;
+    color: black;
+    background-color: #eae7dc;
+    border: none;
+    border-radius: 1px;
+    box-shadow: 0 5px rgb(212, 212, 212);
+    margin: 25px;
+}
+
+.button-group .button1:hover {
+    background-color: #a8a8a8;
+    box-shadow: 0 5px #666;
+}
+
+.button-group .button1:active {
+    background-color: #a8a8a8;
+    box-shadow: 0 5px #666;
+    transform: translateY(4px);
+}
 .team-name {
     margin-top: 0.25em;
     margin-bottom: 0.25em;
-    color: green;
+    color: black;
 }
 
 .header-item {
@@ -26,19 +51,155 @@
     text-align: center;
 }
 
-.footer-item {
-    text-align: center;
-}
-
-.footer-item p :nth-child(even) {
-    color: orange;
-}
-.footer-item p :nth-child(odd) {
-    color: blue;
-}
-
 .server-message {
     justify-content: center;
     width: 20%;
     min-width: min-content;
 }
+
+h1 {
+    color: #eae7dc;
+    text-align: center;
+}
+
+h2 {
+    color: #eae7dc;
+    font-size: 100px;
+    font-style: oblique;
+}
+h3 {
+    font-size: 20px;
+}
+
+body {
+    background-image: url('image/scrabble_bg.jpg');
+    background-size: cover;
+}
+
+.button-group .button1 {
+    padding: 15px 25px;
+    font-size: 24px;
+    cursor: pointer;
+    text-align: center;
+    text-decoration: none;
+    outline: none;
+    color: black;
+    background-color: #eae7dc;
+    border: none;
+    border-radius: 10px;
+    box-shadow: 0 5px rgb(212, 212, 212);
+    margin: 25px;
+}
+
+.button1 {
+    padding: 15px 25px;
+    font-size: 24px;
+    cursor: pointer;
+    text-align: center;
+    text-decoration: none;
+    outline: none;
+    color: black;
+    background-color: #eae7dc;
+    border: none;
+    border-radius: 10px;
+    box-shadow: 0 5px rgb(212, 212, 212);
+    margin: 25px;
+}
+
+.button1:hover {
+    background-color: #a8a8a8;
+    box-shadow: 0 5px #666;
+}
+
+.button1:active {
+    background-color: #a8a8a8;
+    box-shadow: 0 5px #666;
+    transform: translateY(4px);
+}
+
+p {
+    text-align: center;
+    color: #eae7dc;
+    font-size: 20px;
+}
+.dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+.dropdown-content1 {
+    display: none;
+    position: absolute;
+    right: 200px;
+    background-color: #8e8d8a;
+    min-width: 400px;
+    box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+    padding: 12px 16px;
+    z-index: 1;
+    border-radius: 10px;
+}
+
+.dropdown:hover .dropdown-content1 {
+    display: block;
+}
+
+.dropdown-content2 {
+    display: none;
+    position: absolute;
+    left: 200px;
+    background-color: #8e8d8a;
+
+    min-width: 400px;
+    box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+    padding: 12px 16px;
+    z-index: 1;
+    border-radius: 10px;
+}
+
+.dropdown:hover .dropdown-content2 {
+    display: block;
+    border-color: #eae7dc;
+    border-width: 3px;
+}
+
+.dropbtn{
+    padding-bottom: 10px;
+    position:relative;
+    left: 700px;
+}
+
+.dropup {
+    position: relative;
+    display: inline-block;
+    padding-bottom: 10px;    
+}
+.dropup-content {
+    display: none;
+    position: absolute;
+    left: 500px;
+    bottom: 50px;
+    background-color: #eae7dc;
+    min-width: 250px;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    z-index: 1;
+    border-radius: 10px;
+  }
+
+  .dropup-content h4 {
+    color: black;
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block;
+  }
+  
+  .dropup-content a:hover {
+      background-color: #ddd
+    }
+  
+  .dropup:hover .dropup-content {
+    display: block;
+  }
+  
+  .dropup:hover .dropbtn {
+    background-color: #8e8d8a;
+  }

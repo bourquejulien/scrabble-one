@@ -15,17 +15,13 @@ export class MessagingService {
             this.subject.next(message);
         } else {
             // If debugging is turned off, then we only show user messages
-            if (this.isSystemMessage(message)) {
-                this.subject.next(message);
-            }
+            // if (message.messageType === 'Log') {
+            this.subject.next(message);
+            // }
         }
     }
 
     onMessage(): Observable<Message> {
         return this.subject.asObservable();
-    }
-
-    isSystemMessage(message: Message) {
-        return message.messageType.endsWith('Error') || message.messageType === 'Log';
     }
 }

@@ -19,19 +19,21 @@
         "emitDecoratorMetadata": true,
         "moduleResolution": "node",
         "resolveJsonModule": true,
+        "esModuleInterop": true,
         "allowSyntheticDefaultImports": true,
         "importHelpers": true,
         "target": "es2017",
         "module": "es2020",
         "lib": ["es2018", "dom"],
         "paths": {
-            "@app/*": ["./src/app/*"]
+            "@app/*": ["./src/app/*"],
+            "@assets/*": ["./src/assets/*"]
         }
     },
     "angularCompilerOptions": {
         "enableI18nLegacyMessageIdFormat": false,
         "strictInjectionParameters": true,
         "strictInputAccessModifiers": true,
-        "strictTemplates": true
+        "strictTemplates": true,
     }
 }

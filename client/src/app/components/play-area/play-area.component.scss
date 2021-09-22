@@ -1,3 +1,28 @@
-#canvas {
-    border: 1px solid black;
+#board {
+    position: relative;
+}
+
+#grid-container {
+    position: relative;
+}
+
+#gridCanvas {
+    z-index: 0;
+}
+
+#squareCanvas {
+    z-index: 1;
+}
+
+.rack {
+    margin-top: 3rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+canvas {
+    position: absolute;
+    left: 0;
+    top: 0;
 }

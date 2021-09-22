@@ -1,22 +1,23 @@
-<mat-grid-list cols="1" >
-    <!-- Message list -->
-    <cdk-virtual-scroll-viewport itemSize="5" class="message-viewport">
-        <div id="messages" *ngFor="let message of messages">
-            <mat-card style="margin:8px" [style.backgroung-color]="message.messageType">
+<div class="comm-box-container">
+    <mat-grid-list cols="1">
+        <!-- Message list -->
+        <div #messageContainer *ngFor="let message of messages">
+            <mat-card class="message-card" [style.background-color]="getMessageColor(message)">
+                <mat-icon class="card-icon">dangerous</mat-icon>
                 <span><b *ngIf="message.title !== ''">{{ message.title }}<br></b></span>
                 {{ message.body }}
             </mat-card>
         </div>
-    </cdk-virtual-scroll-viewport>
-</mat-grid-list>
-<!-- Command input -->
-<mat-form-field class="command-field" appearance="fill">
-    <mat-label>Saisissez une commande</mat-label>
-    <input autofocus matInput type="text" (keydown.enter)="send(inputValue)" [(ngModel)]="inputValue" />
-    <!-- Erase text button -->
-    <button *ngIf="inputValue" matSuffix mat-icon-button aria-label="Clear" (click)="inputValue = ''">
-        <mat-icon>close</mat-icon>
-    </button>
-    <!-- Submit button -->
-    <button mat-button type="submit" (keydown.enter)="send(inputValue)" (click)="send(inputValue)">Envoyer</button>
-</mat-form-field>
+    </mat-grid-list>
+    <!-- Command input -->
+    <mat-form-field class="command-input" appearance="fill">
+        <mat-label>Saisissez une commande</mat-label>
+        <input autofocus matInput type="text" (keydown.enter)="send(inputValue)" [(ngModel)]="inputValue" />
+        <!-- Erase text button -->
+        <button *ngIf="inputValue" matSuffix mat-icon-button aria-label="Clear" (click)="inputValue = ''">
+            <mat-icon>close</mat-icon>
+        </button>
+        <!-- Submit button -->
+        <button mat-button type="submit" (keydown.enter)="send(inputValue)" (click)="send(inputValue)">Envoyer</button>
+    </mat-form-field>
+</div>

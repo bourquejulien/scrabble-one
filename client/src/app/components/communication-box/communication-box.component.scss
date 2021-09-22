@@ -1,24 +1,23 @@
-.command-field {
-    width: 95%;
-    margin: 16px;
+
+.comm-box-container {
+    display: block;
+    height: 100%;
+    width: 100%;
+    overflow: scroll;
 }
 
-
-.syntax-error .input-error .action-error .log-message {
-    background-color: #ff7b7b !important;
+.message-card {
+    display: flex;
+    align-items: center;
 }
 
-// TODO: perhaps put colors into variables so we can use them in other components as well
-.my-player {
-    background-color: blanchedalmond;
+.card-icon {
+    margin: 4px;
 }
 
-.other-player {
-    background-color: aliceblue;
-}
-
-.message-viewport {
-    height: 300px;
+.command-input {
+    position: absolute;
+    bottom: 0%;
     width: 100%;
 }
 

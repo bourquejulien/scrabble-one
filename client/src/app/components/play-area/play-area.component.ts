@@ -1,58 +1,58 @@
-import { AfterViewInit, Component, ElementRef, HostListener, ViewChild } from '@angular/core';
-import { Vec2 } from '@app/classes/vec2';
+import { AfterViewInit, Component, ElementRef, Input, OnChanges, SimpleChanges, ViewChild } from '@angular/core';
+import { PlayerType } from '@app/classes/player-type';
+import { Constants } from '@app/constants/global.constants';
 import { GridService } from '@app/services/grid/grid.service';
-
-// TODO : Avoir un fichier séparé pour les constantes!
-export const DEFAULT_WIDTH = 500;
-export const DEFAULT_HEIGHT = 500;
-
-// TODO : Déplacer ça dans un fichier séparé accessible par tous
-export enum MouseButton {
-    Left = 0,
-    Middle = 1,
-    Right = 2,
-    Back = 3,
-    Forward = 4,
-}
+import { MouseHandlingService } from '@app/services/mouse-handling/mouse-handling.service';
 
 @Component({
     selector: 'app-play-area',
     templateUrl: './play-area.component.html',
     styleUrls: ['./play-area.component.scss'],
 })
-export class PlayAreaComponent implements AfterViewInit {
+export class PlayAreaComponent implements AfterViewInit, OnChanges {
+    @Input() playerType: PlayerType;
+
     @ViewChild('gridCanvas', { static: false }) private gridCanvas!: ElementRef<HTMLCanvasElement>;
+    @ViewChild('squareCanvas', { static: false }) private squareCanvas!: ElementRef<HTMLCanvasElement>;
 
-    mousePosition: Vec2 = { x: 0, y: 0 };
-    buttonPressed = '';
-    private canvasSize = { x: DEFAULT_WIDTH, y: DEFAULT_HEIGHT };
+    private gridContext: CanvasRenderingContext2D;
+    private squareContext: CanvasRenderingContext2D;
 
-    constructor(private readonly gridService: GridService) {}
-
-    @HostListener('keydown', ['$event'])
-    buttonDetect(event: KeyboardEvent) {
-        this.buttonPressed = event.key;
-    }
+    constructor(private readonly gridService: GridService, readonly mouseHandlingService: MouseHandlingService) {}
 
     ngAfterViewInit(): void {
-        this.gridService.gridContext = this.gridCanvas.nativeElement.getContext('2d') as CanvasRenderingContext2D;
-        this.gridService.drawGrid();
-        this.gridService.drawWord('Scrabble');
-        this.gridCanvas.nativeElement.focus();
+        this.gridContext = this.gridCanvas.nativeElement.getContext('2d') as CanvasRenderingContext2D;
+        this.squareContext = this.squareCanvas.nativeElement.getContext('2d') as CanvasRenderingContext2D;
+
+        this.scale();
+
+        this.gridService.drawGrid(this.gridContext);
+        this.gridService.drawSquares(this.squareContext);
+        this.squareCanvas.nativeElement.focus();
+    }
+
+    ngOnChanges(changes: SimpleChanges): void {
+        if (!changes.playerType.isFirstChange && changes.playerType.currentValue !== changes.playerType.previousValue) {
+            this.gridService.drawSquares(this.squareContext);
+        }
     }
 
     get width(): number {
-        return this.canvasSize.x;
+        return Constants.grid.CANVAS_SIZE.x;
     }
 
     get height(): number {
-        return this.canvasSize.y;
+        return Constants.grid.CANVAS_SIZE.y;
     }
 
-    // TODO : déplacer ceci dans un service de gestion de la souris!
-    mouseHitDetect(event: MouseEvent) {
-        if (event.button === MouseButton.Left) {
-            this.mousePosition = { x: event.offsetX, y: event.offsetY };
-        }
+    scale(): void {
+        const gridCanvas = this.gridCanvas.nativeElement;
+        const squareCanvas = this.squareCanvas.nativeElement;
+        const scaleFactor = window.devicePixelRatio;
+
+        squareCanvas.width = gridCanvas.width = Math.ceil(gridCanvas.width * scaleFactor);
+        squareCanvas.height = gridCanvas.height = Math.ceil(gridCanvas.height * scaleFactor);
+        this.gridContext.scale(scaleFactor, scaleFactor);
+        this.squareContext.scale(scaleFactor, scaleFactor);
     }
 }

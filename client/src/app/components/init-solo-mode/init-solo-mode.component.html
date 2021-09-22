@@ -1,0 +1,40 @@
+<div id="container">
+    <p class="containerInput" id="title">Paramètres de la partie</p>
+    <p class="inputPresentationText">Mode de Jeu</p>
+    <select name="gameTypes" id="selecter" [(ngModel)]="this.game.gameType">
+        <option *ngFor="let gameType of gameTypesList" [value]="gameType">{{ gameType }}</option>
+    </select>
+    <p class="inputPresentationText">Temps Maximum Par Tour</p>
+    <div class="playersFlex">
+        <select name="minutesPerTurn" class="selecterTime flex-items-players" [(ngModel)]="this.game.minutes">
+            <option *ngFor="let minutes of minutesList" [value]="minutes">{{ minutes }}</option>
+        </select>
+        <p class="flex-items-players">min</p>
+        <select name="secondsPerTurn" class="selecterTime flex-items-players" [(ngModel)]="this.game.seconds">
+            <option *ngFor="let seconds of secondsList" [value]="seconds">{{ seconds }}</option>
+        </select>
+        <p class="flex-items-players">sec</p>
+    </div>
+    <p class="containerInput" class="inputPresentationText">Nom Des Joueurs</p>
+    <div class="playersFlex">
+        <input class="inputBox flex-items-players" placeholder="Joueur 1" name="name" [(ngModel)]="this.game.firstPlayerName" />
+        <p class="flex-items-players">VS</p>
+        <input class="inputBox flex-items-players" placeholder="Joueur 2" value="{{ this.game.secondPlayerName }}" />
+    </div>
+    <div *ngIf="this.game.nameForm !== undefined && this.game.nameForm.get('control')?.hasError('containsOnlyLetters')" class="alert">
+        *Le nom doit seulement être composé de lettres.
+    </div>
+    <div *ngIf="this.game.nameForm !== undefined && this.game.nameForm.get('control')?.hasError('required')" class="alert">
+        *Un nom doit être entré.
+    </div>
+    <div *ngIf="this.game.nameForm !== undefined && this.game.nameForm.get('control')?.hasError('minLength')" class="alert">
+        *Le nom doit contenir au moins 3 caractères.
+    </div>
+    <div *ngIf="this.game.nameForm !== undefined && this.game.nameForm.get('control')?.hasError('maxLength')" class="alert">
+        *Le nom doit au maximum contenir 16 lettres.
+    </div>
+    <div *ngIf="this.game.nameForm !== undefined && this.game.nameForm.get('control')?.hasError('startsWithLowerLetter')" class="alert">
+        *Le nom doit débuter par une majuscule.
+    </div>
+    <button (click)="this.game.confirmInitialization(this.game.firstPlayerName)" id="confirm">Confirmer</button>
+</div>
