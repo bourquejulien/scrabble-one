@@ -1,15 +1,15 @@
 
-.local > .mat-toolbar.mat-primary {
+.local.mat-toolbar{
     background:  #45cb85 ;
     color: #fff;
 }
 
-.remote > .mat-toolbar.mat-primary {
+.remote.mat-toolbar {
     background: #57E2E5 ;
     color: #fff;
 }
 
-.virtual > .mat-toolbar.mat-primary {
+.virtual.mat-toolbar.mat-primary {
     background: #b03a2e;
     color: #fff;
 }
