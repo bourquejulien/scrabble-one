@@ -1,5 +1,6 @@
-import { AfterViewInit, Component, ElementRef, ViewChild, Input, SimpleChanges, OnChanges } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, Input, OnChanges, SimpleChanges, ViewChild } from '@angular/core';
 import { PlayerType } from '@app/classes/player-type';
+import { Timer } from '@app/classes/timer';
 import { Constants } from '@app/constants/global.constants';
 import { GridService } from '@app/services/grid.service';
 import { MouseHandlingService } from '@app/services/mouse-handling.service';
@@ -14,6 +15,8 @@ export class PlayAreaComponent implements AfterViewInit, OnChanges {
 
     @ViewChild('gridCanvas', { static: false }) private gridCanvas!: ElementRef<HTMLCanvasElement>;
     @ViewChild('squareCanvas', { static: false }) private squareCanvas!: ElementRef<HTMLCanvasElement>;
+    
+    timer1= new Timer();
 
     private gridContext: CanvasRenderingContext2D;
     private squareContext: CanvasRenderingContext2D;
@@ -54,5 +57,9 @@ export class PlayAreaComponent implements AfterViewInit, OnChanges {
         squareCanvas.height = gridCanvas.height = Math.ceil(gridCanvas.height * scaleFactor);
         this.gridContext.scale(scaleFactor, scaleFactor);
         this.squareContext.scale(scaleFactor, scaleFactor);
+    }
+
+    showTimer(): void {
+        this.timer1.countDown(180).subscribe(next => {console.log(this.timer1.displayedTimer)});
     }
 }

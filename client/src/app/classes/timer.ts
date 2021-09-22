@@ -31,18 +31,22 @@ export class Timer implements Timer {
         return 'Timer Error';
     }
 
-    countDown(time: number): Observable<any> {
+    countDown(timeLimit: number): Observable<any> {
         const oneSecond = 1000;
-        let displayedSeconds = time;//this.secondsLimit;
-        let displayedMinutes = this.minutesLimit / 60;
+        let displayedSeconds = 0;//this.secondsLimit;
+        let displayedMinutes = 3;//this.minutesLimit;
 
         return new Observable<any>(
             timerInstance => {
                 timer(0, oneSecond)
-                    .pipe(takeWhile(limitInSeconds => limitInSeconds >= 0))
-
+                    .pipe(takeWhile(limitInSeconds => limitInSeconds <= timeLimit))
                     .subscribe((currentSecond: number) => {
+                        displayedSeconds--;
 
+                        if (displayedSeconds < 0 && displayedMinutes > 0) {
+                            displayedSeconds = 59;
+                            displayedMinutes--;
+                        }
 
                         timerInstance.next({
                             display: this.stringifyTimer(displayedSeconds, displayedMinutes)
