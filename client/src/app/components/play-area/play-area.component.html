@@ -16,6 +16,10 @@
         click me to start timer
     </button>
 
+    <button (click)="stopTimer()">
+        click me to stop timer
+    </button>
+
     <div id="mouse-position-display">
         <p [attr.height]="height">Cliquez sur la grille pour avoir la position de la souris sur la grille</p>
         <p *ngIf="mouseHandlingService.position.x !== -1">X : {{ mouseHandlingService.position.x }}</p>

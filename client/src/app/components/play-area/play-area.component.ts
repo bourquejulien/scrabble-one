@@ -4,6 +4,7 @@ import { Timer } from '@app/classes/timer';
 import { Constants } from '@app/constants/global.constants';
 import { GridService } from '@app/services/grid.service';
 import { MouseHandlingService } from '@app/services/mouse-handling.service';
+import { Observable, Subscription } from 'rxjs';
 
 @Component({
     selector: 'app-play-area',
@@ -15,8 +16,9 @@ export class PlayAreaComponent implements AfterViewInit, OnChanges {
 
     @ViewChild('gridCanvas', { static: false }) private gridCanvas!: ElementRef<HTMLCanvasElement>;
     @ViewChild('squareCanvas', { static: false }) private squareCanvas!: ElementRef<HTMLCanvasElement>;
-    
-    timer1= new Timer();
+
+    timer1 = new Timer();
+    timerObservable: Observable<any>;
 
     private gridContext: CanvasRenderingContext2D;
     private squareContext: CanvasRenderingContext2D;
@@ -60,6 +62,10 @@ export class PlayAreaComponent implements AfterViewInit, OnChanges {
     }
 
     showTimer(): void {
-        this.timer1.countDown(180).subscribe(next => {console.log(this.timer1.displayedTimer)});
+        this.timerObservable = this.timer1.countDown(60).subscribe(next => { console.log(this.timer1.displayedTimer) });
+    }
+
+    stopTimer(time: Subscription): void {
+        this.timer1.resetTimer(this.timerObservable, 0, 3);
     }
 }

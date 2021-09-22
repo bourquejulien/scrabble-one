@@ -5,15 +5,21 @@ export interface Timer {
     minutesLimit: number;
     secondsLimit: number;
     displayedTimer: string;
+    timerInstance: Observable<any>;
 }
 
 export class Timer implements Timer {
+
+    constructor() {
+        this.timerInstance = new Observable<any>();
+    }
+
     initTimerLimits(minutes: number, seconds: number): void {
         this.minutesLimit = minutes;
         this.secondsLimit = seconds;
     }
 
-    stringifyTimer(displayedSeconds: number, displayedMinutes: number): string | undefined {
+    stringifyTimer(displayedSeconds: number, displayedMinutes: number): string {
         if (displayedSeconds < 10) {
             this.displayedTimer = `${displayedMinutes}:0${displayedSeconds} `;
             return `${displayedMinutes}:0${displayedSeconds} `;
@@ -34,7 +40,7 @@ export class Timer implements Timer {
     countDown(timeLimit: number): Observable<any> {
         const oneSecond = 1000;
         let displayedSeconds = 0;//this.secondsLimit;
-        let displayedMinutes = 3;//this.minutesLimit;
+        let displayedMinutes = 1;//this.minutesLimit;
 
         return new Observable<any>(
             timerInstance => {
@@ -53,11 +59,30 @@ export class Timer implements Timer {
 
                         });
 
-                        if (displayedSeconds <= 0 && displayedMinutes <= 0)
-                            timerInstance.complete();
+                        this.resetTimer(timerInstance, displayedSeconds, displayedMinutes);
+
+                        /*if (displayedSeconds <= 0 && displayedMinutes <= 0) {
+                            displayedSeconds = 0;
+                            displayedMinutes = 1;
+
+                            timerInstance.next({
+                                display: this.stringifyTimer(displayedSeconds, displayedMinutes)
+                            });
+                        }*/
                     })
             }
         )
+    }
+
+    resetTimer(timerInstance: () => Observable<any>, displayedSeconds: number, displayedMinutes: number): void {
+        if (displayedSeconds <= 0 && displayedMinutes <= 0) {
+            displayedSeconds = 0;
+            displayedMinutes = 1;
+
+            timerInstance.subscribe(next => ({
+                display: this.stringifyTimer(displayedSeconds, displayedMinutes)
+            }));
+        }
     }
 }
 
