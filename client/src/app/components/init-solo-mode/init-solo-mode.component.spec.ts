@@ -1,4 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { NgModel } from '@angular/forms';
+import { MatIcon } from '@angular/material/icon';
+import { Router } from '@angular/router';
 import { InitSoloModeComponent } from './init-solo-mode.component';
 
 describe('InitSoloModeComponent', () => {
@@ -6,9 +9,14 @@ describe('InitSoloModeComponent', () => {
     let fixture: ComponentFixture<InitSoloModeComponent>;
     // const NAMES = ['Jean', 'RenÉéÎîÉéÇçÏï', 'moulon', 'Jo', 'Josiannnnnnnnnne', 'Jean123'];
 
+    const routerMock = {
+        navigate: jasmine.createSpy('navigate'),
+    };
+
     beforeEach(async () => {
         await TestBed.configureTestingModule({
-            declarations: [InitSoloModeComponent],
+            declarations: [InitSoloModeComponent, MatIcon, NgModel],
+            providers: [{ provide: Router, useValue: routerMock }],
         }).compileComponents();
     });
 

@@ -7,6 +7,7 @@ import { Component } from '@angular/core';
     styleUrls: ['./game-mode-page.component.scss'],
 })
 export class GameModePageComponent {
+    formEnabled: boolean = false;
     // constructor(public dialog: MatDialog) {}
     // name:string;
     // gameType:string;

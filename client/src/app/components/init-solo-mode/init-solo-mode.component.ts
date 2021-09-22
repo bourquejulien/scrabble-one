@@ -79,10 +79,12 @@ export class InitSoloModeComponent implements OnInit {
     private nameValidatorFunction(control: FormControl): { [key: string]: boolean } | null {
         // We make sure that player name is considered as a string
         const playerName = control.value as string;
+
         if (playerName !== undefined && playerName !== null) {
             for (let index = 0; index < playerName.length; index++) {
                 if (!/[a-zA-Z||ÉéÎîÉéÇçÏï]/.test(playerName.charAt(index))) return { ['containsOnlyLetters']: true };
             }
+
             const firstLetter = playerName[0];
             if (firstLetter !== firstLetter.toUpperCase()) {
                 return { ['startsWithLowerLetter']: true };

@@ -35,18 +35,22 @@
         </mat-form-field>
     </form>
 
-    <div *ngIf="this.nameForm !== undefined && this.nameForm.get('control')?.hasError('containsOnlyLetters')" class="alert">
+    <div *ngIf="this.nameForm !== undefined && this.nameForm.get('control')?.hasError('containsOnlyLetters')"
+        class="alert">
         *Le nom doit seulement être composé de lettres.
     </div>
-    <div *ngIf="this.nameForm !== undefined && this.nameForm.get('control')?.hasError('required')" class="alert">*Un nom doit être entré.</div>
+    <div *ngIf="this.nameForm !== undefined && this.nameForm.get('control')?.hasError('required')" class="alert">*Un nom
+        doit être entré.</div>
     <div *ngIf="this.nameForm !== undefined && this.nameForm.get('control')?.hasError('minLength')" class="alert">
         *Le nom doit contenir au moins 3 caractères.
     </div>
     <div *ngIf="this.nameForm !== undefined && this.nameForm.get('control')?.hasError('maxLength')" class="alert">
         *Le nom doit au maximum contenir 16 lettres.
     </div>
-    <div *ngIf="this.nameForm !== undefined && this.nameForm.get('control')?.hasError('startsWithLowerLetter')" class="alert">
+    <div *ngIf="this.nameForm !== undefined && this.nameForm.get('control')?.hasError('startsWithLowerLetter')"
+        class="alert">
         *Le nom doit débuter par une majuscule.
     </div>
-    <button (click)="this.initialize(this.gameConfig.firstPlayerName)" mat-raised-button color="primary" id="confirm">Confirmer</button>
+    <button (click)="this.initialize(this.gameConfig.firstPlayerName)" mat-raised-button color="primary"
+        id="confirm">Confirmer</button>
 </div>
