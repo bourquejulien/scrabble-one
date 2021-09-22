@@ -27,28 +27,26 @@
     <form class="playersFlex">
         <mat-form-field style="margin-right: 15px" appearance="fill">
             <mat-label>Joueur 1</mat-label>
-            <input matInput placeholder="Joueur 1" name="name" [(ngModel)]="this.game.firstPlayerName" />
+            <input matInput placeholder="Joueur 1" name="name" [(ngModel)]="this.firstPlayerName" />
         </mat-form-field>
         <mat-form-field appearance="fill">
             <mat-label>Joueur 2</mat-label>
-            <input matInput placeholder="Joueur 2" value="{{ this.game.secondPlayerName }}" />
+            <input matInput placeholder="Joueur 2" value="{{ this.secondPlayerName }}" />
         </mat-form-field>
     </form>
 
-    <div *ngIf="this.game.nameForm !== undefined && this.game.nameForm.get('control')?.hasError('containsOnlyLetters')" class="alert">
+    <div *ngIf="this.nameForm !== undefined && this.nameForm.get('control')?.hasError('containsOnlyLetters')" class="alert">
         *Le nom doit seulement être composé de lettres.
     </div>
-    <div *ngIf="this.game.nameForm !== undefined && this.game.nameForm.get('control')?.hasError('required')" class="alert">
-        *Un nom doit être entré.
-    </div>
-    <div *ngIf="this.game.nameForm !== undefined && this.game.nameForm.get('control')?.hasError('minLength')" class="alert">
+    <div *ngIf="this.nameForm !== undefined && this.nameForm.get('control')?.hasError('required')" class="alert">*Un nom doit être entré.</div>
+    <div *ngIf="this.nameForm !== undefined && this.nameForm.get('control')?.hasError('minLength')" class="alert">
         *Le nom doit contenir au moins 3 caractères.
     </div>
-    <div *ngIf="this.game.nameForm !== undefined && this.game.nameForm.get('control')?.hasError('maxLength')" class="alert">
+    <div *ngIf="this.nameForm !== undefined && this.nameForm.get('control')?.hasError('maxLength')" class="alert">
         *Le nom doit au maximum contenir 16 lettres.
     </div>
-    <div *ngIf="this.game.nameForm !== undefined && this.game.nameForm.get('control')?.hasError('startsWithLowerLetter')" class="alert">
+    <div *ngIf="this.nameForm !== undefined && this.nameForm.get('control')?.hasError('startsWithLowerLetter')" class="alert">
         *Le nom doit débuter par une majuscule.
     </div>
-    <button (click)="this.game.confirmInitialization(this.game.firstPlayerName)" mat-raised-button color="primary" id="confirm">Confirmer</button>
+    <button (click)="this.confirmInitialization(this.firstPlayerName)" mat-raised-button color="primary" id="confirm">Confirmer</button>
 </div>
