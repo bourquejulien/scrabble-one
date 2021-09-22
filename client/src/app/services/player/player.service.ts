@@ -1,11 +1,11 @@
 import { Injectable } from '@angular/core';
 import { Direction } from '@app/classes/board/direction';
 import { Vec2 } from '@app/classes/vec2';
-// import { skip } from 'rxjs/operators';
 import { BoardService } from '@app/services/board/board.service';
-// import { GameService } from '@app/services/';
+import { GameService } from '@app/services/game/game.service';
 import { ReserveService } from '@app/services/reserve/reserve.service';
 import { BehaviorSubject } from 'rxjs/internal/BehaviorSubject';
+import { skip } from 'rxjs/operators';
 
 @Injectable({
     providedIn: 'root',
@@ -14,7 +14,7 @@ export class PlayerService {
     rack: string[] = [];
     rackUpdated: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(true);
 
-    constructor(private reserveService: ReserveService, /* private gameService: GameService, */ private boardService: BoardService) {
+    constructor(private reserveService: ReserveService, private gameService: GameService, private boardService: BoardService) {
         const initNbTiles = 7;
 
         for (let tile = 0; tile < initNbTiles; tile++) {
@@ -75,6 +75,8 @@ export class PlayerService {
         this.updateRack(word);
         this.updateReserve(word);
 
+        this.boardService.placeLetters(lettersToPlace);
+
         this.completeTurn();
 
         return '';
@@ -100,16 +102,15 @@ export class PlayerService {
             this.reserveService.putBackLetter(letter);
         }
         this.updateRack(lettersToExchange);
-
         this.completeTurn();
 
         return '';
     }
 
     completeTurn(): void {
-        // this.gameService.onTurn.pipe(skip(1)).subscribe(x => console.log('player ' + (Number(x) + 1) + ' has completed their turn!'));
-        // let isTurn = this.gameService.onTurn.getValue();
-        // this.gameService.onTurn.next(!isTurn);
+        this.gameService.onTurn.pipe(skip(1)).subscribe();
+        const isTurn = this.gameService.onTurn.getValue();
+        this.gameService.onTurn.next(!isTurn);
     }
 
     // For testing
