@@ -3,7 +3,7 @@
         <h1 class="header-item">Bienvenue au cours {{ title }}</h1>
         <h2>Scrabble</h2>
         <section id="game">
-            <p>choix du mode de jeu</p>
+            <p>Choix du mode de jeu</p>
             <div class="button-group">
                 <div class="dropdown">
                     <button class="button1" routerLink="/secondary">Scrabble Classique</button>
@@ -28,12 +28,22 @@
             </div>
         </section>
         <button class="button1">Meilleur Score</button>
-        <div class="footer-item">
-            <h4 class="team-name">Équipe Poly 301</h4>
-            <p>
-                <span>Julien Bourque</span>, <span>Alexandre Dufort</span>, <span>Eloïse Brosseau</span>, <span>Étienne Hourdebaigt</span>,
-                <span> Ikram Kohil</span>, <span> Morgan De Gregorio Beaudoin</span>
-            </p>
+        <div class="dropup">
+            <button mat-mini-fab color="white" class="dropbtn">
+                <mat-icon>group</mat-icon>
+            </button> 
+            <div class="dropup-content">
+                <h4> 
+                    Équipe Poly 301<br />
+                    <br />
+                    Julien Bourque<br />
+                    Alexandre Dufort<br />
+                    Éloise Brosseau<br /> 
+                    Étienne Hourdebaigt<br />
+                    Ikram Kohil<br />
+                    Morgan De Gregorio Beaudoin<br />
+                </h4>                
+            </div>
         </div>
     </div>
 </body>
