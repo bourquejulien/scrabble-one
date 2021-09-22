@@ -6,7 +6,7 @@ export interface LetterData {
 export const letterDefinitions = new Map<string, LetterData>([
     ['A', { points: 1, maxQuantity: 9 }],
     ['B', { points: 3, maxQuantity: 2 }],
-    ['c', { points: 3, maxQuantity: 2 }],
+    ['C', { points: 3, maxQuantity: 2 }],
     ['D', { points: 2, maxQuantity: 3 }],
     ['E', { points: 1, maxQuantity: 15 }],
     ['F', { points: 4, maxQuantity: 2 }],

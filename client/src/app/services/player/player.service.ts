@@ -1,25 +1,25 @@
 import { Injectable } from '@angular/core';
-// import { Direction } from '@app/classes/board/direction';
-// import { Vec2 } from '@app/classes/vec2';
+import { Direction } from '@app/classes/board/direction';
+import { Vec2 } from '@app/classes/vec2';
 // import { skip } from 'rxjs/operators';
-import { BoardService } from './board.service';
-// import { GameService } from './game.service';
-import { ReserveService } from './reserve.service';
+import { BoardService } from '@app/services/board/board.service';
+// import { GameService } from '@app/services/';
+import { ReserveService } from '@app/services/reserve/reserve.service';
+import { BehaviorSubject } from 'rxjs/internal/BehaviorSubject';
 
 @Injectable({
     providedIn: 'root',
 })
 export class PlayerService {
     rack: string[] = [];
+    rackUpdated: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(true);
 
-    constructor(private reserveService: ReserveService /* private gameService: GameService, private boardService: BoardService*/) {}
+    constructor(private reserveService: ReserveService, /* private gameService: GameService, */ private boardService: BoardService) {
+        const initNbTiles = 7;
 
-    boardValidation(): string {
-        let board: BoardService | undefined;
-        if (board === undefined) {
-            return 'There was a problem with board service. Try again.';
+        for (let tile = 0; tile < initNbTiles; tile++) {
+            this.rack.push(this.reserveService.drawLetter());
         }
-        return '';
     }
 
     checkIfLettersInRack(lettersToPlace: string): string {
@@ -57,28 +57,23 @@ export class PlayerService {
     updateRack(lettersToPlace: string): void {
         for (const letter of lettersToPlace) {
             const letterIndex = this.rack.indexOf(letter);
+            if (letterIndex === -1) return;
             this.rack.splice(letterIndex, 1);
         }
+        this.rackUpdated.next(!this.rackUpdated.getValue());
     }
 
-    placeLetters(/* word: string, position: Vec2, direction: Direction*/): string {
-        const boardMessage = this.boardValidation();
-        if (boardMessage !== '') return boardMessage;
+    placeLetters(word: string, position: Vec2, direction: Direction): string {
+        const lettersToPlace = this.boardService.retrieveNewLetters(word, position, direction);
+        const rackMessage = this.checkIfLettersInRack(word);
+        if (rackMessage !== '') return rackMessage;
 
-        /*
-const lettersToPlace = board.retrieveNewLetters(word, position, direction);
-const rackMessage = this.checkIfLettersInRack(lettersToPlace);
-if(rackMessage !== '')
-return rackMessage;
- 
-const validationData = this.boardService.validateWord(lettersToPlace);
+        const validationData = this.boardService.validateLetters(lettersToPlace);
 
-if (!validationData.isSuccess)
-return validationData.description;
+        if (!validationData.isSuccess) return validationData.description;
 
-this.updateRack(lettersToPlace);
-this.updateReserve(lettersToPlace);
-*/
+        this.updateRack(word);
+        this.updateReserve(word);
 
         this.completeTurn();
 
@@ -88,8 +83,9 @@ this.updateReserve(lettersToPlace);
     exchangeLetters(lettersToExchange: string): string {
         const minLettersInReserve = 7;
         const lettersToExchangeLength = lettersToExchange.length;
+        const rackMessage = this.checkIfLettersInRack(lettersToExchange);
 
-        // call checkifletterinrack to make sure player exchanges letters that are in their possession.
+        if (rackMessage !== '') return rackMessage;
 
         if (this.reserveService.length < minLettersInReserve) {
             return 'There are not enough letters in the reserve. You may not use this command.';
@@ -99,9 +95,11 @@ this.updateReserve(lettersToPlace);
             this.rack.push(this.reserveService.drawLetter());
         }
 
+        // we forgot to add update rack here
         for (const letter of lettersToExchange) {
             this.reserveService.putBackLetter(letter);
         }
+        this.updateRack(lettersToExchange);
 
         this.completeTurn();
 
@@ -112,5 +110,19 @@ this.updateReserve(lettersToPlace);
         // this.gameService.onTurn.pipe(skip(1)).subscribe(x => console.log('player ' + (Number(x) + 1) + ' has completed their turn!'));
         // let isTurn = this.gameService.onTurn.getValue();
         // this.gameService.onTurn.next(!isTurn);
+    }
+
+    // For testing
+    setRack(mockRack: string[]): void {
+        this.rack = [];
+
+        for (const letter of mockRack) {
+            this.rack.push(letter);
+        }
+    }
+
+    // For testing
+    get length(): number {
+        return this.rack.length;
     }
 }

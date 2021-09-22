@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Vec2 } from '@app/classes/vec2';
-import { GridService } from './grid.service';
+import { GridService } from '@app/services/grid/grid.service';
 
 export enum MouseButton {
     Left = 0,

@@ -1,8 +1,8 @@
-import { AfterViewInit, Component, ElementRef, ViewChild, Input, SimpleChanges, OnChanges } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, Input, OnChanges, SimpleChanges, ViewChild } from '@angular/core';
 import { PlayerType } from '@app/classes/player-type';
 import { Constants } from '@app/constants/global.constants';
-import { GridService } from '@app/services/grid.service';
-import { MouseHandlingService } from '@app/services/mouse-handling.service';
+import { GridService } from '@app/services/grid/grid.service';
+import { MouseHandlingService } from '@app/services/mouse-handling/mouse-handling.service';
 
 @Component({
     selector: 'app-play-area',

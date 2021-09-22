@@ -51,17 +51,6 @@
     text-align: center;
 }
 
-.footer-item {
-    text-align: center;
-}
-
-.footer-item p :nth-child(even) {
-    color: white;
-}
-.footer-item p :nth-child(odd) {
-    color: white;
-}
-
 .server-message {
     justify-content: center;
     width: 20%;
@@ -172,3 +161,45 @@ p {
     border-color: #eae7dc;
     border-width: 3px;
 }
+
+.dropbtn{
+    padding-bottom: 10px;
+    position:relative;
+    left: 700px;
+}
+
+.dropup {
+    position: relative;
+    display: inline-block;
+    padding-bottom: 10px;    
+}
+.dropup-content {
+    display: none;
+    position: absolute;
+    left: 500px;
+    bottom: 50px;
+    background-color: #eae7dc;
+    min-width: 250px;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    z-index: 1;
+    border-radius: 10px;
+  }
+
+  .dropup-content h4 {
+    color: black;
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block;
+  }
+  
+  .dropup-content a:hover {
+      background-color: #ddd
+    }
+  
+  .dropup:hover .dropup-content {
+    display: block;
+  }
+  
+  .dropup:hover .dropbtn {
+    background-color: #8e8d8a;
+  }

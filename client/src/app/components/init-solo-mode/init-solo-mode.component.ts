@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup, ValidatorFn, Validators } from '@angular/forms';
 import { Constants } from '@app/constants/global.constants';
-import { GameService } from '@app/services/game.service';
+import { GameService } from '@app/services/game/game.service';
 
 @Component({
     selector: 'app-init-solo-mode',

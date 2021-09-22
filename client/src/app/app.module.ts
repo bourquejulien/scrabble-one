@@ -1,18 +1,20 @@
+// Modules
 import { HttpClientModule } from '@angular/common/http';
 import { NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { PlayAreaComponent } from '@app/components/play-area/play-area.component';
-import { SidebarComponent } from '@app/components/sidebar/sidebar.component';
 import { AppRoutingModule } from '@app/modules/app-routing.module';
 import { AppMaterialModule } from '@app/modules/material.module';
+// Components
+import { PlayAreaComponent } from '@app/components/play-area/play-area.component';
+// Page components
 import { AppComponent } from '@app/pages/app/app.component';
 import { GamePageComponent } from '@app/pages/game-page/game-page.component';
 import { MainPageComponent } from '@app/pages/main-page/main-page.component';
-import { MaterialPageComponent } from '@app/pages/material-page/material-page.component';
-import { InitSoloModeComponent } from './components/init-solo-mode/init-solo-mode.component';
+import { CommunicationBoxComponent } from './components/communication-box/communication-box.component';
 import { GameModePageComponent } from './pages/game-mode-page/game-mode-page.component';
+import { RackComponent } from './components/rack/rack.component';
 
 /**
  * Main module that is used in main.ts.
@@ -25,11 +27,10 @@ import { GameModePageComponent } from './pages/game-mode-page/game-mode-page.com
         AppComponent,
         GamePageComponent,
         MainPageComponent,
-        MaterialPageComponent,
         PlayAreaComponent,
-        SidebarComponent,
-        InitSoloModeComponent,
         GameModePageComponent,
+        CommunicationBoxComponent,
+        RackComponent,
     ],
     imports: [AppMaterialModule, AppRoutingModule, BrowserAnimationsModule, BrowserModule, FormsModule, HttpClientModule],
     providers: [],

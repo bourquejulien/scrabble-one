@@ -1,6 +1,5 @@
 import { Component } from '@angular/core';
 import { PlayerType } from '@app/classes/player-type';
-
 @Component({
     selector: 'app-game-page',
     templateUrl: './game-page.component.html',
@@ -8,4 +7,8 @@ import { PlayerType } from '@app/classes/player-type';
 })
 export class GamePageComponent {
     playerType: PlayerType = PlayerType.Local;
+
+    confirmQuit(): void {
+        // TODO:
+    }
 }
