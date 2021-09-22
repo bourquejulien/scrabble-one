@@ -1,6 +1,8 @@
+/* eslint-disable no-restricted-imports */
 import { TestBed } from '@angular/core/testing';
-
 import { PlayerService } from '@app/services/player/player.service';
+import { BoardService } from '../board/board.service';
+import { MockBoardService } from '../board/mock-board.service';
 
 describe('PlayerService', () => {
     let service: PlayerService;
@@ -12,7 +14,9 @@ describe('PlayerService', () => {
         invalidLetter = 'Z';
         const mockRack = ['K', 'E', 'S', 'E', 'I', 'O', 'V'];
 
-        TestBed.configureTestingModule({});
+        TestBed.configureTestingModule({
+            providers: [{ provide: BoardService, useClass: MockBoardService }],
+        });
         service = TestBed.inject(PlayerService);
 
         service.setRack(mockRack);

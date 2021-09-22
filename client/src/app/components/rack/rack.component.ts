@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { letterDefinitions } from '@app/classes/letter';
-import { PlayerService } from '@app/services/player.service';
+import { PlayerService } from '@app/services/player/player.service';
 
 @Component({
     selector: 'app-rack',
