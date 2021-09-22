@@ -48,7 +48,15 @@ export class CommandsService {
                     const yCoordinate = Number(options[2].toString());
                     const direction: Direction = options[3] === 'v' ? Direction.Down : Direction.Right;
                     const vecCoordinate: Vec2 = { x: xCoordinate, y: yCoordinate };
-                    this.playerService.placeLetters(word, vecCoordinate, direction);
+                    const operationResult: string = this.playerService.placeLetters(word, vecCoordinate, direction);
+
+                    this.messagingService.sendMessage({
+                        body: `${operationResult}`,
+                        messageType: 'Log',
+                        timestamp: Date.now(),
+                        title: '',
+                        userId: 0,
+                    });
                 } else {
                     // Invalid syntax
                     return false;
