@@ -7,9 +7,9 @@ import { BehaviorSubject } from 'rxjs';
 })
 export class GameService {
     time: number;
-    gameType: string;
-    minutes: number;
-    seconds: number;
+    gameType: string = Constants.gameTypesList[0];
+    minutes: number = Constants.turnLengthMinutes[1];
+    seconds: number = Constants.turnLengthSeconds[0];
     onTurn = new BehaviorSubject<boolean>(false);
 
     randomizeTurn(): boolean {
