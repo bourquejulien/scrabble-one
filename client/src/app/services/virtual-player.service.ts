@@ -10,6 +10,7 @@ import { ReserveService } from './reserve.service';
 })
 export class VirtualPlayerService {
     private rack: string[];
+
     constructor(
         private readonly boardService: BoardService,
         private readonly reserveService: ReserveService,
@@ -21,13 +22,13 @@ export class VirtualPlayerService {
 
         let random = Math.random();
 
-        if (random < 0.1) {
-            random -= 0.1;
+        if (random < Constants.virtualPlayer.SKIP_PERCENTAGE) {
+            random -= Constants.virtualPlayer.SKIP_PERCENTAGE;
             this.skipTurn();
             return;
         }
 
-        if (random < 0.1) {
+        if (random < Constants.virtualPlayer.EXCHANGE_PERCENTAGE) {
             this.exchange();
             return;
         }
@@ -35,7 +36,9 @@ export class VirtualPlayerService {
         this.play();
     }
 
-    private skipTurn() {}
+    private skipTurn() {
+        // TODO Implement in game service
+    }
 
     private exchange() {
         const randomLetterCount = Math.floor(Math.random() * this.rack.length);
@@ -73,16 +76,15 @@ export class VirtualPlayerService {
 
     private getScoreRange(): { min: number; max: number } {
         let random = Math.random();
+        const scoreRanges = Constants.virtualPlayer.SCORE_RANGE;
 
-        if (random < 0.4) {
-            random -= 0.4;
-            return { min: 0, max: 6 };
+        for (const scoreRange of scoreRanges) {
+            if (random < scoreRange.percentage) {
+                return scoreRange.range;
+            }
+            random -= scoreRange.percentage;
         }
 
-        if (random < 0.3) {
-            return { min: 7, max: 12 };
-        }
-
-        return { min: 13, max: 18 };
+        return { min: 0, max: 0 };
     }
 }
