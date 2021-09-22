@@ -1,8 +1,7 @@
 import { Injectable } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { PlayAreaComponent } from '@app/components/play-area/play-area.component';
-import { SidebarComponent } from '@app/components/sidebar/sidebar.component';
-import { GridService } from '@app/services/grid.service';
+import { GridService } from '@app/services/grid/grid.service';
 import { GamePageComponent } from './game-page.component';
 
 @Injectable({
@@ -26,7 +25,7 @@ describe('GamePageComponent', () => {
 
     beforeEach(async () => {
         await TestBed.configureTestingModule({
-            declarations: [GamePageComponent, SidebarComponent, PlayAreaComponent],
+            declarations: [GamePageComponent, PlayAreaComponent],
             providers: [{ provide: GridService, useClass: GridServiceStub }],
         }).compileComponents();
     });

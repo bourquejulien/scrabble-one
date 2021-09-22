@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { PlayAreaComponent } from '@app/components/play-area/play-area.component';
-import { GridService } from '@app/services/grid.service';
+import { GridService } from '@app/services/grid/grid.service';
 
 @Injectable({
     providedIn: 'root',

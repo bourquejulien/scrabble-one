@@ -1,11 +1,11 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject } from 'rxjs';
-// import { Direction } from '@app/classes/board/direction';
-// import { Vec2 } from '@app/classes/vec2';
+import { Direction } from '@app/classes/board/direction';
+import { Vec2 } from '@app/classes/vec2';
 // import { skip } from 'rxjs/operators';
-import { BoardService } from './board.service';
-// import { GameService } from './game.service';
-import { ReserveService } from './reserve.service';
+import { BoardService } from '@app/services/board/board.service';
+// import { GameService } from '@app/services/';
+import { ReserveService } from '@app/services/reserve/reserve.service';
+import { BehaviorSubject } from 'rxjs/internal/BehaviorSubject';
 
 @Injectable({
     providedIn: 'root',
@@ -14,20 +14,12 @@ export class PlayerService {
     rack: string[] = [];
     rackUpdated: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(true);
 
-    constructor(private reserveService: ReserveService /* private gameService: GameService, private boardService: BoardService*/) {
+    constructor(private reserveService: ReserveService, /* private gameService: GameService, */ private boardService: BoardService) {
         const initNbTiles = 7;
 
         for (let tile = 0; tile < initNbTiles; tile++) {
             this.rack.push(this.reserveService.drawLetter());
         }
-    }
-
-    boardValidation(): string {
-        let board: BoardService | undefined;
-        if (board === undefined) {
-            return 'There was a problem with board service. Try again.';
-        }
-        return '';
     }
 
     checkIfLettersInRack(lettersToPlace: string): string {
@@ -71,24 +63,17 @@ export class PlayerService {
         this.rackUpdated.next(!this.rackUpdated.getValue());
     }
 
-    placeLetters(/* word: string, position: Vec2, direction: Direction*/): string {
-        const boardMessage = this.boardValidation();
-        if (boardMessage !== '') return boardMessage;
+    placeLetters(word: string, position: Vec2, direction: Direction): string {
+        const lettersToPlace = this.boardService.retrieveNewLetters(word, position, direction);
+        const rackMessage = this.checkIfLettersInRack(word);
+        if (rackMessage !== '') return rackMessage;
 
-        /*
-const lettersToPlace = board.retrieveNewLetters(word, position, direction);
-const rackMessage = this.checkIfLettersInRack(lettersToPlace);
-if(rackMessage !== '')
-return rackMessage;
- 
-const validationData = this.boardService.validateWord(lettersToPlace);
+        const validationData = this.boardService.validateLetters(lettersToPlace);
 
-if (!validationData.isSuccess)
-return validationData.description;
+        if (!validationData.isSuccess) return validationData.description;
 
-this.updateRack(lettersToPlace);
-this.updateReserve(lettersToPlace);
-*/
+        this.updateRack(word);
+        this.updateReserve(word);
 
         this.completeTurn();
 

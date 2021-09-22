@@ -1,7 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 import { Vec2 } from '@app/classes/vec2';
 import { Constants } from '@app/constants/global.constants';
-import { GridService } from './grid.service';
+import { GridService } from '@app/services/grid/grid.service';
 
 import { MouseHandlingService } from './mouse-handling.service';
 

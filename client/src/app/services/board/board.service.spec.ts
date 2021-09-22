@@ -3,8 +3,8 @@ import { TestBed } from '@angular/core/testing';
 import { Direction } from '@app/classes/board/direction';
 import { Vec2 } from '@app/classes/vec2';
 
-import { BoardService } from './board.service';
-import { DictionaryService } from './dictionary.service';
+import { BoardService } from '@app/services/board/board.service';
+import { DictionaryService } from '@app/services/dictionary/dictionary.service';
 
 const WORDS: string[] = ['pomme', 'orange', 'poire', 'raisin', 'peche', 'banane', 'bananes'];
 const mockedDictionary: Set<string> = new Set(WORDS);

@@ -1,0 +1,23 @@
+
+.comm-box-container {
+    display: block;
+    height: 100%;
+    width: 100%;
+    overflow: scroll;
+}
+
+.message-card {
+    display: flex;
+    align-items: center;
+}
+
+.card-icon {
+    margin: 4px;
+}
+
+.command-input {
+    position: absolute;
+    bottom: 0%;
+    width: 100%;
+}
+

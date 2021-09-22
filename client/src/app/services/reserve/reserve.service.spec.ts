@@ -1,5 +1,5 @@
 import { TestBed } from '@angular/core/testing';
-import { ReserveService } from './reserve.service';
+import { ReserveService } from '@app/services/reserve/reserve.service';
 
 describe('ReserveService', () => {
     let letterToExchange: string;
