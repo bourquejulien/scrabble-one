@@ -2,8 +2,8 @@
 import { Injectable } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { VirtualPlayerService } from '@app/services/virtual-player.service';
-import { BoardService } from './board.service';
-import { DictionaryService } from './dictionary.service';
+import { BoardService } from './board/board.service';
+import { DictionaryService } from './dictionary/dictionary.service';
 
 @Injectable({
     providedIn: 'root',

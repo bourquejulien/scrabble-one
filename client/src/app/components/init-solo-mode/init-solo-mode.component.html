@@ -1,40 +1,52 @@
 <div id="container">
     <p class="containerInput" id="title">Paramètres de la partie</p>
     <p class="inputPresentationText">Mode de Jeu</p>
-    <select name="gameTypes" id="selecter">
-        <option *ngFor="let gameType of gameTypesList" [value]="gameType">{{ gameType }}</option>
-    </select>
+    <mat-form-field class="inputs" appearance="fill">
+        <mat-label>Mode de jeu</mat-label>
+        <mat-select name="gameTypes" appearance="fill">
+            <mat-option *ngFor="let gameType of gameTypesList" [value]="gameType">{{ gameType }}</mat-option>
+        </mat-select>
+    </mat-form-field>
     <p class="inputPresentationText">Temps Maximum Par Tour</p>
     <div class="playersFlex">
-        <select name="minutesPerTurn" class="selecterTime flex-items-players">
-            <option *ngFor="let minutes of minutesList" [value]="minutes">{{ minutes }}</option>
-        </select>
-        <p class="flex-items-players">min</p>
-        <select name="secondsPerTurn" class="selecterTime flex-items-players">
-            <option *ngFor="let seconds of secondsList" [value]="seconds">{{ seconds }}</option>
-        </select>
-        <p class="flex-items-players">sec</p>
+        <mat-form-field class="inputs" style="margin-right: 15px" appearance="fill">
+            <mat-label>Minutes</mat-label>
+            <mat-select name="minutesPerTurn">
+                <mat-option *ngFor="let minutes of minutesList" [value]="minutes">{{ minutes }} </mat-option>
+            </mat-select>
+        </mat-form-field>
+        <mat-form-field class="inputs" appearance="fill">
+            <mat-label>Secondes</mat-label>
+            <mat-select name="secondsPerTurn">
+                <mat-option *ngFor="let seconds of secondsList" [value]="seconds">{{ seconds }}</mat-option>
+            </mat-select>
+        </mat-form-field>
     </div>
     <p class="containerInput" class="inputPresentationText">Nom Des Joueurs</p>
-    <div class="playersFlex">
-        <input class="inputBox flex-items-players" placeholder="Joueur 1" name="name"/>
-        <p class="flex-items-players">VS</p>
-        <input class="inputBox flex-items-players" placeholder="Joueur 2" value="{{ this.game.secondPlayerName }}" />
-    </div>
-    <div *ngIf="this.game.nameForm !== undefined && this.game.nameForm.get('control')?.hasError('containsOnlyLetters')" class="alert">
+
+    <form class="playersFlex">
+        <mat-form-field style="margin-right: 15px" appearance="fill">
+            <mat-label>Joueur 1</mat-label>
+            <input matInput placeholder="Joueur 1" name="name"/>
+        </mat-form-field>
+        <mat-form-field appearance="fill">
+            <mat-label>Joueur 2</mat-label>
+            <input matInput placeholder="Joueur 2" value="{{ this.game.gameConfig.secondPlayerName }}" />
+        </mat-form-field>
+    </form>
+
+    <div *ngIf="this.nameForm !== undefined && this.nameForm.get('control')?.hasError('containsOnlyLetters')" class="alert">
         *Le nom doit seulement être composé de lettres.
     </div>
-    <div *ngIf="this.game.nameForm !== undefined && this.game.nameForm.get('control')?.hasError('required')" class="alert">
-        *Un nom doit être entré.
-    </div>
-    <div *ngIf="this.game.nameForm !== undefined && this.game.nameForm.get('control')?.hasError('minLength')" class="alert">
+    <div *ngIf="this.nameForm !== undefined && this.nameForm.get('control')?.hasError('required')" class="alert">*Un nom doit être entré.</div>
+    <div *ngIf="this.nameForm !== undefined && this.nameForm.get('control')?.hasError('minLength')" class="alert">
         *Le nom doit contenir au moins 3 caractères.
     </div>
-    <div *ngIf="this.game.nameForm !== undefined && this.game.nameForm.get('control')?.hasError('maxLength')" class="alert">
+    <div *ngIf="this.nameForm !== undefined && this.nameForm.get('control')?.hasError('maxLength')" class="alert">
         *Le nom doit au maximum contenir 16 lettres.
     </div>
-    <div *ngIf="this.game.nameForm !== undefined && this.game.nameForm.get('control')?.hasError('startsWithLowerLetter')" class="alert">
+    <div *ngIf="this.nameForm !== undefined && this.nameForm.get('control')?.hasError('startsWithLowerLetter')" class="alert">
         *Le nom doit débuter par une majuscule.
     </div>
-    <button (click)="this.game.confirmInitialization(this.game.firstPlayerName)" id="confirm">Confirmer</button>
+    <button (click)="this.initialize(this.game.gameConfig.firstPlayerName)" mat-raised-button color="primary" id="confirm">Confirmer</button>
 </div>

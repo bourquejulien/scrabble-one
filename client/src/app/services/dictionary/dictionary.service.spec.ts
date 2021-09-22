@@ -1,6 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
-import { DictionaryService } from './dictionary.service';
+import { DictionaryService } from '@app/services/dictionary/dictionary.service';
 import { JsonDictionary } from '@app/classes/dictionary/json-dictionary';
 import { Constants } from '@app/constants/global.constants';
 

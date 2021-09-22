@@ -1,9 +1,9 @@
 import { Injectable } from '@angular/core';
 import { PlayGenerator } from '@app/classes/virtual-player/play-generator';
 import { Constants } from '@app/constants/global.constants';
-import { BoardService } from './board.service';
-import { DictionaryService } from './dictionary.service';
-import { ReserveService } from './reserve.service';
+import { BoardService } from './board/board.service';
+import { DictionaryService } from './dictionary/dictionary.service';
+import { ReserveService } from './reserve/reserve.service';
 
 @Injectable({
     providedIn: 'root',
