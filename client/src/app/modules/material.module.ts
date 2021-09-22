@@ -32,7 +32,6 @@ import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatTooltipModule } from '@angular/material/tooltip';
 
-
 const modules = [
     // MatAutocompleteModule,
     MatButtonModule,
