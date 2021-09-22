@@ -19,18 +19,22 @@ class TrieNode {
     getChildren(character: string): TrieNode | null {
         return this.children.get(character) ?? null;
     }
+
+    get hasChildren(): boolean {
+        return this.children.size !== 0;
+    }
 }
 
 export interface IReadOnlyTrie {
     contains(word: string): boolean;
-    startsWith(word: string): boolean;
+    startsWith(word: string): { isWord: boolean; isOther: boolean };
     get size(): number;
 }
 
 export interface ITrie {
     insert(word: string): void;
     contains(word: string): boolean;
-    startsWith(word: string): boolean;
+    startsWith(word: string): { isWord: boolean; isOther: boolean };
     get size(): number;
 }
 
@@ -63,8 +67,9 @@ export class Trie implements ITrie {
         return node !== null && node.isWord;
     }
 
-    startsWith(word: string): boolean {
-        return this.getNode(word) !== null;
+    startsWith(word: string): { isWord: boolean; isOther: boolean } {
+        const node = this.getNode(word);
+        return { isWord: node !== null && node.isWord, isOther: node !== null && node.hasChildren };
     }
 
     private getNode(word: string): TrieNode | null {

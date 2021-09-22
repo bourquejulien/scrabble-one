@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { MatToolbar } from '@angular/material/toolbar';
 import { PlayAreaComponent } from '@app/components/play-area/play-area.component';
 import { GridService } from '@app/services/grid/grid.service';
 import { GamePageComponent } from './game-page.component';
@@ -25,7 +26,7 @@ describe('GamePageComponent', () => {
 
     beforeEach(async () => {
         await TestBed.configureTestingModule({
-            declarations: [GamePageComponent, PlayAreaComponent],
+            declarations: [GamePageComponent, PlayAreaComponent, MatToolbar],
             providers: [{ provide: GridService, useClass: GridServiceStub }],
         }).compileComponents();
     });

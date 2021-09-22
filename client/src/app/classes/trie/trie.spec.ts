@@ -49,6 +49,6 @@ describe('Trie', () => {
             trie.insert(word);
         }
 
-        expect(trie.startsWith('cha')).toBeTrue();
+        expect(trie.startsWith('cha').isOther).toBeTrue();
     });
 });

@@ -68,7 +68,7 @@ export class PlayerService {
         const rackMessage = this.checkIfLettersInRack(word);
         if (rackMessage !== '') return rackMessage;
 
-        const validationData = this.boardService.validateLetters(lettersToPlace);
+        const validationData = this.boardService.lookupLetters(lettersToPlace);
 
         if (!validationData.isSuccess) return validationData.description;
 

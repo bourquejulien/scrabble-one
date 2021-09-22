@@ -3,7 +3,7 @@
     <p class="inputPresentationText">Mode de Jeu</p>
     <mat-form-field class="inputs" appearance="fill">
         <mat-label>Mode de jeu</mat-label>
-        <mat-select name="gameTypes" [(ngModel)]="this.game.gameConfig.gameType" appearance="fill">
+        <mat-select name="gameTypes" appearance="fill">
             <mat-option *ngFor="let gameType of gameTypesList" [value]="gameType">{{ gameType }}</mat-option>
         </mat-select>
     </mat-form-field>
@@ -11,13 +11,13 @@
     <div class="playersFlex">
         <mat-form-field class="inputs" style="margin-right: 15px" appearance="fill">
             <mat-label>Minutes</mat-label>
-            <mat-select name="minutesPerTurn" [(ngModel)]="this.game.gameConfig.minutes">
+            <mat-select name="minutesPerTurn">
                 <mat-option *ngFor="let minutes of minutesList" [value]="minutes">{{ minutes }} </mat-option>
             </mat-select>
         </mat-form-field>
         <mat-form-field class="inputs" appearance="fill">
             <mat-label>Secondes</mat-label>
-            <mat-select name="secondsPerTurn" [(ngModel)]="this.game.gameConfig.seconds">
+            <mat-select name="secondsPerTurn">
                 <mat-option *ngFor="let seconds of secondsList" [value]="seconds">{{ seconds }}</mat-option>
             </mat-select>
         </mat-form-field>
@@ -27,7 +27,7 @@
     <form class="playersFlex">
         <mat-form-field style="margin-right: 15px" appearance="fill">
             <mat-label>Joueur 1</mat-label>
-            <input matInput placeholder="Joueur 1" name="name" [(ngModel)]="this.game.gameConfig.firstPlayerName" />
+            <input matInput placeholder="Joueur 1" name="name"/>
         </mat-form-field>
         <mat-form-field appearance="fill">
             <mat-label>Joueur 2</mat-label>
