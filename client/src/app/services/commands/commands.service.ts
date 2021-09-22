@@ -3,7 +3,6 @@ import { Direction } from '@app/classes/board/direction';
 import { Vec2 } from '@app/classes/vec2';
 import { MessagingService } from '@app/services/messaging/messaging.service';
 import { PlayerService } from '@app/services/player/player.service';
-import { ReserveService } from '@app/services/reserve/reserve.service';
 
 @Injectable({
     providedIn: 'root',
@@ -14,7 +13,7 @@ export class CommandsService {
     readonly messageRegex: RegExp = /^[a-zA-Z0-9 [:punct:]]{1,512}$/;
 
     // TODO: retrieve user id from Player
-    constructor(public messagingService: MessagingService, private playerService: PlayerService, private reserveService: ReserveService) {}
+    constructor(public messagingService: MessagingService, private playerService: PlayerService) {}
     /**
      * Parse the user' input and call the relevant functions
      *
@@ -69,7 +68,10 @@ export class CommandsService {
             }
             case '!echanger': {
                 // TODO: validation !echanger
-                this.reserveService.drawLetter();
+                const letter: string = args[1];
+                if (letter && letter.length === 1) {
+                    this.playerService.exchangeLetters(letter);
+                }
                 break;
             }
             case '!passer': {
