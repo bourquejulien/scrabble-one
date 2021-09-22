@@ -40,6 +40,7 @@ export class GameService {
             this.randomizeTurn();
             this.firstPlayerName = name;
             this.botNameChange(this.firstPlayerName);
+            // Had to cast the parts of the addition to Numbers otherwise it was considered as a string
             this.time = Number(this.minutes * Constants.timeConstant) + Number(this.seconds);
             return true;
         }
