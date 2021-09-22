@@ -1,13 +1,33 @@
-<main [ngClass]="playerType" class="mat-app-background">
-    <mat-toolbar color="primary" class="toolbar">
+<mat-drawer-container autosize>
+    <mat-toolbar [ngClass]="playerType" class="mat-app-background" color="primary" class="toolbar">
         <span>Scrabble</span>
         <span>Joueur1 contre Joueur2</span>
         <span>Minuteur</span>
     </mat-toolbar>
-    <div class="container">
-        <app-sidebar style="display: block"></app-sidebar>
+    <mat-drawer #drawer class="comm-box-sidenav" mode="side" opened>
+        <app-communication-box></app-communication-box>
+    </mat-drawer>
+    <div class="comm-box-sidenav-content">
+        <div class="button-bar">
+            <button mat-fab color="warn" class="fab-button" routerLink="/" (click)="confirmQuit()">
+                <mat-icon>home</mat-icon>
+            </button>
+            <button mat-fab color="primary" class="fab-button" (click)="drawer.toggle()">
+                <mat-icon>question_answer</mat-icon>
+            </button>
+            <button mat-fab color="warn" class="fab-button">
+                <mat-icon>logout</mat-icon>
+            </button>
+            <button mat-fab color="primary" class="fab-button">
+                <mat-icon>autorenew</mat-icon>
+            </button>
+            <button mat-fab color="warn" class="fab-button">
+                <mat-icon>settings</mat-icon>
+            </button>
+        </div>
+        <!-- Board -->
         <section class="play-area-container">
-            <app-play-area class="play-area" tabindex="0" [playerType]="playerType"></app-play-area>
+            <app-play-area class="play-area"></app-play-area>
         </section>
     </div>
-</main>
+</mat-drawer-container>

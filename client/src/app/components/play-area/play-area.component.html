@@ -11,18 +11,16 @@
             [attr.height]="height"
         ></canvas>
     </div>
+</div>
 
-    <button (click)="showTimer()">
+    <!-- <button (click)="showTimer()">
         click me to start timer
     </button>
 
     <button (click)="stopTimer()">
         click me to stop timer
-    </button>
+    </button> -->
 
-    <div id="mouse-position-display">
-        <p [attr.height]="height">Cliquez sur la grille pour avoir la position de la souris sur la grille</p>
-        <p *ngIf="mouseHandlingService.position.x !== -1">X : {{ mouseHandlingService.position.x }}</p>
-        <p *ngIf="mouseHandlingService.position.y !== -1">Y : {{ mouseHandlingService.position.y }}</p>
-    </div>
+<div class="rack">
+    <app-rack></app-rack>
 </div>

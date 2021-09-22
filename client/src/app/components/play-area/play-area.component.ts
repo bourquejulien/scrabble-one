@@ -2,8 +2,8 @@ import { AfterViewInit, Component, ElementRef, Input, OnChanges, SimpleChanges, 
 import { PlayerType } from '@app/classes/player-type';
 import { Timer } from '@app/classes/timer';
 import { Constants } from '@app/constants/global.constants';
-import { GridService } from '@app/services/grid.service';
-import { MouseHandlingService } from '@app/services/mouse-handling.service';
+import { GridService } from '@app/services/grid/grid.service';
+import { MouseHandlingService } from '@app/services/mouse-handling/mouse-handling.service';
 import { Observable, Subscription } from 'rxjs';
 
 @Component({

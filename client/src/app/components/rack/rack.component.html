@@ -1,0 +1,10 @@
+<mat-card class="rack">
+    <mat-card class="tile" *ngFor="let letter of rack">
+        <div>
+            {{ letter }}
+            <sub class="letter-point">
+                {{ retrievePoints(letter) }}
+            </sub>
+        </div>
+    </mat-card>
+</mat-card>
