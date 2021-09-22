@@ -1,23 +1,23 @@
 <div id="container">
     <p class="containerInput" id="title">Paramètres de la partie</p>
     <p class="inputPresentationText">Mode de Jeu</p>
-    <select name="gameTypes" id="selecter" [(ngModel)]="this.game.gameType">
+    <select name="gameTypes" id="selecter">
         <option *ngFor="let gameType of gameTypesList" [value]="gameType">{{ gameType }}</option>
     </select>
     <p class="inputPresentationText">Temps Maximum Par Tour</p>
     <div class="playersFlex">
-        <select name="minutesPerTurn" class="selecterTime flex-items-players" [(ngModel)]="this.game.minutes">
+        <select name="minutesPerTurn" class="selecterTime flex-items-players">
             <option *ngFor="let minutes of minutesList" [value]="minutes">{{ minutes }}</option>
         </select>
         <p class="flex-items-players">min</p>
-        <select name="secondsPerTurn" class="selecterTime flex-items-players" [(ngModel)]="this.game.seconds">
+        <select name="secondsPerTurn" class="selecterTime flex-items-players">
             <option *ngFor="let seconds of secondsList" [value]="seconds">{{ seconds }}</option>
         </select>
         <p class="flex-items-players">sec</p>
     </div>
     <p class="containerInput" class="inputPresentationText">Nom Des Joueurs</p>
     <div class="playersFlex">
-        <input class="inputBox flex-items-players" placeholder="Joueur 1" name="name" [(ngModel)]="this.game.firstPlayerName" />
+        <input class="inputBox flex-items-players" placeholder="Joueur 1" name="name"/>
         <p class="flex-items-players">VS</p>
         <input class="inputBox flex-items-players" placeholder="Joueur 2" value="{{ this.game.secondPlayerName }}" />
     </div>
