@@ -2,10 +2,10 @@ import { Injectable } from '@angular/core';
 import { Direction } from '@app/classes/board/direction';
 import { Vec2 } from '@app/classes/vec2';
 import { BoardService } from '@app/services/board/board.service';
+import { GameService } from '@app/services/game/game.service';
 import { ReserveService } from '@app/services/reserve/reserve.service';
 import { BehaviorSubject } from 'rxjs/internal/BehaviorSubject';
 import { skip } from 'rxjs/operators';
-import { GameService } from '../game/game.service';
 
 @Injectable({
     providedIn: 'root',
@@ -108,8 +108,8 @@ export class PlayerService {
     }
 
     completeTurn(): void {
-        this.gameService.onTurn.pipe(skip(1)).subscribe(x => console.log('player ' + (Number(x) + 1) + ' has completed their turn!'));
-        let isTurn = this.gameService.onTurn.getValue();
+        this.gameService.onTurn.pipe(skip(1)).subscribe();
+        const isTurn = this.gameService.onTurn.getValue();
         this.gameService.onTurn.next(!isTurn);
     }
 
