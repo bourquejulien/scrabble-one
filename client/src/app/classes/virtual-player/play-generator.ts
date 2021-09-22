@@ -19,7 +19,7 @@ export class PlayGenerator {
         this.plays = [];
 
         this.board = board;
-        this.positionsToTry = board.positions;
+        this.positionsToTry = board.positions.length === 0 ? [board.center] : board.positions;
         this.dictionaryLookup = dictionaryLookup;
         this.validationLookup = validationLookup;
         this.availableLetters = availableLetters;
@@ -33,7 +33,7 @@ export class PlayGenerator {
         const positionIndex = PlayGenerator.getRandomPosition(this.positionsToTry.length);
         const position = this.positionsToTry.splice(positionIndex);
         this.tryGenerate(position[0], Direction.Right);
-        this.tryGenerate(position[0], Direction.Right);
+        this.tryGenerate(position[0], Direction.Down);
     }
 
     get orderedPlays(): Play[] {
