@@ -109,8 +109,7 @@ export class PlayerService {
 
     completeTurn(): void {
         this.gameService.onTurn.pipe(skip(1)).subscribe();
-        const isTurn = this.gameService.onTurn.getValue();
-        this.gameService.onTurn.next(!isTurn);
+        this.gameService.nextTurn();
     }
 
     // For testing

@@ -31,7 +31,7 @@
         </mat-form-field>
         <mat-form-field appearance="fill">
             <mat-label>Joueur 2</mat-label>
-            <input matInput placeholder="Joueur 2" value="{{ this.game.gameConfig.secondPlayerName }}" />
+            <input matInput placeholder="Joueur 2" value="{{ this.gameConfig.secondPlayerName }}" />
         </mat-form-field>
     </form>
 
@@ -48,5 +48,5 @@
     <div *ngIf="this.nameForm !== undefined && this.nameForm.get('control')?.hasError('startsWithLowerLetter')" class="alert">
         *Le nom doit débuter par une majuscule.
     </div>
-    <button (click)="this.initialize(this.game.gameConfig.firstPlayerName)" mat-raised-button color="primary" id="confirm">Confirmer</button>
+    <button (click)="this.initialize(this.gameConfig.firstPlayerName)" mat-raised-button color="primary" id="confirm">Confirmer</button>
 </div>

@@ -13,7 +13,7 @@ export class Constants {
     static readonly turnLengthSeconds = [0, 15, 30, 45];
     static readonly maxSizeName = 16;
     static readonly minSizeName = 3;
-    static readonly half = 0.5;
+    static readonly HALF = 0.5;
     static readonly timeConstant: number = 60;
     static readonly dictionary = new Dictionary();
     static readonly reserve = new Reserve();

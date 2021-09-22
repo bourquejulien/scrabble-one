@@ -1,29 +1,29 @@
 import { Injectable } from '@angular/core';
 import { GameConfig } from '@app/classes/game-config';
+import { PlayerType } from '@app/classes/player-type';
 import { Constants } from '@app/constants/global.constants';
 import { BehaviorSubject } from 'rxjs';
 @Injectable({
     providedIn: 'root',
 })
 export class GameService {
-    onTurn = new BehaviorSubject<boolean>(false);
-    time: number;
-    gameType: string;
-    minutes: number;
-    seconds: number;
-    firstPlayerName: string;
-    secondPlayerName: string;
-    gameConfig: GameConfig = {
-        gameType: Constants.gameTypesList[0],
-        minutes: Constants.turnLengthMinutes[1],
-        seconds: Constants.turnLengthSeconds[0],
-        time: 0,
-        firstPlayerName: '',
-        secondPlayerName: '',
-    };
-    randomizeTurn(): boolean {
-        const turn = Math.random() < Constants.half;
-        this.onTurn.next(turn);
-        return false;
+    onTurn: BehaviorSubject<PlayerType>;
+    gameConfig: GameConfig;
+
+    startGame(gameConfig: GameConfig) {
+        this.gameConfig = gameConfig;
+        this.onTurn = new BehaviorSubject(this.randomizeTurn());
+    }
+
+    endGame() {
+
+    }
+
+    nextTurn() {
+        this.onTurn?.next(this.onTurn.getValue() === PlayerType.Local ? PlayerType.Virtual : PlayerType.Local);
+    }
+
+    private randomizeTurn(): PlayerType {
+        return Math.random() < Constants.HALF ? PlayerType.Local : PlayerType.Virtual;
     }
 }
