@@ -8,18 +8,19 @@ import { InitSoloModeComponent } from '@app/components/init-solo-mode/init-solo-
     styleUrls: ['./game-mode-page.component.scss'],
 })
 export class GameModePageComponent {
-    name: string;
-    gameType: string;
-    time: number;
+    // name: string;
+    // gameType: string;
+    // time: number;
     constructor(public dialog: MatDialog) {}
     openDialog(): void {
         const dialogRef = this.dialog.open(InitSoloModeComponent, {
-            width: '0px',
-            data: { name: this.name, gameType: this.gameType, time: this.time },
+            // data: { name: this.name, gameType: this.gameType, time: this.time },
         });
 
-        dialogRef.afterClosed().subscribe((result) => {
-            this.name = result;
-        });
+        dialogRef.afterClosed().subscribe(
+            // (result) => {
+            // this.name = result;
+        //}
+        );
     }
 }
