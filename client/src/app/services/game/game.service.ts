@@ -10,7 +10,14 @@ import { VirtualPlayerService } from '@app/services/virtual-player.service';
 })
 export class GameService {
     currentTurn: PlayerType = PlayerType.Local;
-    gameConfig: GameConfig;
+    gameConfig: GameConfig = {
+        gameType: '',
+        minutes: 0,
+        seconds: 0,
+        time: 0,
+        firstPlayerName: '',
+        secondPlayerName: '',
+    };
 
     constructor(private readonly playerService: PlayerService, private readonly virtualPlayerService: VirtualPlayerService) {
         playerService.turnComplete.subscribe((e) => this.handleTurnCompletion(e));

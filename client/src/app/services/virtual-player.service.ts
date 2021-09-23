@@ -25,22 +25,21 @@ export class VirtualPlayerService {
     onTurn() {
         this.fillRack();
 
-        // const random = Math.random();
-        this.skipTurn();
+        let random = Math.random();
 
-        // if (random < Constants.virtualPlayer.SKIP_PERCENTAGE) {
-        //     random -= Constants.virtualPlayer.SKIP_PERCENTAGE;
-        //     this.skipTurn();
-        //     return;
-        // }
+        if (random < Constants.virtualPlayer.SKIP_PERCENTAGE) {
+            random -= Constants.virtualPlayer.SKIP_PERCENTAGE;
+            this.skipTurn();
+            return;
+        }
 
-        // if (random < Constants.virtualPlayer.EXCHANGE_PERCENTAGE) {
-        //     this.exchange();
-        //     return;
-        // }
+        if (random < Constants.virtualPlayer.EXCHANGE_PERCENTAGE) {
+            this.exchange();
+            return;
+        }
 
-        // this.turnComplete.next(PlayerType.Virtual);
-        // this.play();
+        this.turnComplete.next(PlayerType.Virtual);
+        this.play();
     }
 
     async skipTurn() {
