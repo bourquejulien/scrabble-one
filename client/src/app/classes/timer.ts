@@ -5,7 +5,7 @@ export class Timer {
     minutesLimit: number;
     secondsLimit: number;
 
-    timerInstance: Observable<unknown>;
+    timerInstance: Observable<number>;
     startCountdown: Subject<void>;
     stopCountdown: Subject<void>;
 
@@ -21,7 +21,7 @@ export class Timer {
 
         this.startCountdown = new Subject<void>();
         this.stopCountdown = new Subject<void>();
-        this.timerInstance = new Observable<unknown>();
+        this.timerInstance = new Observable<number>();
 
         this.timerInstance = timer(0, oneSecond).pipe(
             takeUntil(this.stopCountdown),
@@ -47,10 +47,12 @@ export class Timer {
     }
 
     startTimer(): void {
+        console.log('started timer');
         this.startCountdown.next();
     }
 
     stopTimer(): void {
+        console.log('stopped timer');
         this.displayedMinutes = this.minutesLimit;
         this.displayedSeconds = this.secondsLimit;
         this.stopCountdown.next();
@@ -70,5 +72,6 @@ export class Timer {
         if (timerToStart.displayedSeconds <= 0 && timerToStart.displayedMinutes <= 0) {
             timerToStart.stopTimer();
         }
+        console.log(timerToStart.displayedTimer);
     }
 }
