@@ -15,15 +15,6 @@ export class MainPageComponent {
 
     constructor(private readonly communicationService: CommunicationService) {}
 
-    sendTimeToServer(): void {
-        /* const newTimeMessage: Message = {
-            title: 'Hello from the client',
-            body: 'Time is : ' + new Date().toString(),
-        };
-        // Important de ne pas oublier "subscribe" ou l'appel ne sera jamais lancé puisque personne l'observe
-        this.communicationService.basicPost(newTimeMessage).subscribe();*/
-    }
-
     getMessagesFromServer(): void {
         this.communicationService
             .basicGet()

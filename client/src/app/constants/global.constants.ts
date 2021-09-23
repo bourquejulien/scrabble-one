@@ -1,4 +1,5 @@
-/* eslint-disable @typescript-eslint/no-magic-numbers */
+/* eslint-disable @typescript-eslint/naming-convention -- Constants file*/
+/* eslint-disable @typescript-eslint/no-magic-numbers -- Constants file*/
 import { Dictionary } from './dictionary.constants';
 import { Grid } from './grid.constants';
 import { Reserve } from './reserve.constants';
@@ -13,7 +14,7 @@ export class Constants {
     static readonly turnLengthSeconds = [0, 15, 30, 45];
     static readonly maxSizeName = 16;
     static readonly minSizeName = 3;
-    static readonly half = 0.5;
+    static readonly HALF = 0.5;
     static readonly timeConstant: number = 60;
     static readonly dictionary = new Dictionary();
     static readonly reserve = new Reserve();

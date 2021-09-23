@@ -32,10 +32,10 @@ export class BoardValidator {
     }
 
     private static ensureCoherence(clonedBoard: Board, sortedPositions: Vec2[], direction: Direction): boolean {
-        const finalPosition = sortedPositions[sortedPositions.length - 1];
         const initialPosition = sortedPositions[0];
+        const finalPosition = sortedPositions[sortedPositions.length - 1];
 
-        let square = clonedBoard.getRelative(initialPosition, direction);
+        let square: Square | null = clonedBoard.getSquare(initialPosition);
 
         while (square != null && square.letter !== '') {
             if (square.position === finalPosition) {

@@ -1,14 +1,13 @@
 /* eslint-disable max-classes-per-file -- Class is implemented for testing purposes only relevant ro this service*/
 
-import { TestBed } from '@angular/core/testing';
-import { CanvasTestHelper } from '@app/classes/canvas-test-helper';
-
-import { GridService } from '@app/services/grid/grid.service';
-import { Constants } from '@app/constants/global.constants';
-import { BoardService } from '@app/services/board/board.service';
 import { Injectable } from '@angular/core';
+import { TestBed } from '@angular/core/testing';
 import { Board, ImmutableBoard } from '@app/classes/board/board';
 import { Bonus } from '@app/classes/board/bonus';
+import { CanvasTestHelper } from '@app/classes/canvas-test-helper';
+import { Constants } from '@app/constants/global.constants';
+import { BoardService } from '@app/services/board/board.service';
+import { GridService } from '@app/services/grid/grid.service';
 
 const BOARD: Board = new Board(Constants.grid.GRID_SIZE, [
     [{ x: 0, y: 0 }, Bonus.L2],

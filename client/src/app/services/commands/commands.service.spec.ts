@@ -2,7 +2,6 @@
 import { TestBed } from '@angular/core/testing';
 import { FakePlayerService } from '../player/mock-player.service.spec';
 import { PlayerService } from '../player/player.service';
-
 import { CommandsService } from './commands.service';
 
 describe('CommandsService', () => {

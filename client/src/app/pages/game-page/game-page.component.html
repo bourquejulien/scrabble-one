@@ -1,5 +1,5 @@
 <mat-drawer-container autosize>
-    <mat-toolbar [ngClass]="playerType" class="mat-app-background" color="primary" class="toolbar">
+    <mat-toolbar [ngClass]="gameService.currentTurn" class="mat-app-background" color="primary" class="toolbar">
         <span>Scrabble</span>
         <span>Joueur1 contre Joueur2</span>
         <span>Minuteur</span>
@@ -28,8 +28,9 @@
             </div>
             <!-- Board -->
         </div>
-        <div class="play-area-container">
-            <app-play-area class="play-area"></app-play-area>
-        </div>
+        <!-- Board -->
+        <section class="play-area-container">
+            <app-play-area class="play-area" [playerType]="gameService.currentTurn"></app-play-area>
+        </section>
     </div>
 </mat-drawer-container>
