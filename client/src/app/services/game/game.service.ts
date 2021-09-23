@@ -12,7 +12,7 @@ export class GameService {
     currentTurn: PlayerType = PlayerType.Local;
     gameConfig: GameConfig;
 
-    constructor(playerService: PlayerService, private readonly virtualPlayerService: VirtualPlayerService) {
+    constructor(private readonly playerService: PlayerService, private readonly virtualPlayerService: VirtualPlayerService) {
         playerService.turnComplete.subscribe((e) => this.handleTurnCompletion(e));
         virtualPlayerService.turnComplete.subscribe((e) => this.handleTurnCompletion(e));
     }
@@ -20,6 +20,10 @@ export class GameService {
     startGame(gameConfig: GameConfig) {
         this.gameConfig = gameConfig;
         this.currentTurn = this.randomizeTurn();
+
+        this.virtualPlayerService.fillRack();
+        this.playerService.updateReserve(Constants.reserve.SIZE);
+
         this.nextTurn();
     }
 

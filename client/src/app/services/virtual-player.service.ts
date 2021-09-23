@@ -76,7 +76,7 @@ export class VirtualPlayerService {
         play.letters.forEach((letter) => this.rack.splice(this.rack.findIndex((rackLetter) => letter.letter === rackLetter)));
     }
 
-    private fillRack(): void {
+    fillRack(): void {
         while (this.reserveService.length > 0 && this.rack.length < Constants.reserve.SIZE) {
             this.rack.push(this.reserveService.drawLetter());
         }
