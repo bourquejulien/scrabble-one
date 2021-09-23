@@ -35,6 +35,7 @@ export class InitSoloModeComponent implements OnInit {
 
     initialize(name: string): void {
         const needsToReroute: boolean = this.confirmInitialization(name);
+
         if (needsToReroute) {
             this.gameService.startGame(this.gameConfig);
             this.router.navigate(['/game']);
@@ -65,7 +66,9 @@ export class InitSoloModeComponent implements OnInit {
                 this.isNameValidator(),
             ]),
         });
+
         this.nameForm = nameForm;
+
         if (nameForm.valid) {
             this.gameConfig.firstPlayerName = name;
             this.botNameChange(this.gameConfig.firstPlayerName);

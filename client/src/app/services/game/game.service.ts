@@ -3,16 +3,17 @@ import { GameConfig } from '@app/classes/game-config';
 import { PlayerType } from '@app/classes/player-type';
 import { Constants } from '@app/constants/global.constants';
 import { BehaviorSubject } from 'rxjs';
+
 @Injectable({
     providedIn: 'root',
 })
 export class GameService {
-    onTurn: BehaviorSubject<PlayerType>;
+    onTurn: BehaviorSubject<PlayerType> = new BehaviorSubject<PlayerType>(PlayerType.Local);
     gameConfig: GameConfig;
 
     startGame(gameConfig: GameConfig) {
         this.gameConfig = gameConfig;
-        this.onTurn = new BehaviorSubject(this.randomizeTurn());
+        this.nextTurn();
     }
 
     endGame() {
@@ -20,10 +21,10 @@ export class GameService {
     }
 
     nextTurn() {
-        this.onTurn?.next(this.onTurn.getValue() === PlayerType.Local ? PlayerType.Virtual : PlayerType.Local);
+        this.onTurn.next(this.onTurn.getValue() === PlayerType.Local ? PlayerType.Virtual : PlayerType.Local);
     }
 
-    private randomizeTurn(): PlayerType {
+    randomizeTurn(): PlayerType {
         return Math.random() < Constants.HALF ? PlayerType.Local : PlayerType.Virtual;
     }
 }

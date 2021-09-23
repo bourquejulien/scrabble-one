@@ -5,7 +5,6 @@ import { BoardService } from '@app/services/board/board.service';
 import { GameService } from '@app/services/game/game.service';
 import { ReserveService } from '@app/services/reserve/reserve.service';
 import { BehaviorSubject } from 'rxjs/internal/BehaviorSubject';
-import { skip } from 'rxjs/operators';
 
 @Injectable({
     providedIn: 'root',
@@ -24,7 +23,7 @@ export class PlayerService {
 
     checkIfLettersInRack(lettersToPlace: string): string {
         for (const letter of lettersToPlace) {
-            if (this.rack.indexOf(letter) === -1) {
+            if (this.rack.indexOf(letter.toUpperCase()) === -1) {
                 return 'You are not in possession of the letter ' + letter + '. Cheating is bad.';
             }
         }
@@ -102,13 +101,13 @@ export class PlayerService {
             this.reserveService.putBackLetter(letter);
         }
         this.updateRack(lettersToExchange);
+
         this.completeTurn();
 
         return '';
     }
 
     completeTurn(): void {
-        this.gameService.onTurn.pipe(skip(1)).subscribe();
         this.gameService.nextTurn();
     }
 

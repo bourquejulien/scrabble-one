@@ -1,8 +1,10 @@
 import { Injectable } from '@angular/core';
+import { PlayerType } from '@app/classes/player-type';
 import { PlayGenerator } from '@app/classes/virtual-player/play-generator';
 import { Constants } from '@app/constants/global.constants';
 import { BoardService } from './board/board.service';
 import { DictionaryService } from './dictionary/dictionary.service';
+import { GameService } from './game/game.service';
 import { ReserveService } from './reserve/reserve.service';
 
 @Injectable({
@@ -15,32 +17,40 @@ export class VirtualPlayerService {
         private readonly boardService: BoardService,
         private readonly reserveService: ReserveService,
         private readonly dictionaryService: DictionaryService,
-    ) {}
+        private readonly gameService: GameService,
+    ) {
+        gameService.onTurn.subscribe((e) => this.onTurn(e));
+    }
 
-    onTurn() {
+    onTurn(playerType: PlayerType) {
+        if (playerType !== PlayerType.Virtual) {
+            return;
+        }
+
         this.fillRack();
 
-        let random = Math.random();
+        // const random = Math.random();
+        this.skipTurn();
 
-        if (random < Constants.virtualPlayer.SKIP_PERCENTAGE) {
-            random -= Constants.virtualPlayer.SKIP_PERCENTAGE;
-            this.skipTurn();
-            return;
-        }
+        // if (random < Constants.virtualPlayer.SKIP_PERCENTAGE) {
+        //     random -= Constants.virtualPlayer.SKIP_PERCENTAGE;
+        //     this.skipTurn();
+        //     return;
+        // }
 
-        if (random < Constants.virtualPlayer.EXCHANGE_PERCENTAGE) {
-            this.exchange();
-            return;
-        }
+        // if (random < Constants.virtualPlayer.EXCHANGE_PERCENTAGE) {
+        //     this.exchange();
+        //     return;
+        // }
 
-        this.play();
+        // this.play();
     }
 
-    private skipTurn() {
-        // TODO Implement in game service
+    skipTurn() {
+        this.gameService.nextTurn();
     }
 
-    private exchange() {
+    exchange() {
         const randomLetterCount = Math.floor(Math.random() * this.rack.length);
 
         for (let i = 0; i < randomLetterCount; i++) {
@@ -52,7 +62,7 @@ export class VirtualPlayerService {
         }
     }
 
-    private play() {
+    play() {
         const generator = new PlayGenerator(this.boardService.gameBoard.clone(), this.dictionaryService, this.boardService, this.rack);
         const scoreRange = this.getScoreRange();
 
