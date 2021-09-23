@@ -44,7 +44,8 @@ export class VirtualPlayerService {
     }
 
     async skipTurn() {
-        await new Promise(resolve => setTimeout(resolve, 1000));
+        const SKIP_TURN_WAIT = 1000;
+        await new Promise((resolve) => setTimeout(resolve, SKIP_TURN_WAIT));
         this.turnComplete.next(PlayerType.Virtual);
     }
 

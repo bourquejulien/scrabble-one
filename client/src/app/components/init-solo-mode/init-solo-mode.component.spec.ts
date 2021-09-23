@@ -1,10 +1,19 @@
-import { CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA } from '@angular/core';
+import { CUSTOM_ELEMENTS_SCHEMA, Injectable, NO_ERRORS_SCHEMA } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormsModule } from '@angular/forms';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { Router } from '@angular/router';
+import { PlayerType } from '@app/classes/player-type';
 import { AppMaterialModule } from '@app/modules/material.module';
+import { GameService } from '@app/services/game/game.service';
 import { InitSoloModeComponent } from './init-solo-mode.component';
+
+@Injectable({
+    providedIn: 'root',
+})
+class GameServiceStub {
+    currentTurn: PlayerType = PlayerType.Local;
+}
 
 describe('InitSoloModeComponent', () => {
     let init: InitSoloModeComponent;
@@ -20,7 +29,10 @@ describe('InitSoloModeComponent', () => {
             declarations: [InitSoloModeComponent],
             imports: [AppMaterialModule, BrowserAnimationsModule, FormsModule],
             schemas: [CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA],
-            providers: [{ provide: Router, useValue: routerMock }],
+            providers: [
+                { provide: Router, useValue: routerMock },
+                { provide: GameService, useValue: GameServiceStub },
+            ],
         }).compileComponents();
     });
 

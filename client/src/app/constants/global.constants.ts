@@ -1,4 +1,5 @@
-/* eslint-disable @typescript-eslint/no-magic-numbers */
+/* eslint-disable @typescript-eslint/naming-convention -- Constants file*/
+/* eslint-disable @typescript-eslint/no-magic-numbers -- Constants file*/
 import { Dictionary } from './dictionary.constants';
 import { Grid } from './grid.constants';
 import { Reserve } from './reserve.constants';
