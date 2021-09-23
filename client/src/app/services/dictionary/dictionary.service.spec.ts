@@ -1,8 +1,8 @@
-import { TestBed } from '@angular/core/testing';
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
-import { DictionaryService } from '@app/services/dictionary/dictionary.service';
+import { TestBed } from '@angular/core/testing';
 import { JsonDictionary } from '@app/classes/dictionary/json-dictionary';
 import { Constants } from '@app/constants/global.constants';
+import { DictionaryService } from '@app/services/dictionary/dictionary.service';
 
 const WORDS = ['pomme', 'orange', 'poire', 'raisin', 'peche', 'banane', 'bananes'];
 const DICTIONARY: JsonDictionary = { title: 'test', description: 'test', words: WORDS };

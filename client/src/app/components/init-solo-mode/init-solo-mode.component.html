@@ -39,10 +39,10 @@
         *Le nom doit seulement être composé de lettres.
     </div>
     <div *ngIf="this.nameForm !== undefined && this.nameForm.get('control')?.hasError('required')" class="alert">*Un nom doit être entré.</div>
-    <div *ngIf="this.nameForm !== undefined && this.nameForm.get('control')?.hasError('minLength')" class="alert">
+    <div *ngIf="this.nameForm !== undefined && this.nameForm.get('control')?.hasError('minlength')" class="alert">
         *Le nom doit contenir au moins 3 caractères.
     </div>
-    <div *ngIf="this.nameForm !== undefined && this.nameForm.get('control')?.hasError('maxLength')" class="alert">
+    <div *ngIf="this.nameForm !== undefined && this.nameForm.get('control')?.hasError('maxlength')" class="alert">
         *Le nom doit au maximum contenir 16 lettres.
     </div>
     <div *ngIf="this.nameForm !== undefined && this.nameForm.get('control')?.hasError('startsWithLowerLetter')" class="alert">
