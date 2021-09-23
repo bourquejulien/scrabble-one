@@ -7,12 +7,6 @@ import { BehaviorSubject } from 'rxjs';
 })
 export class GameService {
     onTurn = new BehaviorSubject<boolean>(false);
-    time: number;
-    gameType: string;
-    minutes: number;
-    seconds: number;
-    firstPlayerName: string;
-    secondPlayerName: string;
     gameConfig: GameConfig = {
         gameType: Constants.gameTypesList[0],
         minutes: Constants.turnLengthMinutes[1],
