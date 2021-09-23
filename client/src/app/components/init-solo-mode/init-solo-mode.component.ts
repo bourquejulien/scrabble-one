@@ -2,7 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup, ValidatorFn, Validators } from '@angular/forms';
 import { Constants } from '@app/constants/global.constants';
 import { GameService } from '@app/services/game/game.service';
-import { MatDialogRef} from '@angular/material/dialog';
+import { MatDialogRef } from '@angular/material/dialog';
+import { Router } from '@angular/router';
 
 @Component({
     selector: 'app-init-solo-mode',
@@ -17,7 +18,7 @@ export class InitSoloModeComponent implements OnInit {
     readonly secondsList = Constants.turnLengthSeconds;
     nameForm: FormGroup;
 
-    constructor(public game: GameService,public dialogRef: MatDialogRef<InitSoloModeComponent>,) {}
+    constructor(public game: GameService,public router: Router,public dialogRef: MatDialogRef<InitSoloModeComponent> ) {}
 
     ngOnInit(): void {
         this.game.gameConfig.secondPlayerName = this.randomizeBotName(this.botNames);
@@ -30,9 +31,11 @@ export class InitSoloModeComponent implements OnInit {
     }
 
     initialize(name: string): void {
+        console.log(name);
         const needsToReroute: boolean = this.confirmInitialization(name);
         if (needsToReroute) {
-            // reroute
+            this.router.navigate(['game']);
+            this.dialogRef.close();
         }
     }
 
@@ -45,6 +48,7 @@ export class InitSoloModeComponent implements OnInit {
         return this.nameValidatorFunction as ValidatorFn;
     }
     private confirmInitialization(name: string): boolean {
+        console.log("bouton appuye");
         const nameForm = new FormGroup({
             control: new FormControl(name, [
                 Validators.required,
@@ -60,18 +64,23 @@ export class InitSoloModeComponent implements OnInit {
             this.botNameChange(this.game.gameConfig.firstPlayerName);
             // Had to cast the parts of the addition to Numbers otherwise it was considered as a string
             this.game.gameConfig.time = Number(this.game.gameConfig.minutes * Constants.timeConstant) + Number(this.game.gameConfig.seconds);
+            console.log("init");
             return true;
+
         }
+        console.log("no init");
         return false;
     }
     private nameValidatorFunction(control: FormControl): { [key: string]: boolean } | null {
         // We make sure that player name is considered as a string
         const playerName = control.value as string;
-        if (playerName !== undefined && playerName !== null) {
+        console.log(playerName);
+        if (playerName !== undefined && playerName !== null ) {
             for (let index = 0; index < playerName.length; index++) {
                 if (!/[a-zA-Z||ÉéÎîÉéÇçÏï]/.test(playerName.charAt(index))) return { ['containsOnlyLetters']: true };
             }
             const firstLetter = playerName[0];
+            console.log(firstLetter,playerName[0]);
             if (firstLetter !== firstLetter.toUpperCase()) {
                 return { ['startsWithLowerLetter']: true };
             }

@@ -15,7 +15,7 @@ export class GameModePageComponent {
     time:number;
     openDialog(): void {
         const dialogRef = this.dialog.open(InitSoloModeComponent, {
-          width: '250px',
+          width: '0px',
           data: {name: this.name, gameType: this.gameType, time:this.time}
         });
     
