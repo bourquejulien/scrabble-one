@@ -47,12 +47,10 @@ export class Timer {
     }
 
     startTimer(): void {
-        console.log('started timer');
         this.startCountdown.next();
     }
 
     stopTimer(): void {
-        console.log('stopped timer');
         this.displayedMinutes = this.minutesLimit;
         this.displayedSeconds = this.secondsLimit;
         this.stopCountdown.next();
@@ -72,6 +70,5 @@ export class Timer {
         if (timerToStart.displayedSeconds <= 0 && timerToStart.displayedMinutes <= 0) {
             timerToStart.stopTimer();
         }
-        console.log(timerToStart.displayedTimer);
     }
 }
