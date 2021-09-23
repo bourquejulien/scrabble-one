@@ -17,7 +17,7 @@ export class GameService {
     seconds: number;
     onTurn = new BehaviorSubject<boolean>(false);
 
-    constructor(public router:Router){}
+    constructor(public router: Router) {}
 
     botNameChange(firstPlayerName: string): void {
         while (firstPlayerName === this.secondPlayerName) {

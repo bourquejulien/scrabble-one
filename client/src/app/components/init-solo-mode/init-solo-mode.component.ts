@@ -18,7 +18,7 @@ export class InitSoloModeComponent implements OnInit {
     readonly secondsList = Constants.turnLengthSeconds;
     nameForm: FormGroup;
 
-    constructor(public game: GameService,public router: Router,public dialogRef: MatDialogRef<InitSoloModeComponent> ) {}
+    constructor(public game: GameService, public router: Router, public dialogRef: MatDialogRef<InitSoloModeComponent>) {}
 
     ngOnInit(): void {
         this.game.gameConfig.secondPlayerName = this.randomizeBotName(this.botNames);
@@ -31,7 +31,6 @@ export class InitSoloModeComponent implements OnInit {
     }
 
     initialize(name: string): void {
-        console.log(name);
         const needsToReroute: boolean = this.confirmInitialization(name);
         if (needsToReroute) {
             this.router.navigate(['game']);
@@ -64,14 +63,13 @@ export class InitSoloModeComponent implements OnInit {
             // Had to cast the parts of the addition to Numbers otherwise it was considered as a string
             this.game.gameConfig.time = Number(this.game.gameConfig.minutes * Constants.timeConstant) + Number(this.game.gameConfig.seconds);
             return true;
-
         }
         return false;
     }
     private nameValidatorFunction(control: FormControl): { [key: string]: boolean } | null {
         // We make sure that player name is considered as a string
         const playerName = control.value as string;
-        if (playerName !== undefined && playerName !== null && playerName !== "") {
+        if (playerName !== undefined && playerName !== null && playerName !== '') {
             for (let index = 0; index < playerName.length; index++) {
                 if (!/[a-zA-Z||ÉéÎîÉéÇçÏï]/.test(playerName.charAt(index))) return { ['containsOnlyLetters']: true };
             }
@@ -82,8 +80,4 @@ export class InitSoloModeComponent implements OnInit {
         }
         return null;
     }
-
-    onNoClick(): void {
-        this.dialogRef.close();
-      }
 }

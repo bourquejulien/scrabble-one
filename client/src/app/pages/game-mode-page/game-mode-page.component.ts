@@ -1,7 +1,6 @@
 import { Component } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
-import {InitSoloModeComponent} from '@app/components/init-solo-mode/init-solo-mode.component';
-
+import { InitSoloModeComponent } from '@app/components/init-solo-mode/init-solo-mode.component';
 
 @Component({
     selector: 'app-game-mode-page',
@@ -9,19 +8,18 @@ import {InitSoloModeComponent} from '@app/components/init-solo-mode/init-solo-mo
     styleUrls: ['./game-mode-page.component.scss'],
 })
 export class GameModePageComponent {
+    name: string;
+    gameType: string;
+    time: number;
     constructor(public dialog: MatDialog) {}
-    name:string;
-    gameType:string;
-    time:number;
     openDialog(): void {
         const dialogRef = this.dialog.open(InitSoloModeComponent, {
-          width: '0px',
-          data: {name: this.name, gameType: this.gameType, time:this.time}
+            width: '0px',
+            data: { name: this.name, gameType: this.gameType, time: this.time },
         });
-    
-    dialogRef.afterClosed().subscribe(result => {
-        console.log('The dialog was closed');
-        this.name = result;
-      });
+
+        dialogRef.afterClosed().subscribe((result) => {
+            this.name = result;
+        });
     }
 }
