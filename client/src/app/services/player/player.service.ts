@@ -25,6 +25,46 @@ export class PlayerService {
         this.turnComplete = new Subject<PlayerType>();
     }
 
+    isCapitalLetter(letter: string): boolean {
+        // eslint-disable-next-line @typescript-eslint/no-magic-numbers
+        return letter.charCodeAt(0) >= 65 && letter.charCodeAt(0) <= 90;
+    }
+
+    checkIfLettersInRack(lettersToPlace: string): string {
+        for (let letter of lettersToPlace) {
+            if (this.isCapitalLetter(letter)) {
+                letter = '*';
+            }
+            if (this.rack.indexOf(letter.toUpperCase()) === -1) {
+                return 'You are not in possession of the letter ' + letter + '. Cheating is bad.';
+            }
+        }
+        return '';
+    }
+
+    updateReserve(lettersToPlace: string): string {
+        const reserveLength = this.reserveService.length;
+        const lettersToPlaceLength = lettersToPlace.length;
+
+        if (this.reserveService.length === 0) return 'The reserve is empty. You cannot draw any letters.';
+
+        if (this.reserveService.length <= lettersToPlace.length) {
+            for (let i = 0; i < reserveLength; i++) {
+                this.rack.push(this.reserveService.drawLetter());
+            }
+            return 'The reserve is now empty. You cannot draw any more letters.';
+        }
+
+        if (this.reserveService.length > lettersToPlace.length) {
+            for (let i = 0; i < lettersToPlaceLength; i++) {
+                this.rack.push(this.reserveService.drawLetter());
+            }
+            return '';
+        }
+
+        return '';
+    }
+
     placeLetters(word: string, position: Vec2, direction: Direction): string {
         const lettersToPlace = this.boardService.retrieveNewLetters(word, position, direction);
         const rackMessage = this.checkIfLettersInRack(word);
@@ -86,38 +126,6 @@ export class PlayerService {
     // For testing
     get length(): number {
         return this.rack.length;
-    }
-
-    private updateReserve(lettersToPlace: string): string {
-        const reserveLength = this.reserveService.length;
-        const lettersToPlaceLength = lettersToPlace.length;
-
-        if (this.reserveService.length === 0) return 'The reserve is empty. You cannot draw any letters.';
-
-        if (this.reserveService.length <= lettersToPlace.length) {
-            for (let i = 0; i < reserveLength; i++) {
-                this.rack.push(this.reserveService.drawLetter());
-            }
-            return 'The reserve is now empty. You cannot draw any more letters.';
-        }
-
-        if (this.reserveService.length > lettersToPlace.length) {
-            for (let i = 0; i < lettersToPlaceLength; i++) {
-                this.rack.push(this.reserveService.drawLetter());
-            }
-            return '';
-        }
-
-        return 'There was a problem with reserve service. Try again.';
-    }
-
-    private checkIfLettersInRack(lettersToPlace: string): string {
-        for (const letter of lettersToPlace) {
-            if (this.rack.indexOf(letter.toUpperCase()) === -1) {
-                return 'You are not in possession of the letter ' + letter + '. Cheating is bad.';
-            }
-        }
-        return '';
     }
 
     private updateRack(lettersToPlace: string): void {
