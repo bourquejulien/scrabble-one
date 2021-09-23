@@ -38,7 +38,7 @@ export class InitSoloModeComponent implements OnInit {
 
         if (needsToReroute) {
             this.gameService.startGame(this.gameConfig);
-            this.router.navigate(['/game']);
+            this.router.navigate(['game']);
         }
     }
 
