@@ -9,7 +9,31 @@ export class MessagingService {
     debuggingMode: boolean; // When debugging is on, we send error and log messages
     private subject = new Subject<Message>();
 
-    sendMessage(message: Message) {
+    log(title: string, body: string): void {
+        this.sendMessage({
+            title,
+            body,
+            messageType: 'Log',
+            userId: 1,
+            timestamp: Date.now(),
+        });
+    }
+
+    sendUserMessage(input: string) {
+        this.sendMessage({
+            title: '',
+            body: `${input}`,
+            messageType: 'UserMessage',
+            userId: 1,
+            timestamp: Date.now(),
+        });
+    }
+
+    onMessage(): Observable<Message> {
+        return this.subject.asObservable();
+    }
+
+    private sendMessage(message: Message) {
         if (this.debuggingMode) {
             // Every message passes through when debugging is on
             this.subject.next(message);
@@ -19,9 +43,5 @@ export class MessagingService {
             this.subject.next(message);
             // }
         }
-    }
-
-    onMessage(): Observable<Message> {
-        return this.subject.asObservable();
     }
 }
