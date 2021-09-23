@@ -43,8 +43,11 @@ export class CommandsService {
                 if (options && options[1] && this.wordRegex.test(word)) {
                     // N.B.: the letter 'a' has value 97, hence the magic number
                     // eslint-disable-next-line @typescript-eslint/no-magic-numbers
-                    const xCoordinate: number = (options[1].charCodeAt(0) - 97) as number;
-                    const yCoordinate = Number(options[2].toString()) - 1;
+                    const CHAR_OFFSET = 97;
+
+                    const xCoordinate: number = Number(options[2].toString()) - 1;
+                    const yCoordinate: number = (options[1].charCodeAt(0) - CHAR_OFFSET) as number;
+
                     const direction: Direction = options[3] === 'v' ? Direction.Down : Direction.Right;
                     const vecCoordinate: Vec2 = { x: xCoordinate, y: yCoordinate };
                     const operationResult: string = this.playerService.placeLetters(word, vecCoordinate, direction);
