@@ -48,7 +48,6 @@ export class InitSoloModeComponent implements OnInit {
         return this.nameValidatorFunction as ValidatorFn;
     }
     private confirmInitialization(name: string): boolean {
-        console.log("bouton appuye");
         const nameForm = new FormGroup({
             control: new FormControl(name, [
                 Validators.required,
@@ -64,23 +63,19 @@ export class InitSoloModeComponent implements OnInit {
             this.botNameChange(this.game.gameConfig.firstPlayerName);
             // Had to cast the parts of the addition to Numbers otherwise it was considered as a string
             this.game.gameConfig.time = Number(this.game.gameConfig.minutes * Constants.timeConstant) + Number(this.game.gameConfig.seconds);
-            console.log("init");
             return true;
 
         }
-        console.log("no init");
         return false;
     }
     private nameValidatorFunction(control: FormControl): { [key: string]: boolean } | null {
         // We make sure that player name is considered as a string
         const playerName = control.value as string;
-        console.log(playerName);
         if (playerName !== undefined && playerName !== null && playerName !== "") {
             for (let index = 0; index < playerName.length; index++) {
                 if (!/[a-zA-Z||ÉéÎîÉéÇçÏï]/.test(playerName.charAt(index))) return { ['containsOnlyLetters']: true };
             }
             const firstLetter = playerName[0];
-            console.log(firstLetter,playerName[0]);
             if (firstLetter !== firstLetter.toUpperCase()) {
                 return { ['startsWithLowerLetter']: true };
             }
