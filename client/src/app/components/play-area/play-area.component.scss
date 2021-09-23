@@ -1,28 +1,46 @@
 #board {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
     position: relative;
+    //max-height: 100%;
 }
 
 #grid-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
     position: relative;
 }
 
-#gridCanvas {
-    z-index: 0;
+.board-display {
+    flex-wrap: wrap;
+    position: relative;
 }
 
-#squareCanvas {
+#grid-canvas {
+    z-index: 0;
+    position: absolute;
+}
+
+#square-canvas {
     z-index: 1;
+    position: absolute;
 }
 
 .rack {
-    margin-top: 3rem;
+    margin-top: 2rem;
     display: flex;
     justify-content: center;
     align-items: center;
 }
 
 canvas {
-    position: absolute;
+    display: flex;
+    justify-content: center;
+    align-items: center;
     left: 0;
     top: 0;
 }
