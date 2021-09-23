@@ -112,7 +112,7 @@ export class PlayerService {
 
     private updateRack(lettersToPlace: string): void {
         for (const letter of lettersToPlace) {
-            const letterIndex = this.rack.indexOf(letter.toUpperCase());
+            const letterIndex = this.rack.indexOf(letter);
             if (letterIndex === -1) return;
             this.rack.splice(letterIndex, 1);
         }
@@ -128,7 +128,7 @@ export class PlayerService {
             if (this.isCapitalLetter(letter)) {
                 letter = '*';
             }
-            if (this.rack.indexOf(letter.toUpperCase()) === -1) {
+            if (this.rack.indexOf(letter) === -1) {
                 return 'You are not in possession of the letter ' + letter + '. Cheating is bad.';
             }
         }
