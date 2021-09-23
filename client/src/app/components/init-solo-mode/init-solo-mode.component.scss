@@ -1,14 +1,17 @@
 #container {
     position: absolute;
+    top: 350px;
+    left:700px;
     font-family: 'Poppins', sans-serif;
     display: flex;
     flex-direction: column;
     align-items: center;
-    height: 65%;
-    width: 30%;
+    height: 500px;
+    width: 500px;
     font-size: 1.5rem;
-    background-color: lightblue;
+    background-color: #eae7dc;
     border: 2px solid black;
+    border-radius: 10px;
 }
 
 #title {

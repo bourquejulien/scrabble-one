@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup, ValidatorFn, Validators } from '@angular/forms';
 import { Constants } from '@app/constants/global.constants';
 import { GameService } from '@app/services/game/game.service';
+import { MatDialogRef} from '@angular/material/dialog';
 
 @Component({
     selector: 'app-init-solo-mode',
@@ -16,7 +17,7 @@ export class InitSoloModeComponent implements OnInit {
     readonly secondsList = Constants.turnLengthSeconds;
     nameForm: FormGroup;
 
-    constructor(public game: GameService) {}
+    constructor(public game: GameService,public dialogRef: MatDialogRef<InitSoloModeComponent>,) {}
 
     ngOnInit(): void {
         this.game.gameConfig.secondPlayerName = this.randomizeBotName(this.botNames);
@@ -77,4 +78,8 @@ export class InitSoloModeComponent implements OnInit {
         }
         return null;
     }
+
+    onNoClick(): void {
+        this.dialogRef.close();
+      }
 }
