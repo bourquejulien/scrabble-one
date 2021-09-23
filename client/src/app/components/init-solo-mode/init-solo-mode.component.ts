@@ -75,7 +75,7 @@ export class InitSoloModeComponent implements OnInit {
         // We make sure that player name is considered as a string
         const playerName = control.value as string;
         console.log(playerName);
-        if (playerName !== undefined && playerName !== null ) {
+        if (playerName !== undefined && playerName !== null && playerName !== "") {
             for (let index = 0; index < playerName.length; index++) {
                 if (!/[a-zA-Z||ÉéÎîÉéÇçÏï]/.test(playerName.charAt(index))) return { ['containsOnlyLetters']: true };
             }

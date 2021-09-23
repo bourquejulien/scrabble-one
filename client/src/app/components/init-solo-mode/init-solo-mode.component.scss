@@ -1,12 +1,12 @@
 #container {
-    position: absolute;
-    top: 350px;
-    left:700px;
+    position: fixed;
+    top: 200px;
+    left:500px;
     font-family: 'Poppins', sans-serif;
     display: flex;
     flex-direction: column;
     align-items: center;
-    height: 500px;
+    height: 530px;
     width: 500px;
     font-size: 1.5rem;
     background-color: #eae7dc;
@@ -59,7 +59,7 @@
 
 #confirm {
     position: absolute;
-    margin: 90%;
+    margin: 95%;
 }
 
 #confirm:hover {
