@@ -3,7 +3,6 @@ import { PlayerType } from '@app/classes/player-type';
 import { Constants } from '@app/constants/global.constants';
 import { GridService } from '@app/services/grid/grid.service';
 import { MouseHandlingService } from '@app/services/mouse-handling/mouse-handling.service';
-
 @Component({
     selector: 'app-play-area',
     templateUrl: './play-area.component.html',

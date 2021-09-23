@@ -3,7 +3,7 @@
     <p class="inputPresentationText">Mode de Jeu</p>
     <mat-form-field class="inputs" appearance="fill">
         <mat-label>Mode de jeu</mat-label>
-        <mat-select name="gameTypes" appearance="fill">
+        <mat-select name="gameTypes" appearance="fill" [(ngModel)]="gameConfig.gameType">
             <mat-option *ngFor="let gameType of gameTypesList" [value]="gameType">{{ gameType }}</mat-option>
         </mat-select>
     </mat-form-field>
@@ -11,13 +11,13 @@
     <div class="playersFlex">
         <mat-form-field class="inputs" style="margin-right: 15px" appearance="fill">
             <mat-label>Minutes</mat-label>
-            <mat-select name="minutesPerTurn">
+            <mat-select name="minutesPerTurn" [(ngModel)]="gameConfig.minutes">
                 <mat-option *ngFor="let minutes of minutesList" [value]="minutes">{{ minutes }} </mat-option>
             </mat-select>
         </mat-form-field>
         <mat-form-field class="inputs" appearance="fill">
             <mat-label>Secondes</mat-label>
-            <mat-select name="secondsPerTurn">
+            <mat-select name="secondsPerTurn" [(ngModel)]="gameConfig.seconds">
                 <mat-option *ngFor="let seconds of secondsList" [value]="seconds">{{ seconds }}</mat-option>
             </mat-select>
         </mat-form-field>
@@ -39,12 +39,11 @@
         class="alert">
         *Le nom doit seulement être composé de lettres.
     </div>
-    <div *ngIf="this.nameForm !== undefined && this.nameForm.get('control')?.hasError('required')" class="alert">*Un nom
-        doit être entré.</div>
-    <div *ngIf="this.nameForm !== undefined && this.nameForm.get('control')?.hasError('minLength')" class="alert">
+    <div *ngIf="this.nameForm !== undefined && this.nameForm.get('control')?.hasError('required')" class="alert">*Un nom doit être entré.</div>
+    <div *ngIf="this.nameForm !== undefined && this.nameForm.get('control')?.hasError('minlength')" class="alert">
         *Le nom doit contenir au moins 3 caractères.
     </div>
-    <div *ngIf="this.nameForm !== undefined && this.nameForm.get('control')?.hasError('maxLength')" class="alert">
+    <div *ngIf="this.nameForm !== undefined && this.nameForm.get('control')?.hasError('maxlength')" class="alert">
         *Le nom doit au maximum contenir 16 lettres.
     </div>
     <div *ngIf="this.nameForm !== undefined && this.nameForm.get('control')?.hasError('startsWithLowerLetter')"

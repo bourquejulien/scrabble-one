@@ -1,7 +1,9 @@
+import { CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { NgModel } from '@angular/forms';
-import { MatIcon } from '@angular/material/icon';
+import { FormsModule } from '@angular/forms';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { Router } from '@angular/router';
+import { AppMaterialModule } from '@app/modules/material.module';
 import { InitSoloModeComponent } from './init-solo-mode.component';
 
 describe('InitSoloModeComponent', () => {
@@ -15,7 +17,9 @@ describe('InitSoloModeComponent', () => {
 
     beforeEach(async () => {
         await TestBed.configureTestingModule({
-            declarations: [InitSoloModeComponent, MatIcon, NgModel],
+            declarations: [InitSoloModeComponent],
+            imports: [AppMaterialModule, BrowserAnimationsModule, FormsModule],
+            schemas: [CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA],
             providers: [{ provide: Router, useValue: routerMock }],
         }).compileComponents();
     });
