@@ -37,6 +37,8 @@ export class GridService {
     }
 
     drawGrid(gridContext: CanvasRenderingContext2D): void {
+        gridContext.clearRect(0, 0, this.width, this.height);
+
         for (let i = 1; i < this.playGridSize + 1; i++) {
             this.drawSymbol(i.toString(), { x: i, y: 0 }, gridContext);
             this.drawSymbol(String.fromCharCode('A'.charCodeAt(0) + i - 1), { x: 0, y: i }, gridContext);
@@ -66,11 +68,13 @@ export class GridService {
     }
 
     drawSquares(squareContext: CanvasRenderingContext2D): void {
+        squareContext.clearRect(0, 0, this.width, this.height);
+
         for (let x = 0; x < this.playGridSize; x++) {
             for (let y = 0; y < this.playGridSize; y++) {
                 const square = this.board.getSquare({ x, y });
                 if (square.letter !== '') {
-                    this.drawSymbol(square.letter, { x: x + 1, y: y + 1 }, squareContext);
+                    this.drawSymbol(square.letter.toUpperCase(), { x: x + 1, y: y + 1 }, squareContext);
                 } else if (square.bonus !== Bonus.None) {
                     this.drawBonus(square.bonus, { x: x + 1, y: y + 1 }, squareContext);
                 }

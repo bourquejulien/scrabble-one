@@ -2,7 +2,6 @@ import { Injectable } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { Direction } from '@app/classes/board/direction';
 import { Vec2 } from '@app/classes/vec2';
-
 import { BoardService } from '@app/services/board/board.service';
 import { DictionaryService } from '@app/services/dictionary/dictionary.service';
 

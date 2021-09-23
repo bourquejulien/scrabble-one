@@ -3,7 +3,6 @@ import { PlayerType } from '@app/classes/player-type';
 import { Constants } from '@app/constants/global.constants';
 import { GridService } from '@app/services/grid/grid.service';
 import { MouseHandlingService } from '@app/services/mouse-handling/mouse-handling.service';
-
 @Component({
     selector: 'app-play-area',
     templateUrl: './play-area.component.html',
@@ -32,7 +31,7 @@ export class PlayAreaComponent implements AfterViewInit, OnChanges {
     }
 
     ngOnChanges(changes: SimpleChanges): void {
-        if (!changes.playerType.isFirstChange && changes.playerType.currentValue !== changes.playerType.previousValue) {
+        if (!changes.playerType.isFirstChange() && changes.playerType.currentValue !== changes.playerType.previousValue) {
             this.gridService.drawSquares(this.squareContext);
         }
     }

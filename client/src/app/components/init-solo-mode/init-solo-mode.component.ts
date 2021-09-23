@@ -1,9 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup, ValidatorFn, Validators } from '@angular/forms';
+import { Router } from '@angular/router';
+import { GameConfig } from '@app/classes/game-config';
 import { Constants } from '@app/constants/global.constants';
 import { GameService } from '@app/services/game/game.service';
 import { MatDialogRef } from '@angular/material/dialog';
-import { Router } from '@angular/router';
 
 @Component({
     selector: 'app-init-solo-mode',
@@ -18,34 +19,46 @@ export class InitSoloModeComponent implements OnInit {
     readonly secondsList = Constants.turnLengthSeconds;
     nameForm: FormGroup;
 
-    constructor(public game: GameService, public router: Router, public dialogRef: MatDialogRef<InitSoloModeComponent>) {}
+    gameConfig: GameConfig = {
+        gameType: Constants.gameTypesList[0],
+        minutes: Constants.turnLengthMinutes[1],
+        seconds: Constants.turnLengthSeconds[0],
+        time: 0,
+        firstPlayerName: '',
+        secondPlayerName: '',
+    };
+
+    constructor(public gameService: GameService, private router: Router,public dialogRef: MatDialogRef<InitSoloModeComponent>) {}
 
     ngOnInit(): void {
-        this.game.gameConfig.secondPlayerName = this.randomizeBotName(this.botNames);
-    }
-
-    botNameChange(firstPlayerName: string): void {
-        while (firstPlayerName === this.game.gameConfig.secondPlayerName) {
-            this.game.gameConfig.secondPlayerName = this.randomizeBotName(Constants.botNames);
-        }
+        this.gameConfig.secondPlayerName = this.randomizeBotName(this.botNames);
     }
 
     initialize(name: string): void {
         const needsToReroute: boolean = this.confirmInitialization(name);
+
         if (needsToReroute) {
+            this.gameService.startGame(this.gameConfig);
             this.router.navigate(['game']);
             this.dialogRef.close();
         }
     }
 
-    randomizeBotName(nameArr: string[]): string {
+    private botNameChange(firstPlayerName: string): void {
+        while (firstPlayerName === this.gameConfig.secondPlayerName) {
+            this.gameConfig.secondPlayerName = this.randomizeBotName(Constants.botNames);
+        }
+    }
+
+    private randomizeBotName(nameArr: string[]): string {
         const randomIndex = Math.floor(Math.random() * nameArr.length);
         return nameArr[randomIndex];
     }
 
-    isNameValidator(): ValidatorFn {
+    private isNameValidator(): ValidatorFn {
         return this.nameValidatorFunction as ValidatorFn;
     }
+
     private confirmInitialization(name: string): boolean {
         const nameForm = new FormGroup({
             control: new FormControl(name, [
@@ -55,17 +68,19 @@ export class InitSoloModeComponent implements OnInit {
                 this.isNameValidator(),
             ]),
         });
+
         this.nameForm = nameForm;
+
         if (nameForm.valid) {
-            this.game.randomizeTurn();
-            this.game.gameConfig.firstPlayerName = name;
-            this.botNameChange(this.game.gameConfig.firstPlayerName);
+            this.gameConfig.firstPlayerName = name;
+            this.botNameChange(this.gameConfig.firstPlayerName);
             // Had to cast the parts of the addition to Numbers otherwise it was considered as a string
-            this.game.gameConfig.time = Number(this.game.gameConfig.minutes * Constants.timeConstant) + Number(this.game.gameConfig.seconds);
+            this.gameConfig.time = Number(this.gameConfig.minutes * Constants.timeConstant) + Number(this.gameConfig.seconds);
             return true;
         }
         return false;
     }
+
     private nameValidatorFunction(control: FormControl): { [key: string]: boolean } | null {
         // We make sure that player name is considered as a string
         const playerName = control.value as string;
@@ -73,6 +88,7 @@ export class InitSoloModeComponent implements OnInit {
             for (let index = 0; index < playerName.length; index++) {
                 if (!/[a-zA-Z||ÉéÎîÉéÇçÏï]/.test(playerName.charAt(index))) return { ['containsOnlyLetters']: true };
             }
+
             const firstLetter = playerName[0];
             if (firstLetter !== firstLetter.toUpperCase()) {
                 return { ['startsWithLowerLetter']: true };

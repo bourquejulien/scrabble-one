@@ -22,7 +22,6 @@ export class RackComponent implements OnInit {
         const currentLetterData = letterDefinitions.get(letter);
 
         if (currentLetterData?.points === undefined) return -1;
-        if (letter === ' ') return 0;
 
         return currentLetterData.points;
     }
@@ -31,9 +30,6 @@ export class RackComponent implements OnInit {
         this.rack = [];
 
         for (const letter of this.playerService.rack) {
-            if (letter === '*') {
-                this.rack.push(' ');
-            }
             this.rack.push(letter);
         }
     }
