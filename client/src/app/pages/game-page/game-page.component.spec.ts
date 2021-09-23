@@ -32,7 +32,7 @@ class GridServiceStub {
 })
 class GameServiceStub {
     currentTurn: PlayerType = PlayerType.Local;
-    gameConfig: GameConfig  = {
+    gameConfig: GameConfig = {
         gameType: Constants.gameTypesList[0],
         minutes: Constants.turnLengthMinutes[1],
         seconds: Constants.turnLengthSeconds[0],

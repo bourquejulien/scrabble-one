@@ -1,3 +1,4 @@
+/* eslint-disable max-classes-per-file -- Multiple stub implementation needed */
 import { CUSTOM_ELEMENTS_SCHEMA, Injectable, NO_ERRORS_SCHEMA } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormsModule } from '@angular/forms';
@@ -9,7 +10,6 @@ import { AppMaterialModule } from '@app/modules/material.module';
 import { GameService } from '@app/services/game/game.service';
 import { InitSoloModeComponent } from './init-solo-mode.component';
 
-
 @Injectable({
     providedIn: 'root',
 })
@@ -19,7 +19,7 @@ class GameServiceStub {
 
 class MatDialogStub {
     close() {
-        console.log('closing')
+        // Does nothing
     }
 }
 
@@ -40,7 +40,7 @@ describe('InitSoloModeComponent', () => {
             providers: [
                 { provide: Router, useValue: routerMock },
                 { provide: GameService, useValue: GameServiceStub },
-                { provide: MatDialogRef, useValue: MatDialogStub}
+                { provide: MatDialogRef, useValue: MatDialogStub },
             ],
         }).compileComponents();
     });
