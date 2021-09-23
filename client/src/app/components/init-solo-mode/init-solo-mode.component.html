@@ -31,7 +31,7 @@
         </mat-form-field>
         <mat-form-field appearance="fill">
             <mat-label>Joueur 2</mat-label>
-            <input matInput placeholder="Joueur 2" value="{{ this.gameConfig.secondPlayerName }}" />
+            <input matInput placeholder="Joueur 2" value="{{ gameConfig.secondPlayerName }}" />
         </mat-form-field>
     </form>
 
@@ -50,6 +50,6 @@
         class="alert">
         *Le nom doit débuter par une majuscule.
     </div>
-    <button (click)="this.initialize(this.gameConfig.firstPlayerName)" mat-raised-button color="primary"
+    <button (click)="this.initialize(gameConfig.firstPlayerName)" mat-raised-button color="primary"
         id="confirm">Confirmer</button>
 </div>

@@ -1,14 +1,17 @@
 #container {
-    position: absolute;
+    position: fixed;
+    top:25%;
+    left: 34%;
     font-family: 'Poppins', sans-serif;
     display: flex;
     flex-direction: column;
     align-items: center;
-    height: 65%;
-    width: 30%;
+    height: 530px;
+    width: 500px;
     font-size: 1.5rem;
-    background-color: lightblue;
+    background-color: #eae7dc;
     border: 2px solid black;
+    border-radius: 10px;
 }
 
 #title {
@@ -56,7 +59,7 @@
 
 #confirm {
     position: absolute;
-    margin: 90%;
+    margin: 95%;
 }
 
 #confirm:hover {
@@ -70,14 +73,6 @@
     margin-top: 10px;
 }
 
-.example-form {
-    display: flex;
-    justify-content: center;
-    min-width: 50px;
-    max-width: 100px;
-    height: 30px;
-    width: 50%;
-}
 
 .inputs {
     font-size: 15px;
