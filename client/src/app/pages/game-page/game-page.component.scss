@@ -20,7 +20,7 @@ mat-drawer-container {
 .play-area-container > *{
     flex: 1 1 auto;
     align-items: center;
-    position: relative;
+    position: fixed;
     z-index: 1;
 }
 
@@ -64,5 +64,9 @@ mat-drawer-container {
 .toolbar {
     justify-content: space-between;
     z-index: 2;
+}
+
+#tools-container{
+    display: flex;
 }
 
