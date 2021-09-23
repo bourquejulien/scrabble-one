@@ -26,19 +26,21 @@ export class PlayerService {
     }
 
     placeLetters(word: string, position: Vec2, direction: Direction): string {
-        const lettersToPlace = this.boardService.retrieveNewLetters(word, position, direction);
-        const rackMessage = this.checkIfLettersInRack(word);
+        const positionToPlace = this.boardService.retrieveNewLetters(word, position, direction);
+        const lettersToPlace = positionToPlace.map((e) => e.letter).join('');
+
+        const rackMessage = this.checkIfLettersInRack(lettersToPlace);
         if (rackMessage !== '') return rackMessage;
 
-        const validationData = this.boardService.lookupLetters(lettersToPlace);
+        const validationData = this.boardService.lookupLetters(positionToPlace);
 
         if (!validationData.isSuccess) return validationData.description;
 
-        this.updateRack(lettersToPlace.map((e) => e.letter).join());
-        this.updateReserve(lettersToPlace.length);
+        this.updateRack(lettersToPlace);
+        this.updateReserve(positionToPlace.length);
         this.rackUpdated.next(!this.rackUpdated.getValue());
 
-        this.boardService.placeLetters(lettersToPlace);
+        this.boardService.placeLetters(positionToPlace);
 
         this.completeTurn();
 
