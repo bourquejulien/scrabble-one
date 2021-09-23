@@ -1,7 +1,9 @@
 #container {
     position: fixed;
-    top: 200px;
-    left:500px;
+    // top: 200px;
+    // left:525px;
+    top:25%;
+    left: 34%;
     font-family: 'Poppins', sans-serif;
     display: flex;
     flex-direction: column;
@@ -73,14 +75,6 @@
     margin-top: 10px;
 }
 
-.example-form {
-    display: flex;
-    justify-content: center;
-    min-width: 50px;
-    max-width: 100px;
-    height: 30px;
-    width: 50%;
-}
 
 .inputs {
     font-size: 15px;
