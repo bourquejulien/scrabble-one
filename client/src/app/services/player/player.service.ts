@@ -22,9 +22,17 @@ export class PlayerService {
         }
     }
 
+    isCapitalLetter(letter: string): boolean {
+        // eslint-disable-next-line @typescript-eslint/no-magic-numbers
+        return letter.charCodeAt(0) >= 65 && letter.charCodeAt(0) <= 90;
+    }
+
     checkIfLettersInRack(lettersToPlace: string): string {
-        for (const letter of lettersToPlace) {
-            if (this.rack.indexOf(letter) === -1) {
+        for (let letter of lettersToPlace) {
+            if (this.isCapitalLetter(letter)) {
+                letter = '*';
+            }
+            if (this.rack.indexOf(letter.toUpperCase()) === -1) {
                 return 'You are not in possession of the letter ' + letter + '. Cheating is bad.';
             }
         }
