@@ -1,10 +1,8 @@
 import { AfterViewInit, Component, ElementRef, Input, OnChanges, SimpleChanges, ViewChild } from '@angular/core';
 import { PlayerType } from '@app/classes/player-type';
-import { Timer } from '@app/classes/timer';
 import { Constants } from '@app/constants/global.constants';
 import { GridService } from '@app/services/grid/grid.service';
 import { MouseHandlingService } from '@app/services/mouse-handling/mouse-handling.service';
-import { Observable } from 'rxjs';
 
 @Component({
     selector: 'app-play-area',
@@ -17,22 +15,10 @@ export class PlayAreaComponent implements AfterViewInit, OnChanges {
     @ViewChild('gridCanvas', { static: false }) private gridCanvas!: ElementRef<HTMLCanvasElement>;
     @ViewChild('squareCanvas', { static: false }) private squareCanvas!: ElementRef<HTMLCanvasElement>;
 
-    timer1 = new Timer(2, 0);
-    timerObservable: Observable<any>;
-    timer2 = new Timer(1, 30);
-    timer2Observable: Observable<any>;
-
     private gridContext: CanvasRenderingContext2D;
     private squareContext: CanvasRenderingContext2D;
 
-    constructor(private readonly gridService: GridService, readonly mouseHandlingService: MouseHandlingService) {
-
-        this.timer1.timerInstance.subscribe((currentSecond: number) => { this.timer1.getTimerCountdown(this.timer1) });
-        this.timer1.stopTimer();
-
-        this.timer2.timerInstance.subscribe((currentSecond: number) => { this.timer2.getTimerCountdown(this.timer2) });
-        this.timer2.stopTimer();
-    }
+    constructor(private readonly gridService: GridService, readonly mouseHandlingService: MouseHandlingService) {}
 
     ngAfterViewInit(): void {
         this.gridContext = this.gridCanvas.nativeElement.getContext('2d') as CanvasRenderingContext2D;
@@ -69,23 +55,4 @@ export class PlayAreaComponent implements AfterViewInit, OnChanges {
         this.gridContext.scale(scaleFactor, scaleFactor);
         this.squareContext.scale(scaleFactor, scaleFactor);
     }
-
-    startTimer1(): void {
-        //this.timer1.initTimerLimits(3, 0);
-        this.timer1.startTimer();
-    }
-
-    stopTimer1(): void {
-        this.timer1.stopTimer();
-    }
-
-    startTimer2(): void {
-        //this.timer2.initTimerLimits(1, 30);
-        this.timer2.startTimer();
-    }
-
-    stopTimer2(): void {
-        this.timer2.stopTimer();
-    }
-
 }

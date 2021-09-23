@@ -1,77 +1,74 @@
-import { Observable, Subject, timer } from "rxjs";
-import { repeatWhen, takeUntil } from "rxjs/operators";
+import { Observable, Subject, timer } from 'rxjs';
+import { repeatWhen, takeUntil } from 'rxjs/operators';
 
-export interface Timer {
+export class Timer {
     minutesLimit: number;
     secondsLimit: number;
-    displayedTimer: string;
-    timerInstance: Observable<any>;
+
+    timerInstance: Observable<unknown>;
     startCountdown: Subject<void>;
     stopCountdown: Subject<void>;
+
     displayedSeconds: number;
     displayedMinutes: number;
-}
+    displayedTimer: string;
 
-const oneSecond = 1000;
-
-export class Timer implements Timer {
     constructor(minutes: number, seconds: number) {
+        const oneSecond = 1000;
+
         this.minutesLimit = minutes;
         this.secondsLimit = seconds;
 
         this.startCountdown = new Subject<void>();
         this.stopCountdown = new Subject<void>();
-        this.timerInstance = new Observable<any>();
+        this.timerInstance = new Observable<unknown>();
 
-        this.timerInstance =
-            timer(0, oneSecond)
-                .pipe(takeUntil(this.stopCountdown), repeatWhen(() => this.startCountdown));
+        this.timerInstance = timer(0, oneSecond).pipe(
+            takeUntil(this.stopCountdown),
+            repeatWhen(() => this.startCountdown),
+        );
         this.stopTimer();
     }
 
-    stringifyTimer(displayedSeconds: number, displayedMinutes: number): string {
-        if (displayedMinutes >= 10 && displayedSeconds < 10) { // Ex: 10:09
+    stringifyTimer(displayedSeconds: number, displayedMinutes: number): void {
+        const twoDigitsDisplayed = 10;
+
+        if (displayedMinutes >= twoDigitsDisplayed && displayedSeconds < twoDigitsDisplayed) {
             this.displayedTimer = `${displayedMinutes}:0${displayedSeconds} `;
-            return `${displayedMinutes}:0${displayedSeconds} `;
         }
 
-        if (displayedMinutes < 10 && displayedSeconds > 10) { // Ex: 09:10
+        if (displayedMinutes < twoDigitsDisplayed && displayedSeconds > twoDigitsDisplayed) {
             this.displayedTimer = `0${displayedMinutes}:${displayedSeconds} `;
-            return `0${displayedMinutes}:${displayedSeconds} `;
         }
 
-        if (displayedMinutes < 10 && displayedSeconds < 10) { // Ex: 09:09
+        if (displayedMinutes < twoDigitsDisplayed && displayedSeconds < twoDigitsDisplayed) {
             this.displayedTimer = `0${displayedMinutes}:0${displayedSeconds} `;
-            return `0${displayedMinutes}:0${displayedSeconds} `;
         }
-        return 'Timer Error';
     }
 
     startTimer(): void {
-        console.log('started timer');
         this.startCountdown.next();
     }
 
     stopTimer(): void {
         this.displayedMinutes = this.minutesLimit;
         this.displayedSeconds = this.secondsLimit;
-        console.log('stopped timer');
         this.stopCountdown.next();
     }
 
-    getTimerCountdown(timer: Timer): void {
-        timer.displayedSeconds--;
+    getTimerCountdown(timerToStart: Timer): void {
+        const maxSeconds = 59;
+        timerToStart.displayedSeconds--;
 
-        if (timer.displayedSeconds < 0 && timer.displayedMinutes > 0) {
-            timer.displayedSeconds = 59;
-            timer.displayedMinutes--;
+        if (timerToStart.displayedSeconds < 0 && timerToStart.displayedMinutes > 0) {
+            timerToStart.displayedSeconds = maxSeconds;
+            timerToStart.displayedMinutes--;
         }
 
-        timer.stringifyTimer(timer.displayedSeconds, timer.displayedMinutes);
+        timerToStart.stringifyTimer(timerToStart.displayedSeconds, timerToStart.displayedMinutes);
 
-        if (timer.displayedSeconds <= 0 && timer.displayedMinutes <= 0) {
-            timer.stopTimer();
+        if (timerToStart.displayedSeconds <= 0 && timerToStart.displayedMinutes <= 0) {
+            timerToStart.stopTimer();
         }
-        console.log(timer.displayedTimer);
     }
 }
