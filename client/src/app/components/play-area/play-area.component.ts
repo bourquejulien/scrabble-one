@@ -17,16 +17,15 @@ export class PlayAreaComponent implements AfterViewInit, OnChanges {
     @ViewChild('gridCanvas', { static: false }) private gridCanvas!: ElementRef<HTMLCanvasElement>;
     @ViewChild('squareCanvas', { static: false }) private squareCanvas!: ElementRef<HTMLCanvasElement>;
 
-    timer1 = new Timer();
+    timer1 = new Timer(2, 0);
     timerObservable: Observable<any>;
-    timer2 = new Timer();
+    timer2 = new Timer(1, 30);
     timer2Observable: Observable<any>;
 
     private gridContext: CanvasRenderingContext2D;
     private squareContext: CanvasRenderingContext2D;
 
     constructor(private readonly gridService: GridService, readonly mouseHandlingService: MouseHandlingService) {
-
 
         this.timer1.timerInstance.subscribe((currentSecond: number) => { this.timer1.getTimerCountdown(this.timer1) });
         this.timer1.stopTimer();
@@ -72,6 +71,7 @@ export class PlayAreaComponent implements AfterViewInit, OnChanges {
     }
 
     startTimer1(): void {
+        //this.timer1.initTimerLimits(3, 0);
         this.timer1.startTimer();
     }
 
@@ -80,6 +80,7 @@ export class PlayAreaComponent implements AfterViewInit, OnChanges {
     }
 
     startTimer2(): void {
+        //this.timer2.initTimerLimits(1, 30);
         this.timer2.startTimer();
     }
 

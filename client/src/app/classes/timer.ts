@@ -15,9 +15,9 @@ export interface Timer {
 const oneSecond = 1000;
 
 export class Timer implements Timer {
-    constructor() {
-        this.displayedSeconds = 0;//this.secondsLimit;
-        this.displayedMinutes = 1;//this.minutesLimit;
+    constructor(minutes: number, seconds: number) {
+        this.minutesLimit = minutes;
+        this.secondsLimit = seconds;
 
         this.startCountdown = new Subject<void>();
         this.stopCountdown = new Subject<void>();
@@ -27,11 +27,6 @@ export class Timer implements Timer {
             timer(0, oneSecond)
                 .pipe(takeUntil(this.stopCountdown), repeatWhen(() => this.startCountdown));
         this.stopTimer();
-    }
-
-    initTimerLimits(minutes: number, seconds: number): void {
-        this.minutesLimit = minutes;
-        this.secondsLimit = seconds;
     }
 
     stringifyTimer(displayedSeconds: number, displayedMinutes: number): string {
@@ -58,8 +53,8 @@ export class Timer implements Timer {
     }
 
     stopTimer(): void {
-        this.displayedSeconds = 0;//this.secondsLimit;
-        this.displayedMinutes = 1;//this.minutesLimit;
+        this.displayedMinutes = this.minutesLimit;
+        this.displayedSeconds = this.secondsLimit;
         console.log('stopped timer');
         this.stopCountdown.next();
     }
