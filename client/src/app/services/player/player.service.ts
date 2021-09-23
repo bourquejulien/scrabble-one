@@ -1,9 +1,10 @@
 import { Injectable } from '@angular/core';
 import { Direction } from '@app/classes/board/direction';
+import { PlayerType } from '@app/classes/player-type';
 import { Vec2 } from '@app/classes/vec2';
 import { BoardService } from '@app/services/board/board.service';
-import { GameService } from '@app/services/game/game.service';
 import { ReserveService } from '@app/services/reserve/reserve.service';
+import { Subject } from 'rxjs';
 import { BehaviorSubject } from 'rxjs/internal/BehaviorSubject';
 
 @Injectable({
@@ -11,55 +12,17 @@ import { BehaviorSubject } from 'rxjs/internal/BehaviorSubject';
 })
 export class PlayerService {
     rack: string[] = [];
+    turnComplete: Subject<PlayerType>;
     rackUpdated: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(true);
 
-    constructor(private reserveService: ReserveService, private gameService: GameService, private boardService: BoardService) {
+    constructor(private reserveService: ReserveService, private boardService: BoardService) {
         const initNbTiles = 7;
 
         for (let tile = 0; tile < initNbTiles; tile++) {
             this.rack.push(this.reserveService.drawLetter());
         }
-    }
 
-    checkIfLettersInRack(lettersToPlace: string): string {
-        for (const letter of lettersToPlace) {
-            if (this.rack.indexOf(letter.toUpperCase()) === -1) {
-                return 'You are not in possession of the letter ' + letter + '. Cheating is bad.';
-            }
-        }
-        return '';
-    }
-
-    updateReserve(lettersToPlace: string): string {
-        const reserveLength = this.reserveService.length;
-        const lettersToPlaceLength = lettersToPlace.length;
-
-        if (this.reserveService.length === 0) return 'The reserve is empty. You cannot draw any letters.';
-
-        if (this.reserveService.length <= lettersToPlace.length) {
-            for (let i = 0; i < reserveLength; i++) {
-                this.rack.push(this.reserveService.drawLetter());
-            }
-            return 'The reserve is now empty. You cannot draw any more letters.';
-        }
-
-        if (this.reserveService.length > lettersToPlace.length) {
-            for (let i = 0; i < lettersToPlaceLength; i++) {
-                this.rack.push(this.reserveService.drawLetter());
-            }
-            return '';
-        }
-
-        return 'There was a problem with reserve service. Try again.';
-    }
-
-    updateRack(lettersToPlace: string): void {
-        for (const letter of lettersToPlace) {
-            const letterIndex = this.rack.indexOf(letter);
-            if (letterIndex === -1) return;
-            this.rack.splice(letterIndex, 1);
-        }
-        this.rackUpdated.next(!this.rackUpdated.getValue());
+        this.turnComplete = new Subject<PlayerType>();
     }
 
     placeLetters(word: string, position: Vec2, direction: Direction): string {
@@ -108,7 +71,7 @@ export class PlayerService {
     }
 
     completeTurn(): void {
-        this.gameService.nextTurn();
+        this.turnComplete.next(PlayerType.Local);
     }
 
     // For testing
@@ -123,5 +86,46 @@ export class PlayerService {
     // For testing
     get length(): number {
         return this.rack.length;
+    }
+
+    private updateReserve(lettersToPlace: string): string {
+        const reserveLength = this.reserveService.length;
+        const lettersToPlaceLength = lettersToPlace.length;
+
+        if (this.reserveService.length === 0) return 'The reserve is empty. You cannot draw any letters.';
+
+        if (this.reserveService.length <= lettersToPlace.length) {
+            for (let i = 0; i < reserveLength; i++) {
+                this.rack.push(this.reserveService.drawLetter());
+            }
+            return 'The reserve is now empty. You cannot draw any more letters.';
+        }
+
+        if (this.reserveService.length > lettersToPlace.length) {
+            for (let i = 0; i < lettersToPlaceLength; i++) {
+                this.rack.push(this.reserveService.drawLetter());
+            }
+            return '';
+        }
+
+        return 'There was a problem with reserve service. Try again.';
+    }
+
+    private checkIfLettersInRack(lettersToPlace: string): string {
+        for (const letter of lettersToPlace) {
+            if (this.rack.indexOf(letter.toUpperCase()) === -1) {
+                return 'You are not in possession of the letter ' + letter + '. Cheating is bad.';
+            }
+        }
+        return '';
+    }
+
+    private updateRack(lettersToPlace: string): void {
+        for (const letter of lettersToPlace) {
+            const letterIndex = this.rack.indexOf(letter.toUpperCase());
+            if (letterIndex === -1) return;
+            this.rack.splice(letterIndex, 1);
+        }
+        this.rackUpdated.next(!this.rackUpdated.getValue());
     }
 }

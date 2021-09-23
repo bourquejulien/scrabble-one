@@ -1,18 +1,15 @@
-import { Component, OnInit } from '@angular/core';
-import { PlayerType } from '@app/classes/player-type';
+import { Component } from '@angular/core';
 import { GameService } from '@app/services/game/game.service';
 @Component({
     selector: 'app-game-page',
     templateUrl: './game-page.component.html',
     styleUrls: ['./game-page.component.scss'],
 })
-export class GamePageComponent implements OnInit {
-    playerType: PlayerType = PlayerType.Local;
+export class GamePageComponent {
+    gameService: GameService;
 
-    constructor(private readonly gameService: GameService) {}
-
-    ngOnInit() {
-        this.gameService.onTurn.subscribe((e) => (this.playerType = e));
+    constructor(gameService: GameService) {
+        this.gameService = gameService;
     }
 
     confirmQuit(): void {

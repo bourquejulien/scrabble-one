@@ -2,31 +2,27 @@ import { Injectable } from '@angular/core';
 import { PlayerType } from '@app/classes/player-type';
 import { PlayGenerator } from '@app/classes/virtual-player/play-generator';
 import { Constants } from '@app/constants/global.constants';
+import { Subject } from 'rxjs';
 import { BoardService } from './board/board.service';
 import { DictionaryService } from './dictionary/dictionary.service';
-import { GameService } from './game/game.service';
 import { ReserveService } from './reserve/reserve.service';
 
 @Injectable({
     providedIn: 'root',
 })
 export class VirtualPlayerService {
-    private rack: string[];
+    turnComplete: Subject<PlayerType>;
+    private rack: string[] = [];
 
     constructor(
         private readonly boardService: BoardService,
         private readonly reserveService: ReserveService,
         private readonly dictionaryService: DictionaryService,
-        private readonly gameService: GameService,
     ) {
-        gameService.onTurn.subscribe((e) => this.onTurn(e));
+        this.turnComplete = new Subject<PlayerType>();
     }
 
-    onTurn(playerType: PlayerType) {
-        if (playerType !== PlayerType.Virtual) {
-            return;
-        }
-
+    onTurn() {
         this.fillRack();
 
         // const random = Math.random();
@@ -43,11 +39,13 @@ export class VirtualPlayerService {
         //     return;
         // }
 
+        // this.turnComplete.next(PlayerType.Virtual);
         // this.play();
     }
 
-    skipTurn() {
-        this.gameService.nextTurn();
+    async skipTurn() {
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        this.turnComplete.next(PlayerType.Virtual);
     }
 
     exchange() {
