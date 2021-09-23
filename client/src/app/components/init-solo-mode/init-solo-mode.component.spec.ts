@@ -1,4 +1,8 @@
+import { CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { FormsModule } from '@angular/forms';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { AppMaterialModule } from '@app/modules/material.module';
 import { InitSoloModeComponent } from './init-solo-mode.component';
 
 describe('InitSoloModeComponent', () => {
@@ -9,6 +13,8 @@ describe('InitSoloModeComponent', () => {
     beforeEach(async () => {
         await TestBed.configureTestingModule({
             declarations: [InitSoloModeComponent],
+            imports: [AppMaterialModule, BrowserAnimationsModule, FormsModule],
+            schemas: [CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA],
         }).compileComponents();
     });
 

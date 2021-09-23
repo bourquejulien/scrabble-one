@@ -1,5 +1,9 @@
-import { Injectable } from '@angular/core';
+import { NO_ERRORS_SCHEMA } from '@angular/compiler';
+import { CUSTOM_ELEMENTS_SCHEMA, Injectable } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { FormsModule } from '@angular/forms';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { AppMaterialModule } from '@app/modules/material.module';
 import { CommandsService } from '@app/services/commands/commands.service';
 import { CommunicationBoxComponent } from './communication-box.component';
 @Injectable({
@@ -19,6 +23,8 @@ describe('CommunicationBoxComponent', () => {
         await TestBed.configureTestingModule({
             declarations: [CommunicationBoxComponent],
             providers: [{ provide: CommandsService, useClass: FakeCommandsService }],
+            imports: [AppMaterialModule, BrowserAnimationsModule, FormsModule],
+            schemas: [CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA],
         }).compileComponents();
     });
 
