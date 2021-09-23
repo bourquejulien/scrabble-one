@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { Direction } from '@app/classes/board/direction';
 import { PlayerType } from '@app/classes/player-type';
 import { Vec2 } from '@app/classes/vec2';
+import { Constants } from '@app/constants/global.constants';
 import { BoardService } from '@app/services/board/board.service';
 import { ReserveService } from '@app/services/reserve/reserve.service';
 import { Subject } from 'rxjs';
@@ -16,12 +17,6 @@ export class PlayerService {
     rackUpdated: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(true);
 
     constructor(private reserveService: ReserveService, private boardService: BoardService) {
-        const initNbTiles = 7;
-
-        for (let tile = 0; tile < initNbTiles; tile++) {
-            this.rack.push(this.reserveService.drawLetter());
-        }
-
         this.turnComplete = new Subject<PlayerType>();
     }
 
@@ -80,24 +75,25 @@ export class PlayerService {
 
     updateReserve(lettersToPlaceLength: number): string {
         const reserveLength = this.reserveService.length;
+        const rackPlaceLimit = Constants.reserve.SIZE - this.rack.length;
 
         if (this.reserveService.length === 0) return 'The reserve is empty. You cannot draw any letters.';
 
-        if (this.reserveService.length <= lettersToPlaceLength) {
+        if (lettersToPlaceLength > rackPlaceLimit) {
+            lettersToPlaceLength = rackPlaceLimit;
+        }
+
+        if (reserveLength <= lettersToPlaceLength) {
             for (let i = 0; i < reserveLength; i++) {
                 this.rack.push(this.reserveService.drawLetter());
             }
             return 'The reserve is now empty. You cannot draw any more letters.';
-        }
-
-        if (this.reserveService.length > lettersToPlaceLength) {
+        } else {
             for (let i = 0; i < lettersToPlaceLength; i++) {
                 this.rack.push(this.reserveService.drawLetter());
             }
             return '';
         }
-
-        return 'There was a problem with reserve service. Try again.';
     }
 
     // For testing
