@@ -5,7 +5,6 @@ import { Vec2 } from '@app/classes/vec2';
 import { BoardService } from '@app/services/board/board.service';
 import { DictionaryService } from '@app/services/dictionary/dictionary.service';
 
-
 const WORDS: string[] = ['pomme', 'orange', 'poire', 'raisin', 'peche', 'banane', 'bananes'];
 const mockedDictionary: Set<string> = new Set(WORDS);
 
