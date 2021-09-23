@@ -25,10 +25,10 @@ export class Board implements ImmutableBoard {
         this.board = new Array<Square[]>();
         this.filledPositions = [];
 
-        for (let x = 0; x <= size; x++) {
+        for (let x = 0; x < size; x++) {
             const column: Square[] = new Array<Square>();
 
-            for (let y = 0; y <= size; y++) {
+            for (let y = 0; y < size; y++) {
                 column.push({ letter: '', bonus: Bonus.None, position: { x, y } });
             }
 
@@ -88,8 +88,8 @@ export class Board implements ImmutableBoard {
     clone(): Board {
         const clonedBoard = new Board(this.size);
 
-        for (let x = 0; x <= this.size; x++) {
-            for (let y = 0; y <= this.size; y++) {
+        for (let x = 0; x < this.size; x++) {
+            for (let y = 0; y < this.size; y++) {
                 clonedBoard.board[x][y] = this.board[x][y];
             }
         }

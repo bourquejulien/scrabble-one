@@ -1,8 +1,8 @@
-/* eslint-disable no-restricted-imports */
+/* eslint-disable dot-notation */
 import { TestBed } from '@angular/core/testing';
 import { PlayerService } from '@app/services/player/player.service';
-import { BoardService } from '../board/board.service';
-import { MockBoardService } from '../board/mock-board.service';
+import { BoardService } from '@app/services/board/board.service';
+import { MockBoardService } from '@app/services/board/mock-board.service';
 
 describe('PlayerService', () => {
     let service: PlayerService;
@@ -26,37 +26,37 @@ describe('PlayerService', () => {
         expect(service).toBeTruthy();
     });
 
-    it('should decrease length of rack if valid letter succesfully removed from rack', () => {
+    it('should decrease length of rack if valid letter successfully removed from rack', () => {
         const currentLength = service.length;
-        service.updateRack(letterToRemoveFromRack);
+        service['updateRack'](letterToRemoveFromRack);
 
         expect(service.length).toBe(currentLength - 1);
     });
 
-    it('should succesfully remove first occurence of valid letter of multiple occurences from rack', () => {
-        service.updateRack(letterToRemoveFromRack);
+    it('should successful remove first occurrence of valid letter of multiple occurrences from rack', () => {
+        service['updateRack'](letterToRemoveFromRack);
 
         expect(service.rack[1]).toBe('S');
     });
 
-    it('should decrease length of rack if valid letter with multiple occurences succesfully removed from rack', () => {
+    it('should decrease length of rack if valid letter with multiple occurrences successful removed from rack', () => {
         const currentLength = service.length;
-        service.updateRack(letterToRemoveFromRack);
-        service.updateRack(letterToRemoveFromRack);
+        service['updateRack'](letterToRemoveFromRack);
+        service['updateRack'](letterToRemoveFromRack);
 
         expect(service.length).toBe(currentLength - 2);
     });
 
-    it('should succesfully remove first occurence of valid letter from rack', () => {
-        service.updateRack(letterToRemoveFromRack);
-        service.updateRack(letterToRemoveFromRack);
+    it('should successful remove first occurrence of valid letter from rack', () => {
+        service['updateRack'](letterToRemoveFromRack);
+        service['updateRack'](letterToRemoveFromRack);
 
         expect(service.rack[2]).toBe('I');
     });
 
     it('should not affect rack if invalid letter tries to be removed', () => {
         const currentLength = service.length;
-        service.updateRack(invalidLetter);
+        service['updateRack'](invalidLetter);
 
         expect(service.length).toBe(currentLength);
     });
