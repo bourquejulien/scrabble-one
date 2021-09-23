@@ -10,12 +10,11 @@ export class GamePageComponent {
     gameService: GameService;
     playerType: PlayerType = PlayerType.Local;
     joueur1: string = 'default';
-    joueur2: string = 'bot'
-    constructor( gameService: GameService) {
-        this.gameService=gameService;
+    joueur2: string = 'bot';
+    constructor(gameService: GameService) {
+        this.gameService = gameService;
         this.joueur1 = this.gameService.gameConfig.firstPlayerName;
-        this.joueur2 = this.gameService.gameConfig.secondPlayerName; 
-
+        this.joueur2 = this.gameService.gameConfig.secondPlayerName;
     }
 
     confirmQuit(): void {

@@ -28,7 +28,7 @@ export class InitSoloModeComponent implements OnInit {
         secondPlayerName: '',
     };
 
-    constructor(public gameService: GameService, private router: Router,public dialogRef: MatDialogRef<InitSoloModeComponent>) {}
+    constructor(public gameService: GameService, private router: Router, public dialogRef: MatDialogRef<InitSoloModeComponent>) {}
 
     ngOnInit(): void {
         this.gameConfig.secondPlayerName = this.randomizeBotName(this.botNames);

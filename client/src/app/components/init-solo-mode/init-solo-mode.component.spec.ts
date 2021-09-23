@@ -1,6 +1,7 @@
 import { CUSTOM_ELEMENTS_SCHEMA, Injectable, NO_ERRORS_SCHEMA } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormsModule } from '@angular/forms';
+import { MatDialogRef } from '@angular/material/dialog';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { Router } from '@angular/router';
 import { PlayerType } from '@app/classes/player-type';
@@ -8,11 +9,18 @@ import { AppMaterialModule } from '@app/modules/material.module';
 import { GameService } from '@app/services/game/game.service';
 import { InitSoloModeComponent } from './init-solo-mode.component';
 
+
 @Injectable({
     providedIn: 'root',
 })
 class GameServiceStub {
     currentTurn: PlayerType = PlayerType.Local;
+}
+
+class MatDialogStub {
+    close() {
+        console.log('closing')
+    }
 }
 
 describe('InitSoloModeComponent', () => {
@@ -32,6 +40,7 @@ describe('InitSoloModeComponent', () => {
             providers: [
                 { provide: Router, useValue: routerMock },
                 { provide: GameService, useValue: GameServiceStub },
+                { provide: MatDialogRef, useValue: MatDialogStub}
             ],
         }).compileComponents();
     });

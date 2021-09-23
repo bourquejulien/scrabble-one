@@ -17,10 +17,12 @@ export class GameModePageComponent {
             // data: { name: this.name, gameType: this.gameType, time: this.time },
         });
 
-        dialogRef.afterClosed().subscribe(
+        dialogRef
+            .afterClosed()
+            .subscribe
             // (result) => {
             // this.name = result;
-        //}
-        );
+            // }
+            ();
     }
 }
