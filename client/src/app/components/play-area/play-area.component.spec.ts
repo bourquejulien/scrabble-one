@@ -1,9 +1,17 @@
+/* eslint-disable max-classes-per-file -- Multiple stub implementation needed*/
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/compiler';
-import { Injectable, NO_ERRORS_SCHEMA } from '@angular/core';
+import { Component, Injectable, NO_ERRORS_SCHEMA } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { MatCard } from '@angular/material/card';
 import { PlayAreaComponent } from '@app/components/play-area/play-area.component';
 import { AppMaterialModule } from '@app/modules/material.module';
 import { GridService } from '@app/services/grid/grid.service';
+
+@Component({
+    selector: 'app-rack',
+    template: '',
+})
+class StubRackComponent {}
 
 @Injectable({
     providedIn: 'root',
@@ -26,7 +34,7 @@ describe('PlayAreaComponent', () => {
 
     beforeEach(async () => {
         await TestBed.configureTestingModule({
-            declarations: [PlayAreaComponent],
+            declarations: [PlayAreaComponent, StubRackComponent, MatCard],
             providers: [{ provide: GridService, useClass: GridServiceStub }],
             imports: [AppMaterialModule],
             schemas: [CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA],

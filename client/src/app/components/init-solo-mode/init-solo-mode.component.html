@@ -3,7 +3,7 @@
     <p class="inputPresentationText">Mode de Jeu</p>
     <mat-form-field class="inputs" appearance="fill">
         <mat-label>Mode de jeu</mat-label>
-        <mat-select name="gameTypes" appearance="fill" [(ngModel)]="this.game.gameConfig.gameType">
+        <mat-select name="gameTypes" appearance="fill" [(ngModel)]="gameConfig.gameType">
             <mat-option *ngFor="let gameType of gameTypesList" [value]="gameType">{{ gameType }}</mat-option>
         </mat-select>
     </mat-form-field>
@@ -11,13 +11,13 @@
     <div class="playersFlex">
         <mat-form-field class="inputs" style="margin-right: 15px" appearance="fill">
             <mat-label>Minutes</mat-label>
-            <mat-select name="minutesPerTurn" [(ngModel)]="this.game.gameConfig.minutes">
+            <mat-select name="minutesPerTurn" [(ngModel)]="gameConfig.minutes">
                 <mat-option *ngFor="let minutes of minutesList" [value]="minutes">{{ minutes }} </mat-option>
             </mat-select>
         </mat-form-field>
         <mat-form-field class="inputs" appearance="fill">
             <mat-label>Secondes</mat-label>
-            <mat-select name="secondsPerTurn" [(ngModel)]="this.game.gameConfig.seconds">
+            <mat-select name="secondsPerTurn" [(ngModel)]="gameConfig.seconds">
                 <mat-option *ngFor="let seconds of secondsList" [value]="seconds">{{ seconds }}</mat-option>
             </mat-select>
         </mat-form-field>
@@ -27,15 +27,16 @@
     <form class="playersFlex">
         <mat-form-field style="margin-right: 15px" appearance="fill">
             <mat-label>Joueur 1</mat-label>
-            <input matInput placeholder="Joueur 1" name="name" [(ngModel)]="this.game.gameConfig.firstPlayerName" />
+            <input matInput placeholder="Joueur 1" name="name" [(ngModel)]="gameConfig.firstPlayerName"/>
         </mat-form-field>
         <mat-form-field appearance="fill">
             <mat-label>Joueur 2</mat-label>
-            <input matInput placeholder="Joueur 2" value="{{ this.game.gameConfig.secondPlayerName }}" />
+            <input matInput placeholder="Joueur 2" value="{{ this.gameConfig.secondPlayerName }}" />
         </mat-form-field>
     </form>
 
-    <div *ngIf="this.nameForm !== undefined && this.nameForm.get('control')?.hasError('containsOnlyLetters')" class="alert">
+    <div *ngIf="this.nameForm !== undefined && this.nameForm.get('control')?.hasError('containsOnlyLetters')"
+        class="alert">
         *Le nom doit seulement être composé de lettres.
     </div>
     <div *ngIf="this.nameForm !== undefined && this.nameForm.get('control')?.hasError('required')" class="alert">*Un nom doit être entré.</div>
@@ -45,8 +46,10 @@
     <div *ngIf="this.nameForm !== undefined && this.nameForm.get('control')?.hasError('maxlength')" class="alert">
         *Le nom doit au maximum contenir 16 lettres.
     </div>
-    <div *ngIf="this.nameForm !== undefined && this.nameForm.get('control')?.hasError('startsWithLowerLetter')" class="alert">
+    <div *ngIf="this.nameForm !== undefined && this.nameForm.get('control')?.hasError('startsWithLowerLetter')"
+        class="alert">
         *Le nom doit débuter par une majuscule.
     </div>
-    <button (click)="this.initialize(this.game.gameConfig.firstPlayerName)" mat-raised-button color="primary" id="confirm">Confirmer</button>
+    <button (click)="this.initialize(this.gameConfig.firstPlayerName)" mat-raised-button color="primary"
+        id="confirm">Confirmer</button>
 </div>

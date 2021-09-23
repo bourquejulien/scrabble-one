@@ -31,7 +31,7 @@ export class PlayAreaComponent implements AfterViewInit, OnChanges {
     }
 
     ngOnChanges(changes: SimpleChanges): void {
-        if (!changes.playerType.isFirstChange && changes.playerType.currentValue !== changes.playerType.previousValue) {
+        if (!changes.playerType.isFirstChange() && changes.playerType.currentValue !== changes.playerType.previousValue) {
             this.gridService.drawSquares(this.squareContext);
         }
     }

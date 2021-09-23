@@ -1,89 +1,46 @@
 import { Injectable } from '@angular/core';
 import { Direction } from '@app/classes/board/direction';
+import { PlayerType } from '@app/classes/player-type';
 import { Vec2 } from '@app/classes/vec2';
 import { BoardService } from '@app/services/board/board.service';
-import { GameService } from '@app/services/game/game.service';
 import { ReserveService } from '@app/services/reserve/reserve.service';
+import { Subject } from 'rxjs';
 import { BehaviorSubject } from 'rxjs/internal/BehaviorSubject';
-import { skip } from 'rxjs/operators';
 
 @Injectable({
     providedIn: 'root',
 })
 export class PlayerService {
     rack: string[] = [];
+    turnComplete: Subject<PlayerType>;
     rackUpdated: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(true);
 
-    constructor(private reserveService: ReserveService, private gameService: GameService, private boardService: BoardService) {
+    constructor(private reserveService: ReserveService, private boardService: BoardService) {
         const initNbTiles = 7;
 
         for (let tile = 0; tile < initNbTiles; tile++) {
             this.rack.push(this.reserveService.drawLetter());
         }
-    }
 
-    isCapitalLetter(letter: string): boolean {
-        // eslint-disable-next-line @typescript-eslint/no-magic-numbers
-        return letter.charCodeAt(0) >= 65 && letter.charCodeAt(0) <= 90;
-    }
-
-    checkIfLettersInRack(lettersToPlace: string): string {
-        for (let letter of lettersToPlace) {
-            if (this.isCapitalLetter(letter)) {
-                letter = '*';
-            }
-            if (this.rack.indexOf(letter.toUpperCase()) === -1) {
-                return 'You are not in possession of the letter ' + letter + '. Cheating is bad.';
-            }
-        }
-        return '';
-    }
-
-    updateReserve(lettersToPlace: string): string {
-        const reserveLength = this.reserveService.length;
-        const lettersToPlaceLength = lettersToPlace.length;
-
-        if (this.reserveService.length === 0) return 'The reserve is empty. You cannot draw any letters.';
-
-        if (this.reserveService.length <= lettersToPlace.length) {
-            for (let i = 0; i < reserveLength; i++) {
-                this.rack.push(this.reserveService.drawLetter());
-            }
-            return 'The reserve is now empty. You cannot draw any more letters.';
-        }
-
-        if (this.reserveService.length > lettersToPlace.length) {
-            for (let i = 0; i < lettersToPlaceLength; i++) {
-                this.rack.push(this.reserveService.drawLetter());
-            }
-            return '';
-        }
-
-        return 'There was a problem with reserve service. Try again.';
-    }
-
-    updateRack(lettersToPlace: string): void {
-        for (const letter of lettersToPlace) {
-            const letterIndex = this.rack.indexOf(letter);
-            if (letterIndex === -1) return;
-            this.rack.splice(letterIndex, 1);
-        }
-        this.rackUpdated.next(!this.rackUpdated.getValue());
+        this.turnComplete = new Subject<PlayerType>();
     }
 
     placeLetters(word: string, position: Vec2, direction: Direction): string {
-        const lettersToPlace = this.boardService.retrieveNewLetters(word, position, direction);
-        const rackMessage = this.checkIfLettersInRack(word);
+        const positionToPlace = this.boardService.retrieveNewLetters(word, position, direction);
+        const lettersToPlace = positionToPlace.map((e) => e.letter).join('');
+
+        const rackMessage = this.checkIfLettersInRack(lettersToPlace);
         if (rackMessage !== '') return rackMessage;
 
-        const validationData = this.boardService.lookupLetters(lettersToPlace);
+        const validationData = this.boardService.lookupLetters(positionToPlace);
 
         if (!validationData.isSuccess) return validationData.description;
 
-        this.updateRack(word);
-        this.updateReserve(word);
+        this.updateRack(lettersToPlace);
+        this.updateReserve(positionToPlace.length);
+        this.rackUpdated.next(!this.rackUpdated.getValue());
 
-        this.boardService.placeLetters(lettersToPlace);
+        this.boardService.placeLetters(positionToPlace);
 
         this.completeTurn();
 
@@ -109,16 +66,38 @@ export class PlayerService {
         for (const letter of lettersToExchange) {
             this.reserveService.putBackLetter(letter);
         }
+
         this.updateRack(lettersToExchange);
+
         this.completeTurn();
 
         return '';
     }
 
     completeTurn(): void {
-        this.gameService.onTurn.pipe(skip(1)).subscribe();
-        const isTurn = this.gameService.onTurn.getValue();
-        this.gameService.onTurn.next(!isTurn);
+        this.turnComplete.next(PlayerType.Local);
+    }
+
+    updateReserve(lettersToPlaceLength: number): string {
+        const reserveLength = this.reserveService.length;
+
+        if (this.reserveService.length === 0) return 'The reserve is empty. You cannot draw any letters.';
+
+        if (this.reserveService.length <= lettersToPlaceLength) {
+            for (let i = 0; i < reserveLength; i++) {
+                this.rack.push(this.reserveService.drawLetter());
+            }
+            return 'The reserve is now empty. You cannot draw any more letters.';
+        }
+
+        if (this.reserveService.length > lettersToPlaceLength) {
+            for (let i = 0; i < lettersToPlaceLength; i++) {
+                this.rack.push(this.reserveService.drawLetter());
+            }
+            return '';
+        }
+
+        return 'There was a problem with reserve service. Try again.';
     }
 
     // For testing
@@ -133,5 +112,30 @@ export class PlayerService {
     // For testing
     get length(): number {
         return this.rack.length;
+    }
+
+    private updateRack(lettersToPlace: string): void {
+        for (const letter of lettersToPlace) {
+            const letterIndex = this.rack.indexOf(letter.toUpperCase());
+            if (letterIndex === -1) return;
+            this.rack.splice(letterIndex, 1);
+        }
+    }
+
+    private isCapitalLetter(letter: string): boolean {
+        // eslint-disable-next-line @typescript-eslint/no-magic-numbers
+        return letter.charCodeAt(0) >= 65 && letter.charCodeAt(0) <= 90;
+    }
+
+    private checkIfLettersInRack(lettersToPlace: string): string {
+        for (let letter of lettersToPlace) {
+            if (this.isCapitalLetter(letter)) {
+                letter = '*';
+            }
+            if (this.rack.indexOf(letter.toUpperCase()) === -1) {
+                return 'You are not in possession of the letter ' + letter + '. Cheating is bad.';
+            }
+        }
+        return '';
     }
 }
