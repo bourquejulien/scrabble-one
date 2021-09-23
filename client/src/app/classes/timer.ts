@@ -1,17 +1,32 @@
-import { Observable, timer } from "rxjs";
-import { takeWhile } from "rxjs/operators";
+import { Observable, Subject, timer } from "rxjs";
+import { repeatWhen, takeUntil } from "rxjs/operators";
 
 export interface Timer {
     minutesLimit: number;
     secondsLimit: number;
     displayedTimer: string;
     timerInstance: Observable<any>;
+    startCountdown: Subject<void>;
+    stopCountdown: Subject<void>;
+    displayedSeconds: number;
+    displayedMinutes: number;
 }
 
-export class Timer implements Timer {
+const oneSecond = 1000;
 
+export class Timer implements Timer {
     constructor() {
+        this.displayedSeconds = 0;//this.secondsLimit;
+        this.displayedMinutes = 1;//this.minutesLimit;
+
+        this.startCountdown = new Subject<void>();
+        this.stopCountdown = new Subject<void>();
         this.timerInstance = new Observable<any>();
+
+        this.timerInstance =
+            timer(0, oneSecond)
+                .pipe(takeUntil(this.stopCountdown), repeatWhen(() => this.startCountdown));
+        this.stopTimer();
     }
 
     initTimerLimits(minutes: number, seconds: number): void {
@@ -20,85 +35,48 @@ export class Timer implements Timer {
     }
 
     stringifyTimer(displayedSeconds: number, displayedMinutes: number): string {
-        if (displayedSeconds < 10) {
+        if (displayedMinutes >= 10 && displayedSeconds < 10) { // Ex: 10:09
             this.displayedTimer = `${displayedMinutes}:0${displayedSeconds} `;
             return `${displayedMinutes}:0${displayedSeconds} `;
         }
 
-        if (displayedMinutes < 10) {
+        if (displayedMinutes < 10 && displayedSeconds > 10) { // Ex: 09:10
             this.displayedTimer = `0${displayedMinutes}:${displayedSeconds} `;
             return `0${displayedMinutes}:${displayedSeconds} `;
         }
 
-        if (displayedMinutes < 10 && displayedSeconds < 10) {
+        if (displayedMinutes < 10 && displayedSeconds < 10) { // Ex: 09:09
             this.displayedTimer = `0${displayedMinutes}:0${displayedSeconds} `;
             return `0${displayedMinutes}:0${displayedSeconds} `;
         }
         return 'Timer Error';
     }
 
-    countDown(timeLimit: number): Observable<any> {
-        const oneSecond = 1000;
-        let displayedSeconds = 0;//this.secondsLimit;
-        let displayedMinutes = 1;//this.minutesLimit;
-
-        return new Observable<any>(
-            timerInstance => {
-                timer(0, oneSecond)
-                    .pipe(takeWhile(limitInSeconds => limitInSeconds <= timeLimit))
-                    .subscribe((currentSecond: number) => {
-                        displayedSeconds--;
-
-                        if (displayedSeconds < 0 && displayedMinutes > 0) {
-                            displayedSeconds = 59;
-                            displayedMinutes--;
-                        }
-
-                        timerInstance.next({
-                            display: this.stringifyTimer(displayedSeconds, displayedMinutes)
-
-                        });
-
-                        this.resetTimer(timerInstance, displayedSeconds, displayedMinutes);
-
-                        /*if (displayedSeconds <= 0 && displayedMinutes <= 0) {
-                            displayedSeconds = 0;
-                            displayedMinutes = 1;
-
-                            timerInstance.next({
-                                display: this.stringifyTimer(displayedSeconds, displayedMinutes)
-                            });
-                        }*/
-                    })
-            }
-        )
+    startTimer(): void {
+        console.log('started timer');
+        this.startCountdown.next();
     }
 
-    resetTimer(timerInstance: () => Observable<any>, displayedSeconds: number, displayedMinutes: number): void {
-        if (displayedSeconds <= 0 && displayedMinutes <= 0) {
-            displayedSeconds = 0;
-            displayedMinutes = 1;
+    stopTimer(): void {
+        this.displayedSeconds = 0;//this.secondsLimit;
+        this.displayedMinutes = 1;//this.minutesLimit;
+        console.log('stopped timer');
+        this.stopCountdown.next();
+    }
 
-            timerInstance.subscribe(next => ({
-                display: this.stringifyTimer(displayedSeconds, displayedMinutes)
-            }));
+    getTimerCountdown(timer: Timer): void {
+        timer.displayedSeconds--;
+
+        if (timer.displayedSeconds < 0 && timer.displayedMinutes > 0) {
+            timer.displayedSeconds = 59;
+            timer.displayedMinutes--;
         }
+
+        timer.stringifyTimer(timer.displayedSeconds, timer.displayedMinutes);
+
+        if (timer.displayedSeconds <= 0 && timer.displayedMinutes <= 0) {
+            timer.stopTimer();
+        }
+        console.log(timer.displayedTimer);
     }
 }
-
-/**
- * // RxJS v6+
-import { of } from 'rxjs';
-import { takeWhile } from 'rxjs/operators';
-import { range } from'rxjs';
-
-//emit 1,2,3,4,5
-const source$ = range(1,15);
-
-//allow values until value from source is greater than 4, then complete
-source$
-  .pipe(takeWhile((val) => val <= 15))
-  // log: 1,2,3,4
-  .subscribe((val) => {if(val === 10)console.log(val)});
-
- */

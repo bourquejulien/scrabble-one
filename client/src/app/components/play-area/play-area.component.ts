@@ -4,7 +4,7 @@ import { Timer } from '@app/classes/timer';
 import { Constants } from '@app/constants/global.constants';
 import { GridService } from '@app/services/grid/grid.service';
 import { MouseHandlingService } from '@app/services/mouse-handling/mouse-handling.service';
-import { Observable, Subscription } from 'rxjs';
+import { Observable } from 'rxjs';
 
 @Component({
     selector: 'app-play-area',
@@ -19,11 +19,21 @@ export class PlayAreaComponent implements AfterViewInit, OnChanges {
 
     timer1 = new Timer();
     timerObservable: Observable<any>;
+    timer2 = new Timer();
+    timer2Observable: Observable<any>;
 
     private gridContext: CanvasRenderingContext2D;
     private squareContext: CanvasRenderingContext2D;
 
-    constructor(private readonly gridService: GridService, readonly mouseHandlingService: MouseHandlingService) {}
+    constructor(private readonly gridService: GridService, readonly mouseHandlingService: MouseHandlingService) {
+
+
+        this.timer1.timerInstance.subscribe((currentSecond: number) => { this.timer1.getTimerCountdown(this.timer1) });
+        this.timer1.stopTimer();
+
+        this.timer2.timerInstance.subscribe((currentSecond: number) => { this.timer2.getTimerCountdown(this.timer2) });
+        this.timer2.stopTimer();
+    }
 
     ngAfterViewInit(): void {
         this.gridContext = this.gridCanvas.nativeElement.getContext('2d') as CanvasRenderingContext2D;
@@ -61,11 +71,20 @@ export class PlayAreaComponent implements AfterViewInit, OnChanges {
         this.squareContext.scale(scaleFactor, scaleFactor);
     }
 
-    showTimer(): void {
-        this.timerObservable = this.timer1.countDown(60).subscribe(next => { console.log(this.timer1.displayedTimer) });
+    startTimer1(): void {
+        this.timer1.startTimer();
     }
 
-    stopTimer(time: Subscription): void {
-        this.timer1.resetTimer(this.timerObservable, 0, 3);
+    stopTimer1(): void {
+        this.timer1.stopTimer();
     }
+
+    startTimer2(): void {
+        this.timer2.startTimer();
+    }
+
+    stopTimer2(): void {
+        this.timer2.stopTimer();
+    }
+
 }
