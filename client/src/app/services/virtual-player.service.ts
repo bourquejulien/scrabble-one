@@ -28,18 +28,18 @@ export class VirtualPlayerService {
         let random = Math.random();
 
         if (random < Constants.virtualPlayer.SKIP_PERCENTAGE) {
-            random -= Constants.virtualPlayer.SKIP_PERCENTAGE;
             this.skipTurn();
             return;
         }
+        random -= Constants.virtualPlayer.SKIP_PERCENTAGE;
 
         if (random < Constants.virtualPlayer.EXCHANGE_PERCENTAGE) {
             this.exchange();
             return;
         }
 
-        this.turnComplete.next(PlayerType.Virtual);
         this.play();
+        this.turnComplete.next(PlayerType.Virtual);
     }
 
     async skipTurn() {
@@ -58,15 +58,15 @@ export class VirtualPlayerService {
             this.reserveService.putBackLetter(letter);
             this.rack[letterToReplace] = this.reserveService.drawLetter();
         }
+
+        this.skipTurn();
     }
 
     play() {
         const generator = new PlayGenerator(this.boardService.gameBoard.clone(), this.dictionaryService, this.boardService, this.rack);
         const scoreRange = this.getScoreRange();
 
-        while (generator.orderedPlays.length < 3) {
-            generator.generateNext();
-        }
+        while (generator.generateNext());
 
         const filteredPlays = generator.orderedPlays.filter((e) => e.score >= scoreRange.min && e.score <= scoreRange.max);
         const play = filteredPlays[Math.floor(Math.random() * filteredPlays.length)];

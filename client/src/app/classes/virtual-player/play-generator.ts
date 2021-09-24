@@ -3,7 +3,6 @@ import { Board } from '@app/classes/board/board';
 import { DictionaryLookup } from '@app/classes/dictionary/dictionary-lookup';
 import { ValidationLookup } from '@app/classes/validation/validation-lookup';
 import { Vec2 } from '@app/classes/vec2';
-import { Constants } from '@app/constants/global.constants';
 import { Play } from './play';
 import { Square } from '@app/classes/board/square';
 
@@ -29,11 +28,13 @@ export class PlayGenerator {
         return Math.floor(Math.random() * excludedMax);
     }
 
-    generateNext(): void {
+    generateNext(): boolean {
         const positionIndex = PlayGenerator.getRandomPosition(this.positionsToTry.length);
         const position = this.positionsToTry.splice(positionIndex);
         this.tryGenerate(position[0], Direction.Right);
         this.tryGenerate(position[0], Direction.Down);
+
+        return this.positionsToTry.length !== 0;
     }
 
     get orderedPlays(): Play[] {
@@ -79,33 +80,24 @@ export class PlayGenerator {
     }
 
     private findWords(startWord: string): string[] {
-        const reserveSize = Constants.reserve.SIZE;
-        const indexes: number[] = [reserveSize];
         const generatedWords: string[] = [];
-        let index = 0;
-        let word = startWord;
+        this.findWord(generatedWords, this.availableLetters, startWord);
 
-        while (index > 0) {
-            word += this.availableLetters[indexes[index]];
+        return generatedWords;
+    }
+
+    private findWord(generatedWords: string[], letters: string[], startWord: string) {
+        for (const letter of letters) {
+            const word = startWord + letter;
             const { isWord, isOther } = this.dictionaryLookup.lookUpStart(word);
 
             if (isWord) {
                 generatedWords.push(word);
             }
 
-            if (isOther && index < reserveSize - 1) {
-                index++;
-            } else {
-                word = word.substring(0, word.length - 1);
-                if (indexes[index] < reserveSize - 1) {
-                    indexes[index]++;
-                } else {
-                    indexes[index] = 0;
-                    index--;
-                }
+            if (isOther && letters.length > 1) {
+                this.findWord(generatedWords, letters.slice(0, -1), word);
             }
         }
-
-        return generatedWords;
     }
 }
