@@ -3,7 +3,7 @@ import { GameConfig } from '@app/classes/game-config';
 import { PlayerType } from '@app/classes/player-type';
 import { Constants } from '@app/constants/global.constants';
 import { PlayerService } from '@app/services/player/player.service';
-import { VirtualPlayerService } from '@app/services/virtual-player.service';
+import { VirtualPlayerService } from '@app/services/virtual-player/virtual-player.service';
 import { BehaviorSubject } from 'rxjs';
 
 @Injectable({

@@ -1,11 +1,10 @@
 import { Injectable } from '@angular/core';
 import { PlayerType } from '@app/classes/player-type';
-import { PlayGenerator } from '@app/classes/virtual-player/play-generator';
+import { PlayGeneratorService } from '@app/services/virtual-player/play-generator.service';
 import { Constants } from '@app/constants/global.constants';
 import { Subject } from 'rxjs';
-import { BoardService } from './board/board.service';
-import { DictionaryService } from './dictionary/dictionary.service';
-import { ReserveService } from './reserve/reserve.service';
+import { ReserveService } from '@app/services/reserve/reserve.service';
+import { BoardService } from '@app/services/board/board.service';
 
 @Injectable({
     providedIn: 'root',
@@ -15,9 +14,9 @@ export class VirtualPlayerService {
     private rack: string[] = [];
 
     constructor(
-        private readonly boardService: BoardService,
+        private readonly playGeneratorService: PlayGeneratorService,
         private readonly reserveService: ReserveService,
-        private readonly dictionaryService: DictionaryService,
+        private readonly boardService: BoardService,
     ) {
         this.turnComplete = new Subject<PlayerType>();
     }
@@ -62,7 +61,7 @@ export class VirtualPlayerService {
     }
 
     play() {
-        const generator = new PlayGenerator(this.boardService.gameBoard.clone(), this.dictionaryService, this.boardService, this.rack);
+        const generator = this.playGeneratorService.newGenerator(this.rack);
         const scoreRange = this.getScoreRange();
 
         while (generator.generateNext());

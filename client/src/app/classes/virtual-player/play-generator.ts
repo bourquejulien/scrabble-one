@@ -1,5 +1,5 @@
 import { Direction, reverseDirection } from '@app/classes/board/direction';
-import { Board } from '@app/classes/board/board';
+import { ImmutableBoard } from '@app/classes/board/board';
 import { DictionaryLookup } from '@app/classes/dictionary/dictionary-lookup';
 import { ValidationLookup } from '@app/classes/validation/validation-lookup';
 import { Vec2 } from '@app/classes/vec2';
@@ -8,13 +8,13 @@ import { Square } from '@app/classes/board/square';
 
 export class PlayGenerator {
     private readonly plays: Play[];
-    private readonly board: Board;
+    private readonly board: ImmutableBoard;
     private readonly dictionaryLookup: DictionaryLookup;
     private readonly validationLookup: ValidationLookup;
     private readonly availableLetters: string[];
     private readonly positionsToTry: Vec2[];
 
-    constructor(board: Board, dictionaryLookup: DictionaryLookup, validationLookup: ValidationLookup, availableLetters: string[]) {
+    constructor(board: ImmutableBoard, dictionaryLookup: DictionaryLookup, validationLookup: ValidationLookup, availableLetters: string[]) {
         this.plays = [];
 
         this.board = board;
