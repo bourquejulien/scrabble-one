@@ -35,11 +35,12 @@ export class VirtualPlayerService {
 
         if (random < Constants.virtualPlayer.EXCHANGE_PERCENTAGE) {
             this.exchange();
+            this.skipTurn();
             return;
         }
 
         this.play();
-        this.turnComplete.next(PlayerType.Virtual);
+        this.skipTurn();
     }
 
     async skipTurn() {
@@ -58,8 +59,6 @@ export class VirtualPlayerService {
             this.reserveService.putBackLetter(letter);
             this.rack[letterToReplace] = this.reserveService.drawLetter();
         }
-
-        this.skipTurn();
     }
 
     play() {
@@ -69,10 +68,13 @@ export class VirtualPlayerService {
         while (generator.generateNext());
 
         const filteredPlays = generator.orderedPlays.filter((e) => e.score >= scoreRange.min && e.score <= scoreRange.max);
+
+        if (filteredPlays.length === 0) {
+            return;
+        }
+
         const play = filteredPlays[Math.floor(Math.random() * filteredPlays.length)];
-
         this.boardService.placeLetters(play.letters);
-
         play.letters.forEach((letter) => this.rack.splice(this.rack.findIndex((rackLetter) => letter.letter === rackLetter)));
     }
 

@@ -94,6 +94,8 @@ export class Board implements ImmutableBoard {
             }
         }
 
+        this.filledPositions.forEach((p) => clonedBoard.filledPositions.push(p));
+
         return clonedBoard;
     }
 
