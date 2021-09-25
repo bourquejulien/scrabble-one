@@ -1,4 +1,5 @@
 import { AfterViewInit, Component, ElementRef, Input, OnChanges, SimpleChanges, ViewChild } from '@angular/core';
+import FontFaceObserver from 'fontfaceobserver'
 import { PlayerType } from '@app/classes/player-type';
 import { Constants } from '@app/constants/global.constants';
 import { GridService } from '@app/services/grid/grid.service';
@@ -25,9 +26,11 @@ export class PlayAreaComponent implements AfterViewInit, OnChanges {
 
         this.scale();
 
-        this.gridService.drawGrid(this.gridContext);
-        this.gridService.drawSquares(this.squareContext);
-        this.squareCanvas.nativeElement.focus();
+        new FontFaceObserver(Constants.grid.FONT_FACE.font).load().then(() => {
+            this.gridService.drawGrid(this.gridContext);
+            this.gridService.drawSquares(this.squareContext);
+            this.squareCanvas.nativeElement.focus();
+        });
     }
 
     ngOnChanges(changes: SimpleChanges): void {
