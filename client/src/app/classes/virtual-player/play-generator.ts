@@ -6,6 +6,11 @@ import { Vec2 } from '@app/classes/vec2';
 import { Play } from './play';
 import { Square } from '@app/classes/board/square';
 
+interface PositionedWord {
+    word: string;
+    startPosition: number;
+}
+
 export class PlayGenerator {
     private readonly plays: Play[];
     private readonly board: ImmutableBoard;
@@ -30,7 +35,7 @@ export class PlayGenerator {
 
     generateNext(): boolean {
         const positionIndex = PlayGenerator.getRandomPosition(this.positionsToTry.length);
-        const position = this.positionsToTry.splice(positionIndex);
+        const position = this.positionsToTry.splice(positionIndex, 1);
         this.tryGenerate(position[0], Direction.Right);
         this.tryGenerate(position[0], Direction.Down);
 
@@ -42,13 +47,19 @@ export class PlayGenerator {
     }
 
     private tryGenerate(position: Vec2, direction: Direction): void {
-        const firstPosition = this.retrieveEndPosition(position, reverseDirection(direction));
-        const existingWord = this.retrieveExistingWord(firstPosition, direction);
+        const startPosition = this.retrieveEndPosition(position, reverseDirection(direction));
+        const existingWord = this.retrieveExistingWord(startPosition, direction);
 
-        const foundWords = this.findWords(existingWord);
+        const foundWords = this.findWords(existingWord, direction === Direction.Right ? startPosition.x : startPosition.y);
 
-        for (const word of foundWords) {
-            const letters = this.validationLookup.retrieveNewLetters(word, firstPosition, direction);
+        for (const positionedWord of foundWords) {
+            const letters = this.validationLookup.retrieveNewLetters(
+                positionedWord.word,
+                direction === Direction.Right
+                    ? { x: positionedWord.startPosition, y: startPosition.y }
+                    : { x: startPosition.x, y: positionedWord.startPosition },
+                direction,
+            );
             const response = this.validationLookup.lookupLetters(letters);
             if (response.isSuccess) {
                 this.plays.push({ score: response.points, letters });
@@ -79,24 +90,45 @@ export class PlayGenerator {
         return position;
     }
 
-    private findWords(startWord: string): string[] {
-        const generatedWords: string[] = [];
-        this.findWord(generatedWords, this.availableLetters, startWord);
+    private findWords(startWord: string, startPosition: number): PositionedWord[] {
+        const generatedWords: PositionedWord[] = [];
+        this.findWord(generatedWords, this.availableLetters, { word: startWord, startPosition }, true);
+        this.findWord(generatedWords, this.availableLetters, { word: startWord, startPosition }, false);
 
         return generatedWords;
     }
 
-    private findWord(generatedWords: string[], letters: string[], startWord: string) {
-        for (const letter of letters) {
-            const word = startWord + letter;
-            const { isWord, isOther } = this.dictionaryLookup.lookUpStart(word);
+    private findWord(generatedWords: PositionedWord[], letters: string[], startWord: PositionedWord, isForward: boolean) {
+        for (let index = 0; index < letters.length; index++) {
+            const positionedWord = Object.assign({}, startWord);
 
-            if (isWord) {
-                generatedWords.push(word);
+            if (isForward) {
+                positionedWord.word = startWord.word + letters[index];
+            } else {
+                positionedWord.word = letters[index] + startWord.word;
+                positionedWord.startPosition--;
             }
 
-            if (isOther && letters.length > 1) {
-                this.findWord(generatedWords, letters.slice(0, -1), word);
+            const { isWord, isOther: isOtherStart } = this.dictionaryLookup.lookUpStart(positionedWord.word);
+            const isOtherEnd = this.dictionaryLookup.lookUpEnd(positionedWord.word);
+
+            if (isWord) {
+                generatedWords.push(positionedWord);
+            }
+
+            if (letters.length < 1) {
+                return;
+            }
+
+            const clonedLetters = letters.slice();
+            clonedLetters.splice(index);
+
+            if (isOtherStart) {
+                this.findWord(generatedWords, clonedLetters, positionedWord, true);
+            }
+
+            if (isOtherEnd) {
+                this.findWord(generatedWords, clonedLetters, positionedWord, false);
             }
         }
     }
