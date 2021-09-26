@@ -6,18 +6,23 @@ import { FontFace } from '@app/classes/font-face';
 import { Constants } from '@app/constants/global.constants';
 import { BoardService } from '@app/services/board/board.service';
 
+const STAR_IMAGE_PATH = '/assets/img/star.svg';
+
 @Injectable({
     providedIn: 'root',
 })
 export class GridService {
-    private readonly board: ImmutableBoard;
+    letterFontFace = Constants.grid.FONT_FACE;
 
+    private readonly board: ImmutableBoard;
     private readonly canvasSize: Vec2 = Constants.grid.CANVAS_SIZE;
     private readonly playGridSize: number = Constants.grid.GRID_SIZE;
-    private readonly letterFontFace = Constants.grid.FONT_FACE;
+    private readonly starImage: HTMLImageElement;
 
     constructor(boardService: BoardService) {
         this.board = boardService.gameBoard;
+        this.starImage = new Image();
+        this.starImage.src = STAR_IMAGE_PATH;
     }
 
     private static getBonusText(bonus: Bonus): { kind: string; multiplier: string } {
@@ -84,7 +89,7 @@ export class GridService {
         const centerSquare = Math.floor(this.playGridSize / 2);
 
         if (this.board.getSquare({ x: centerSquare, y: centerSquare }).letter === '') {
-            this.drawImage('/assets/img/star.svg', { x: centerSquare + 1, y: centerSquare + 1 }, squareContext);
+            this.drawImage(this.starImage, { x: centerSquare + 1, y: centerSquare + 1 }, squareContext);
         }
     }
 
@@ -141,8 +146,7 @@ export class GridService {
         return fontFace;
     }
 
-    private drawImage(imagePath: string, gridPosition: Vec2, context: CanvasRenderingContext2D) {
-        const image = new Image();
+    private async drawImage(image: HTMLImageElement, gridPosition: Vec2, context: CanvasRenderingContext2D) {
         const canvasPosition = this.computeCanvasCoord(gridPosition);
         const halfLineWidth = Constants.grid.LINE_WIDTH / 2;
         const centeredPosition = {
@@ -150,8 +154,7 @@ export class GridService {
             y: canvasPosition.y - this.squareHeight / 2 + halfLineWidth,
         };
 
-        image.src = imagePath;
-        image.onload = () =>
+        const drawImage = () =>
             context.drawImage(
                 image,
                 centeredPosition.x,
@@ -159,6 +162,11 @@ export class GridService {
                 this.squareWidth - Constants.grid.LINE_WIDTH,
                 this.squareHeight - Constants.grid.LINE_WIDTH,
             );
+        if (image.complete) {
+            drawImage();
+        } else {
+            image.onload = () => drawImage();
+        }
     }
 
     private drawRow(pos: number, context: CanvasRenderingContext2D) {
