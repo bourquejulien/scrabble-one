@@ -61,13 +61,13 @@ export class GameService {
     private onPlayerTurn() {
         this.currentTurn = PlayerType.Local;
         this.onTurn.next(this.currentTurn);
-        // TODO Start timer?
+        this.playerService.startTurn();
     }
 
     private onVirtualPlayerTurn() {
         this.currentTurn = PlayerType.Virtual;
         this.onTurn.next(this.currentTurn);
-        this.virtualPlayerService.onTurn();
+        this.virtualPlayerService.startTurn();
     }
 
     private randomizeTurn(): PlayerType {
