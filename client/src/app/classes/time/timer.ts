@@ -24,7 +24,6 @@ export class Timer {
         this.countdownStarted = new Subject<void>();
         this.timerStopped = new Subject();
 
-
         this.timerInstance = new Observable<number>();
 
         this.timerInstance = timer(0, TIME_PERIOD).pipe(

@@ -1,5 +1,5 @@
+import FontFaceObserver from 'fontfaceobserver';
 import { AfterViewInit, Component, ElementRef, Input, OnChanges, SimpleChanges, ViewChild } from '@angular/core';
-import FontFaceObserver from 'fontfaceobserver'
 import { PlayerType } from '@app/classes/player-type';
 import { Constants } from '@app/constants/global.constants';
 import { GridService } from '@app/services/grid/grid.service';
