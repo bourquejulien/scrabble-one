@@ -16,6 +16,7 @@ import { CommunicationBoxComponent } from './components/communication-box/commun
 import { GameModePageComponent } from './pages/game-mode-page/game-mode-page.component';
 import { RackComponent } from './components/rack/rack.component';
 import { InitSoloModeComponent } from './components/init-solo-mode/init-solo-mode.component';
+import { SizeSelectorComponent } from './components/size-selector/size-selector/size-selector.component';
 
 /**
  * Main module that is used in main.ts.
@@ -33,6 +34,7 @@ import { InitSoloModeComponent } from './components/init-solo-mode/init-solo-mod
         CommunicationBoxComponent,
         RackComponent,
         InitSoloModeComponent,
+        SizeSelectorComponent,
     ],
     imports: [AppMaterialModule, AppRoutingModule, BrowserAnimationsModule, BrowserModule, FormsModule, HttpClientModule],
     providers: [],
