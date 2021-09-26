@@ -6,7 +6,7 @@ import { Reserve } from './reserve.constants';
 import { VirtualPlayer } from './virtual-player.constants';
 
 export class Constants {
-    static readonly grid = new Grid();
+    static readonly GRID = new Grid();
     static readonly gameTypesList = ['Mode Solo Débutant'];
     static readonly turnLengthList = ['Une Minute', 'Deux Minutes'];
     static readonly botNames = ['Maurice', 'Claudette', 'Alphonse'];
