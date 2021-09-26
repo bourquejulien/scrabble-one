@@ -4,6 +4,7 @@ import { Router } from '@angular/router';
 import { GameConfig } from '@app/classes/game-config';
 import { Constants } from '@app/constants/global.constants';
 import { GameService } from '@app/services/game/game.service';
+import { MatDialogRef } from '@angular/material/dialog';
 
 @Component({
     selector: 'app-init-solo-mode',
@@ -27,7 +28,7 @@ export class InitSoloModeComponent implements OnInit {
         secondPlayerName: '',
     };
 
-    constructor(public gameService: GameService, private router: Router) {}
+    constructor(public gameService: GameService, private router: Router, public dialogRef: MatDialogRef<InitSoloModeComponent>) {}
 
     ngOnInit(): void {
         this.gameConfig.secondPlayerName = this.randomizeBotName(this.botNames);
@@ -39,6 +40,7 @@ export class InitSoloModeComponent implements OnInit {
         if (needsToReroute) {
             this.gameService.startGame(this.gameConfig);
             this.router.navigate(['game']);
+            this.dialogRef.close();
         }
     }
 
@@ -82,8 +84,7 @@ export class InitSoloModeComponent implements OnInit {
     private nameValidatorFunction(control: FormControl): { [key: string]: boolean } | null {
         // We make sure that player name is considered as a string
         const playerName = control.value as string;
-
-        if (playerName !== undefined && playerName !== null) {
+        if (playerName !== undefined && playerName !== null && playerName !== '') {
             for (let index = 0; index < playerName.length; index++) {
                 if (!/[a-zA-Z||ÉéÎîÉéÇçÏï]/.test(playerName.charAt(index))) return { ['containsOnlyLetters']: true };
             }

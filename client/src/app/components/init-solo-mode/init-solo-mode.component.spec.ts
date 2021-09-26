@@ -1,6 +1,8 @@
+/* eslint-disable max-classes-per-file -- Multiple stub implementation needed */
 import { CUSTOM_ELEMENTS_SCHEMA, Injectable, NO_ERRORS_SCHEMA } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormsModule } from '@angular/forms';
+import { MatDialogRef } from '@angular/material/dialog';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { Router } from '@angular/router';
 import { PlayerType } from '@app/classes/player-type';
@@ -13,6 +15,12 @@ import { InitSoloModeComponent } from './init-solo-mode.component';
 })
 class GameServiceStub {
     currentTurn: PlayerType = PlayerType.Local;
+}
+
+class MatDialogStub {
+    close() {
+        // Does nothing
+    }
 }
 
 describe('InitSoloModeComponent', () => {
@@ -32,6 +40,7 @@ describe('InitSoloModeComponent', () => {
             providers: [
                 { provide: Router, useValue: routerMock },
                 { provide: GameService, useValue: GameServiceStub },
+                { provide: MatDialogRef, useValue: MatDialogStub },
             ],
         }).compileComponents();
     });

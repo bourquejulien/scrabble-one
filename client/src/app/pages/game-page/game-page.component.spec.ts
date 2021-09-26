@@ -3,8 +3,10 @@ import { CUSTOM_ELEMENTS_SCHEMA, Injectable, NO_ERRORS_SCHEMA } from '@angular/c
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MatToolbar } from '@angular/material/toolbar';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { GameConfig } from '@app/classes/game-config';
 import { PlayerType } from '@app/classes/player-type';
 import { PlayAreaComponent } from '@app/components/play-area/play-area.component';
+import { Constants } from '@app/constants/global.constants';
 import { AppMaterialModule } from '@app/modules/material.module';
 import { GameService } from '@app/services/game/game.service';
 import { GridService } from '@app/services/grid/grid.service';
@@ -30,6 +32,14 @@ class GridServiceStub {
 })
 class GameServiceStub {
     currentTurn: PlayerType = PlayerType.Local;
+    gameConfig: GameConfig = {
+        gameType: Constants.gameTypesList[0],
+        minutes: Constants.turnLengthMinutes[1],
+        seconds: Constants.turnLengthSeconds[0],
+        time: 0,
+        firstPlayerName: '',
+        secondPlayerName: '',
+    };
 }
 
 describe('GamePageComponent', () => {
