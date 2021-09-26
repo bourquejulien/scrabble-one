@@ -29,8 +29,8 @@ export class PlayerService {
         });
     }
 
-    startTurn() {
-        this.timerService.start(TimeSpan.fromSeconds(20), PlayerType.Local);
+    startTurn(playTime: TimeSpan) {
+        this.timerService.start(playTime, PlayerType.Local);
     }
 
     placeLetters(word: string, position: Vec2, direction: Direction): string {
