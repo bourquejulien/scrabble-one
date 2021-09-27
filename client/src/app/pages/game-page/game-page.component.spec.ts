@@ -5,11 +5,14 @@ import { MatToolbar } from '@angular/material/toolbar';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { GameConfig } from '@app/classes/game-config';
 import { PlayerType } from '@app/classes/player-type';
-import { Constants } from '@app/constants/global.constants';
+import { TimePipe } from '@app/classes/time/time.pipe';
+import { TimeSpan } from '@app/classes/time/timespan';
 import { AppMaterialModule } from '@app/modules/material.module';
 import { GameService } from '@app/services/game/game.service';
 import { BehaviorSubject } from 'rxjs';
 import { GamePageComponent } from './game-page.component';
+
+const GAME_TYPES_LIST = ['Mode Solo Débutant'];
 
 @Injectable({
     providedIn: 'root',
@@ -17,10 +20,8 @@ import { GamePageComponent } from './game-page.component';
 class GameServiceStub {
     onTurn: BehaviorSubject<PlayerType> = new BehaviorSubject<PlayerType>(PlayerType.Local);
     gameConfig: GameConfig = {
-        gameType: Constants.gameTypesList[0],
-        minutes: Constants.turnLengthMinutes[1],
-        seconds: Constants.turnLengthSeconds[0],
-        time: 0,
+        gameType: GAME_TYPES_LIST[0],
+        playTime: TimeSpan.fromSeconds(0),
         firstPlayerName: '',
         secondPlayerName: '',
     };
@@ -38,7 +39,7 @@ describe('GamePageComponent', () => {
 
     beforeEach(async () => {
         await TestBed.configureTestingModule({
-            declarations: [GamePageComponent, PlayAreaStubComponent, MatToolbar],
+            declarations: [GamePageComponent, PlayAreaStubComponent, MatToolbar, TimePipe],
             providers: [{ provide: GameService, useClass: GameServiceStub }],
             imports: [AppMaterialModule, BrowserAnimationsModule],
             schemas: [CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA],

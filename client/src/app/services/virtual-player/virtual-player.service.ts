@@ -5,6 +5,11 @@ import { Constants } from '@app/constants/global.constants';
 import { Subject } from 'rxjs';
 import { ReserveService } from '@app/services/reserve/reserve.service';
 import { BoardService } from '@app/services/board/board.service';
+import { TimerService } from '@app/services/timer-service/timer.service';
+import { TimeSpan } from '@app/classes/time/timespan';
+import { Timer } from '@app/classes/time/timer';
+const MAX_PLAYTIME_SECONDS = 20;
+const MIN_PLAYTIME_SECONDS = 3;
 
 @Injectable({
     providedIn: 'root',
@@ -12,16 +17,21 @@ import { BoardService } from '@app/services/board/board.service';
 export class VirtualPlayerService {
     turnComplete: Subject<PlayerType>;
     private rack: string[] = [];
+    private minTimer: Timer;
 
     constructor(
         private readonly playGeneratorService: PlayGeneratorService,
         private readonly reserveService: ReserveService,
         private readonly boardService: BoardService,
+        private readonly timerService: TimerService,
     ) {
         this.turnComplete = new Subject<PlayerType>();
+        this.minTimer = new Timer(TimeSpan.fromSeconds(MIN_PLAYTIME_SECONDS));
     }
 
-    onTurn() {
+    startTurn() {
+        this.timerService.start(TimeSpan.fromSeconds(MAX_PLAYTIME_SECONDS), PlayerType.Virtual);
+        this.minTimer.startTimer();
         this.fillRack();
 
         let random = Math.random();
@@ -39,16 +49,28 @@ export class VirtualPlayerService {
         }
 
         this.play();
-        this.skipTurn();
+        this.endTurn();
     }
 
-    async skipTurn() {
-        const SKIP_TURN_WAIT = 1000;
-        await new Promise((resolve) => setTimeout(resolve, SKIP_TURN_WAIT));
+    async endTurn() {
+        await this.minTimer.timerCompleted;
+
+        this.minTimer.stopTimer();
+        this.timerService.reset();
         this.turnComplete.next(PlayerType.Virtual);
     }
 
-    exchange() {
+    skipTurn() {
+        this.endTurn();
+    }
+
+    fillRack(): void {
+        while (this.reserveService.length > 0 && this.rack.length < Constants.reserve.SIZE) {
+            this.rack.push(this.reserveService.drawLetter());
+        }
+    }
+
+    private exchange() {
         const randomLetterCount = Math.floor(Math.random() * this.rack.length);
 
         for (let i = 0; i < randomLetterCount; i++) {
@@ -60,11 +82,11 @@ export class VirtualPlayerService {
         }
     }
 
-    play() {
+    private async play() {
         const generator = this.playGeneratorService.newGenerator(this.rack);
         const scoreRange = this.getScoreRange();
 
-        while (generator.generateNext());
+        while (generator.generateNext() && this.timerService.time.totalMilliseconds > 0);
 
         const filteredPlays = generator.orderedPlays.filter((e) => e.score >= scoreRange.min && e.score <= scoreRange.max);
 
@@ -73,14 +95,11 @@ export class VirtualPlayerService {
         }
 
         const play = filteredPlays[Math.floor(Math.random() * filteredPlays.length)];
+
+        await this.minTimer.timerCompleted;
+
         this.boardService.placeLetters(play.letters);
         play.letters.forEach((letter) => this.rack.splice(this.rack.findIndex((rackLetter) => letter.letter === rackLetter)));
-    }
-
-    fillRack(): void {
-        while (this.reserveService.length > 0 && this.rack.length < Constants.reserve.SIZE) {
-            this.rack.push(this.reserveService.drawLetter());
-        }
     }
 
     private getScoreRange(): { min: number; max: number } {

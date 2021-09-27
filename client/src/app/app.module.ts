@@ -8,15 +8,17 @@ import { AppRoutingModule } from '@app/modules/app-routing.module';
 import { AppMaterialModule } from '@app/modules/material.module';
 // Components
 import { PlayAreaComponent } from '@app/components/play-area/play-area.component';
+import { RackComponent } from './components/rack/rack.component';
+import { InitSoloModeComponent } from './components/init-solo-mode/init-solo-mode.component';
+import { SizeSelectorComponent } from './components/size-selector/size-selector/size-selector.component';
+import { CommunicationBoxComponent } from './components/communication-box/communication-box.component';
 // Page components
 import { AppComponent } from '@app/pages/app/app.component';
 import { GamePageComponent } from '@app/pages/game-page/game-page.component';
 import { MainPageComponent } from '@app/pages/main-page/main-page.component';
-import { CommunicationBoxComponent } from './components/communication-box/communication-box.component';
 import { GameModePageComponent } from './pages/game-mode-page/game-mode-page.component';
-import { RackComponent } from './components/rack/rack.component';
-import { InitSoloModeComponent } from './components/init-solo-mode/init-solo-mode.component';
-import { SizeSelectorComponent } from './components/size-selector/size-selector/size-selector.component';
+// Pipes
+import { TimePipe } from './classes/time/time.pipe';
 
 /**
  * Main module that is used in main.ts.
@@ -35,6 +37,7 @@ import { SizeSelectorComponent } from './components/size-selector/size-selector/
         RackComponent,
         InitSoloModeComponent,
         SizeSelectorComponent,
+        TimePipe,
     ],
     imports: [AppMaterialModule, AppRoutingModule, BrowserAnimationsModule, BrowserModule, FormsModule, HttpClientModule],
     providers: [],

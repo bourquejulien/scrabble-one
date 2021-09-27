@@ -7,6 +7,8 @@ import { BoardService } from '@app/services/board/board.service';
 import { ReserveService } from '@app/services/reserve/reserve.service';
 import { Subject } from 'rxjs';
 import { BehaviorSubject } from 'rxjs/internal/BehaviorSubject';
+import { TimerService } from '@app/services/timer-service/timer.service';
+import { TimeSpan } from '@app/classes/time/timespan';
 
 @Injectable({
     providedIn: 'root',
@@ -16,8 +18,19 @@ export class PlayerService {
     turnComplete: Subject<PlayerType>;
     rackUpdated: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(true);
 
-    constructor(private reserveService: ReserveService, private boardService: BoardService) {
+    constructor(
+        private readonly reserveService: ReserveService,
+        private readonly boardService: BoardService,
+        private readonly timerService: TimerService,
+    ) {
         this.turnComplete = new Subject<PlayerType>();
+        this.timerService.countdownStopped.subscribe(() => {
+            if (PlayerType.Local) this.completeTurn();
+        });
+    }
+
+    startTurn(playTime: TimeSpan) {
+        this.timerService.start(playTime, PlayerType.Local);
     }
 
     placeLetters(word: string, position: Vec2, direction: Direction): string {
