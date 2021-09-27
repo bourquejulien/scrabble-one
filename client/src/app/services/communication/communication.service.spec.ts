@@ -1,6 +1,6 @@
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
-import { Message } from '@app/classes/message';
+import { Message, MessageType } from '@app/classes/message';
 import { CommunicationService } from '@app/services/communication/communication.service';
 
 describe('CommunicationService', () => {
@@ -27,7 +27,7 @@ describe('CommunicationService', () => {
     });
 
     it('should return expected message (HttpClient called once)', () => {
-        const expectedMessage: Message = { title: '', body: 'Hello', userId: 0, messageType: 'Log', timestamp: Date.now() };
+        const expectedMessage: Message = { title: '', body: 'Hello', userId: 0, messageType: MessageType.Log, timestamp: Date.now() };
 
         // check the content of the mocked call
         service.basicGet().subscribe((response: Message) => {
@@ -41,7 +41,7 @@ describe('CommunicationService', () => {
     });
 
     it('should not return any message when sending a POST request (HttpClient called once)', () => {
-        const sentMessage: Message = { title: '', body: 'Hello', userId: 0, messageType: 'Log', timestamp: Date.now() };
+        const sentMessage: Message = { title: '', body: 'Hello', userId: 0, messageType: MessageType.Log, timestamp: Date.now() };
         // subscribe to the mocked call
         // eslint-disable-next-line @typescript-eslint/no-empty-function -- We explicitly need an empty function
         service.basicPost(sentMessage).subscribe(() => {}, fail);

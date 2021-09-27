@@ -1,21 +1,21 @@
 .comm-box-container {
-    display: block;
+    display: flexbox;
     height: 100%;
-    width: 100%;
-    overflow: scroll;
 }
 
 .message-card {
-    display: flex;
-    align-items: center;
-}
-
-.card-icon {
-    margin: 4px;
+    display: block;
+    align-items: flex-end;
 }
 
 .command-input {
     position: absolute;
-    bottom: 0%;
+    bottom: 0;
     width: 100%;
+}
+
+.messages {
+    display: flexbox;
+    align-items: flex-end;
+    overflow-y: scroll;
 }
