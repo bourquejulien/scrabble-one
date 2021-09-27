@@ -93,7 +93,7 @@ export class BoardValidator {
             return 0;
         }
 
-        return this.letterPoints[letter];
+        return this.letterPoints[letter] ?? 0;
     }
 
     private validateFirstPlacement(letters: { letter: string; position: Vec2 }[]): boolean {
@@ -186,7 +186,7 @@ export class BoardValidator {
             const isBonus = currentSquare.bonus !== Bonus.None && this.board.getSquare(currentSquare.position).letter === '';
 
             nextSquare = clonedBoard.getRelative(currentSquare.position, direction);
-            word += currentSquare.letter;
+            word += currentSquare.letter.toLowerCase();
 
             if (!isBonus) {
                 totalPoint += this.getLetterPoints(currentSquare.letter);

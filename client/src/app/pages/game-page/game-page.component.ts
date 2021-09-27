@@ -8,13 +8,12 @@ import { GameService } from '@app/services/game/game.service';
 })
 export class GamePageComponent {
     gameService: GameService;
-    playerType: PlayerType = PlayerType.Local;
-    joueur1: string = 'default';
-    joueur2: string = 'bot';
+    playerType: PlayerType;
+
     constructor(gameService: GameService) {
         this.gameService = gameService;
-        this.joueur1 = this.gameService.gameConfig.firstPlayerName;
-        this.joueur2 = this.gameService.gameConfig.secondPlayerName;
+        this.playerType = gameService.onTurn.getValue();
+        gameService.onTurn.subscribe((e) => (this.playerType = e));
     }
 
     confirmQuit(): void {
