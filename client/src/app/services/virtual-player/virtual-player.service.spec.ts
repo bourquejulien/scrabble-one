@@ -1,9 +1,9 @@
 /* eslint-disable max-classes-per-file -- Multiple stubs are used */
 import { Injectable } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
-import { VirtualPlayerService } from '@app/services/virtual-player.service';
-import { BoardService } from './board/board.service';
-import { DictionaryService } from './dictionary/dictionary.service';
+import { VirtualPlayerService } from '@app/services/virtual-player/virtual-player.service';
+import { BoardService } from '@app/services/board/board.service';
+import { DictionaryService } from '@app/services/dictionary/dictionary.service';
 
 @Injectable({
     providedIn: 'root',

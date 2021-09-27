@@ -1,11 +1,10 @@
 import { Injectable } from '@angular/core';
 import { PlayerType } from '@app/classes/player-type';
-import { PlayGenerator } from '@app/classes/virtual-player/play-generator';
+import { PlayGeneratorService } from '@app/services/virtual-player/play-generator.service';
 import { Constants } from '@app/constants/global.constants';
 import { Subject } from 'rxjs';
-import { BoardService } from './board/board.service';
-import { DictionaryService } from './dictionary/dictionary.service';
-import { ReserveService } from './reserve/reserve.service';
+import { ReserveService } from '@app/services/reserve/reserve.service';
+import { BoardService } from '@app/services/board/board.service';
 
 @Injectable({
     providedIn: 'root',
@@ -15,9 +14,9 @@ export class VirtualPlayerService {
     private rack: string[] = [];
 
     constructor(
-        private readonly boardService: BoardService,
+        private readonly playGeneratorService: PlayGeneratorService,
         private readonly reserveService: ReserveService,
-        private readonly dictionaryService: DictionaryService,
+        private readonly boardService: BoardService,
     ) {
         this.turnComplete = new Subject<PlayerType>();
     }
@@ -25,22 +24,22 @@ export class VirtualPlayerService {
     onTurn() {
         this.fillRack();
 
-        // const random = Math.random();
+        let random = Math.random();
+
+        if (random < Constants.virtualPlayer.SKIP_PERCENTAGE) {
+            this.skipTurn();
+            return;
+        }
+        random -= Constants.virtualPlayer.SKIP_PERCENTAGE;
+
+        if (random < Constants.virtualPlayer.EXCHANGE_PERCENTAGE) {
+            this.exchange();
+            this.skipTurn();
+            return;
+        }
+
+        this.play();
         this.skipTurn();
-
-        // if (random < Constants.virtualPlayer.SKIP_PERCENTAGE) {
-        //     random -= Constants.virtualPlayer.SKIP_PERCENTAGE;
-        //     this.skipTurn();
-        //     return;
-        // }
-
-        // if (random < Constants.virtualPlayer.EXCHANGE_PERCENTAGE) {
-        //     this.exchange();
-        //     return;
-        // }
-
-        // this.turnComplete.next(PlayerType.Virtual);
-        // this.play();
     }
 
     async skipTurn() {
@@ -62,18 +61,19 @@ export class VirtualPlayerService {
     }
 
     play() {
-        const generator = new PlayGenerator(this.boardService.gameBoard.clone(), this.dictionaryService, this.boardService, this.rack);
+        const generator = this.playGeneratorService.newGenerator(this.rack);
         const scoreRange = this.getScoreRange();
 
-        while (generator.orderedPlays.length < 3) {
-            generator.generateNext();
-        }
+        while (generator.generateNext());
 
         const filteredPlays = generator.orderedPlays.filter((e) => e.score >= scoreRange.min && e.score <= scoreRange.max);
+
+        if (filteredPlays.length === 0) {
+            return;
+        }
+
         const play = filteredPlays[Math.floor(Math.random() * filteredPlays.length)];
-
         this.boardService.placeLetters(play.letters);
-
         play.letters.forEach((letter) => this.rack.splice(this.rack.findIndex((rackLetter) => letter.letter === rackLetter)));
     }
 

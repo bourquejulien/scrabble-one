@@ -10,6 +10,7 @@ import { Constants } from '@app/constants/global.constants';
 import { AppMaterialModule } from '@app/modules/material.module';
 import { GameService } from '@app/services/game/game.service';
 import { GridService } from '@app/services/grid/grid.service';
+import { BehaviorSubject } from 'rxjs';
 import { GamePageComponent } from './game-page.component';
 
 @Injectable({
@@ -31,7 +32,7 @@ class GridServiceStub {
     providedIn: 'root',
 })
 class GameServiceStub {
-    currentTurn: PlayerType = PlayerType.Local;
+    onTurn: BehaviorSubject<PlayerType> = new BehaviorSubject<PlayerType>(PlayerType.Local);
     gameConfig: GameConfig = {
         gameType: Constants.gameTypesList[0],
         minutes: Constants.turnLengthMinutes[1],
