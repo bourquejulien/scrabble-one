@@ -1,5 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup, ValidatorFn, Validators } from '@angular/forms';
+import { MatDialogRef } from '@angular/material/dialog';
+import { GameConfig } from '@app/classes/game-config';
 import { Constants } from '@app/constants/global.constants';
 import { GameService } from '@app/services/game/game.service';
 
@@ -15,16 +17,25 @@ export class InitSoloModeComponent implements OnInit {
     readonly minutesList = Constants.turnLengthMinutes;
     readonly secondsList = Constants.turnLengthSeconds;
     nameForm: FormGroup;
+    errorsList: string[];
+    gameConfig: GameConfig = {
+        gameType: Constants.gameTypesList[0],
+        minutes: Constants.turnLengthMinutes[1],
+        seconds: Constants.turnLengthSeconds[0],
+        time: 0,
+        firstPlayerName: '',
+        secondPlayerName: '',
+    };
 
-    constructor(public game: GameService) {}
+    constructor(public gameService: GameService, public dialogRef: MatDialogRef<InitSoloModeComponent>) {}
 
     ngOnInit(): void {
-        this.game.gameConfig.secondPlayerName = this.randomizeBotName(this.botNames);
+        this.gameService.gameConfig.secondPlayerName = this.randomizeBotName(this.botNames);
     }
 
     botNameChange(firstPlayerName: string): void {
-        while (firstPlayerName === this.game.gameConfig.secondPlayerName) {
-            this.game.gameConfig.secondPlayerName = this.randomizeBotName(Constants.botNames);
+        while (firstPlayerName === this.gameService.gameConfig.secondPlayerName) {
+            this.gameService.gameConfig.secondPlayerName = this.randomizeBotName(Constants.botNames);
         }
     }
 
@@ -54,12 +65,16 @@ export class InitSoloModeComponent implements OnInit {
         });
         this.nameForm = nameForm;
         if (nameForm.valid) {
-            this.game.randomizeTurn();
-            this.game.gameConfig.firstPlayerName = name;
-            this.botNameChange(this.game.gameConfig.firstPlayerName);
-            // Had to cast the parts of the addition to Numbers otherwise it was considered as a string
-            this.game.gameConfig.time = Number(this.game.gameConfig.minutes * Constants.timeConstant) + Number(this.game.gameConfig.seconds);
+            this.gameConfig.firstPlayerName = name;
+            this.botNameChange(this.gameConfig.firstPlayerName);
             return true;
+        } else {
+            this.errorsList = [];
+            if (nameForm.get('control')?.hasError('startsWithLowerLetter')) this.errorsList.push('*Le nom doit débuter par une majuscule.\n');
+            if (nameForm.get('control')?.hasError('maxlength')) this.errorsList.push('*Le nom doit au maximum contenir 16 lettres.\n');
+            if (nameForm.get('control')?.hasError('minlength')) this.errorsList.push('*Le nom doit contenir au moins 3 caractères.\n');
+            if (nameForm.get('control')?.hasError('required')) this.errorsList.push('*Un nom doit être entré.\n');
+            if (nameForm.get('control')?.hasError('containsOnlyLetters')) this.errorsList.push('*Le nom doit seulement être composé de lettres.\n');
         }
         return false;
     }
