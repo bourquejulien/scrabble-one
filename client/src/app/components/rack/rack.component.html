@@ -1,7 +1,7 @@
 <mat-card class="rack">
     <mat-card class="tile" *ngFor="let letter of rack">
-        <div>
-            {{ letter }}
+        <div *ngIf="letter !== '*'">
+            {{ letter.toUpperCase() }}
             <sub class="letter-point">
                 {{ retrievePoints(letter) }}
             </sub>

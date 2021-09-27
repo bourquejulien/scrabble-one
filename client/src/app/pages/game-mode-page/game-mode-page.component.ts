@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
-// import { MatDialog } from '@angular/material/dialog';
+import { MatDialog } from '@angular/material/dialog';
+import { InitSoloModeComponent } from '@app/components/init-solo-mode/init-solo-mode.component';
 
 @Component({
     selector: 'app-game-mode-page',
@@ -7,14 +8,10 @@ import { Component } from '@angular/core';
     styleUrls: ['./game-mode-page.component.scss'],
 })
 export class GameModePageComponent {
-    // constructor(public dialog: MatDialog) {}
-    // name:string;
-    // gameType:string;
-    // time:number;
-    // openDialog(): void {
-    //     const dialogRef = this.dialog.open(DialogOverviewExampleDialog, {
-    //       width: '250px',
-    //       data: {name: this.name, gameType: this.gameType, time:this.time}
-    //     });
-    // }
+    constructor(public dialog: MatDialog) {}
+
+    openDialog(): void {
+        const dialogRef = this.dialog.open(InitSoloModeComponent, { panelClass: 'init-solo-mode-dialog' });
+        dialogRef.afterClosed().subscribe();
+    }
 }

@@ -1,46 +1,48 @@
-// TODO Check if accepted
-/* eslint-disable no-underscore-dangle */
-/* eslint-disable max-classes-per-file */
+/* eslint-disable max-classes-per-file -- TrieNode is for internal use only */
 class TrieNode {
     readonly character: string;
     readonly isWord: boolean;
-    private readonly children: Map<string, TrieNode>;
+    private readonly childrens: TrieNode[];
 
     constructor(character: string, isWord: boolean) {
-        this.children = new Map<string, TrieNode>();
+        this.childrens = [];
         this.character = character;
         this.isWord = isWord;
     }
 
     addChildren(node: TrieNode): void {
-        this.children.set(node.character, node);
+        this.childrens.push(node);
     }
 
     getChildren(character: string): TrieNode | null {
-        return this.children.get(character) ?? null;
+        return this.childrens.find((e) => e.character === character) ?? null;
+    }
+
+    get hasChildren(): boolean {
+        return this.childrens.length !== 0;
     }
 }
 
 export interface IReadOnlyTrie {
     contains(word: string): boolean;
-    startsWith(word: string): boolean;
+    startsWith(word: string): { isWord: boolean; isOther: boolean };
     get size(): number;
 }
 
 export interface ITrie {
     insert(word: string): void;
     contains(word: string): boolean;
-    startsWith(word: string): boolean;
+    startsWith(word: string): { isWord: boolean; isOther: boolean };
     get size(): number;
 }
 
 export class Trie implements ITrie {
     private readonly root: TrieNode;
-    private _size: number;
+    private length: number;
 
     constructor() {
         this.root = new TrieNode('', false);
-        this._size = 0;
+        this.length = 0;
     }
 
     insert(word: string): void {
@@ -55,7 +57,7 @@ export class Trie implements ITrie {
             currentNode = newNode;
         }
 
-        this._size++;
+        this.length++;
     }
 
     contains(word: string): boolean {
@@ -63,8 +65,9 @@ export class Trie implements ITrie {
         return node !== null && node.isWord;
     }
 
-    startsWith(word: string): boolean {
-        return this.getNode(word) !== null;
+    startsWith(word: string): { isWord: boolean; isOther: boolean } {
+        const node = this.getNode(word);
+        return { isWord: node !== null && node.isWord, isOther: node !== null && node.hasChildren };
     }
 
     private getNode(word: string): TrieNode | null {
@@ -85,6 +88,6 @@ export class Trie implements ITrie {
     }
 
     get size(): number {
-        return this._size;
+        return this.length;
     }
 }

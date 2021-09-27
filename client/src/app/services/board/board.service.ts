@@ -10,24 +10,26 @@ import { Direction } from '@app/classes/board/direction';
 import { Constants } from '@app/constants/global.constants';
 import JsonBonuses from '@assets/bonus.json';
 import JsonLetters from '@assets/letters.json';
+import { ValidationLookup } from '@app/classes/validation/validation-lookup';
+import { BoardError } from '@app/exceptions/board-error';
 
 @Injectable({
     providedIn: 'root',
 })
-export class BoardService {
+export class BoardService implements ValidationLookup {
     private readonly board: Board;
     private readonly boardValidator: BoardValidator;
 
     constructor(dictionary: DictionaryService) {
         this.board = new Board(Constants.grid.GRID_SIZE, this.retrieveBonuses());
-        this.boardValidator = new BoardValidator(this.board, dictionary.lookup, this.retrieveLetterValues());
+        this.boardValidator = new BoardValidator(this.board, dictionary, this.retrieveLetterValues());
     }
 
     get gameBoard(): ImmutableBoard {
         return this.board;
     }
 
-    validateLetters(letters: { letter: string; position: Vec2 }[]): ValidationResponse {
+    lookupLetters(letters: { letter: string; position: Vec2 }[]): ValidationResponse {
         return this.boardValidator.validate(letters);
     }
 
@@ -45,13 +47,18 @@ export class BoardService {
         const newLetters: { letter: string; position: Vec2 }[] = [];
         let lastSquare: Square | null = this.board.getSquare(initialPosition);
 
-        for (const letter of word) {
-            if (lastSquare === null) return [];
+        try {
+            for (const letter of word) {
+                if (lastSquare === null) return [];
 
-            if (lastSquare.letter === '') {
-                newLetters.push({ letter, position: lastSquare.position });
+                if (lastSquare.letter === '') {
+                    newLetters.push({ letter, position: lastSquare.position });
+                }
+                lastSquare = this.board.getRelative(lastSquare.position, direction);
             }
-            lastSquare = this.board.getRelative(lastSquare.position, direction);
+        } catch (error) {
+            if (error instanceof BoardError) return [];
+            throw error;
         }
 
         return newLetters;

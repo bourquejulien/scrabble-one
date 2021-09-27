@@ -4,7 +4,9 @@
         <div #messageContainer *ngFor="let message of messages">
             <mat-card class="message-card" [style.background-color]="getMessageColor(message)">
                 <mat-icon class="card-icon">dangerous</mat-icon>
-                <span><b *ngIf="message.title !== ''">{{ message.title }}<br></b></span>
+                <span
+                    ><b *ngIf="message.title !== ''">{{ message.title }}<br /></b
+                ></span>
                 {{ message.body }}
             </mat-card>
         </div>

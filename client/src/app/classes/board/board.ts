@@ -11,23 +11,24 @@ export interface ImmutableBoard {
     getSquare(position: Vec2): Square;
     getRelative(position: Vec2, direction: Direction): Square | null;
     clone(): Board;
-    get filledSquare(): number;
+    get center(): Vec2;
+    get positions(): Vec2[];
 }
 
 export class Board implements ImmutableBoard {
     readonly size: number;
     private readonly board: Square[][];
-
-    private filledSquareCount: number = 0;
+    private readonly filledPositions: Vec2[];
 
     constructor(size: number, bonuses: [Vec2, Bonus][] = []) {
         this.size = size;
         this.board = new Array<Square[]>();
+        this.filledPositions = [];
 
-        for (let x = 0; x <= size; x++) {
+        for (let x = 0; x < size; x++) {
             const column: Square[] = new Array<Square>();
 
-            for (let y = 0; y <= size; y++) {
+            for (let y = 0; y < size; y++) {
                 column.push({ letter: '', bonus: Bonus.None, position: { x, y } });
             }
 
@@ -87,23 +88,31 @@ export class Board implements ImmutableBoard {
     clone(): Board {
         const clonedBoard = new Board(this.size);
 
-        for (let x = 0; x <= this.size; x++) {
-            for (let y = 0; y <= this.size; y++) {
+        for (let x = 0; x < this.size; x++) {
+            for (let y = 0; y < this.size; y++) {
                 clonedBoard.board[x][y] = this.board[x][y];
             }
         }
 
+        this.filledPositions.forEach((p) => clonedBoard.filledPositions.push(p));
+
         return clonedBoard;
     }
 
-    get filledSquare(): number {
-        return this.filledSquareCount;
+    get center(): Vec2 {
+        const x = Math.floor(this.board.length / 2);
+        const y = Math.floor(this.board[0].length / 2);
+        return { x, y };
+    }
+
+    get positions(): Vec2[] {
+        return Array.from(this.filledPositions);
     }
 
     private setLetter(letter: string, position: Vec2): void {
         const replacedSquare = this.getSquare(position);
         this.board[position.x][position.y] = { letter, bonus: replacedSquare.bonus, position };
-        this.filledSquareCount++;
+        this.filledPositions.push(position);
     }
 
     private positionGuard(position: Vec2) {

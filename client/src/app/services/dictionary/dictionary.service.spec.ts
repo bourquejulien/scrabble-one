@@ -1,10 +1,11 @@
-import { TestBed } from '@angular/core/testing';
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
-import { DictionaryService } from '@app/services/dictionary/dictionary.service';
-import { Dictionary } from '@app/classes/dictionary';
+import { TestBed } from '@angular/core/testing';
+import { JsonDictionary } from '@app/classes/dictionary/json-dictionary';
 import { Constants } from '@app/constants/global.constants';
+import { DictionaryService } from '@app/services/dictionary/dictionary.service';
 
-const DICTIONARY: Dictionary = { title: 'test', description: 'test', words: ['pomme', 'orange', 'poire', 'raisin', 'peche', 'banane', 'bananes'] };
+const WORDS = ['pomme', 'orange', 'poire', 'raisin', 'peche', 'banane', 'bananes'];
+const DICTIONARY: JsonDictionary = { title: 'test', description: 'test', words: WORDS };
 
 describe('DictionaryService', () => {
     let service: DictionaryService;
@@ -28,6 +29,14 @@ describe('DictionaryService', () => {
     });
 
     it('should contain word', () => {
-        expect(service.lookup('pomme')).toBe(true);
+        for (const word of WORDS) {
+            expect(service.lookup(word)).toBe(true);
+        }
+    });
+
+    it('should contain the start of a word', () => {
+        for (const word of WORDS) {
+            expect(service.lookUpStart(word.substring(0, word.length - 3)).isOther).toBe(true);
+        }
     });
 });
