@@ -1,10 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup, ValidatorFn, Validators } from '@angular/forms';
+import { MatDialogRef } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 import { GameConfig } from '@app/classes/game-config';
 import { Constants } from '@app/constants/global.constants';
 import { GameService } from '@app/services/game/game.service';
-import { MatDialogRef } from '@angular/material/dialog';
 
 @Component({
     selector: 'app-init-solo-mode',
@@ -86,7 +86,7 @@ export class InitSoloModeComponent implements OnInit {
         const playerName = control.value as string;
         if (playerName !== undefined && playerName !== null && playerName !== '') {
             for (let index = 0; index < playerName.length; index++) {
-                if (!/[a-zA-Z||ÉéÎîÉéÇçÏï]/.test(playerName.charAt(index))) return { ['containsOnlyLetters']: true };
+                if (!/[a-zA-ZÉéÎîÉéÇçÏï]/.test(playerName.charAt(index))) return { ['containsOnlyLetters']: true };
             }
 
             const firstLetter = playerName[0];

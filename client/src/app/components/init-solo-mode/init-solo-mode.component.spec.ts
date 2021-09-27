@@ -23,10 +23,11 @@ class MatDialogStub {
     }
 }
 
-describe('InitSoloModeComponent', () => {
+fdescribe('InitSoloModeComponent', () => {
     let init: InitSoloModeComponent;
     let fixture: ComponentFixture<InitSoloModeComponent>;
-    // const NAMES = ['Jean', 'RenÉéÎîÉéÇçÏï', 'moulon', 'Jo', 'Josiannnnnnnnnne', 'Jean123'];
+    const VALID_NAMES = ['Jean', 'RenÉéÎîÉéÇçÏï'];
+    const INVALID_NAMES = ['moulon', 'Jo', 'Josiannnnnnnnnnne', 'Jean123'];
 
     const routerMock = {
         navigate: jasmine.createSpy('navigate'),
@@ -53,27 +54,16 @@ describe('InitSoloModeComponent', () => {
     it('should create', () => {
         expect(init).toBeTruthy();
     });
-    /*
     it('should initialize', () => {
-        expect(init.confirmInitialization(NAMES[0])).toBeTrue();
-    });
-    it('should initialize', () => {
-        expect(init.confirmInitialization(NAMES[1])).toBeTrue();
-    });
-    it('should not initialize', () => {
-        expect(init.confirmInitialization(NAMES[2])).toBeFalse();
+        const spy = spyOn(init, 'initialize');
+        for (const name of VALID_NAMES) {
+            spy.and.returnValue();
+            expect(bool.toBeTrue());
+        }
     });
     it('should not initialize', () => {
-        expect(init.confirmInitialization(NAMES[3])).toBeFalse();
+        for (const name of INVALID_NAMES) {
+            expect(init.initialize(name)).toBeFalse();
+        }
     });
-    it('should not initialize', () => {
-        expect(init.confirmInitialization(NAMES[4])).toBeFalse();
-    });
-    it('should not initialize', () => {
-        expect(init.confirmInitialization(NAMES[5])).toBeFalse();
-    });
-    it('should not initialize', () => {
-        expect(init.confirmInitialization(NAMES[6])).toBeFalse();
-    });
-    */
 });
