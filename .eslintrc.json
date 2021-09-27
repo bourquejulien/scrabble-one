@@ -116,7 +116,9 @@
                     {
                         "ignore": [-1, 0, 1, 2, 3],
                         "ignoreArrayIndexes": true,
-                        "ignoreEnums": true
+                        "ignoreEnums": true,
+                        "enforceConst": true,
+                        "ignoreDefaultValues": true
                     }
                 ],
                 "@typescript-eslint/no-misused-new": "error",

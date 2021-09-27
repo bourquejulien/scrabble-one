@@ -11,13 +11,13 @@
     <div class="playersFlex">
         <mat-form-field class="inputs" style="margin-right: 15px" appearance="fill">
             <mat-label>Minutes</mat-label>
-            <mat-select name="minutesPerTurn" [(ngModel)]="gameConfig.minutes">
+            <mat-select name="minutesPerTurn" [(ngModel)]="minutes">
                 <mat-option *ngFor="let minutes of minutesList" [value]="minutes">{{ minutes }} </mat-option>
             </mat-select>
         </mat-form-field>
         <mat-form-field class="inputs" appearance="fill">
             <mat-label>Secondes</mat-label>
-            <mat-select name="secondsPerTurn" [(ngModel)]="gameConfig.seconds">
+            <mat-select name="secondsPerTurn" [(ngModel)]="seconds">
                 <mat-option *ngFor="let seconds of secondsList" [value]="seconds">{{ seconds }}</mat-option>
             </mat-select>
         </mat-form-field>
@@ -50,5 +50,5 @@
         class="alert">
         *Le nom doit débuter par une majuscule.
     </div>
-    <button mat-raised-button (click)="this.initialize(gameConfig.firstPlayerName)" color="primary" id="confirm">Confirmer</button>
+    <button mat-raised-button (click)="this.initialize()" color="primary" id="confirm">Confirmer</button>
 </div>
