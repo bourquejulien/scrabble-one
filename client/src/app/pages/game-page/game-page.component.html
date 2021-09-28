@@ -1,8 +1,8 @@
 <mat-drawer-container autosize>
     <mat-toolbar [ngClass]="playerType" class="mat-app-background" color="primary" class="toolbar">
         <span>Scrabble</span>
-        <span>{{gameService.gameConfig.firstPlayerName}} contre {{gameService.gameConfig.secondPlayerName}}</span>
-        <span>Minuteur: {{timerService.time | time}}</span>
+        <span>{{ gameService.gameConfig.firstPlayerName }} contre {{ gameService.gameConfig.secondPlayerName }}</span>
+        <span>Minuteur: {{ timerService.time | time }}</span>
     </mat-toolbar>
     <mat-drawer #drawer class="comm-box-sidenav" mode="side" opened>
         <app-communication-box></app-communication-box>

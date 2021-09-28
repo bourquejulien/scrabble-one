@@ -1,10 +1,10 @@
-import { Component, OnInit, HostListener } from '@angular/core';
+import { Component, HostListener, OnInit } from '@angular/core';
 import { FormControl, FormGroup, ValidatorFn, Validators } from '@angular/forms';
+import { MatDialogRef } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 import { GameConfig } from '@app/classes/game-config';
-import { GameService } from '@app/services/game/game.service';
-import { MatDialogRef } from '@angular/material/dialog';
 import { TimeSpan } from '@app/classes/time/timespan';
+import { GameService } from '@app/services/game/game.service';
 
 const GAME_TYPES_LIST = ['Mode Solo Débutant'];
 const BOT_NAMES = ['Maurice', 'Claudette', 'Alphonse'];
