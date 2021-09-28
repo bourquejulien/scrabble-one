@@ -1,6 +1,6 @@
 import { Bonus } from '@app/classes/board/bonus';
-import { Vec2 } from '@app/classes/vec2';
 import { FontFace } from '@app/classes/font-face';
+import { Vec2 } from '@app/classes/vec2';
 
 /* eslint-disable @typescript-eslint/no-magic-numbers -- Constants file */
 /* eslint-disable @typescript-eslint/naming-convention -- Constants file */

@@ -1,6 +1,14 @@
 <div id="grid-container">
     <div id="board" [style.width.px]="width" [style.height.px]="height">
-        <canvas class="board-display" id="grid-canvas" #gridCanvas [style.width.px]="width" [style.height.px]="height" [attr.width]="width" [attr.height]="height"></canvas>
+        <canvas
+            class="board-display"
+            id="grid-canvas"
+            #gridCanvas
+            [style.width.px]="width"
+            [style.height.px]="height"
+            [attr.width]="width"
+            [attr.height]="height"
+        ></canvas>
         <canvas
             class="board-display"
             id="squareCanvas"
@@ -16,4 +24,3 @@
         <app-rack></app-rack>
     </div>
 </div>
-

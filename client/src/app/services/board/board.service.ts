@@ -1,17 +1,17 @@
 import { Injectable } from '@angular/core';
 import { Board, ImmutableBoard } from '@app/classes/board/board';
-import { BoardValidator } from '@app/classes/validation/board-validator';
-import { DictionaryService } from '@app/services/dictionary/dictionary.service';
-import { Square } from '@app/classes/board/square';
 import { Bonus } from '@app/classes/board/bonus';
+import { Direction } from '@app/classes/board/direction';
+import { Square } from '@app/classes/board/square';
+import { BoardValidator } from '@app/classes/validation/board-validator';
+import { ValidationLookup } from '@app/classes/validation/validation-lookup';
 import { ValidationResponse } from '@app/classes/validation/validation-response';
 import { Vec2 } from '@app/classes/vec2';
-import { Direction } from '@app/classes/board/direction';
 import { Constants } from '@app/constants/global.constants';
+import { BoardError } from '@app/exceptions/board-error';
+import { DictionaryService } from '@app/services/dictionary/dictionary.service';
 import JsonBonuses from '@assets/bonus.json';
 import JsonLetters from '@assets/letters.json';
-import { ValidationLookup } from '@app/classes/validation/validation-lookup';
-import { BoardError } from '@app/exceptions/board-error';
 
 @Injectable({
     providedIn: 'root',
@@ -21,7 +21,7 @@ export class BoardService implements ValidationLookup {
     private readonly boardValidator: BoardValidator;
 
     constructor(dictionary: DictionaryService) {
-        this.board = new Board(Constants.grid.GRID_SIZE, this.retrieveBonuses());
+        this.board = new Board(Constants.GRID.GRID_SIZE, this.retrieveBonuses());
         this.boardValidator = new BoardValidator(this.board, dictionary, this.retrieveLetterValues());
     }
 

@@ -9,7 +9,7 @@ import { Constants } from '@app/constants/global.constants';
 import { BoardService } from '@app/services/board/board.service';
 import { GridService } from '@app/services/grid/grid.service';
 
-const BOARD: Board = new Board(Constants.grid.GRID_SIZE, [
+const BOARD: Board = new Board(Constants.GRID.GRID_SIZE, [
     [{ x: 0, y: 0 }, Bonus.L2],
     [{ x: 0, y: 1 }, Bonus.L3],
     [{ x: 0, y: 2 }, Bonus.W2],
@@ -47,11 +47,11 @@ describe('GridService', () => {
     });
 
     it(' width should return the width of the grid canvas', () => {
-        expect(service.width).toEqual(Constants.grid.CANVAS_SIZE.x);
+        expect(service.width).toEqual(Constants.GRID.CANVAS_SIZE.x);
     });
 
     it(' height should return the height of the grid canvas', () => {
-        expect(service.width).toEqual(Constants.grid.CANVAS_SIZE.y);
+        expect(service.width).toEqual(Constants.GRID.CANVAS_SIZE.y);
     });
 
     it(' drawLetter should call fillText on the canvas', () => {

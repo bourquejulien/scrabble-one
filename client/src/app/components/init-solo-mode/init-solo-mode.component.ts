@@ -1,10 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup, ValidatorFn, Validators } from '@angular/forms';
+import { MatDialogRef } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 import { GameConfig } from '@app/classes/game-config';
 import { Constants } from '@app/constants/global.constants';
 import { GameService } from '@app/services/game/game.service';
-import { MatDialogRef } from '@angular/material/dialog';
 
 @Component({
     selector: 'app-init-solo-mode',
@@ -12,17 +12,17 @@ import { MatDialogRef } from '@angular/material/dialog';
     styleUrls: ['./init-solo-mode.component.scss'],
 })
 export class InitSoloModeComponent implements OnInit {
-    readonly gameTypesList = Constants.gameTypesList;
-    readonly turnLengthList = Constants.turnLengthList;
-    readonly botNames = Constants.botNames;
-    readonly minutesList = Constants.turnLengthMinutes;
-    readonly secondsList = Constants.turnLengthSeconds;
+    readonly gameTypesList = Constants.GAME_TYPES_LIST;
+    readonly turnLengthList = Constants.TURN_LENGTH_LIST;
+    readonly botNames = Constants.BOT_NAMES;
+    readonly minutesList = Constants.TURN_LENGTH_MINUTES;
+    readonly secondsList = Constants.TURN_LENGTH_SECONDS;
     nameForm: FormGroup;
 
     gameConfig: GameConfig = {
-        gameType: Constants.gameTypesList[0],
-        minutes: Constants.turnLengthMinutes[1],
-        seconds: Constants.turnLengthSeconds[0],
+        gameType: Constants.GAME_TYPES_LIST[0],
+        minutes: Constants.TURN_LENGTH_MINUTES[1],
+        seconds: Constants.TURN_LENGTH_SECONDS[0],
         time: 0,
         firstPlayerName: '',
         secondPlayerName: '',
@@ -46,7 +46,7 @@ export class InitSoloModeComponent implements OnInit {
 
     private botNameChange(firstPlayerName: string): void {
         while (firstPlayerName === this.gameConfig.secondPlayerName) {
-            this.gameConfig.secondPlayerName = this.randomizeBotName(Constants.botNames);
+            this.gameConfig.secondPlayerName = this.randomizeBotName(Constants.BOT_NAMES);
         }
     }
 
@@ -63,8 +63,8 @@ export class InitSoloModeComponent implements OnInit {
         const nameForm = new FormGroup({
             control: new FormControl(name, [
                 Validators.required,
-                Validators.minLength(Constants.minSizeName),
-                Validators.maxLength(Constants.maxSizeName),
+                Validators.minLength(Constants.MIN_SIZE_NAME),
+                Validators.maxLength(Constants.MAX_SIZE_NAME),
                 this.isNameValidator(),
             ]),
         });
@@ -75,7 +75,7 @@ export class InitSoloModeComponent implements OnInit {
             this.gameConfig.firstPlayerName = name;
             this.botNameChange(this.gameConfig.firstPlayerName);
             // Had to cast the parts of the addition to Numbers otherwise it was considered as a string
-            this.gameConfig.time = Number(this.gameConfig.minutes * Constants.timeConstant) + Number(this.gameConfig.seconds);
+            this.gameConfig.time = Number(this.gameConfig.minutes * Constants.TIME_CONSTANT) + Number(this.gameConfig.seconds);
             return true;
         }
         return false;

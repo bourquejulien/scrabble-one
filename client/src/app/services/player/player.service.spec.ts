@@ -1,8 +1,8 @@
 /* eslint-disable dot-notation */
 import { TestBed } from '@angular/core/testing';
-import { PlayerService } from '@app/services/player/player.service';
 import { BoardService } from '@app/services/board/board.service';
 import { MockBoardService } from '@app/services/board/mock-board.service';
+import { PlayerService } from '@app/services/player/player.service';
 
 describe('PlayerService', () => {
     let service: PlayerService;
@@ -36,7 +36,7 @@ describe('PlayerService', () => {
     it('should successful remove first occurrence of valid letter of multiple occurrences from rack', () => {
         service['updateRack'](letterToRemoveFromRack);
 
-        expect(service.rack[1]).toBe('S');
+        expect(service['rack'][1]).toBe('S');
     });
 
     it('should decrease length of rack if valid letter with multiple occurrences successful removed from rack', () => {
@@ -51,7 +51,7 @@ describe('PlayerService', () => {
         service['updateRack'](letterToRemoveFromRack);
         service['updateRack'](letterToRemoveFromRack);
 
-        expect(service.rack[2]).toBe('I');
+        expect(service['rack'][2]).toBe('I');
     });
 
     it('should not affect rack if invalid letter tries to be removed', () => {

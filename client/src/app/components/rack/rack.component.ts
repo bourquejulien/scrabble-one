@@ -29,7 +29,7 @@ export class RackComponent implements OnInit {
     refreshRack(): void {
         this.rack = [];
 
-        for (const letter of this.playerService.rack) {
+        for (const letter of this.playerService.getRack()) {
             this.rack.push(letter);
         }
     }

@@ -1,10 +1,10 @@
 import { Injectable } from '@angular/core';
 import { PlayerType } from '@app/classes/player-type';
-import { PlayGeneratorService } from '@app/services/virtual-player/play-generator.service';
 import { Constants } from '@app/constants/global.constants';
-import { Subject } from 'rxjs';
-import { ReserveService } from '@app/services/reserve/reserve.service';
 import { BoardService } from '@app/services/board/board.service';
+import { ReserveService } from '@app/services/reserve/reserve.service';
+import { PlayGeneratorService } from '@app/services/virtual-player/play-generator.service';
+import { Subject } from 'rxjs';
 
 @Injectable({
     providedIn: 'root',
@@ -78,7 +78,7 @@ export class VirtualPlayerService {
     }
 
     fillRack(): void {
-        while (this.reserveService.length > 0 && this.rack.length < Constants.reserve.SIZE) {
+        while (this.reserveService.length > 0 && this.rack.length < Constants.MIN_SIZE) {
             this.rack.push(this.reserveService.drawLetter());
         }
     }

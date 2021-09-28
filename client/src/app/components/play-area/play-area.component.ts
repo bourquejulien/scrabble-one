@@ -37,11 +37,11 @@ export class PlayAreaComponent implements AfterViewInit, OnChanges {
     }
 
     get width(): number {
-        return Constants.grid.CANVAS_SIZE.x;
+        return Constants.GRID.CANVAS_SIZE.x;
     }
 
     get height(): number {
-        return Constants.grid.CANVAS_SIZE.y;
+        return Constants.GRID.CANVAS_SIZE.y;
     }
 
     scale(): void {

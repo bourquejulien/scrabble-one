@@ -34,9 +34,9 @@ class GridServiceStub {
 class GameServiceStub {
     onTurn: BehaviorSubject<PlayerType> = new BehaviorSubject<PlayerType>(PlayerType.Local);
     gameConfig: GameConfig = {
-        gameType: Constants.gameTypesList[0],
-        minutes: Constants.turnLengthMinutes[1],
-        seconds: Constants.turnLengthSeconds[0],
+        gameType: Constants.GAME_TYPES_LIST[0],
+        minutes: Constants.TURN_LENGTH_MINUTES[1],
+        seconds: Constants.TURN_LENGTH_SECONDS[0],
         time: 0,
         firstPlayerName: '',
         secondPlayerName: '',

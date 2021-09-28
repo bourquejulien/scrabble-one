@@ -2,11 +2,11 @@
 /* eslint-disable @typescript-eslint/no-useless-constructor */
 import { Injectable } from '@angular/core';
 import { Board, ImmutableBoard } from '@app/classes/board/board';
-import { BoardValidator } from '@app/classes/validation/board-validator';
+import { Direction } from '@app/classes/board/direction';
 import { Square } from '@app/classes/board/square';
+import { BoardValidator } from '@app/classes/validation/board-validator';
 import { ValidationResponse } from '@app/classes/validation/validation-response';
 import { Vec2 } from '@app/classes/vec2';
-import { Direction } from '@app/classes/board/direction';
 import { Constants } from '@app/constants/global.constants';
 
 @Injectable({
@@ -17,7 +17,7 @@ export class MockBoardService {
     private readonly boardValidator: BoardValidator;
 
     constructor() {
-        this.board = new Board(Constants.grid.GRID_SIZE);
+        this.board = new Board(Constants.GRID.GRID_SIZE);
     }
 
     get gameBoard(): ImmutableBoard {
