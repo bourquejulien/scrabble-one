@@ -12,7 +12,6 @@ import { AppMaterialModule } from '@app/modules/material.module';
 import { AppComponent } from '@app/pages/app/app.component';
 import { GamePageComponent } from '@app/pages/game-page/game-page.component';
 import { MainPageComponent } from '@app/pages/main-page/main-page.component';
-// Pipes
 import { TimePipe } from './classes/time/time.pipe';
 import { CommunicationBoxComponent } from './components/communication-box/communication-box.component';
 import { InitSoloModeComponent } from './components/init-solo-mode/init-solo-mode.component';
