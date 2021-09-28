@@ -1,7 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 import { Timer } from './timer';
 
-
 describe('Timer', () => {
     let timer: Timer;
 
@@ -13,7 +12,5 @@ describe('Timer', () => {
         expect(timer).toBeTruthy();
     });
 
-    it('should not go in the negative', () => {
-
-    });
+    // it('should not go in the negative', () => {});
 });

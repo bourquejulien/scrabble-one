@@ -7,8 +7,8 @@ import { TimerService } from '@app/services/timer-service/timer.service';
 import { ConfirmQuitDialog } from './confirm-quit-dialog/confirm-quit-dialog';
 
 interface ButtonConfig {
-    color: string,
-    routerLink?: string,
+    color: string;
+    routerLink?: string;
 }
 
 @Component({
@@ -32,16 +32,16 @@ export class GamePageComponent {
         this.buttonConfig = [
             {
                 color: 'warn',
-                routerLink: "/",
+                routerLink: '/',
             },
             {
-                color: 'accent',
+                color: 'primary',
             },
             {
                 color: 'warn',
             },
             {
-                color: 'accent',
+                color: 'primary',
             },
             {
                 color: 'warn',
@@ -72,12 +72,10 @@ export class GamePageComponent {
     confirmQuit(): void {
         const dialogRef = this.dialog.open(ConfirmQuitDialog);
 
-        dialogRef.afterClosed().subscribe(result => {
-            console.log(`Dialog result: ${result}`);
+        dialogRef.afterClosed().subscribe((result) => {
             if (result === true) {
-                // TODO: call endGame  
+                // TODO: call endGame
             }
         });
-
     }
 }

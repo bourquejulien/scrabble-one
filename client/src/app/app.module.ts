@@ -39,7 +39,7 @@ import { ConfirmQuitDialog } from './pages/game-page/confirm-quit-dialog/confirm
         InitSoloModeComponent,
         SizeSelectorComponent,
         TimePipe,
-        ConfirmQuitDialog
+        ConfirmQuitDialog,
     ],
     imports: [AppMaterialModule, AppRoutingModule, BrowserAnimationsModule, BrowserModule, FormsModule, HttpClientModule],
     providers: [],

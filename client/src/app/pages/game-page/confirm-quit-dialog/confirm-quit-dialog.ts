@@ -1,7 +1,7 @@
-import { Component } from "@angular/core";
+import { Component } from '@angular/core';
 
 @Component({
-    selector: 'confirm-quit-dialog',
+    selector: 'app-confirm-quit-dialog',
     templateUrl: 'confirm-quit-dialog.html',
 })
-export class ConfirmQuitDialog {}
+export class ConfirmQuitDialogComponent {}
