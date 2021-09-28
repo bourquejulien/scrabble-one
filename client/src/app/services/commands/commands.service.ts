@@ -2,6 +2,8 @@ import { Injectable } from '@angular/core';
 import { Direction } from '@app/classes/board/direction';
 import { MessageType } from '@app/classes/message';
 import { Vec2 } from '@app/classes/vec2';
+import { Constants } from '@app/constants/global.constants';
+import { SystemMessages } from '@app/constants/system-messages.constants';
 import { MessagingService } from '@app/services/messaging/messaging.service';
 import { PlayerService } from '@app/services/player/player.service';
 
@@ -10,10 +12,9 @@ import { PlayerService } from '@app/services/player/player.service';
 })
 export class CommandsService {
     placeWordCommandRegex: RegExp = /^([a-o]){1}([1-9]|1[0-5]){1}([hv]){1}$/;
-    wordRegex: RegExp = /^[A-zÀ-ú]{1,15}$/; // This regex accepts lowerase and uppercase letters with and without accents
+    wordRegex: RegExp = /^[A-zÀ-ú]{1,15}$/;
+    rackRegex: RegExp = /^[A-zÀ-ú]{1,7}$/;
     messageRegex: RegExp = /^[A-zÀ-ú0-9 !.?'"]{1,512}$/;
-    // eslint-disable-next-line @typescript-eslint/no-magic-numbers
-    readonly charOffset = 97; // 'a' has ASCII value of 97
 
     constructor(public messagingService: MessagingService, public playerService: PlayerService) {}
 
@@ -38,14 +39,14 @@ export class CommandsService {
                     this.exchangeLetter(args[1]);
                     break;
                 default:
-                    this.messagingService.send('Commande non existante', 'Commande non reconnue', MessageType.Error);
+                    this.messagingService.send('', SystemMessages.InvalidCommand, MessageType.Error);
                     return false;
             }
         } else {
             if (this.messageRegex.test(input)) {
-                this.messagingService.send("L'autre utilisateur dit", input, MessageType.Message);
+                this.messagingService.send('', input, MessageType.Message);
             } else {
-                this.messagingService.send('Message ne respecte pas le format', 'Format du message inrecevable', MessageType.Error);
+                this.messagingService.send(SystemMessages.InvalidFormat, SystemMessages.InvalidUserMessage, MessageType.Error);
                 return false;
             }
         }
@@ -53,37 +54,35 @@ export class CommandsService {
     }
 
     private showHelp() {
-        this.messagingService.send("Capsule d'aide", "Vous avez appelé à l'aide", MessageType.Log);
+        this.messagingService.send(SystemMessages.HelpTitle, SystemMessages.HelpMessage, MessageType.Log);
     }
 
     private checkPlaceCommand(options: string, word: string): boolean {
         if (!this.placeWordCommandRegex.test(options)) {
-            this.messagingService.send('', 'Options fournies invalides', MessageType.Error);
+            this.messagingService.send('', SystemMessages.InvalidOptions, MessageType.Error);
             return false;
         }
         // Arguments: [COMMAND, OPTIONS, WORD]
         // Options: [Y, X, DIRECTION]
-        if (options && this.wordRegex.test(word)) {
-            const yCoordinate = Number(options.charCodeAt(0) - this.charOffset);
+        if (this.wordRegex.test(word)) {
+            const yCoordinate = Number(options.charCodeAt(0) - Constants.CHAR_OFFSET);
             const xCoordinate = Number(options.charAt(1)) - 1;
             const direction: Direction = options.charAt(2) === 'v' ? Direction.Down : Direction.Right;
             const vecCoordinate: Vec2 = { x: xCoordinate, y: yCoordinate };
             this.playerService.placeLetters(word, vecCoordinate, direction);
         } else {
-            this.messagingService.send('', 'Erreur survenue', MessageType.Error);
+            this.messagingService.send('', SystemMessages.InvalidWord, MessageType.Error);
             return false;
         }
 
         return true;
     }
 
-    private exchangeLetter(letter: string): void {
-        // According to game logic, there can be 1 to 7 letters to exchange
-        // eslint-disable-next-line @typescript-eslint/no-magic-numbers
-        if (letter.length >= 1 && letter.length <= 7) {
-            this.playerService.exchangeLetters(letter);
+    private exchangeLetter(letters: string): void {
+        if (this.rackRegex.test(letters)) {
+            this.playerService.exchangeLetters(letters);
         } else {
-            this.messagingService.send('', "Vous n'avez pas saisi une lettre", MessageType.Error);
+            this.messagingService.send('', SystemMessages.InvalidLetters, MessageType.Error);
         }
     }
 
@@ -93,10 +92,6 @@ export class CommandsService {
 
     private toggleDebug(): void {
         this.messagingService.debuggingMode = !this.messagingService.debuggingMode;
-        this.messagingService.send(
-            '',
-            this.messagingService.debuggingMode ? 'Affichages de débogages activés' : 'Affichages de débogages désactivés',
-            MessageType.Log,
-        );
+        this.messagingService.send('', this.messagingService.debuggingMode ? SystemMessages.DebugOn : SystemMessages.DebugOff, MessageType.Log);
     }
 }

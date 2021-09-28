@@ -54,16 +54,8 @@ describe('CommandsService', () => {
     });
 
     it('#parseInput should send a help message with the correct info', () => {
-        const expectedMessage: Message = {
-            title: "Capsule d'aide",
-            body: "Vous avez appelé à l'aide",
-            messageType: MessageType.Log,
-            timestamp: MockMessagingService.MOCK_TIMESTAMP,
-            userId: 1,
-        };
-
         service.messagingService.onMessage().subscribe((message) => {
-            expect(message).toEqual(expectedMessage);
+            expect(message.messageType).toEqual(MessageType.Log);
         });
         service.parseInput('!aide');
     });
