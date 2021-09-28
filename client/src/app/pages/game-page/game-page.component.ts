@@ -2,9 +2,9 @@ import { Component, ViewChild } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { MatDrawer } from '@angular/material/sidenav';
 import { PlayerType } from '@app/classes/player-type';
+import { ConfirmQuitDialogComponent } from '@app/components/confirm-quit-dialog/confirm-quit-dialog.component';
 import { GameService } from '@app/services/game/game.service';
 import { TimerService } from '@app/services/timer-service/timer.service';
-import { ConfirmQuitDialog } from './confirm-quit-dialog/confirm-quit-dialog';
 
 interface ButtonConfig {
     color: string;
@@ -70,7 +70,7 @@ export class GamePageComponent {
     }
 
     confirmQuit(): void {
-        const dialogRef = this.dialog.open(ConfirmQuitDialog);
+        const dialogRef = this.dialog.open(ConfirmQuitDialogComponent);
 
         dialogRef.afterClosed().subscribe((result) => {
             if (result === true) {

@@ -1,25 +1,21 @@
-// Modules
 import { HttpClientModule } from '@angular/common/http';
 import { NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-// Components
 import { PlayAreaComponent } from '@app/components/play-area/play-area.component';
 import { AppRoutingModule } from '@app/modules/app-routing.module';
 import { AppMaterialModule } from '@app/modules/material.module';
-// Page components
 import { AppComponent } from '@app/pages/app/app.component';
 import { GamePageComponent } from '@app/pages/game-page/game-page.component';
 import { MainPageComponent } from '@app/pages/main-page/main-page.component';
-// Pipes
 import { TimePipe } from './classes/time/time.pipe';
 import { CommunicationBoxComponent } from './components/communication-box/communication-box.component';
+import { ConfirmQuitDialogComponent } from './components/confirm-quit-dialog/confirm-quit-dialog.component';
 import { InitSoloModeComponent } from './components/init-solo-mode/init-solo-mode.component';
 import { RackComponent } from './components/rack/rack.component';
 import { SizeSelectorComponent } from './components/size-selector/size-selector/size-selector.component';
 import { GameModePageComponent } from './pages/game-mode-page/game-mode-page.component';
-import { ConfirmQuitDialog } from './pages/game-page/confirm-quit-dialog/confirm-quit-dialog';
 
 /**
  * Main module that is used in main.ts.
@@ -39,7 +35,7 @@ import { ConfirmQuitDialog } from './pages/game-page/confirm-quit-dialog/confirm
         InitSoloModeComponent,
         SizeSelectorComponent,
         TimePipe,
-        ConfirmQuitDialog,
+        ConfirmQuitDialogComponent,
     ],
     imports: [AppMaterialModule, AppRoutingModule, BrowserAnimationsModule, BrowserModule, FormsModule, HttpClientModule],
     providers: [],
