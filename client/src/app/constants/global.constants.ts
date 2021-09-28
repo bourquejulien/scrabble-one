@@ -6,7 +6,7 @@ import { Reserve } from './reserve.constants';
 import { VirtualPlayer } from './virtual-player.constants';
 
 export class Constants {
-    static readonly grid = new Grid();
+    static readonly GRID = new Grid();
     static readonly dictionary = new Dictionary();
     static readonly reserve = new Reserve();
     static readonly virtualPlayer = new VirtualPlayer();

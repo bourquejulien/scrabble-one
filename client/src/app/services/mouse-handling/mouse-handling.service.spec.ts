@@ -6,15 +6,15 @@ import { MouseHandlingService } from './mouse-handling.service';
 
 class GridServiceStub {
     get width(): number {
-        return Constants.grid.CANVAS_SIZE.x;
+        return Constants.GRID.CANVAS_SIZE.x;
     }
 
     get height(): number {
-        return Constants.grid.CANVAS_SIZE.y;
+        return Constants.GRID.CANVAS_SIZE.y;
     }
 
     get boardGridSize(): number {
-        return Constants.grid.GRID_SIZE;
+        return Constants.GRID.GRID_SIZE;
     }
 }
 

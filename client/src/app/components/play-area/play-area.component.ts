@@ -4,6 +4,7 @@ import { PlayerType } from '@app/classes/player-type';
 import { Constants } from '@app/constants/global.constants';
 import { GridService } from '@app/services/grid/grid.service';
 import { MouseHandlingService } from '@app/services/mouse-handling/mouse-handling.service';
+
 @Component({
     selector: 'app-play-area',
     templateUrl: './play-area.component.html',
@@ -18,7 +19,7 @@ export class PlayAreaComponent implements AfterViewInit, OnChanges {
     private gridContext: CanvasRenderingContext2D;
     private squareContext: CanvasRenderingContext2D;
 
-    constructor(private readonly gridService: GridService, readonly mouseHandlingService: MouseHandlingService) {}
+    constructor(readonly gridService: GridService, readonly mouseHandlingService: MouseHandlingService) {}
 
     ngAfterViewInit(): void {
         this.gridContext = this.gridCanvas.nativeElement.getContext('2d') as CanvasRenderingContext2D;
@@ -26,7 +27,7 @@ export class PlayAreaComponent implements AfterViewInit, OnChanges {
 
         this.scale();
 
-        new FontFaceObserver(Constants.grid.FONT_FACE.font).load().then(() => {
+        new FontFaceObserver(this.gridService.letterFontFace.font).load().then(() => {
             this.gridService.drawGrid(this.gridContext);
             this.gridService.drawSquares(this.squareContext);
             this.squareCanvas.nativeElement.focus();
@@ -40,11 +41,11 @@ export class PlayAreaComponent implements AfterViewInit, OnChanges {
     }
 
     get width(): number {
-        return Constants.grid.CANVAS_SIZE.x;
+        return Constants.GRID.CANVAS_SIZE.x;
     }
 
     get height(): number {
-        return Constants.grid.CANVAS_SIZE.y;
+        return Constants.GRID.CANVAS_SIZE.y;
     }
 
     scale(): void {
@@ -56,5 +57,11 @@ export class PlayAreaComponent implements AfterViewInit, OnChanges {
         squareCanvas.height = gridCanvas.height = Math.ceil(gridCanvas.height * scaleFactor);
         this.gridContext.scale(scaleFactor, scaleFactor);
         this.squareContext.scale(scaleFactor, scaleFactor);
+    }
+
+    updateFontSize(size: number) {
+        this.gridService.letterFontFace.size = size;
+        this.gridService.drawGrid(this.gridContext);
+        this.gridService.drawSquares(this.squareContext);
     }
 }

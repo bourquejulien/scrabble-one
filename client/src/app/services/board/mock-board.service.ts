@@ -17,7 +17,7 @@ export class MockBoardService {
     private readonly boardValidator: BoardValidator;
 
     constructor() {
-        this.board = new Board(Constants.grid.GRID_SIZE);
+        this.board = new Board(Constants.GRID.GRID_SIZE);
     }
 
     get gameBoard(): ImmutableBoard {
