@@ -74,7 +74,9 @@ export class CommandsService {
     }
 
     private exchangeLetter(letter: string): void {
-        if (letter && letter.length === 1) {
+        // According to game logic, there can be 1 to 7 letters to exchange
+        // eslint-disable-next-line @typescript-eslint/no-magic-numbers
+        if (letter.length >= 1 && letter.length <= 7) {
             this.playerService.exchangeLetters(letter);
         } else {
             this.messagingService.send('', "Vous n'avez pas saisi une lettre", MessageType.Error);

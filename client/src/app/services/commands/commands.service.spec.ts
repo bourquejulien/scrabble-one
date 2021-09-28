@@ -1,15 +1,44 @@
+/* eslint-disable @typescript-eslint/naming-convention */
 import { TestBed } from '@angular/core/testing';
 import { FakePlayerService } from '@app/services/player/mock-player.service.spec';
 import { PlayerService } from '@app/services/player/player.service';
 import { CommandsService } from '@app/services/commands/commands.service';
 import { Message, MessageType } from '@app/classes/message';
+import { MessagingService } from '@app/services/messaging/messaging.service';
+import { Subject } from 'rxjs';
+class MockMessagingService extends MessagingService {
+    // For test purposes
+    // eslint-disable-next-line @typescript-eslint/no-magic-numbers
+    static MOCK_TIMESTAMP: number = 100000000;
+    constuctor() {
+        this.subject = new Subject<Message>();
+    }
 
+    send(title: string, body: string, messageType: MessageType) {
+        const message = {
+            title,
+            body,
+            messageType,
+            userId: 1,
+            timestamp: MockMessagingService.MOCK_TIMESTAMP,
+        };
+
+        if (this.debuggingMode) {
+            this.subject.next(message);
+        } else {
+            this.subject.next(message);
+        }
+    }
+}
 describe('CommandsService', () => {
     let service: CommandsService;
 
     beforeEach(() => {
         TestBed.configureTestingModule({
-            providers: [{ provide: PlayerService, useClass: FakePlayerService }],
+            providers: [
+                { provide: PlayerService, useClass: FakePlayerService },
+                { provide: MessagingService, useClass: MockMessagingService },
+            ],
         });
         service = TestBed.inject(CommandsService);
     });
@@ -23,7 +52,7 @@ describe('CommandsService', () => {
             title: "Capsule d'aide",
             body: "Vous avez appelé à l'aide",
             messageType: MessageType.Log,
-            timestamp: Date.now(),
+            timestamp: MockMessagingService.MOCK_TIMESTAMP,
             userId: 1,
         };
 
@@ -79,7 +108,8 @@ describe('CommandsService', () => {
     });
 
     it('#parseInputsend should call skip turn', () => {
+        const spy = spyOn(service.playerService, 'completeTurn');
         service.parseInput('!passer');
-        expect(service.playerService.completeTurn).toHaveBeenCalled();
+        expect(spy).toHaveBeenCalled();
     });
 });

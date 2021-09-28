@@ -7,25 +7,21 @@ import { Observable, Subject } from 'rxjs';
 })
 export class MessagingService {
     debuggingMode: boolean; // When debugging is on, we send error and log messages
-    private subject = new Subject<Message>();
+    protected subject = new Subject<Message>();
 
     send(title: string, body: string, messageType: MessageType): void {
         const message = {
             title,
             body,
             messageType,
-            userId: 1,
+            userId: 1, // TODO: put the current user's
             timestamp: Date.now(),
         };
 
         if (this.debuggingMode) {
-            // Every message passes through when debugging is on
             this.subject.next(message);
-        } else {
-            // If debugging is turned off, then we only show user messages
-            // if (message.messageType === 'Log') {
+        } else if (message.messageType !== MessageType.Message) {
             this.subject.next(message);
-            // }
         }
     }
 
