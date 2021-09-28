@@ -110,13 +110,8 @@ export class PlayerService {
 
     private updateReserve(lettersToPlaceLength: number): string {
         const reserveLength = this.reserveService.length;
-        const rackPlaceLimit = Constants.MIN_SIZE - this.rack.length;
 
         if (this.reserveService.length === 0) return 'The reserve is empty. You cannot draw any letters.';
-
-        if (lettersToPlaceLength > rackPlaceLimit) {
-            lettersToPlaceLength = rackPlaceLimit;
-        }
 
         if (reserveLength <= lettersToPlaceLength) {
             for (let i = 0; i < reserveLength; i++) {
