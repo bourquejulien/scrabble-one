@@ -11,31 +11,14 @@
         <div class="comm-box-sidenav-content">
             <div class="button-bar">
                 <button mat-fab *ngFor="let button of buttonConfig; let indexOfButton=index"
+                    class="fab-button"
                     [color] = "button.color"
-                    [class] =  "button.class"
                     [routerLink] = "button.routerLink"
-                    (click) = "button.click">
+                    (click) = "callFunction(indexOfButton)">
                     <mat-icon >
                         {{iconList[indexOfButton]}}
                     </mat-icon>
                 </button>
-
-
-                <!-- <button mat-fab color="warn" class="fab-button" routerLink="/" (click)="confirmQuit()">
-                    <mat-icon>home</mat-icon>
-                </button>
-                <button mat-fab color="primary" class="fab-button" (click)="drawer.toggle()">
-                    <mat-icon>question_answer</mat-icon>
-                </button>
-                <button mat-fab color="warn" class="fab-button">
-                    <mat-icon>logout</mat-icon>
-                </button>
-                <button mat-fab color="primary" class="fab-button">
-                    <mat-icon>autorenew</mat-icon>
-                </button>
-                <button mat-fab color="warn" class="fab-button">
-                    <mat-icon>settings</mat-icon>
-                </button> -->
             </div>
         </div>
         <section class="play-area-container">
