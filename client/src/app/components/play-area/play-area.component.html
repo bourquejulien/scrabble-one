@@ -1,6 +1,14 @@
 <div id="grid-container">
     <div id="board" [style.width.px]="width" [style.height.px]="height">
-        <canvas class="board-display" id="grid-canvas" #gridCanvas [style.width.px]="width" [style.height.px]="height" [attr.width]="width" [attr.height]="height"></canvas>
+        <canvas
+            class="board-display"
+            id="grid-canvas"
+            #gridCanvas
+            [style.width.px]="width"
+            [style.height.px]="height"
+            [attr.width]="width"
+            [attr.height]="height"
+        ></canvas>
         <canvas
             class="board-display"
             id="squareCanvas"
@@ -12,9 +20,14 @@
             [attr.height]="height"
         ></canvas>
     </div>
-    <app-size-selector id="size-selector" [minSize]=25 [maxSize]=35 [size]="gridService.letterFontFace.size" (sizeUpdated)="updateFontSize($event)"></app-size-selector>
+    <app-size-selector
+        id="size-selector"
+        [minSize]="25"
+        [maxSize]="35"
+        [size]="gridService.letterFontFace.size"
+        (sizeUpdated)="updateFontSize($event)"
+    ></app-size-selector>
     <div class="rack">
         <app-rack></app-rack>
     </div>
 </div>
-
