@@ -7,6 +7,7 @@ import { Square } from '@app/classes/board/square';
 import { ValidationResponse } from '@app/classes/validation/validation-response';
 import { Vec2 } from '@app/classes/vec2';
 import { Direction } from '@app/classes/board/direction';
+import { Constants } from '@app/constants/global.constants';
 
 @Injectable({
     providedIn: 'root',
@@ -15,7 +16,9 @@ export class MockBoardService {
     private readonly board: Board;
     private readonly boardValidator: BoardValidator;
 
-    constructor() {}
+    constructor() {
+        this.board = new Board(Constants.GRID.GRID_SIZE);
+    }
 
     get gameBoard(): ImmutableBoard {
         return this.board;

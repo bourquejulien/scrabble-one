@@ -1,7 +1,4 @@
 #container {
-    position: fixed;
-    top:25%;
-    left: 34%;
     font-family: 'Poppins', sans-serif;
     display: flex;
     flex-direction: column;
@@ -11,7 +8,7 @@
     font-size: 1.5rem;
     background-color: #eae7dc;
     border: 2px solid black;
-    border-radius: 10px;
+    border-radius: 0px;
 }
 
 #title {
@@ -58,8 +55,7 @@
 }
 
 #confirm {
-    position: absolute;
-    margin: 95%;
+    margin: 5%;
 }
 
 #confirm:hover {

@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { PlayerType } from '@app/classes/player-type';
 import { GameService } from '@app/services/game/game.service';
+import { TimerService } from '@app/services/timer-service/timer.service';
 @Component({
     selector: 'app-game-page',
     templateUrl: './game-page.component.html',
@@ -8,13 +9,14 @@ import { GameService } from '@app/services/game/game.service';
 })
 export class GamePageComponent {
     gameService: GameService;
-    playerType: PlayerType = PlayerType.Local;
-    joueur1: string = 'default';
-    joueur2: string = 'bot';
-    constructor(gameService: GameService) {
+    timerService: TimerService;
+    playerType: PlayerType;
+
+    constructor(gameService: GameService, timerService: TimerService) {
         this.gameService = gameService;
-        this.joueur1 = this.gameService.gameConfig.firstPlayerName;
-        this.joueur2 = this.gameService.gameConfig.secondPlayerName;
+        this.playerType = gameService.onTurn.getValue();
+        this.timerService = timerService;
+        gameService.onTurn.subscribe((e) => (this.playerType = e));
     }
 
     confirmQuit(): void {

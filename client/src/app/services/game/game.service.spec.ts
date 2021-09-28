@@ -4,7 +4,7 @@ import { TestBed } from '@angular/core/testing';
 import { PlayerType } from '@app/classes/player-type';
 import { Subject } from 'rxjs';
 import { PlayerService } from '@app/services/player/player.service';
-import { VirtualPlayerService } from '@app/services/virtual-player.service';
+import { VirtualPlayerService } from '@app/services/virtual-player/virtual-player.service';
 import { GameService } from './game.service';
 
 @Injectable({

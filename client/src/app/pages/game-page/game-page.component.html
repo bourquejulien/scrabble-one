@@ -1,8 +1,8 @@
 <mat-drawer-container autosize>
-    <mat-toolbar [ngClass]="gameService.currentTurn" class="mat-app-background" color="primary" class="toolbar">
+    <mat-toolbar [ngClass]="playerType" class="mat-app-background" color="primary" class="toolbar">
         <span>Scrabble</span>
-        <span>{{joueur1}} contre {{joueur2}}</span>
-        <span>Minuteur</span>
+        <span>{{gameService.gameConfig.firstPlayerName}} contre {{gameService.gameConfig.secondPlayerName}}</span>
+        <span>Minuteur: {{timerService.time | time}}</span>
     </mat-toolbar>
     <mat-drawer #drawer class="comm-box-sidenav" mode="side" opened>
         <app-communication-box></app-communication-box>
@@ -26,11 +26,9 @@
                     <mat-icon>settings</mat-icon>
                 </button>
             </div>
-            <!-- Board -->
         </div>
-        <!-- Board -->
         <section class="play-area-container">
-            <app-play-area class="play-area" [playerType]="gameService.currentTurn"></app-play-area>
+            <app-play-area class="play-area" [playerType]="playerType"></app-play-area>
         </section>
     </div>
 </mat-drawer-container>

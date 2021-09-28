@@ -2,10 +2,13 @@ import { Injectable } from '@angular/core';
 import { Direction } from '@app/classes/board/direction';
 import { PlayerType } from '@app/classes/player-type';
 import { Vec2 } from '@app/classes/vec2';
+import { Constants } from '@app/constants/global.constants';
 import { BoardService } from '@app/services/board/board.service';
 import { ReserveService } from '@app/services/reserve/reserve.service';
 import { Subject } from 'rxjs';
 import { BehaviorSubject } from 'rxjs/internal/BehaviorSubject';
+import { TimerService } from '@app/services/timer-service/timer.service';
+import { TimeSpan } from '@app/classes/time/timespan';
 
 @Injectable({
     providedIn: 'root',
@@ -15,14 +18,19 @@ export class PlayerService {
     turnComplete: Subject<PlayerType>;
     rackUpdated: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(true);
 
-    constructor(private reserveService: ReserveService, private boardService: BoardService) {
-        const initNbTiles = 7;
-
-        for (let tile = 0; tile < initNbTiles; tile++) {
-            this.rack.push(this.reserveService.drawLetter());
-        }
-
+    constructor(
+        private readonly reserveService: ReserveService,
+        private readonly boardService: BoardService,
+        private readonly timerService: TimerService,
+    ) {
         this.turnComplete = new Subject<PlayerType>();
+        this.timerService.countdownStopped.subscribe(() => {
+            if (PlayerType.Local) this.completeTurn();
+        });
+    }
+
+    startTurn(playTime: TimeSpan) {
+        this.timerService.start(playTime, PlayerType.Local);
     }
 
     placeLetters(word: string, position: Vec2, direction: Direction): string {
@@ -80,24 +88,25 @@ export class PlayerService {
 
     updateReserve(lettersToPlaceLength: number): string {
         const reserveLength = this.reserveService.length;
+        const rackPlaceLimit = Constants.reserve.SIZE - this.rack.length;
 
         if (this.reserveService.length === 0) return 'The reserve is empty. You cannot draw any letters.';
 
-        if (this.reserveService.length <= lettersToPlaceLength) {
+        if (lettersToPlaceLength > rackPlaceLimit) {
+            lettersToPlaceLength = rackPlaceLimit;
+        }
+
+        if (reserveLength <= lettersToPlaceLength) {
             for (let i = 0; i < reserveLength; i++) {
                 this.rack.push(this.reserveService.drawLetter());
             }
             return 'The reserve is now empty. You cannot draw any more letters.';
-        }
-
-        if (this.reserveService.length > lettersToPlaceLength) {
+        } else {
             for (let i = 0; i < lettersToPlaceLength; i++) {
                 this.rack.push(this.reserveService.drawLetter());
             }
             return '';
         }
-
-        return 'There was a problem with reserve service. Try again.';
     }
 
     // For testing
@@ -116,7 +125,7 @@ export class PlayerService {
 
     private updateRack(lettersToPlace: string): void {
         for (const letter of lettersToPlace) {
-            const letterIndex = this.rack.indexOf(letter.toUpperCase());
+            const letterIndex = this.rack.indexOf(letter);
             if (letterIndex === -1) return;
             this.rack.splice(letterIndex, 1);
         }
@@ -132,7 +141,7 @@ export class PlayerService {
             if (this.isCapitalLetter(letter)) {
                 letter = '*';
             }
-            if (this.rack.indexOf(letter.toUpperCase()) === -1) {
+            if (this.rack.indexOf(letter) === -1) {
                 return 'You are not in possession of the letter ' + letter + '. Cheating is bad.';
             }
         }
