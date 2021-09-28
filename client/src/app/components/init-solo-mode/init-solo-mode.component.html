@@ -17,7 +17,7 @@
         </mat-form-field>
         <mat-form-field class="inputs" appearance="fill">
             <mat-label>Secondes</mat-label>
-            <mat-select name="secondsPerTurn" [(ngModel)]="seconds" [disabled]="minutes == 5">
+            <mat-select name="secondsPerTurn" [(ngModel)]="seconds" [disabled]="minutes === 5">
                 <mat-option *ngFor="let seconds of secondsList" [value]="seconds">{{ seconds }}</mat-option>
             </mat-select>
         </mat-form-field>
