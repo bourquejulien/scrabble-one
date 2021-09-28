@@ -5,7 +5,7 @@ import { Constants } from '@app/constants/global.constants';
 import { Subject } from 'rxjs';
 import { ReserveService } from '@app/services/reserve/reserve.service';
 import { BoardService } from '@app/services/board/board.service';
-import { TimerService } from '@app/services/timer-service/timer.service';
+import { TimerService } from '@app/services/timer/timer.service';
 import { TimeSpan } from '@app/classes/time/timespan';
 import { Timer } from '@app/classes/time/timer';
 const MAX_PLAYTIME_SECONDS = 20;
@@ -31,7 +31,7 @@ export class VirtualPlayerService {
 
     startTurn() {
         this.timerService.start(TimeSpan.fromSeconds(MAX_PLAYTIME_SECONDS), PlayerType.Virtual);
-        this.minTimer.startTimer();
+        this.minTimer.start();
         this.fillRack();
 
         let random = Math.random();
@@ -53,9 +53,9 @@ export class VirtualPlayerService {
     }
 
     async endTurn() {
-        await this.minTimer.timerCompleted;
+        await this.minTimer.completed;
 
-        this.minTimer.stopTimer();
+        this.minTimer.stop();
         this.timerService.reset();
         this.turnComplete.next(PlayerType.Virtual);
     }
@@ -96,7 +96,7 @@ export class VirtualPlayerService {
 
         const play = filteredPlays[Math.floor(Math.random() * filteredPlays.length)];
 
-        await this.minTimer.timerCompleted;
+        await this.minTimer.completed;
 
         this.boardService.placeLetters(play.letters);
         play.letters.forEach((letter) => this.rack.splice(this.rack.findIndex((rackLetter) => letter.letter === rackLetter)));

@@ -15,7 +15,7 @@ export class TimerService {
 
     start(delay: TimeSpan, playerType: PlayerType): void {
         this.timer = new Timer(delay);
-        this.timer.startTimer();
+        this.timer.start();
         this.countdownSubscription = this.timer.timerUpdated.subscribe((timeSpan) => {
             if (timeSpan.totalMilliseconds <= 0) {
                 this.reset();

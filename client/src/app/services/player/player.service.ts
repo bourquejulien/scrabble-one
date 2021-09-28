@@ -7,7 +7,7 @@ import { BoardService } from '@app/services/board/board.service';
 import { ReserveService } from '@app/services/reserve/reserve.service';
 import { Subject } from 'rxjs';
 import { BehaviorSubject } from 'rxjs/internal/BehaviorSubject';
-import { TimerService } from '@app/services/timer-service/timer.service';
+import { TimerService } from '@app/services/timer/timer.service';
 import { TimeSpan } from '@app/classes/time/timespan';
 
 @Injectable({
