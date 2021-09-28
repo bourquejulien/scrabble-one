@@ -18,7 +18,7 @@ class GameServiceStub {
 }
 
 class MatDialogStub {
-    close() {
+    close(): void {
         // Does nothing
     }
 }
@@ -65,26 +65,25 @@ describe('InitSoloModeComponent', () => {
     it('Should have error for lower letter', () => {
         init.gameConfig.firstPlayerName = NAMES[2];
         init.initialize();
-        expect(init.errorsList).toEqual(['*Le nom doit débuter par une majuscule.']);
+        expect(init.errorsList).toEqual(['*Le nom doit débuter par une majuscule.\n']);
     });
     it('Should have error for minimum length', () => {
         init.gameConfig.firstPlayerName = NAMES[3];
         init.initialize();
-        expect(init.errorsList).toEqual(['*Le nom doit contenir au moins 3 caractères.']);
+        expect(init.errorsList).toEqual(['*Le nom doit contenir au moins 3 caractères.\n']);
     });
     it('Should have error for maximum length', () => {
         init.gameConfig.firstPlayerName = NAMES[4];
         init.initialize();
-        expect(init.errorsList).toEqual(['*Le nom doit au maximum contenir 16 lettres.']);
+        expect(init.errorsList).toEqual(['*Le nom doit au maximum contenir 16 lettres.\n']);
     });
     it('Should have error for not having name', () => {
-        init.gameConfig.firstPlayerName = NAMES[5];
         init.initialize();
-        expect(init.errorsList).toEqual(['*Un nom doit être entré.']);
+        expect(init.errorsList).toEqual(['*Un nom doit être entré.\n']);
     });
     it('Should have error for not containing only letters', () => {
-        init.gameConfig.firstPlayerName = NAMES[6];
+        init.gameConfig.firstPlayerName = NAMES[5];
         init.initialize();
-        expect(init.errorsList).toEqual(['*Le nom doit seulement être composé de lettres.']);
+        expect(init.errorsList).toEqual(['*Le nom doit seulement être composé de lettres.\n']);
     });
 });
