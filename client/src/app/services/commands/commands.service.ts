@@ -38,7 +38,7 @@ export class CommandsService {
                     this.exchangeLetter(args[1]);
                     break;
                 default:
-                    this.messagingService.send('Saisie invalide', 'Commande non reconnue', MessageType.Error);
+                    this.messagingService.send('Commande non existante', 'Commande non reconnue', MessageType.Error);
                     return false;
             }
         } else {
@@ -57,7 +57,7 @@ export class CommandsService {
     }
 
     private checkPlaceCommand(options: string, word: string): boolean {
-        if (this.placeWordCommandRegex.test(options)) {
+        if (!this.placeWordCommandRegex.test(options)) {
             this.messagingService.send('', 'Options fournies invalides', MessageType.Error);
             return false;
         }

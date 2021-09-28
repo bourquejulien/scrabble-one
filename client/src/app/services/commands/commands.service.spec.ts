@@ -6,6 +6,12 @@ import { CommandsService } from '@app/services/commands/commands.service';
 import { Message, MessageType } from '@app/classes/message';
 import { MessagingService } from '@app/services/messaging/messaging.service';
 import { Subject } from 'rxjs';
+import { Injectable } from '@angular/core';
+import { Direction } from '@app/classes/board/direction';
+import { Vec2 } from '@app/classes/vec2';
+@Injectable({
+    providedIn: 'root',
+})
 class MockMessagingService extends MessagingService {
     // For test purposes
     // eslint-disable-next-line @typescript-eslint/no-magic-numbers
@@ -76,11 +82,38 @@ describe('CommandsService', () => {
         service.parseInput('!echanger 12345678');
     });
 
-    it('#parseInput should send an error message when place letter command is invalid', () => {
+    it('#parseInput should call exchange le message when exchange letter command is invalid', () => {
+        service.messagingService.onMessage().subscribe((message) => {
+            expect(message.messageType).toEqual(MessageType.Error);
+        });
+        service.parseInput('!echanger 12345678');
+    });
+
+    it('#parseInputsend should call skip turn', () => {
+        const spy = spyOn(service.playerService, 'exchangeLetters');
+        service.parseInput('!echanger abc');
+        expect(spy).toHaveBeenCalled();
+    });
+
+    it('#parseInput should send an error message when place command is passed an invalid word', () => {
         service.messagingService.onMessage().subscribe((message) => {
             expect(message.messageType).toEqual(MessageType.Error);
         });
         service.parseInput('!placer a9h w0rd');
+    });
+
+    it('#parseInput should send an error message when place command is passed invalid options', () => {
+        service.messagingService.onMessage().subscribe((message) => {
+            expect(message.messageType).toEqual(MessageType.Error);
+        });
+        service.parseInput('!placer a19h word');
+    });
+
+    it('#parseInput should call placeLetters when the input is valid', () => {
+        const spy = spyOn(service.playerService, 'placeLetters');
+        const vecCoordinate: Vec2 = { x: 7, y: 7 };
+        service.parseInput('!placer h8v word');
+        expect(spy).toHaveBeenCalledWith('word', vecCoordinate, Direction.Down);
     });
 
     it('#parseInput should send an error message if the user message is not in the right format', () => {
