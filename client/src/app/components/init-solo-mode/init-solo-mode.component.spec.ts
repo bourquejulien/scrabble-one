@@ -55,36 +55,36 @@ describe('InitSoloModeComponent', () => {
     it('Should not contains any error', () => {
         init.gameConfig.firstPlayerName = NAMES[0];
         init.initialize();
-        expect(init.errorsList).toBe([]);
+        expect(init.errorsList).toEqual([]);
     });
     it('Should not contains any error', () => {
         init.gameConfig.firstPlayerName = NAMES[1];
         init.initialize();
-        expect(init.errorsList).toBe([]);
+        expect(init.errorsList).toEqual([]);
     });
     it('Should have error for lower letter', () => {
         init.gameConfig.firstPlayerName = NAMES[2];
         init.initialize();
-        expect(init.errorsList).toBe(['startsWithLowerLetter']);
+        expect(init.errorsList).toEqual(['*Le nom doit débuter par une majuscule.']);
     });
     it('Should have error for minimum length', () => {
         init.gameConfig.firstPlayerName = NAMES[3];
         init.initialize();
-        expect(init.errorsList).toBe(['minlength']);
+        expect(init.errorsList).toEqual(['*Le nom doit contenir au moins 3 caractères.']);
     });
     it('Should have error for maximum length', () => {
         init.gameConfig.firstPlayerName = NAMES[4];
         init.initialize();
-        expect(init.errorsList).toBe(['maxlength']);
+        expect(init.errorsList).toEqual(['*Le nom doit au maximum contenir 16 lettres.']);
     });
     it('Should have error for not having name', () => {
         init.gameConfig.firstPlayerName = NAMES[5];
         init.initialize();
-        expect(init.errorsList).toBe(['required']);
+        expect(init.errorsList).toEqual(['*Un nom doit être entré.']);
     });
-    it('Should have error for not having name', () => {
+    it('Should have error for not containing only letters', () => {
         init.gameConfig.firstPlayerName = NAMES[6];
         init.initialize();
-        expect(init.errorsList).toBe(['containsOnlyLetters']);
+        expect(init.errorsList).toEqual(['*Le nom doit seulement être composé de lettres.']);
     });
 });
