@@ -95,6 +95,13 @@ export class InitSoloModeComponent implements OnInit {
             this.gameConfig.playTime = TimeSpan.fromMinutesSeconds(this.minutes, this.seconds);
 
             return true;
+        } else {
+            this.errorsList = [];
+            if (nameForm.get('control')?.hasError('startsWithLowerLetter')) this.errorsList.push('*Le nom doit débuter par une majuscule.\n');
+            if (nameForm.get('control')?.hasError('maxlength')) this.errorsList.push('*Le nom doit au maximum contenir 16 lettres.\n');
+            if (nameForm.get('control')?.hasError('minlength')) this.errorsList.push('*Le nom doit contenir au moins 3 caractères.\n');
+            if (nameForm.get('control')?.hasError('required')) this.errorsList.push('*Un nom doit être entré.\n');
+            if (nameForm.get('control')?.hasError('containsOnlyLetters')) this.errorsList.push('*Le nom doit seulement être composé de lettres.\n');
         }
         return false;
     }
