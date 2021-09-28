@@ -82,13 +82,6 @@ describe('CommandsService', () => {
         service.parseInput('!echanger 12345678');
     });
 
-    it('#parseInput should call exchange le message when exchange letter command is invalid', () => {
-        service.messagingService.onMessage().subscribe((message) => {
-            expect(message.messageType).toEqual(MessageType.Error);
-        });
-        service.parseInput('!echanger 12345678');
-    });
-
     it('#parseInputsend should call skip turn', () => {
         const spy = spyOn(service.playerService, 'exchangeLetters');
         service.parseInput('!echanger abc');
