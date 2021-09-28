@@ -25,16 +25,10 @@ export class GamePageComponent {
     buttonConfig: ButtonConfig[] = [];
     iconList: string[];
 
-    /*functionMap = new Map<string, void>([
-        ['confirmQuit', this.confirmQuit()],
-        ['toggleDrawer', this.toggleDrawer()]
-    ]);*/
-
     constructor(gameService: GameService, timerService: TimerService, public dialog: MatDialog) {
         this.gameService = gameService;
         this.playerType = gameService.onTurn.getValue();
         this.timerService = timerService;
-        gameService.onTurn.subscribe((e) => (this.playerType = e));
         this.buttonConfig = [
             {
                 color: 'warn',
@@ -54,6 +48,8 @@ export class GamePageComponent {
             },
         ];
         this.iconList = ['home', 'question_answer', 'logout', 'autorenew', 'settings'];
+
+        gameService.onTurn.subscribe((e) => (this.playerType = e));
     }
 
     toggleDrawer() {
