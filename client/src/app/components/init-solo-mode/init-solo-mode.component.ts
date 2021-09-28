@@ -18,7 +18,7 @@ export class InitSoloModeComponent implements OnInit {
     readonly minutesList = Constants.turnLengthMinutes;
     readonly secondsList = Constants.turnLengthSeconds;
     nameForm: FormGroup;
-
+    errorsList: string[];
     gameConfig: GameConfig = {
         gameType: Constants.gameTypesList[0],
         minutes: Constants.turnLengthMinutes[1],
@@ -34,8 +34,8 @@ export class InitSoloModeComponent implements OnInit {
         this.gameConfig.secondPlayerName = this.randomizeBotName(this.botNames);
     }
 
-    initialize(name: string): void {
-        const needsToReroute: boolean = this.confirmInitialization(name);
+    initialize(): void {
+        const needsToReroute: boolean = this.confirmInitialization(this.gameConfig.firstPlayerName);
 
         if (needsToReroute) {
             this.gameService.startGame(this.gameConfig);

@@ -23,12 +23,10 @@ class MatDialogStub {
     }
 }
 
-fdescribe('InitSoloModeComponent', () => {
+describe('InitSoloModeComponent', () => {
     let init: InitSoloModeComponent;
     let fixture: ComponentFixture<InitSoloModeComponent>;
-    // const VALID_NAMES = ['Jean', 'RenÉéÎîÉéÇçÏï'];
-    const INVALID_NAMES = ['moulon', 'Jo', 'Josiannnnnnnnnnne', 'Jean123'];
-
+    const NAMES = ['Jean', 'RenÉéÎîÉéÇçÏï', 'moulon', 'Jo', 'Josiannnnnnnnnne', 'Jean123'];
     const routerMock = {
         navigate: jasmine.createSpy('navigate'),
     };
@@ -54,14 +52,39 @@ fdescribe('InitSoloModeComponent', () => {
     it('should create', () => {
         expect(init).toBeTruthy();
     });
-    it('should initialize', () => {
-        // const spy = spyOn(init, 'initialize');
-        // for (const name of VALID_NAMES) {
-        // }
+    it('Should not contains any error', () => {
+        init.gameConfig.firstPlayerName = NAMES[0];
+        init.initialize();
+        expect(init.errorsList).toBe([]);
     });
-    it('should not initialize', () => {
-        for (const name of INVALID_NAMES) {
-            expect(init.initialize(name)).toBeFalse();
-        }
+    it('Should not contains any error', () => {
+        init.gameConfig.firstPlayerName = NAMES[1];
+        init.initialize();
+        expect(init.errorsList).toBe([]);
+    });
+    it('Should have error for lower letter', () => {
+        init.gameConfig.firstPlayerName = NAMES[2];
+        init.initialize();
+        expect(init.errorsList).toBe(['startsWithLowerLetter']);
+    });
+    it('Should have error for minimum length', () => {
+        init.gameConfig.firstPlayerName = NAMES[3];
+        init.initialize();
+        expect(init.errorsList).toBe(['minlength']);
+    });
+    it('Should have error for maximum length', () => {
+        init.gameConfig.firstPlayerName = NAMES[4];
+        init.initialize();
+        expect(init.errorsList).toBe(['maxlength']);
+    });
+    it('Should have error for not having name', () => {
+        init.gameConfig.firstPlayerName = NAMES[5];
+        init.initialize();
+        expect(init.errorsList).toBe(['required']);
+    });
+    it('Should have error for not having name', () => {
+        init.gameConfig.firstPlayerName = NAMES[6];
+        init.initialize();
+        expect(init.errorsList).toBe(['containsOnlyLetters']);
     });
 });
