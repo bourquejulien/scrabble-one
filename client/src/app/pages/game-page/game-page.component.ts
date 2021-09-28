@@ -18,7 +18,6 @@ export class GamePageComponent {
         this.timerService = timerService;
         gameService.onTurn.subscribe((e) => (this.playerType = e));
     }
-
     confirmQuit(): void {
         // TODO:
     }
