@@ -40,6 +40,11 @@ stages:
     - test
     - deploy
 
+before_script:
+    - cd client
+    - npm ci --cache .npm --prefer-offline
+    - cd ..
+
 install:client:
     stage: install
     <<: *only-client

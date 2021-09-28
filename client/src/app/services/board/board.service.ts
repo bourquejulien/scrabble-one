@@ -21,7 +21,7 @@ export class BoardService implements ValidationLookup {
     private readonly boardValidator: BoardValidator;
 
     constructor(dictionary: DictionaryService) {
-        this.board = new Board(Constants.grid.GRID_SIZE, this.retrieveBonuses());
+        this.board = new Board(Constants.GRID.GRID_SIZE, this.retrieveBonuses());
         this.boardValidator = new BoardValidator(this.board, dictionary, this.retrieveLetterValues());
     }
 
