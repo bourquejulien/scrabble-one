@@ -20,7 +20,7 @@ export class MessagingService {
 
         if (this.debuggingMode) {
             this.subject.next(message);
-        } else if (message.messageType !== MessageType.Message) {
+        } else if (message.messageType === MessageType.Message) {
             this.subject.next(message);
         }
     }

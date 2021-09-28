@@ -45,9 +45,6 @@ describe('MessagingService', () => {
         service.send('title1', 'body1', MessageType.Error);
         service.send('title2', 'body2', MessageType.Log);
         service.send('title3', 'body3', MessageType.Message);
-        setTimeout(() => {
-            expect(timerCallback).not.toHaveBeenCalledTimes(1);
-            // eslint-disable-next-line @typescript-eslint/no-magic-numbers
-        }, 100);
+        expect(timerCallback).toHaveBeenCalledTimes(1);
     });
 });

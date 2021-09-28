@@ -73,17 +73,17 @@ describe('CommandsService', () => {
         service.messagingService.onMessage().subscribe((message) => {
             expect(message.messageType).toEqual(MessageType.Error);
         });
-        service.parseInput('!echanger 2');
+        service.parseInput('!echanger 12345678');
     });
 
-    it('#parseInputsend an error message when place letter command is invalid', () => {
+    it('#parseInput should send an error message when place letter command is invalid', () => {
         service.messagingService.onMessage().subscribe((message) => {
             expect(message.messageType).toEqual(MessageType.Error);
         });
-        service.parseInput('!placer z9h test');
+        service.parseInput('!placer a9h w0rd');
     });
 
-    it('#parseInputsend should send an error message if the user message is not in the right format', () => {
+    it('#parseInput should send an error message if the user message is not in the right format', () => {
         // For test purposes
         // eslint-disable-next-line @typescript-eslint/no-magic-numbers
         const userMessage = 'A'.repeat(512 + 3);
@@ -93,14 +93,14 @@ describe('CommandsService', () => {
         service.parseInput(userMessage);
     });
 
-    it('#parseInputsend should send a message to the other user', () => {
+    it('#parseInput send a message to the other user', () => {
         service.messagingService.onMessage().subscribe((message) => {
             expect(message.messageType).toEqual(MessageType.Message);
         });
         service.parseInput('This is a message.');
     });
 
-    it('#parseInputsend should send an error message if the command is not recognized', () => {
+    it('#parseInput should send an error message if the command is not recognized', () => {
         service.messagingService.onMessage().subscribe((message) => {
             expect(message.messageType).toEqual(MessageType.Error);
         });

@@ -57,9 +57,13 @@ export class CommandsService {
     }
 
     private checkPlaceCommand(options: string, word: string): boolean {
+        if (this.placeWordCommandRegex.test(options)) {
+            this.messagingService.send('', 'Options fournies invalides', MessageType.Error);
+            return false;
+        }
         // Arguments: [COMMAND, OPTIONS, WORD]
         // Options: [Y, X, DIRECTION]
-        if (options && options[1] && this.wordRegex.test(word)) {
+        if (options && this.wordRegex.test(word)) {
             const yCoordinate = Number(options.charCodeAt(0) - this.charOffset);
             const xCoordinate = Number(options.charAt(1)) - 1;
             const direction: Direction = options.charAt(2) === 'v' ? Direction.Down : Direction.Right;
