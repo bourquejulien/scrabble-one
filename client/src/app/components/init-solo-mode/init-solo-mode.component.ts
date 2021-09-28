@@ -62,7 +62,11 @@ export class InitSoloModeComponent implements OnInit {
         }
     }
 
-    private botNameChange(firstPlayerName: string): void {
+    forceSecondsToZero(): void {
+        if (this.minutes === TURN_LENGTH_MINUTES[5]) this.seconds = 0;
+    }
+
+    botNameChange(firstPlayerName: string): void {
         while (firstPlayerName === this.gameConfig.secondPlayerName) {
             this.gameConfig.secondPlayerName = this.randomizeBotName(BOT_NAMES);
         }
