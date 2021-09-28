@@ -11,7 +11,7 @@ const BOT_NAMES = ['Maurice', 'Claudette', 'Alphonse'];
 // eslint-disable-next-line @typescript-eslint/no-magic-numbers -- Lists all option, the list is a constant
 const TURN_LENGTH_MINUTES = [0, 1, 2, 3, 4, 5] as const;
 // eslint-disable-next-line @typescript-eslint/no-magic-numbers -- Lists all option, the list is a constant
-const TURN_LENGTH_SECONDS = [0, 15, 30, 45] as const;
+const TURN_LENGTH_SECONDS = [0, 30] as const;
 // eslint-disable-next-line @typescript-eslint/no-magic-numbers -- Default play time is readable and immutable
 const DEFAULT_PLAY_TIME = TimeSpan.fromMinutesSeconds(1, 30);
 const MAX_SIZE_NAME = 16;
@@ -30,6 +30,7 @@ export class InitSoloModeComponent implements OnInit {
     nameForm: FormGroup;
     minutes: number = DEFAULT_PLAY_TIME.totalMinutes;
     seconds: number = DEFAULT_PLAY_TIME.seconds;
+    errorsList: string[];
 
     gameConfig: GameConfig = {
         gameType: GAME_TYPES_LIST[0],
@@ -61,7 +62,11 @@ export class InitSoloModeComponent implements OnInit {
         }
     }
 
-    private botNameChange(firstPlayerName: string): void {
+    forceSecondsToZero(): void {
+        if (this.minutes === TURN_LENGTH_MINUTES[5]) this.seconds = 0;
+    }
+
+    botNameChange(firstPlayerName: string): void {
         while (firstPlayerName === this.gameConfig.secondPlayerName) {
             this.gameConfig.secondPlayerName = this.randomizeBotName(BOT_NAMES);
         }
@@ -94,6 +99,13 @@ export class InitSoloModeComponent implements OnInit {
             this.gameConfig.playTime = TimeSpan.fromMinutesSeconds(this.minutes, this.seconds);
 
             return true;
+        } else {
+            this.errorsList = [];
+            if (nameForm.get('control')?.hasError('startsWithLowerLetter')) this.errorsList.push('*Le nom doit débuter par une majuscule.\n');
+            if (nameForm.get('control')?.hasError('maxlength')) this.errorsList.push('*Le nom doit au maximum contenir 16 lettres.\n');
+            if (nameForm.get('control')?.hasError('minlength')) this.errorsList.push('*Le nom doit contenir au moins 3 caractères.\n');
+            if (nameForm.get('control')?.hasError('required')) this.errorsList.push('*Un nom doit être entré.\n');
+            if (nameForm.get('control')?.hasError('containsOnlyLetters')) this.errorsList.push('*Le nom doit seulement être composé de lettres.\n');
         }
         return false;
     }

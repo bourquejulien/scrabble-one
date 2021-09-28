@@ -11,13 +11,13 @@
     <div class="playersFlex">
         <mat-form-field class="inputs" style="margin-right: 15px" appearance="fill">
             <mat-label>Minutes</mat-label>
-            <mat-select name="minutesPerTurn" [(ngModel)]="minutes">
+            <mat-select name="minutesPerTurn" [(ngModel)]="minutes" (selectionChange)="forceSecondsToZero()">
                 <mat-option *ngFor="let minutes of minutesList" [value]="minutes">{{ minutes }} </mat-option>
             </mat-select>
         </mat-form-field>
         <mat-form-field class="inputs" appearance="fill">
             <mat-label>Secondes</mat-label>
-            <mat-select name="secondsPerTurn" [(ngModel)]="seconds">
+            <mat-select name="secondsPerTurn" [(ngModel)]="seconds" [disabled]="minutes === 5">
                 <mat-option *ngFor="let seconds of secondsList" [value]="seconds">{{ seconds }}</mat-option>
             </mat-select>
         </mat-form-field>
@@ -27,26 +27,19 @@
     <form class="playersFlex">
         <mat-form-field style="margin-right: 15px" appearance="fill">
             <mat-label>Joueur 1</mat-label>
-            <input matInput placeholder="Joueur 1" name="name" [(ngModel)]="gameConfig.firstPlayerName" />
+            <input
+                matInput
+                placeholder="Joueur 1"
+                name="name"
+                [(ngModel)]="gameConfig.firstPlayerName"
+                (input)="botNameChange(gameConfig.firstPlayerName)"
+            />
         </mat-form-field>
         <mat-form-field appearance="fill">
             <mat-label>Joueur 2</mat-label>
             <input matInput placeholder="Joueur 2" value="{{ gameConfig.secondPlayerName }}" />
         </mat-form-field>
     </form>
-
-    <div *ngIf="this.nameForm !== undefined && this.nameForm.get('control')?.hasError('containsOnlyLetters')" class="alert">
-        *Le nom doit seulement être composé de lettres.
-    </div>
-    <div *ngIf="this.nameForm !== undefined && this.nameForm.get('control')?.hasError('required')" class="alert">*Un nom doit être entré.</div>
-    <div *ngIf="this.nameForm !== undefined && this.nameForm.get('control')?.hasError('minlength')" class="alert">
-        *Le nom doit contenir au moins 3 caractères.
-    </div>
-    <div *ngIf="this.nameForm !== undefined && this.nameForm.get('control')?.hasError('maxlength')" class="alert">
-        *Le nom doit au maximum contenir 16 lettres.
-    </div>
-    <div *ngIf="this.nameForm !== undefined && this.nameForm.get('control')?.hasError('startsWithLowerLetter')" class="alert">
-        *Le nom doit débuter par une majuscule.
-    </div>
+    <div *ngFor="let error of errorsList" class="alert">{{ error }}</div>
     <button mat-raised-button (click)="this.initialize()" color="primary" id="confirm">Confirmer</button>
 </div>
