@@ -79,9 +79,9 @@ export class CommandsService {
             case '!echanger': {
                 // TODO: validation !echanger
                 const letter: string = args[1];
-                if (letter && letter.length === 1) {
-                    this.playerService.exchangeLetters(letter);
-                }
+
+                this.playerService.exchangeLetters(letter);
+
                 break;
             }
             case '!passer': {

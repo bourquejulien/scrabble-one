@@ -1,10 +1,10 @@
 import { Injectable } from '@angular/core';
 import { ImmutableBoard } from '@app/classes/board/board';
 import { Bonus } from '@app/classes/board/bonus';
-import { Vec2 } from '@app/classes/vec2';
 import { FontFace } from '@app/classes/font-face';
-import { BoardService } from '@app/services/board/board.service';
+import { Vec2 } from '@app/classes/vec2';
 import { Constants } from '@app/constants/global.constants';
+import { BoardService } from '@app/services/board/board.service';
 
 const STAR_IMAGE_PATH = '/assets/img/star.svg';
 const LINE_WIDTH = 3;
@@ -172,9 +172,8 @@ export class GridService {
 
         if (image.complete) {
             drawImage();
-        } else {
-            image.onload = () => drawImage();
         }
+        image.onload = () => drawImage();
     }
 
     private drawRow(pos: number, context: CanvasRenderingContext2D) {

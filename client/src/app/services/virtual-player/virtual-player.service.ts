@@ -1,13 +1,13 @@
 import { Injectable } from '@angular/core';
 import { PlayerType } from '@app/classes/player-type';
-import { PlayGeneratorService } from '@app/services/virtual-player/play-generator.service';
-import { Constants } from '@app/constants/global.constants';
-import { Subject } from 'rxjs';
-import { ReserveService } from '@app/services/reserve/reserve.service';
-import { BoardService } from '@app/services/board/board.service';
-import { TimerService } from '@app/services/timer-service/timer.service';
-import { TimeSpan } from '@app/classes/time/timespan';
 import { Timer } from '@app/classes/time/timer';
+import { TimeSpan } from '@app/classes/time/timespan';
+import { Constants } from '@app/constants/global.constants';
+import { BoardService } from '@app/services/board/board.service';
+import { ReserveService } from '@app/services/reserve/reserve.service';
+import { TimerService } from '@app/services/timer-service/timer.service';
+import { PlayGeneratorService } from '@app/services/virtual-player/play-generator.service';
+import { Subject } from 'rxjs';
 const MAX_PLAYTIME_SECONDS = 20;
 const MIN_PLAYTIME_SECONDS = 3;
 
@@ -65,7 +65,7 @@ export class VirtualPlayerService {
     }
 
     fillRack(): void {
-        while (this.reserveService.length > 0 && this.rack.length < Constants.reserve.SIZE) {
+        while (this.reserveService.length > 0 && this.rack.length < Constants.MIN_SIZE) {
             this.rack.push(this.reserveService.drawLetter());
         }
     }

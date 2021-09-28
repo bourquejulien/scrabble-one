@@ -31,6 +31,7 @@ export class InitSoloModeComponent implements OnInit {
     errorsList: string[];
     minutes: number = DEFAULT_PLAY_TIME.totalMinutes;
     seconds: number = DEFAULT_PLAY_TIME.seconds;
+    errorsList: string[];
 
     gameConfig: GameConfig = {
         gameType: GAME_TYPES_LIST[0],
@@ -62,7 +63,11 @@ export class InitSoloModeComponent implements OnInit {
         }
     }
 
-    private botNameChange(firstPlayerName: string): void {
+    forceSecondsToZero(): void {
+        if (this.minutes === TURN_LENGTH_MINUTES[5]) this.seconds = 0;
+    }
+
+    botNameChange(firstPlayerName: string): void {
         while (firstPlayerName === this.gameConfig.secondPlayerName) {
             this.gameConfig.secondPlayerName = this.randomizeBotName(BOT_NAMES);
         }

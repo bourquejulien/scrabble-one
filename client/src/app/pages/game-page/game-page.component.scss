@@ -1,11 +1,10 @@
-
-.local.mat-toolbar{
-    background:  #45cb85 ;
+.local.mat-toolbar {
+    background: #45cb85;
     color: #fff;
 }
 
 .remote.mat-toolbar {
-    background: #57E2E5 ;
+    background: #57e2e5;
     color: #fff;
 }
 
@@ -18,7 +17,7 @@ mat-drawer-container {
     height: 100%;
 }
 
-.play-area-container > *{
+.play-area-container > * {
     flex: 1 1 auto;
     align-items: center;
     position: fixed;
@@ -67,7 +66,6 @@ mat-drawer-container {
     z-index: 2;
 }
 
-#tools-container{
+#tools-container {
     display: flex;
 }
-
