@@ -20,6 +20,13 @@
             [attr.height]="height"
         ></canvas>
     </div>
+    <app-size-selector
+        id="size-selector"
+        [minSize]="25"
+        [maxSize]="35"
+        [size]="gridService.letterFontFace.size"
+        (sizeUpdated)="updateFontSize($event)"
+    ></app-size-selector>
     <div class="rack">
         <app-rack></app-rack>
     </div>

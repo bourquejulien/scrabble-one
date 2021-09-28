@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { GameConfig } from '@app/classes/game-config';
 import { PlayerType } from '@app/classes/player-type';
+import { TimeSpan } from '@app/classes/time/timespan';
 import { Constants } from '@app/constants/global.constants';
 import { PlayerService } from '@app/services/player/player.service';
 import { VirtualPlayerService } from '@app/services/virtual-player/virtual-player.service';
@@ -14,9 +15,7 @@ export class GameService {
     onTurn: BehaviorSubject<PlayerType>;
     gameConfig: GameConfig = {
         gameType: '',
-        minutes: 0,
-        seconds: 0,
-        time: 0,
+        playTime: TimeSpan.fromSeconds(0),
         firstPlayerName: '',
         secondPlayerName: '',
     };
@@ -60,16 +59,17 @@ export class GameService {
     private onPlayerTurn() {
         this.currentTurn = PlayerType.Local;
         this.onTurn.next(this.currentTurn);
-        // TODO Start timer?
+        this.playerService.startTurn(this.gameConfig.playTime);
     }
 
     private onVirtualPlayerTurn() {
         this.currentTurn = PlayerType.Virtual;
         this.onTurn.next(this.currentTurn);
-        this.virtualPlayerService.onTurn();
+        this.virtualPlayerService.startTurn();
     }
 
     private randomizeTurn(): PlayerType {
-        return Math.random() < Constants.HALF ? PlayerType.Local : PlayerType.Virtual;
+        const HALF = 0.5;
+        return Math.random() < HALF ? PlayerType.Local : PlayerType.Virtual;
     }
 }

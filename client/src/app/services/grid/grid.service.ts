@@ -6,18 +6,36 @@ import { Vec2 } from '@app/classes/vec2';
 import { Constants } from '@app/constants/global.constants';
 import { BoardService } from '@app/services/board/board.service';
 
+const STAR_IMAGE_PATH = '/assets/img/star.svg';
+const LINE_WIDTH = 3;
+const STROKE_STYLE = 'black';
+const FONT_FACE: FontFace = { font: 'BenchNine', size: 30 };
+const FONT_FACE_SCALE_FACTOR = 0.75;
+const TEXT_STYLE = 'black';
+const BONUS_COLORS = new Map([
+    [Bonus.None, '#C6BDA6'],
+    [Bonus.L2, '#9ea6ff'],
+    [Bonus.L3, '#6571ff'],
+    [Bonus.W2, '#ffcccb'],
+    [Bonus.W3, '#ff7d7a'],
+    [Bonus.Star, '#ffcccb'],
+]);
+
 @Injectable({
     providedIn: 'root',
 })
 export class GridService {
-    private readonly board: ImmutableBoard;
+    letterFontFace = FONT_FACE;
 
+    private readonly board: ImmutableBoard;
     private readonly canvasSize: Vec2 = Constants.GRID.CANVAS_SIZE;
     private readonly playGridSize: number = Constants.GRID.GRID_SIZE;
-    private readonly letterFontFace = Constants.GRID.FONT_FACE;
+    private readonly starImage: HTMLImageElement;
 
     constructor(boardService: BoardService) {
         this.board = boardService.gameBoard;
+        this.starImage = new Image();
+        this.starImage.src = STAR_IMAGE_PATH;
     }
 
     private static getBonusText(bonus: Bonus): { kind: string; multiplier: string } {
@@ -47,14 +65,14 @@ export class GridService {
         for (let x = 0; x < this.playGridSize; x++) {
             for (let y = 0; y < this.playGridSize; y++) {
                 const square = this.board.getSquare({ x, y });
-                const squareColor = Constants.GRID.BONUS_COLORS.get(square.bonus) ?? 'white';
+                const squareColor = BONUS_COLORS.get(square.bonus) ?? 'white';
                 this.fillSquare(squareColor, { x: x + 1, y: y + 1 }, { x: 1, y: 1 }, gridContext);
             }
         }
 
         gridContext.beginPath();
-        gridContext.strokeStyle = Constants.GRID.STROKE_STYLE;
-        gridContext.lineWidth = Constants.GRID.LINE_WIDTH;
+        gridContext.strokeStyle = STROKE_STYLE;
+        gridContext.lineWidth = LINE_WIDTH;
 
         for (let i = 1; i < this.boardGridSize + 1; i++) {
             this.drawRow(i, gridContext);
@@ -84,7 +102,7 @@ export class GridService {
         const centerSquare = Math.floor(this.playGridSize / 2);
 
         if (this.board.getSquare({ x: centerSquare, y: centerSquare }).letter === '') {
-            this.drawImage('/assets/img/star.svg', { x: centerSquare + 1, y: centerSquare + 1 }, squareContext);
+            this.drawImage(this.starImage, { x: centerSquare + 1, y: centerSquare + 1 }, squareContext);
         }
     }
 
@@ -95,7 +113,7 @@ export class GridService {
 
         this.fitTextSize(letter, this.letterFontFace, context);
 
-        context.fillStyle = Constants.GRID.TEXT_STYLE;
+        context.fillStyle = TEXT_STYLE;
         context.textBaseline = 'middle';
         context.textAlign = 'center';
         context.fillText(letter, canvasPosition.x, canvasPosition.y);
@@ -120,7 +138,7 @@ export class GridService {
         const { kind, multiplier } = GridService.getBonusText(bonus);
 
         this.fitTextSize(kind, this.bonusFontFace, context);
-        context.fillStyle = Constants.GRID.TEXT_STYLE;
+        context.fillStyle = TEXT_STYLE;
         context.textAlign = 'center';
 
         context.textBaseline = 'top';
@@ -141,24 +159,21 @@ export class GridService {
         return fontFace;
     }
 
-    private drawImage(imagePath: string, gridPosition: Vec2, context: CanvasRenderingContext2D) {
-        const image = new Image();
+    private async drawImage(image: HTMLImageElement, gridPosition: Vec2, context: CanvasRenderingContext2D) {
         const canvasPosition = this.computeCanvasCoord(gridPosition);
-        const halfLineWidth = Constants.GRID.LINE_WIDTH / 2;
+        const halfLineWidth = LINE_WIDTH / 2;
         const centeredPosition = {
             x: canvasPosition.x - this.squareWidth / 2 + halfLineWidth,
             y: canvasPosition.y - this.squareHeight / 2 + halfLineWidth,
         };
 
-        image.src = imagePath;
-        image.onload = () =>
-            context.drawImage(
-                image,
-                centeredPosition.x,
-                centeredPosition.y,
-                this.squareWidth - Constants.GRID.LINE_WIDTH,
-                this.squareHeight - Constants.GRID.LINE_WIDTH,
-            );
+        const drawImage = () =>
+            context.drawImage(image, centeredPosition.x, centeredPosition.y, this.squareWidth - LINE_WIDTH, this.squareHeight - LINE_WIDTH);
+
+        if (image.complete) {
+            drawImage();
+        }
+        image.onload = () => drawImage();
     }
 
     private drawRow(pos: number, context: CanvasRenderingContext2D) {
@@ -202,6 +217,6 @@ export class GridService {
     }
 
     private get bonusFontFace(): FontFace {
-        return { font: this.letterFontFace.font, size: this.letterFontFace.size * Constants.GRID.FONT_FACE_SCALE_FACTOR };
+        return { font: this.letterFontFace.font, size: this.letterFontFace.size * FONT_FACE_SCALE_FACTOR };
     }
 }

@@ -2,7 +2,6 @@
 /* eslint-disable @typescript-eslint/no-magic-numbers -- Constants file*/
 import { Dictionary } from './dictionary.constants';
 import { Grid } from './grid.constants';
-// import { ReserveService } from '@app/services/reserve/reserve.service';
 import { VirtualPlayer } from './virtual-player.constants';
 
 export class Constants {
@@ -17,7 +16,6 @@ export class Constants {
     static readonly HALF = 0.5;
     static readonly TIME_CONSTANT: number = 60;
     static readonly dictionary = new Dictionary();
-    // static readonly reserve = new Reserve();
     static readonly virtualPlayer = new VirtualPlayer();
     static readonly MIN_SIZE = 7;
 }

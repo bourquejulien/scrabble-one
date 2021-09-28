@@ -1,10 +1,12 @@
 import { Injectable } from '@angular/core';
 import { Direction } from '@app/classes/board/direction';
 import { PlayerType } from '@app/classes/player-type';
+import { TimeSpan } from '@app/classes/time/timespan';
 import { Vec2 } from '@app/classes/vec2';
 import { Constants } from '@app/constants/global.constants';
 import { BoardService } from '@app/services/board/board.service';
 import { ReserveService } from '@app/services/reserve/reserve.service';
+import { TimerService } from '@app/services/timer-service/timer.service';
 import { Subject } from 'rxjs';
 import { BehaviorSubject } from 'rxjs/internal/BehaviorSubject';
 
@@ -16,8 +18,19 @@ export class PlayerService {
     rackUpdated: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(true);
     private rack: string[] = [];
 
-    constructor(private reserveService: ReserveService, private boardService: BoardService) {
+    constructor(
+        private readonly reserveService: ReserveService,
+        private readonly boardService: BoardService,
+        private readonly timerService: TimerService,
+    ) {
         this.turnComplete = new Subject<PlayerType>();
+        this.timerService.countdownStopped.subscribe(() => {
+            if (PlayerType.Local) this.completeTurn();
+        });
+    }
+
+    startTurn(playTime: TimeSpan) {
+        this.timerService.start(playTime, PlayerType.Local);
     }
 
     placeLetters(word: string, position: Vec2, direction: Direction): string {
@@ -82,7 +95,7 @@ export class PlayerService {
         this.rack = [];
     }
 
-    getRack(): string[] {
+    get rackContent(): string[] {
         return this.rack;
     }
 
