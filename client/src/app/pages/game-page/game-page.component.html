@@ -10,17 +10,16 @@
     <div id="tools-container">
         <div class="comm-box-sidenav-content">
             <div class="button-bar">
-                <button *ngFor="let button of buttonConfig"
-                    (color) = "button.color"
+                <button mat-fab *ngFor="let button of buttonConfig; let indexOfButton=index"
+                    [color] = "button.color"
                     [class] =  "button.class"
                     [routerLink] = "button.routerLink"
                     (click) = "button.click">
-
-                    <mat-icon *ngFor="let iconName of iconList">
-                        {{iconName}}
+                    <mat-icon >
+                        {{iconList[indexOfButton]}}
                     </mat-icon>
-
                 </button>
+
 
                 <!-- <button mat-fab color="warn" class="fab-button" routerLink="/" (click)="confirmQuit()">
                     <mat-icon>home</mat-icon>

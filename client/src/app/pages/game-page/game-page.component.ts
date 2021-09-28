@@ -10,7 +10,7 @@ interface ButtonConfig {
     color: string,
     class: string,
     routerLink?: string,
-    click?: Function,
+    click?: void,
 }
 
 @Component({
@@ -19,11 +19,7 @@ interface ButtonConfig {
     styleUrls: ['./game-page.component.scss'],
 })
 export class GamePageComponent {
-    @ViewChild('drawer') drawer: MatDrawer
-
-    toggleDrawer() {
-        this.drawer.toggle();
-    }
+    @ViewChild('drawer', { static: true }) drawer: MatDrawer;
 
     gameService: GameService;
     timerService: TimerService;
@@ -31,9 +27,9 @@ export class GamePageComponent {
     buttonConfig: ButtonConfig[] = [];
     iconList: string[];
 
-    functionMap = new Map<string, Function>([
-        ['confirmQuit', this.confirmQuit],
-        ['toggleDrawer', this.toggleDrawer]
+    functionMap = new Map<string, void>([
+        ['confirmQuit', this.confirmQuit()],
+        ['toggleDrawer', this.toggleDrawer()]
     ]);
 
     constructor(gameService: GameService, timerService: TimerService, public dialog: MatDialog) {
@@ -41,34 +37,14 @@ export class GamePageComponent {
         this.playerType = gameService.onTurn.getValue();
         this.timerService = timerService;
         gameService.onTurn.subscribe((e) => (this.playerType = e));
-
-        this.buttonConfig = [
-            {
-                color: "warn",
-                class: "fab-button",
-                routerLink: "/",
-                click: this.functionMap.get('confirmQuit')!,
-            },
-            {
-                color: "primary",
-                class: "fab-button",
-                click: this.functionMap.get('toggleDrawer')!,
-            },
-            {
-                color: "warn",
-                class: "fab-button",
-            },
-            {
-                color: "primary",
-                class: "fab-button",
-            },
-            {
-                color: "warn",
-                class: "fab-button",
-            },
-        ];
+        //this.functionMap.set('confirmQuit', this.confirmQuit()).set('toggleDrawer', this.toggleDrawer());
 
         this.iconList = ['home', 'question_answer', 'logout', 'autorenew', 'settings'];
+    }
+
+    toggleDrawer() {
+        console.log('entered toggle function');
+        this.drawer.toggle();
     }
 
     confirmQuit(): void {
