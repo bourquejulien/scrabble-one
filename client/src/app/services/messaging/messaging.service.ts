@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Message, MessageType } from '@app/classes/message';
+import { PlayerType } from '@app/classes/player-type';
 import { Observable, Subject } from 'rxjs';
 
 @Injectable({
@@ -14,7 +15,7 @@ export class MessagingService {
             title,
             body,
             messageType,
-            userId: 1, // TODO: put the current user's
+            userId: PlayerType.Local,
             timestamp: Date.now(),
         };
 

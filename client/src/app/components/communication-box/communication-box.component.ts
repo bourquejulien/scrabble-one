@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, Component, ElementRef, OnDestroy, ViewChild } from '@angular/core';
 import { Message, MessageType } from '@app/classes/message';
+import { PlayerType } from '@app/classes/player-type';
 import { CommandsService } from '@app/services/commands/commands.service';
 import { MessagingService } from '@app/services/messaging/messaging.service';
 import { Subscription } from 'rxjs';
@@ -17,9 +18,7 @@ export class CommunicationBoxComponent implements OnDestroy {
 
     constructor(private commandsService: CommandsService, public messagingService: MessagingService) {
         this.subscription = this.messagingService.onMessage().subscribe((message) => {
-            // Actions when a new message is received:
             this.messages.push(message);
-            // We scroll to the end!
             this.scroll();
         });
     }
@@ -48,12 +47,11 @@ export class CommunicationBoxComponent implements OnDestroy {
             case MessageType.Log:
             case MessageType.Message:
             default:
-                return message.userId === 1 ? 'aliceblue' : 'blanchedalmond';
+                return message.userId === PlayerType.Local ? 'aliceblue' : 'blanchedalmond';
         }
     }
 
     ngOnDestroy() {
-        // We unsubscribe in order to avoid memory leaks
         this.subscription.unsubscribe();
     }
 }

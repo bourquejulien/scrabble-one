@@ -9,10 +9,12 @@ import { Subject } from 'rxjs';
 import { Injectable } from '@angular/core';
 import { Direction } from '@app/classes/board/direction';
 import { Vec2 } from '@app/classes/vec2';
+import { PlayerType } from '@app/classes/player-type';
 @Injectable({
     providedIn: 'root',
 })
 class MockMessagingService extends MessagingService {
+    //
     // For test purposes
     // eslint-disable-next-line @typescript-eslint/no-magic-numbers
     static MOCK_TIMESTAMP: number = 100000000;
@@ -25,17 +27,18 @@ class MockMessagingService extends MessagingService {
             title,
             body,
             messageType,
-            userId: 1,
+            userId: PlayerType.Local,
             timestamp: MockMessagingService.MOCK_TIMESTAMP,
         };
 
         if (this.debuggingMode) {
             this.subject.next(message);
-        } else {
+        } else if (message.messageType === MessageType.Message) {
             this.subject.next(message);
         }
     }
 }
+
 describe('CommandsService', () => {
     let service: CommandsService;
 
@@ -47,6 +50,7 @@ describe('CommandsService', () => {
             ],
         });
         service = TestBed.inject(CommandsService);
+        service.messagingService.debuggingMode = true;
     });
 
     it('should be created', () => {
@@ -61,6 +65,7 @@ describe('CommandsService', () => {
     });
 
     it('#parseInput should toggle debugging mode', () => {
+        service.messagingService.debuggingMode = false;
         service.parseInput('!debug');
         expect(service.messagingService.debuggingMode).toBeTrue();
         service.parseInput('!debug');
