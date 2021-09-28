@@ -31,7 +31,7 @@ export class GameService {
         this.currentTurn = this.randomizeTurn();
 
         this.virtualPlayerService.fillRack();
-        this.playerService.updateReserve(Constants.reserve.SIZE);
+        this.playerService.updateReserve(Constants.MIN_SIZE);
 
         this.nextTurn();
     }
