@@ -11,7 +11,7 @@
     <div class="playersFlex">
         <mat-form-field class="inputs" style="margin-right: 15px" appearance="fill">
             <mat-label>Minutes</mat-label>
-            <mat-select name="minutesPerTurn" [(ngModel)]="minutes" (selectionChange)="forceSecondsToZero()">
+            <mat-select name="minutesPerTurn" id="selectMinutes" [(ngModel)]="minutes" (selectionChange)="forceSecondsToZero()">
                 <mat-option *ngFor="let minutes of minutesList" [value]="minutes">{{ minutes }} </mat-option>
             </mat-select>
         </mat-form-field>
@@ -31,6 +31,7 @@
                 matInput
                 placeholder="Joueur 1"
                 name="name"
+                id="inputName"
                 [(ngModel)]="gameConfig.firstPlayerName"
                 (input)="botNameChange(gameConfig.firstPlayerName)"
             />
