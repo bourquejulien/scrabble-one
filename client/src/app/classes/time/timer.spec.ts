@@ -39,10 +39,16 @@ describe('Timer', () => {
         const INITIAL_TIME_MS = 1000;
         const timer = new Timer(TimeSpan.fromMilliseconds(INITIAL_TIME_MS));
 
-        timer.completed.then(() => done());
-
         timer.start();
+
+        timer.completed.then(() => {
+            expect(timer.time.totalMilliseconds).toEqual(INITIAL_TIME_MS);
+            done();
+        });
+
         timer.stop();
+
+
     });
 
     it('should decrease each seconds', fakeAsync(() => {

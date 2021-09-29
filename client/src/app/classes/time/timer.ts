@@ -35,6 +35,7 @@ export class Timer {
     }
 
     start(): void {
+        this.timerStopped = new Subject();
         this.time = this.timeLimit;
         this.isStarted = true;
         this.countdownStarted.next();
@@ -44,7 +45,6 @@ export class Timer {
         this.time = this.timeLimit;
         this.isStarted = false;
         this.timerStopped.complete();
-        this.timerStopped = new Subject();
     }
 
     get completed(): Promise<void> {

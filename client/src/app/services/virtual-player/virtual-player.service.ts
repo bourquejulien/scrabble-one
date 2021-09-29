@@ -36,13 +36,13 @@ export class VirtualPlayerService {
 
         let random = Math.random();
 
-        if (random < Constants.virtualPlayer.SKIP_PERCENTAGE) {
+        if (random <= Constants.virtualPlayer.SKIP_PERCENTAGE) {
             this.skipTurn();
             return;
         }
         random -= Constants.virtualPlayer.SKIP_PERCENTAGE;
 
-        if (random < Constants.virtualPlayer.EXCHANGE_PERCENTAGE) {
+        if (random <= Constants.virtualPlayer.EXCHANGE_PERCENTAGE) {
             this.exchange();
             this.skipTurn();
             return;

@@ -4,7 +4,7 @@ import { Bonus } from '@app/classes/board/bonus';
 import { Direction } from '@app/classes/board/direction';
 import { Square } from '@app/classes/board/square';
 import { BoardValidator } from '@app/classes/validation/board-validator';
-import { ValidationLookup } from '@app/classes/validation/validation-lookup';
+import { Validation } from '@app/classes/validation/validation';
 import { ValidationResponse } from '@app/classes/validation/validation-response';
 import { Vec2 } from '@app/classes/vec2';
 import { Constants } from '@app/constants/global.constants';
@@ -16,7 +16,7 @@ import JsonLetters from '@assets/letters.json';
 @Injectable({
     providedIn: 'root',
 })
-export class BoardService implements ValidationLookup {
+export class BoardService implements Validation {
     private readonly board: Board;
     private readonly boardValidator: BoardValidator;
 

@@ -10,6 +10,6 @@ export class PlayGeneratorService {
     constructor(private readonly dictionaryService: DictionaryService, private readonly boardService: BoardService) {}
 
     newGenerator(rack: string[]): PlayGenerator {
-        return new PlayGenerator(this.boardService.gameBoard, this.dictionaryService, this.boardService, rack);
+        return new PlayGenerator(this.dictionaryService, this.boardService, rack);
     }
 }
