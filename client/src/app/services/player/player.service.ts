@@ -11,6 +11,7 @@ import { Subject } from 'rxjs';
 import { BehaviorSubject } from 'rxjs/internal/BehaviorSubject';
 import { MessagingService } from '@app/services/messaging/messaging.service';
 import { MessageType } from '@app/classes/message';
+import { SystemMessages } from '@app/constants/system-messages.constants';
 
 @Injectable({
     providedIn: 'root',
@@ -32,11 +33,11 @@ export class PlayerService {
         });
     }
 
-    startTurn(playTime: TimeSpan) {
+    startTurn(playTime: TimeSpan): void {
         this.timerService.start(playTime, PlayerType.Local);
     }
 
-    placeLetters(word: string, position: Vec2, direction: Direction) {
+    placeLetters(word: string, position: Vec2, direction: Direction): void {
         const positionToPlace = this.boardService.retrieveNewLetters(word, position, direction);
         const lettersToPlace = positionToPlace.map((element) => element.letter).join('');
 
@@ -57,17 +58,14 @@ export class PlayerService {
         this.completeTurn();
     }
 
-    exchangeLetters(lettersToExchange: string) {
+    exchangeLetters(lettersToExchange: string): void {
         const lettersToExchangeLength = lettersToExchange.length;
 
         if (!this.checkIfLettersInRack(lettersToExchange)) return;
 
         if (this.reserveService.length < Constants.MIN_SIZE) {
-            this.messagingService.send(
-                'Action invalide',
-                'There are not enough letters in the reserve. You may not use this command.',
-                MessageType.Error,
-            );
+            this.messagingService.send(SystemMessages.ImpossibleAction, SystemMessages.NotEnoughLetters, MessageType.Error);
+            return;
         }
 
         for (let i = 0; i < lettersToExchangeLength; i++) {
@@ -80,10 +78,7 @@ export class PlayerService {
 
         this.updateRack(lettersToExchange);
         this.rackUpdated.next(!this.rackUpdated.getValue());
-
         this.completeTurn();
-
-        return '';
     }
 
     completeTurn(): void {

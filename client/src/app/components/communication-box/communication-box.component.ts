@@ -51,6 +51,18 @@ export class CommunicationBoxComponent implements OnDestroy {
         }
     }
 
+    getTitle(message: Message): string {
+        if (message.messageType === MessageType.Message) {
+            return 'Utilisateur ' + message.userId;
+        } else {
+            return message.title;
+        }
+    }
+
+    shouldDisplay(message: Message) {
+        return message.userId === PlayerType.Local || (message.userId === PlayerType.Virtual && message.messageType === MessageType.Message);
+    }
+
     ngOnDestroy() {
         this.subscription.unsubscribe();
     }

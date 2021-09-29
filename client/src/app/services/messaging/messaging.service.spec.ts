@@ -45,6 +45,7 @@ describe('MessagingService', () => {
         service.send('title1', 'body1', MessageType.Error);
         service.send('title2', 'body2', MessageType.Log);
         service.send('title3', 'body3', MessageType.Message);
-        expect(timerCallback).toHaveBeenCalledTimes(1);
+        service.send('title4', 'body4', MessageType.System);
+        expect(timerCallback).toHaveBeenCalledTimes(3);
     });
 });

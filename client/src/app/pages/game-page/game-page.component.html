@@ -4,7 +4,7 @@
         <span>{{ gameService.gameConfig.firstPlayerName }} contre {{ gameService.gameConfig.secondPlayerName }}</span>
         <span>Minuteur: {{ timerService.time | time }}</span>
     </mat-toolbar>
-    <mat-drawer #drawer class="comm-box-sidenav" mode="side" opened>
+    <mat-drawer #drawer autoFocus class="comm-box-sidenav" mode="side" opened>
         <app-communication-box></app-communication-box>
     </mat-drawer>
     <div id="tools-container">

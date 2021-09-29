@@ -7,7 +7,7 @@ import { Observable, Subject } from 'rxjs';
     providedIn: 'root',
 })
 export class MessagingService {
-    debuggingMode: boolean; // When debugging is on, we send error and log messages
+    debuggingMode: boolean;
     protected subject = new Subject<Message>();
 
     send(title: string, body: string, messageType: MessageType): void {
@@ -21,7 +21,7 @@ export class MessagingService {
 
         if (this.debuggingMode) {
             this.subject.next(message);
-        } else if (message.messageType === MessageType.Message) {
+        } else if (message.messageType !== MessageType.Log) {
             this.subject.next(message);
         }
     }

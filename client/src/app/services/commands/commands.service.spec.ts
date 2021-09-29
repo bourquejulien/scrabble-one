@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-magic-numbers */
+/* eslint-disable max-classes-per-file */
 /* eslint-disable @typescript-eslint/naming-convention */
 import { TestBed } from '@angular/core/testing';
 import { FakePlayerService } from '@app/services/player/mock-player.service.spec';
@@ -10,6 +12,7 @@ import { Injectable } from '@angular/core';
 import { Direction } from '@app/classes/board/direction';
 import { Vec2 } from '@app/classes/vec2';
 import { PlayerType } from '@app/classes/player-type';
+import { GameService } from '../game/game.service';
 @Injectable({
     providedIn: 'root',
 })
@@ -38,7 +41,9 @@ class MockMessagingService extends MessagingService {
         }
     }
 }
-
+class MockGameService {
+    currentTurn = PlayerType.Local;
+}
 describe('CommandsService', () => {
     let service: CommandsService;
 
@@ -47,6 +52,7 @@ describe('CommandsService', () => {
             providers: [
                 { provide: PlayerService, useClass: FakePlayerService },
                 { provide: MessagingService, useClass: MockMessagingService },
+                { provide: GameService, useClass: MockGameService },
             ],
         });
         service = TestBed.inject(CommandsService);
@@ -57,9 +63,9 @@ describe('CommandsService', () => {
         expect(service).toBeTruthy();
     });
 
-    it('#parseInput should send a help message with the correct info', () => {
+    it('#parseInput should send a help message', () => {
         service.messagingService.onMessage().subscribe((message) => {
-            expect(message.messageType).toEqual(MessageType.Log);
+            expect(message.messageType).toEqual(MessageType.System);
         });
         service.parseInput('!aide');
     });
@@ -107,8 +113,6 @@ describe('CommandsService', () => {
     });
 
     it('#parseInput should send an error message if the user message is not in the right format', () => {
-        // For test purposes
-        // eslint-disable-next-line @typescript-eslint/no-magic-numbers
         const userMessage = 'A'.repeat(512 + 3);
         service.messagingService.onMessage().subscribe((message) => {
             expect(message.messageType).toEqual(MessageType.Error);
@@ -130,9 +134,17 @@ describe('CommandsService', () => {
         service.parseInput('!notavalidcommand');
     });
 
-    it('#parseInputsend should call skip turn', () => {
+    it('#parseInput should call skip turn', () => {
         const spy = spyOn(service.playerService, 'completeTurn');
         service.parseInput('!passer');
         expect(spy).toHaveBeenCalled();
+    });
+
+    it("#parseInput should fail when it is not the user's turn", () => {
+        service.gameService.currentTurn = PlayerType.Virtual;
+        service.messagingService.onMessage().subscribe((message) => {
+            expect(message.messageType).toEqual(MessageType.Error);
+        });
+        service.parseInput('!skip');
     });
 });

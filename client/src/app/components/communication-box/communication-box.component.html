@@ -2,11 +2,9 @@
     <mat-grid-list cols="1">
         <!-- Message list -->
         <div class="messages" *ngFor="let message of messages">
-            <mat-card class="message-card" [style.background-color]="getMessageColor(message)">
+            <mat-card *ngIf="shouldDisplay(message)" class="message-card" [style.background-color]="getMessageColor(message)">
                 <mat-icon *ngIf="this.isError(message)" class="card-icon">warning</mat-icon>
-                <span
-                    ><b *ngIf="message.title !== ''">{{ message.title }}<br /></b
-                ></span>
+                <span><b>{{ getTitle(message) }}<br /></b></span>
                 {{ message.body }}
             </mat-card>
         </div>

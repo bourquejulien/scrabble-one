@@ -6,6 +6,8 @@ import { Constants } from '@app/constants/global.constants';
 import { SystemMessages } from '@app/constants/system-messages.constants';
 import { MessagingService } from '@app/services/messaging/messaging.service';
 import { PlayerService } from '@app/services/player/player.service';
+import { GameService } from '@app/services/game/game.service';
+import { PlayerType } from '@app/classes/player-type';
 
 @Injectable({
     providedIn: 'root',
@@ -16,7 +18,7 @@ export class CommandsService {
     rackRegex: RegExp = /^[A-zÀ-ú]{1,7}$/;
     messageRegex: RegExp = /^[A-zÀ-ú0-9 !.?'"]{1,512}$/;
 
-    constructor(public messagingService: MessagingService, public playerService: PlayerService) {}
+    constructor(public messagingService: MessagingService, public playerService: PlayerService, public gameService: GameService) {}
 
     parseInput(input: string): boolean {
         // Arguments: [COMMAND, OPTIONS, WORD]
@@ -30,14 +32,11 @@ export class CommandsService {
                     this.toggleDebug();
                     break;
                 case '!placer':
-                    this.checkPlaceCommand(args[1], args[2]);
-                    break;
+                    return this.checkPlaceCommand(args[1], args[2]);
                 case '!passer':
-                    this.skipTurn();
-                    break;
+                    return this.skipTurn();
                 case '!echanger':
-                    this.exchangeLetter(args[1]);
-                    break;
+                    return this.exchangeLetters(args[1]);
                 default:
                     this.messagingService.send('', SystemMessages.InvalidCommand, MessageType.Error);
                     return false;
@@ -54,10 +53,12 @@ export class CommandsService {
     }
 
     private showHelp() {
-        this.messagingService.send(SystemMessages.HelpTitle, SystemMessages.HelpMessage, MessageType.Log);
+        this.messagingService.send(SystemMessages.HelpTitle, SystemMessages.HelpMessage, MessageType.System);
     }
 
     private checkPlaceCommand(options: string, word: string): boolean {
+        if (!this.isUsersTurn()) return false;
+
         if (!this.placeWordCommandRegex.test(options)) {
             this.messagingService.send('', SystemMessages.InvalidOptions, MessageType.Error);
             return false;
@@ -78,20 +79,35 @@ export class CommandsService {
         return true;
     }
 
-    private exchangeLetter(letters: string): void {
+    private exchangeLetters(letters: string): boolean {
+        if (!this.isUsersTurn()) return false;
+
         if (this.rackRegex.test(letters)) {
             this.playerService.exchangeLetters(letters);
+            return true;
         } else {
             this.messagingService.send('', SystemMessages.InvalidLetters, MessageType.Error);
+            return false;
         }
     }
 
-    private skipTurn(): void {
+    private skipTurn(): boolean {
+        if (!this.isUsersTurn()) return false;
+
         this.playerService.completeTurn();
+        return true;
     }
 
     private toggleDebug(): void {
         this.messagingService.debuggingMode = !this.messagingService.debuggingMode;
         this.messagingService.send('', this.messagingService.debuggingMode ? SystemMessages.DebugOn : SystemMessages.DebugOff, MessageType.Log);
+    }
+
+    private isUsersTurn(): boolean {
+        if (this.gameService.currentTurn === PlayerType.Virtual) {
+            this.messagingService.send('', SystemMessages.InvalidTurn, MessageType.Log);
+            return false;
+        }
+        return true;
     }
 }
