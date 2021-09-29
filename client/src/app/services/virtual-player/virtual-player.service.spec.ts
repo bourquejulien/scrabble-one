@@ -7,6 +7,9 @@ import { TimerService } from '@app/services/timer/timer.service';
 import { ReserveService } from '@app/services/reserve/reserve.service';
 import { PlayGeneratorService } from './play-generator.service';
 // import { PlayGenerator } from '@app/classes/virtual-player/play-generator';
+import { TimeSpan } from '@app/classes/time/timespan';
+import { PlayerType } from '@app/classes/player-type';
+import { Constants } from '@app/constants/global.constants';
 
 // @Injectable({
 //     providedIn: 'root',
@@ -16,7 +19,22 @@ import { PlayGeneratorService } from './play-generator.service';
 @Injectable({
     providedIn: 'root',
 })
-class ReserveServiceStub {}
+class ReserveServiceStub {
+    letters = ['a', 'b', 'c', 'd', 'e', 'f', 'g'];
+    lastLetter = '';
+
+    drawLetter(): string {
+        return this.letters.pop() ?? '';
+    }
+
+    putBackLetter(letter: string) {
+        this.lastLetter = letter;
+    }
+
+    get length(): number {
+        return this.letters.length;
+    }
+}
 
 @Injectable({
     providedIn: 'root',
@@ -26,10 +44,25 @@ class BoardServiceStub {}
 @Injectable({
     providedIn: 'root',
 })
-class TimerServiceStub {}
+class TimerServiceStub {
+    // eslint-disable-next-line no-unused-vars
+    start(span: TimeSpan, playerType: PlayerType) {
+        // Does nothing
+    }
+
+    reset() {
+        // Does nothing
+    }
+
+    resetTimer() {
+        // Does nothing
+    }
+}
 
 describe('VirtualPlayerService', () => {
     let service: VirtualPlayerService;
+    let timerService: TimerService;
+    let reserveServiceStub: ReserveServiceStub;
     // let mockedGenerator: PlayGenerator;
 
     beforeEach(() => {
@@ -42,6 +75,10 @@ describe('VirtualPlayerService', () => {
             ],
         });
         service = TestBed.inject(VirtualPlayerService);
+        timerService = TestBed.inject(TimerService);
+        reserveServiceStub = (TestBed.inject(ReserveService) as unknown as ReserveServiceStub)
+
+        spyOnProperty(service['minTimer'], 'completed', 'get').and.returnValue(new Promise<void>((resolve) => resolve()));
         // mockedGenerator = TestBed.inject(PlayGeneratorService);
     });
 
@@ -49,12 +86,34 @@ describe('VirtualPlayerService', () => {
         expect(service).toBeTruthy();
     });
 
-    it('should skip turn', () => {
-        expect(service).toBeTruthy();
+    it('should skip turn', async () => {
+        spyOn(Math, 'random').and.returnValue(Constants.virtualPlayer.SKIP_PERCENTAGE);
+        const timerSpy = spyOn(timerService, 'reset');
+
+        service.startTurn();
+
+        await service['minTimer'].completed;
+
+        expect(timerSpy).toHaveBeenCalled();
     });
 
-    it('should exchange', () => {
-        expect(service).toBeTruthy();
+    it('should exchange', async () => {
+        const RACK_LENGTH = 7;
+        spyOn(Math, 'random').and.returnValues(
+            Constants.virtualPlayer.EXCHANGE_PERCENTAGE + Constants.virtualPlayer.SKIP_PERCENTAGE,
+            1 / RACK_LENGTH,
+            0,
+        );
+        const timerSpy = spyOn(timerService, 'reset');
+
+        const firstLetter = reserveServiceStub.letters[reserveServiceStub.letters.length - 1];
+
+        service.startTurn();
+
+        await service['minTimer'].completed;
+
+        expect((reserveServiceStub as unknown as ReserveServiceStub).lastLetter).toEqual(firstLetter);
+        expect(timerSpy).toHaveBeenCalled();
     });
 
     it('should play', () => {

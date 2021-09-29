@@ -1,7 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 import { PlayGeneratorService } from '@app/services/virtual-player/play-generator.service';
 import { BoardService } from '@app/services/board/board.service';
-import { MockBoardService } from '@app/services/board/mock-board.service';
+import { MockBoardService } from '@app/services/board/mock-board.service.spec';
 import { Injectable } from '@angular/core';
 import { DictionaryService } from '@app/services/dictionary/dictionary.service';
 

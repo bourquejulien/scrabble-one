@@ -47,8 +47,6 @@ describe('Timer', () => {
         });
 
         timer.stop();
-
-
     });
 
     it('should decrease each seconds', fakeAsync(() => {
