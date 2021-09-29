@@ -26,7 +26,7 @@ export class Timer {
 
         this.timerInstance = new Observable<number>();
 
-        this.timerInstance = timer(0, TIME_PERIOD).pipe(
+        this.timerInstance = timer(TIME_PERIOD, TIME_PERIOD).pipe(
             takeWhile(() => this.isRunning),
             repeatWhen(() => this.countdownStarted),
         );
@@ -34,20 +34,20 @@ export class Timer {
         this.timerInstance.subscribe(() => this.refresh());
     }
 
-    startTimer(): void {
-        this.timerStopped = new Subject();
+    start(): void {
         this.time = this.timeLimit;
         this.isStarted = true;
         this.countdownStarted.next();
     }
 
-    stopTimer(): void {
+    stop(): void {
         this.time = this.timeLimit;
         this.isStarted = false;
         this.timerStopped.complete();
+        this.timerStopped = new Subject();
     }
 
-    get timerCompleted(): Promise<void> {
+    get completed(): Promise<void> {
         return this.timerStopped.toPromise();
     }
 
@@ -57,7 +57,7 @@ export class Timer {
         this.timerUpdated.next(this.time);
 
         if (!this.isRunning) {
-            this.stopTimer();
+            this.stop();
         }
     }
 

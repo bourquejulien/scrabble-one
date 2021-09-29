@@ -9,7 +9,7 @@ import { DictionaryService } from '@app/services/dictionary/dictionary.service';
 export class PlayGeneratorService {
     constructor(private readonly dictionaryService: DictionaryService, private readonly boardService: BoardService) {}
 
-    newGenerator(rack: string[]) {
+    newGenerator(rack: string[]): PlayGenerator {
         return new PlayGenerator(this.boardService.gameBoard, this.dictionaryService, this.boardService, rack);
     }
 }

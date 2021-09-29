@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { PlayerType } from '@app/classes/player-type';
 import { GameService } from '@app/services/game/game.service';
-import { TimerService } from '@app/services/timer-service/timer.service';
+import { TimerService } from '@app/services/timer/timer.service';
 @Component({
     selector: 'app-game-page',
     templateUrl: './game-page.component.html',
