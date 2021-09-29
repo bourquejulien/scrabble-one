@@ -7,6 +7,14 @@
     <mat-drawer #drawer autoFocus class="comm-box-sidenav" mode="side" opened>
         <app-communication-box></app-communication-box>
     </mat-drawer>
+    <mat-card id="scoreboardPlayerOne">
+        <span class="verticalFlexItems">{{ gameService.gameConfig.firstPlayerName }}</span>
+        <span class="verticalFlexItems"> {{ gameService.firstPlayerPoints }} </span>
+    </mat-card>
+    <mat-card id="scoreboardPlayerTwo">
+        <span class="verticalFlexItems">{{ gameService.gameConfig.secondPlayerName }}</span>
+        <span class="verticalFlexItems"> {{ gameService.secondPlayerPoints }} </span>
+    </mat-card>
     <div id="tools-container">
         <div class="comm-box-sidenav-content">
             <div class="button-bar">

@@ -17,6 +17,7 @@ import { SystemMessages } from '@app/constants/system-messages.constants';
     providedIn: 'root',
 })
 export class PlayerService {
+    points: number = 0;
     turnComplete: Subject<PlayerType>;
     rackUpdated: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(true);
     private rack: string[] = [];
@@ -48,6 +49,7 @@ export class PlayerService {
             this.messagingService.send('', validationData.description, MessageType.Log);
             return;
         }
+        this.points += validationData.points;
 
         this.updateRack(lettersToPlace);
         this.updateReserve(positionToPlace.length);

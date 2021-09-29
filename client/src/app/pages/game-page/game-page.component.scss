@@ -16,6 +16,34 @@
 mat-drawer-container {
     height: 100%;
 }
+#scoreboardPlayerOne{
+    position: absolute;
+    top: 270px;
+    right: 350px;
+    width: 100px;
+    height: 60px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background-color: #45CB85;
+}
+#scoreboardPlayerTwo{
+    position: absolute;
+    top: 520px;
+    right: 350px;
+    width: 100px;
+    height: 60px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background-color: #F44336;
+}
+.verticalFlexItems{
+    margin-top: 20px;
+    font-size: large;
+    color: #fff;
+    justify-content: center;
+}
 
 .play-area-container > * {
     flex: 1 1 auto;
