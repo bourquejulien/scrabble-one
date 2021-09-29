@@ -21,8 +21,7 @@ export class ReserveService {
         if (letterIndex !== -1) {
             this.reserve.splice(letterIndex, 0, letterToExchange);
         }
-        if (letterToExchange.match(/^[a-z]+$/) || letterToExchange === '*')
-            this.reserve.push(letterToExchange);
+        if (letterToExchange.match(/^[a-z]+$/) || letterToExchange === '*') this.reserve.push(letterToExchange);
     }
 
     drawLetter(): string {

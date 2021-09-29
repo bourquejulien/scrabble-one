@@ -1,4 +1,4 @@
-/* eslint-disable-next-line dot-notation -- reserve is private and we need access for the test*/
+/* eslint-disable dot-notation */
 import { Injectable } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { BoardService } from '@app/services/board/board.service';
@@ -9,7 +9,6 @@ import { ReserveService } from '@app/services/reserve/reserve.service';
 @Injectable({
     providedIn: 'root',
 })
-
 class MockReserveService {
     reserve: string[];
 
@@ -35,8 +34,7 @@ class MockReserveService {
         if (letterIndex !== -1) {
             this.reserve.splice(letterIndex, 0, letterToExchange);
         }
-        if (letterToExchange.match(/^[a-z]+$/) || letterToExchange === '*')
-            this.reserve.push(letterToExchange);
+        if (letterToExchange.match(/^[a-z]+$/) || letterToExchange === '*') this.reserve.push(letterToExchange);
     }
 
     get length(): number {
@@ -60,8 +58,10 @@ describe('PlayerService', () => {
         const mockRack = ['k', 'e', 's', 'e', 'i', 'o', 'v'];
 
         TestBed.configureTestingModule({
-            providers: [{ provide: BoardService, useClass: MockBoardService },
-            { provide: ReserveService, useClass: MockReserveService }],
+            providers: [
+                { provide: BoardService, useClass: MockBoardService },
+                { provide: ReserveService, useClass: MockReserveService },
+            ],
         });
         service = TestBed.inject(PlayerService);
         reserveService = TestBed.inject(ReserveService);
@@ -246,7 +246,6 @@ describe('PlayerService', () => {
         const newReserve = ['a', 'b', 'c'];
         reserveService.setReserve(newReserve);
 
-
         const message = service['updateReserve'](lettersToPlace.length);
         expect(message).toBe('The reserve is now empty. You cannot draw any more letters.');
     });
@@ -258,7 +257,7 @@ describe('PlayerService', () => {
         const newReserve = ['a', 'c', 'c', 'd', 'e', 'f', 'g', 'h', 'h'];
         reserveService.setReserve(newReserve);
 
-        service['updateReserve'](lettersToPlace.length)
+        service['updateReserve'](lettersToPlace.length);
         expect(service['rack'].length).toBe(7);
     });
 
@@ -269,7 +268,7 @@ describe('PlayerService', () => {
         const newReserve = ['a', 'b'];
         reserveService.setReserve(newReserve);
 
-        service['updateReserve'](lettersToPlace.length)
+        service['updateReserve'](lettersToPlace.length);
         expect(service['rack'].length).toBe(6);
     });
 
@@ -280,7 +279,7 @@ describe('PlayerService', () => {
         const newReserve = ['a', 'b', 'c'];
         reserveService.setReserve(newReserve);
 
-        service['updateReserve'](lettersToPlace.length)
+        service['updateReserve'](lettersToPlace.length);
         expect(service['rack'].length).toBe(7);
     });
 
@@ -332,5 +331,4 @@ describe('PlayerService', () => {
     it('should return current size of rack', () => {
         expect(service.length).toBe(7);
     });
-
 });
