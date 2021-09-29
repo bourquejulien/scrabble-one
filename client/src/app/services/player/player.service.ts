@@ -101,7 +101,7 @@ export class PlayerService {
 
     // For testing
     setRack(mockRack: string[]): void {
-        this.rack = [];
+        this.emptyRack();
 
         for (const letter of mockRack) {
             this.rack.push(letter);
@@ -111,7 +111,7 @@ export class PlayerService {
     private updateReserve(lettersToPlaceLength: number): string {
         const reserveLength = this.reserveService.length;
 
-        if (this.reserveService.length === 0) return 'The reserve is empty. You cannot draw any letters.';
+        if (reserveLength === 0) return 'The reserve is empty. You cannot draw any letters.';
 
         if (reserveLength <= lettersToPlaceLength) {
             for (let i = 0; i < reserveLength; i++) {

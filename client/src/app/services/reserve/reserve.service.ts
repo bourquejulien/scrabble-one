@@ -15,11 +15,14 @@ export class ReserveService {
         }
     }
 
+    // dont forget test
     putBackLetter(letterToExchange: string): void {
         const letterIndex = this.reserve.indexOf(letterToExchange);
         if (letterIndex !== -1) {
             this.reserve.splice(letterIndex, 0, letterToExchange);
         }
+        if (letterToExchange.match(/^[a-z]+$/) || letterToExchange === '*')
+            this.reserve.push(letterToExchange);
     }
 
     drawLetter(): string {
