@@ -15,10 +15,10 @@ const MIN_PLAYTIME_SECONDS = 3;
     providedIn: 'root',
 })
 export class VirtualPlayerService {
+    points: number = 0;
     turnComplete: Subject<PlayerType>;
     private rack: string[] = [];
     private minTimer: Timer;
-
     constructor(
         private readonly playGeneratorService: PlayGeneratorService,
         private readonly reserveService: ReserveService,
@@ -98,7 +98,7 @@ export class VirtualPlayerService {
 
         await this.minTimer.timerCompleted;
 
-        this.boardService.placeLetters(play.letters);
+        this.points += this.boardService.placeLetters(play.letters).points;
         play.letters.forEach((letter) => this.rack.splice(this.rack.findIndex((rackLetter) => letter.letter === rackLetter)));
     }
 

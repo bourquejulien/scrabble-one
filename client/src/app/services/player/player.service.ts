@@ -14,6 +14,7 @@ import { BehaviorSubject } from 'rxjs/internal/BehaviorSubject';
     providedIn: 'root',
 })
 export class PlayerService {
+    points: number = 0;
     turnComplete: Subject<PlayerType>;
     rackUpdated: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(true);
     private rack: string[] = [];
@@ -41,6 +42,7 @@ export class PlayerService {
         if (rackMessage !== '') return rackMessage;
 
         const validationData = this.boardService.lookupLetters(positionToPlace);
+        this.points += validationData.points;
 
         if (!validationData.isSuccess) return validationData.description;
 
