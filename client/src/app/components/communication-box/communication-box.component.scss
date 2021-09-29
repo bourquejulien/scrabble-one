@@ -1,21 +1,19 @@
-.comm-box-container {
-    display: flexbox;
-    height: 100%;
-}
-
 .message-card {
     display: block;
-    align-items: flex-end;
+    margin: 6px;
 }
 
 .command-input {
     position: absolute;
-    bottom: 0;
+    bottom: 0px;
     width: 100%;
 }
 
-.messages {
-    display: flexbox;
-    align-items: flex-end;
-    overflow-y: scroll;
+.message-container {
+    display: flex;
+    overflow: scroll;
+}
+
+#col-rev {
+    flex-direction: column-reverse;
 }

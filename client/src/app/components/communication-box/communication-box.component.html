@@ -1,6 +1,5 @@
-<div class="comm-box-container">
+<div class="message-container" id="col-rev">
     <mat-grid-list cols="1">
-        <!-- Message list -->
         <div class="messages" *ngFor="let message of messages">
             <mat-card *ngIf="shouldDisplay(message)" class="message-card" [style.background-color]="getMessageColor(message)">
                 <mat-icon *ngIf="this.isError(message)" class="card-icon">warning</mat-icon>
@@ -9,15 +8,12 @@
             </mat-card>
         </div>
     </mat-grid-list>
-    <!-- Command input -->
-    <mat-form-field class="command-input" appearance="fill">
-        <mat-label>Saisissez une commande</mat-label>
-        <input autofocus matInput type="text" (keydown.enter)="send(inputValue)" [(ngModel)]="inputValue" />
-        <!-- Erase text button -->
-        <button *ngIf="inputValue" matSuffix mat-icon-button aria-label="Clear" (click)="inputValue = ''">
-            <mat-icon>close</mat-icon>
-        </button>
-        <!-- Submit button -->
-        <button mat-button type="submit" (keydown.enter)="send(inputValue)" (click)="send(inputValue)">Envoyer</button>
-    </mat-form-field>
 </div>
+<mat-form-field class="command-input" appearance="fill">
+    <mat-label>Saisissez une commande</mat-label>
+    <input autofocus matInput type="text" (keydown.enter)="send(inputValue)" [(ngModel)]="inputValue" />
+    <button *ngIf="inputValue" matSuffix mat-icon-button aria-label="Clear" (click)="inputValue = ''">
+        <mat-icon>close</mat-icon>
+    </button>
+    <button mat-button type="submit" (keydown.enter)="send(inputValue)" (click)="send(inputValue)">Envoyer</button>
+</mat-form-field>
