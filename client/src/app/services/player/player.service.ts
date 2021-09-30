@@ -11,7 +11,7 @@ import { ReserveService } from '@app/services/reserve/reserve.service';
 import { TimerService } from '@app/services/timer/timer.service';
 import { Subject } from 'rxjs';
 import { BehaviorSubject } from 'rxjs/internal/BehaviorSubject';
-import { MessagingService } from '../messaging/messaging.service';
+import { MessagingService } from '@app/services/messaging/messaging.service';
 
 @Injectable({
     providedIn: 'root',
@@ -113,7 +113,7 @@ export class PlayerService {
         const reserveLength = this.reserveService.length;
 
         if (this.reserveService.length === 0) {
-            this.messagingService.send('Action impossible', 'The reserve is empty. You cannot draw any letters.', MessageType.Error);
+            this.messagingService.send(SystemMessages.ImpossibleAction, SystemMessages.EmptyReserveError, MessageType.Error);
             return;
         }
 
@@ -121,12 +121,11 @@ export class PlayerService {
             for (let i = 0; i < reserveLength; i++) {
                 this.rack.push(this.reserveService.drawLetter());
             }
-            this.messagingService.send('Action impossible', 'The reserve is now empty. You cannot draw any more letters.', MessageType.Error);
+            this.messagingService.send(SystemMessages.ImpossibleAction, SystemMessages.EmptyReserveError, MessageType.Error);
             return;
         }
 
         this.fillRack(lettersToPlaceLength);
-        return '';
     }
 
     private updateRack(lettersToPlace: string): void {
@@ -140,11 +139,7 @@ export class PlayerService {
     private checkIfLettersInRack(lettersToPlace: string): boolean {
         for (const letter of lettersToPlace) {
             if (this.rack.indexOf(letter) === -1) {
-                this.messagingService.send(
-                    'Action impossible',
-                    'You are not in possession of the letter ' + letter + '. Cheating is bad.',
-                    MessageType.Error,
-                );
+                this.messagingService.send(SystemMessages.ImpossibleAction, SystemMessages.LetterPossessionError + letter, MessageType.Error);
                 return false;
             }
         }

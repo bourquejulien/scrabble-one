@@ -13,7 +13,7 @@ import { MessagingService } from '@app/services/messaging/messaging.service';
 import { Subject } from 'rxjs';
 import { CommunicationBoxComponent } from './communication-box.component';
 
-fdescribe('CommunicationBoxComponent', () => {
+describe('CommunicationBoxComponent', () => {
     let component: CommunicationBoxComponent;
     let fixture: ComponentFixture<CommunicationBoxComponent>;
     let dummyMessage: Message;
@@ -46,7 +46,6 @@ fdescribe('CommunicationBoxComponent', () => {
             timestamp: Date.now(),
         };
     });
-
 
     it('should create', () => {
         expect(component).toBeTruthy();

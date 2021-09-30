@@ -12,4 +12,6 @@ export enum SystemMessages {
     InvalidUserMessage = 'Format du message invalide',
     InvalidWord = 'Vous devez saisir un mot',
     NotEnoughLetters = "Il n'y a pas suffisamment de lettres dans votre chevalet",
+    LetterPossessionError = 'Vous ne possédez pas la lettre :',
+    EmptyReserveError = 'La réserve est vide, donc vous ne pouvez plus piger de lettres.',
 }
