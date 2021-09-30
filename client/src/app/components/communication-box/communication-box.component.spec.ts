@@ -47,7 +47,6 @@ fdescribe('CommunicationBoxComponent', () => {
         };
     });
 
-
     it('should create', () => {
         expect(component).toBeTruthy();
     });
