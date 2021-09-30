@@ -12,8 +12,6 @@ import { BehaviorSubject } from 'rxjs/internal/BehaviorSubject';
 import { MessagingService } from '@app/services/messaging/messaging.service';
 import { MessageType } from '@app/classes/message';
 import { SystemMessages } from '@app/constants/system-messages.constants';
-import { TimerService } from '@app/services/timer/timer.service';
-import { TimeSpan } from '@app/classes/time/timespan';
 
 @Injectable({
     providedIn: 'root',
