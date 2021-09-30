@@ -4,7 +4,7 @@ import { Square } from '@app/classes/board/square';
 import { ValidationResponse } from './validation-response';
 import { Vec2 } from '@app/classes/vec2';
 import { Direction, reverseDirection } from '@app/classes/board/direction';
-import { Bonus, getBonusValue, isLetterBonus } from '@app/classes/board/bonus';
+import { Bonus, getBonusDetails } from '@app/classes/board/bonus';
 import { Dictionary } from '@app/classes/dictionary/dictionary';
 
 // TODO
@@ -188,11 +188,12 @@ export class BoardValidator {
                 continue;
             }
 
-            if (isLetterBonus(currentSquare.bonus)) {
-                totalPoint += this.getLetterPoints(currentSquare.letter) * getBonusValue(currentSquare.bonus);
+            const bonusDetails = getBonusDetails(currentSquare.bonus);
+            if (bonusDetails.isLetterBonus) {
+                totalPoint += this.getLetterPoints(currentSquare.letter) * bonusDetails.score;
             } else {
                 totalPoint += this.getLetterPoints(currentSquare.letter);
-                multiplier *= getBonusValue(currentSquare.bonus);
+                multiplier *= bonusDetails.score;
             }
         }
 
