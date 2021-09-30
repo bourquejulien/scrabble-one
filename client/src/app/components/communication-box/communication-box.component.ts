@@ -1,4 +1,4 @@
-import { AfterViewInit, ChangeDetectionStrategy, Component, ElementRef, OnDestroy, ViewChild } from '@angular/core';
+import { AfterContentInit, AfterViewInit, ChangeDetectionStrategy, Component, ElementRef, OnDestroy, ViewChild } from '@angular/core';
 import { Message, MessageType } from '@app/classes/message';
 import { PlayerType } from '@app/classes/player-type';
 import { CommandsService } from '@app/services/commands/commands.service';
@@ -10,7 +10,7 @@ import { Subscription } from 'rxjs';
     styleUrls: ['./communication-box.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class CommunicationBoxComponent implements OnDestroy, AfterViewInit {
+export class CommunicationBoxComponent implements OnDestroy, AfterViewInit, AfterContentInit {
     @ViewChild('messageContainer') private messageContainer: ElementRef<HTMLDivElement>;
     messages: Message[] = [];
     subscription: Subscription;
@@ -18,17 +18,20 @@ export class CommunicationBoxComponent implements OnDestroy, AfterViewInit {
 
     constructor(private commandsService: CommandsService, private messagingService: MessagingService) {}
 
+    ngAfterContentInit(): void {
+        this.scroll();
+    }
+
     ngAfterViewInit(): void {
         this.subscription = this.messagingService.onMessage().subscribe((message) => {
             this.messages.push(message);
-            this.scroll();
         });
     }
 
     scroll(): void {
         if (this.messageContainer) {
             this.messageContainer.nativeElement.scroll({
-                top: this.messageContainer.nativeElement.scrollHeight,
+                top: this.messageContainer.nativeElement.scrollHeight + this.messageContainer.nativeElement.offsetHeight,
                 left: 0,
                 behavior: 'smooth',
             });

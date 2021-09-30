@@ -11,12 +11,12 @@
 }
 
 .message-container {
-    display: flex;
-    overflow: scroll;
+    overflow: auto;
 }
 
 .chat-container {
     display: flex;
     flex-direction: column;
     align-content: space-between;
+    max-height: 100vh;
 }

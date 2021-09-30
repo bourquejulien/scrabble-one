@@ -1,5 +1,5 @@
 <div class="chat-container">
-    <div #messageContainer id="col-rev">
+    <div #messageContainer class="message-container">
         <div class="messages" *ngFor="let message of messages">
             <mat-card *ngIf="shouldDisplay(message)" class="message-card"
                 [style.background-color]="getMessageColor(message)">
