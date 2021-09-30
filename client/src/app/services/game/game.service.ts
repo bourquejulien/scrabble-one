@@ -15,7 +15,7 @@ export class GameService {
     onTurn: BehaviorSubject<PlayerType>;
     gameConfig: GameConfig = {
         gameType: '',
-        playTime: TimeSpan.fromSeconds(0),
+        playTime: TimeSpan.fromMinutesSeconds(1, 0),
         firstPlayerName: '',
         secondPlayerName: '',
     };

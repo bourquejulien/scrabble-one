@@ -24,8 +24,8 @@ export class PlayerService {
         private readonly timerService: TimerService,
     ) {
         this.turnComplete = new Subject<PlayerType>();
-        this.timerService.countdownStopped.subscribe(() => {
-            if (PlayerType.Local) this.completeTurn();
+        this.timerService.countdownStopped.subscribe((playerType) => {
+            if (PlayerType.Local === playerType) this.completeTurn();
         });
     }
 

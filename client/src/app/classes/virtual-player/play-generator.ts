@@ -47,7 +47,7 @@ export class PlayGenerator {
     }
 
     private tryGenerate(position: Vec2, direction: Direction): void {
-        const startPosition = this.retrieveEndPosition(position, reverseDirection(direction));
+        const startPosition = this.retrieveStartPosition(position, direction);
         const existingWord = this.retrieveExistingWord(startPosition, direction);
 
         const foundWords = this.findWords(existingWord, direction === Direction.Right ? startPosition.x : startPosition.y);
@@ -67,6 +67,18 @@ export class PlayGenerator {
         }
     }
 
+    private retrieveStartPosition(position: Vec2, direction: Direction) {
+        const reversedDirection = reverseDirection(direction);
+        let square = this.board.getRelative(position, reversedDirection);
+
+        while (square != null && square.letter !== '') {
+            position = square.position;
+            square = this.board.getRelative(square.position, reversedDirection);
+        }
+
+        return position;
+    }
+
     private retrieveExistingWord(firstPosition: Vec2, direction: Direction): string {
         let word = '';
         let square: Square | null = this.board.getSquare(firstPosition);
@@ -77,17 +89,6 @@ export class PlayGenerator {
         }
 
         return word;
-    }
-
-    private retrieveEndPosition(position: Vec2, direction: Direction) {
-        let square = this.board.getRelative(position, direction);
-
-        while (square != null && square.letter !== '') {
-            position = square.position;
-            square = this.board.getRelative(square.position, direction);
-        }
-
-        return position;
     }
 
     private findWords(startWord: string, startPosition: number): PositionedWord[] {
@@ -110,18 +111,15 @@ export class PlayGenerator {
             }
 
             const { isWord, isOther: isOtherStart } = this.dictionary.lookUpStart(positionedWord.word);
+
             const isOtherEnd = this.dictionary.lookUpEnd(positionedWord.word);
 
             if (isWord) {
                 generatedWords.push(positionedWord);
             }
 
-            if (letters.length < 1) {
-                return;
-            }
-
             const clonedLetters = letters.slice();
-            clonedLetters.splice(index);
+            clonedLetters.splice(index, 1);
 
             if (isOtherStart) {
                 this.findWord(generatedWords, clonedLetters, positionedWord, true);
