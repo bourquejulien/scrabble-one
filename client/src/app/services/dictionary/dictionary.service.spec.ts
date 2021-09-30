@@ -36,7 +36,13 @@ describe('DictionaryService', () => {
 
     it('should contain the start of a word', () => {
         for (const word of WORDS) {
-            expect(service.lookUpStart(word.substring(0, word.length - 3)).isOther).toBe(true);
+            expect(service.lookUpStart(word.substring(0, word.length - 3)).isOther).toBeTrue();
+        }
+    });
+
+    it('should contain the end of a word', () => {
+        for (const word of WORDS) {
+            expect(service.lookUpEnd(word.substring(word.length - 3))).toBeTrue();
         }
     });
 });

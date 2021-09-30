@@ -37,7 +37,7 @@ export class DictionaryService implements Dictionary {
     }
 
     lookUpEnd(word: string): boolean {
-        return this.dictionary.startsWith(DictionaryService.flipWord(word)).isOther;
+        return this.reverseDictionary.startsWith(DictionaryService.flipWord(word)).isOther;
     }
 
     private retrieveDictionary(): void {
