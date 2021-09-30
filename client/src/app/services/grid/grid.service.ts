@@ -6,7 +6,7 @@ import { Vec2 } from '@app/classes/vec2';
 import { Constants } from '@app/constants/global.constants';
 import { BoardService } from '@app/services/board/board.service';
 
-const STAR_IMAGE_PATH = '/assets/img/star.svg';
+const STAR_IMAGE_PATH = 'assets/img/star.svg';
 const LINE_WIDTH = 3;
 const STROKE_STYLE = 'black';
 const FONT_FACE: FontFace = { font: 'BenchNine', size: 30 };

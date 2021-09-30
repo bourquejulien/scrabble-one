@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { GameConfig } from '@app/classes/game-config';
 import { PlayerType } from '@app/classes/player-type';
+import { PlayerStats } from '@app/classes/player/player-stats';
 import { TimeSpan } from '@app/classes/time/timespan';
 import { Constants } from '@app/constants/global.constants';
 import { PlayerService } from '@app/services/player/player.service';
@@ -11,8 +12,14 @@ import { BehaviorSubject } from 'rxjs';
     providedIn: 'root',
 })
 export class GameService {
-    firstPlayerPoints: number = 0;
-    secondPlayerPoints: number = 0;
+    firstPlayerStats: PlayerStats = {
+        points: 0,
+        rackSize: 0,
+    };
+    secondPlayerStats: PlayerStats = {
+        points: 0,
+        rackSize: 0,
+    };
     currentTurn: PlayerType = PlayerType.Local;
     onTurn: BehaviorSubject<PlayerType>;
     gameConfig: GameConfig = {
@@ -42,8 +49,10 @@ export class GameService {
     }
 
     nextTurn() {
-        this.firstPlayerPoints = this.playerService.points;
-        this.secondPlayerPoints = this.virtualPlayerService.points;
+        this.firstPlayerStats.points = this.playerService.points;
+        this.secondPlayerStats.points = this.virtualPlayerService.points;
+        this.firstPlayerStats.rackSize = this.playerService.rack.length;
+        this.secondPlayerStats.rackSize = this.virtualPlayerService.rack.length;
         // TODO Use an interface for services
         if (this.currentTurn === PlayerType.Local) {
             this.onVirtualPlayerTurn();
