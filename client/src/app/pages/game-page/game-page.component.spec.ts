@@ -5,6 +5,7 @@ import { MatToolbar } from '@angular/material/toolbar';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { GameConfig } from '@app/classes/game-config';
 import { PlayerType } from '@app/classes/player-type';
+import { PlayerStats } from '@app/classes/player/player-stats';
 import { TimePipe } from '@app/classes/time/time.pipe';
 import { TimeSpan } from '@app/classes/time/timespan';
 import { AppMaterialModule } from '@app/modules/material.module';
@@ -18,6 +19,14 @@ const GAME_TYPES_LIST = ['Mode Solo Débutant'];
     providedIn: 'root',
 })
 class GameServiceStub {
+    firstPlayerStats: PlayerStats = {
+        points: 0,
+        rackSize: 0,
+    };
+    secondPlayerStats: PlayerStats = {
+        points: 0,
+        rackSize: 0,
+    };
     onTurn: BehaviorSubject<PlayerType> = new BehaviorSubject<PlayerType>(PlayerType.Local);
     currentTurn: PlayerType = PlayerType.Local;
     gameConfig: GameConfig = {

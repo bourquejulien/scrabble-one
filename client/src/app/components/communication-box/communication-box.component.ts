@@ -1,5 +1,6 @@
-import { ChangeDetectionStrategy, Component, ElementRef, OnDestroy, ViewChild } from '@angular/core';
-import { Message } from '@app/classes/message';
+import { AfterContentInit, AfterViewInit, ChangeDetectionStrategy, Component, ElementRef, OnDestroy, ViewChild } from '@angular/core';
+import { Message, MessageType } from '@app/classes/message';
+import { PlayerType } from '@app/classes/player-type';
 import { CommandsService } from '@app/services/commands/commands.service';
 import { MessagingService } from '@app/services/messaging/messaging.service';
 import { Subscription } from 'rxjs';
@@ -9,42 +10,69 @@ import { Subscription } from 'rxjs';
     styleUrls: ['./communication-box.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class CommunicationBoxComponent implements OnDestroy {
-    @ViewChild('messageContainer', { static: false }) private messageContainer: ElementRef<HTMLDivElement>;
+export class CommunicationBoxComponent implements OnDestroy, AfterViewInit, AfterContentInit {
+    @ViewChild('messageContainer') private messageContainer: ElementRef<HTMLDivElement>;
     messages: Message[] = [];
-    subscription: Subscription; // Subscription to messages from MessagingService
-    inputValue: string; // Value of the input field so that we can use the "x" to erase the content
+    subscription: Subscription;
+    inputValue: string;
 
-    constructor(private commandsService: CommandsService, public messagingService: MessagingService) {
-        this.subscription = this.messagingService.onMessage().subscribe((message) => {
-            // Actions when a new message is received:
-            this.messages.push(message);
-            // We scroll to the end!
-            this.scroll();
-        });
+    constructor(private commandsService: CommandsService, private messagingService: MessagingService) {}
+
+    ngAfterContentInit(): void {
+        this.scroll();
     }
 
-    send(input: string): void {
-        if (input === '') return;
-        // This gives the chance to the user to correct the syntax if there are mistakes
-        // When the command contains no errors, we clear the input field.
-        if (this.commandsService.parseInput(input)) {
-            this.inputValue = '';
-        }
+    ngAfterViewInit(): void {
+        this.subscription = this.messagingService.onMessage().subscribe((message) => {
+            this.messages.push(message);
+        });
     }
 
     scroll(): void {
         if (this.messageContainer) {
-            this.messageContainer.nativeElement.scrollTop = this.messageContainer.nativeElement.scrollHeight;
+            this.messageContainer.nativeElement.scroll({
+                top: this.messageContainer.nativeElement.scrollHeight,
+                behavior: 'smooth',
+            });
         }
     }
 
+    send(input: string): boolean {
+        if (input === '') return false;
+        if (this.commandsService.parseInput(input)) {
+            this.inputValue = '';
+        }
+        return true;
+    }
+
+    isError(message: Message): boolean {
+        return message.messageType === MessageType.Error;
+    }
+
     getMessageColor(message: Message): string {
-        return message.userId === 0 ? 'aliceblue' : 'blanchealmond';
+        switch (message.messageType) {
+            case MessageType.Error:
+                return 'red';
+            case MessageType.Log:
+            case MessageType.Message:
+            default:
+                return message.userId === PlayerType.Local ? 'aliceblue' : 'blanchedalmond';
+        }
+    }
+
+    getTitle(message: Message): string {
+        if (message.messageType === MessageType.Message) {
+            return 'Utilisateur ' + message.userId;
+        } else {
+            return message.title;
+        }
+    }
+
+    shouldDisplay(message: Message) {
+        return message.userId === PlayerType.Local || (message.userId === PlayerType.Virtual && message.messageType === MessageType.Message);
     }
 
     ngOnDestroy() {
-        // We unsubscribe in order to avoid memory leaks
         this.subscription.unsubscribe();
     }
 }
