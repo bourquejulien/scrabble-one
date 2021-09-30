@@ -17,7 +17,7 @@ export class PlayAction implements Action {
     execute(): Action | null {
         const scoreRange = this.getScoreRange();
 
-        while (this.playGenerator.generateNext() && this.timerService.time.totalMilliseconds > 0);
+        while (this.timerService.time.totalMilliseconds > 0 && this.playGenerator.generateNext());
 
         const filteredPlays = this.playGenerator.orderedPlays.filter((e) => e.score >= scoreRange.min && e.score <= scoreRange.max);
 

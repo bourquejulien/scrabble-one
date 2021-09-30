@@ -9,13 +9,15 @@ import { PlaceAction } from './place-action';
 import { PlayAction } from './play-action';
 
 class TimerServiceStub {
-    time = TimeSpan.fromSeconds(0);
+    time = TimeSpan.fromSeconds(1);
 }
 
 class PlayGeneratorStub {
     orderedPlays: Play[] = [{ score: 0, letters: [] }];
     canGenerate = false;
+    gotCalled = false;
     generateNext(): boolean {
+        this.gotCalled = true;
         return this.canGenerate;
     }
 }
@@ -39,6 +41,19 @@ describe('PlayAction', () => {
     it('should return null when no words are generated', () => {
         playGeneratorStub.orderedPlays = [];
         expect(playAction.execute()).toBeNull();
+    });
+
+    it('should return 0 to 0 score range interval if no math is found', () => {
+        spyOn(Math, 'random').and.returnValue(1);
+        // eslint-disable-next-line dot-notation -- Need to access private method for testing
+        expect(playAction['getScoreRange']()).toEqual({ min: 0, max: 0 });
+    });
+
+    it('should not generate word when no time is left', () => {
+        timerServiceStub.time = TimeSpan.fromMilliseconds(0);
+        playAction.execute();
+
+        expect(playGeneratorStub.gotCalled).toBeFalse();
     });
 
     it('should return PlaceAction instance when words are generated', () => {

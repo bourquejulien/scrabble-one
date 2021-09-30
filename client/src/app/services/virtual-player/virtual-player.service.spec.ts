@@ -57,6 +57,7 @@ class TimerServiceStub {
 })
 class VirtualPlayerActionServiceMock {
     actionCalled: number = 0;
+    returnSecondAction = true;
 
     // eslint-disable-next-line no-unused-vars -- Not needed for testing
     getNextAction(playerData: PlayerData): Action {
@@ -65,7 +66,7 @@ class VirtualPlayerActionServiceMock {
 
     private execute(): Action {
         this.actionCalled++;
-        return { execute: () => this.execute() };
+        return { execute: this.returnSecondAction ? () => this.execute() : () => null };
     }
 }
 
@@ -95,6 +96,13 @@ describe('VirtualPlayerService', () => {
         await service.startTurn();
 
         expect(virtualPlayerActionServiceMock.actionCalled).toEqual(2);
+    });
+
+    it('should not throw on null second action', async () => {
+        virtualPlayerActionServiceMock.returnSecondAction = false;
+        await service.startTurn();
+
+        expect(virtualPlayerActionServiceMock.actionCalled).toEqual(1);
     });
 
     it('should notify player change', (done) => {
