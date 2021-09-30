@@ -24,7 +24,7 @@ class GameServiceStub {
     providedIn: 'root',
 })
 class MatDialogStub {
-    close(): void {
+    close() {
         // Does Nothing
     }
 }
