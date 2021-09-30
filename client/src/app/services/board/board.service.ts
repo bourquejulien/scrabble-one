@@ -17,16 +17,21 @@ import JsonLetters from '@assets/letters.json';
     providedIn: 'root',
 })
 export class BoardService implements ValidationLookup {
-    private readonly board: Board;
-    private readonly boardValidator: BoardValidator;
+    private board: Board;
+    private boardValidator: BoardValidator;
 
-    constructor(dictionary: DictionaryService) {
+    constructor(private readonly dictionaryService: DictionaryService) {
         this.board = new Board(Constants.GRID.GRID_SIZE, this.retrieveBonuses());
-        this.boardValidator = new BoardValidator(this.board, dictionary, this.retrieveLetterValues());
+        this.boardValidator = new BoardValidator(this.board, dictionaryService, this.retrieveLetterValues());
     }
 
     get gameBoard(): ImmutableBoard {
         return this.board;
+    }
+
+    resetBoardService(): void {
+        this.board = new Board(Constants.GRID.GRID_SIZE, this.retrieveBonuses());
+        this.boardValidator = new BoardValidator(this.board, this.dictionaryService, this.retrieveLetterValues());
     }
 
     lookupLetters(letters: { letter: string; position: Vec2 }[]): ValidationResponse {

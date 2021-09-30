@@ -95,6 +95,14 @@ export class PlayerService {
         this.rack = [];
     }
 
+    resetReserveNewGame(): void {
+        this.reserveService.resetReserve();
+    }
+
+    resetBoard(): void {
+        this.boardService.resetBoardService();
+    }
+
     get rackContent(): string[] {
         return this.rack;
     }
@@ -111,7 +119,9 @@ export class PlayerService {
     private updateReserve(lettersToPlaceLength: number): string {
         const reserveLength = this.reserveService.length;
 
-        if (this.reserveService.length === 0) return 'The reserve is empty. You cannot draw any letters.';
+        if (this.reserveService.length === 0) {
+            return 'The reserve is empty. You cannot draw any letters.';
+        }
 
         if (reserveLength <= lettersToPlaceLength) {
             for (let i = 0; i < reserveLength; i++) {

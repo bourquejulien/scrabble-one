@@ -70,6 +70,10 @@ export class VirtualPlayerService {
         }
     }
 
+    emptyRack(): void {
+        this.rack = [];
+    }
+
     private exchange() {
         const randomLetterCount = Math.floor(Math.random() * this.rack.length);
 
@@ -114,5 +118,9 @@ export class VirtualPlayerService {
         }
 
         return { min: 0, max: 0 };
+    }
+
+    get length(): number {
+        return this.rack.length;
     }
 }

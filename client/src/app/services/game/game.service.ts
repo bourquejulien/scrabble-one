@@ -36,7 +36,10 @@ export class GameService {
     }
 
     endGame() {
-        // TODO
+        this.playerService.emptyRack();
+        this.virtualPlayerService.emptyRack();
+        this.playerService.resetReserveNewGame();
+        this.playerService.resetBoard();
     }
 
     nextTurn() {

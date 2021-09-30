@@ -31,4 +31,10 @@ describe('VirtualPlayerService', () => {
     it('should be created', () => {
         expect(service).toBeTruthy();
     });
+
+    it('should set rack length to 0 when emptyRack is called', () => {
+        const emptyRackLength = 0;
+        service.emptyRack();
+        expect(service.length).toBe(emptyRackLength);
+    });
 });

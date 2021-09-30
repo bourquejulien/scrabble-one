@@ -39,4 +39,13 @@ export class ReserveService {
             this.reserve.push(letter);
         }
     }
+
+    resetReserve(): void {
+        this.reserve = [];
+        for (const [letter, letterData] of letterDefinitions) {
+            for (let i = 0; i < letterData.maxQuantity; i++) {
+                this.reserve.push(letter);
+            }
+        }
+    }
 }

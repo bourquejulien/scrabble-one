@@ -66,4 +66,10 @@ describe('ReserveService', () => {
         // eslint-disable-next-line dot-notation -- reserve is private and we need access for the test
         expect(service.length).toBe(service['reserve'].length);
     });
+
+    it('should reset reserve to original length when resetReserve is called', () => {
+        const reserveLength = 102;
+        service.resetReserve();
+        expect(service.length).toBe(reserveLength);
+    });
 });

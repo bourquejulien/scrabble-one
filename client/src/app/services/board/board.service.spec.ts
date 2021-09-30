@@ -159,4 +159,9 @@ describe('BoardService', () => {
         newLetters = service.retrieveNewLetters(WORDS[5] + WORDS[5], centerPosition, Direction.Right);
         expect(newLetters).toEqual([]);
     });
+
+    it('should fail if word conflicts', () => {
+        service.resetBoardService();
+        expect(service.gameBoard).toBeTruthy();
+    });
 });

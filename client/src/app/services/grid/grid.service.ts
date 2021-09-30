@@ -1,5 +1,4 @@
 import { Injectable } from '@angular/core';
-import { ImmutableBoard } from '@app/classes/board/board';
 import { Bonus } from '@app/classes/board/bonus';
 import { FontFace } from '@app/classes/font-face';
 import { Vec2 } from '@app/classes/vec2';
@@ -27,13 +26,11 @@ const BONUS_COLORS = new Map([
 export class GridService {
     letterFontFace = FONT_FACE;
 
-    private readonly board: ImmutableBoard;
     private readonly canvasSize: Vec2 = Constants.GRID.CANVAS_SIZE;
     private readonly playGridSize: number = Constants.GRID.GRID_SIZE;
     private readonly starImage: HTMLImageElement;
 
-    constructor(boardService: BoardService) {
-        this.board = boardService.gameBoard;
+    constructor(private readonly boardService: BoardService) {
         this.starImage = new Image();
         this.starImage.src = STAR_IMAGE_PATH;
     }
@@ -55,6 +52,7 @@ export class GridService {
     }
 
     drawGrid(gridContext: CanvasRenderingContext2D): void {
+        const board = this.boardService.gameBoard;
         gridContext.clearRect(0, 0, this.width, this.height);
 
         for (let i = 1; i < this.playGridSize + 1; i++) {
@@ -64,7 +62,7 @@ export class GridService {
 
         for (let x = 0; x < this.playGridSize; x++) {
             for (let y = 0; y < this.playGridSize; y++) {
-                const square = this.board.getSquare({ x, y });
+                const square = board.getSquare({ x, y });
                 const squareColor = BONUS_COLORS.get(square.bonus) ?? 'white';
                 this.fillSquare(squareColor, { x: x + 1, y: y + 1 }, { x: 1, y: 1 }, gridContext);
             }
@@ -86,11 +84,12 @@ export class GridService {
     }
 
     drawSquares(squareContext: CanvasRenderingContext2D): void {
+        const board = this.boardService.gameBoard;
         squareContext.clearRect(0, 0, this.width, this.height);
 
         for (let x = 0; x < this.playGridSize; x++) {
             for (let y = 0; y < this.playGridSize; y++) {
-                const square = this.board.getSquare({ x, y });
+                const square = board.getSquare({ x, y });
                 if (square.letter !== '') {
                     this.drawSymbol(square.letter.toUpperCase(), { x: x + 1, y: y + 1 }, squareContext);
                 } else if (square.bonus !== Bonus.None) {
@@ -101,7 +100,7 @@ export class GridService {
 
         const centerSquare = Math.floor(this.playGridSize / 2);
 
-        if (this.board.getSquare({ x: centerSquare, y: centerSquare }).letter === '') {
+        if (board.getSquare({ x: centerSquare, y: centerSquare }).letter === '') {
             this.drawImage(this.starImage, { x: centerSquare + 1, y: centerSquare + 1 }, squareContext);
         }
     }

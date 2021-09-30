@@ -17,7 +17,7 @@ export interface ImmutableBoard {
 
 export class Board implements ImmutableBoard {
     readonly size: number;
-    private readonly board: Square[][];
+    private board: Square[][];
     private readonly filledPositions: Vec2[];
 
     constructor(size: number, bonuses: [Vec2, Bonus][] = []) {
