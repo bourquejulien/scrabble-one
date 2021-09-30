@@ -4,9 +4,6 @@
 }
 
 .init-solo-mode-dialog .mat-dialog-container {
-    // disableClose: false;
-    // hasBackdrop: true;
-    // backdropClass: '';
     height: '530px';
     width: '500px';
     padding: 0px !important;
@@ -75,7 +72,7 @@ h3 {
 }
 
 body {
-    background-image: url('image/scrabble_bg.jpg');
+    background-image: url('~src/assets/img/scrabble_bg.jpg');
     background-size: cover;
 }
 
