@@ -36,4 +36,13 @@ export class RackComponent implements OnInit {
             this.rack.push(letter);
         }
     }
+
+    // For testing
+    setRack(mockRack: string[]): void {
+        this.rack = [];
+
+        for (const letter of mockRack) {
+            this.rack.push(letter);
+        }
+    }
 }
