@@ -4,7 +4,7 @@ import { MatDrawer } from '@angular/material/sidenav';
 import { PlayerType } from '@app/classes/player-type';
 import { ConfirmQuitDialogComponent } from '@app/components/confirm-quit-dialog/confirm-quit-dialog.component';
 import { GameService } from '@app/services/game/game.service';
-import { TimerService } from '@app/services/timer-service/timer.service';
+import { TimerService } from '@app/services/timer/timer.service';
 
 interface ButtonConfig {
     color: string;
