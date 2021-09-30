@@ -42,7 +42,7 @@ class GameServiceStub {
 })
 class PlayAreaStubComponent {}
 
-fdescribe('GamePageComponent', () => {
+describe('GamePageComponent', () => {
     let component: GamePageComponent;
     let fixture: ComponentFixture<GamePageComponent>;
 

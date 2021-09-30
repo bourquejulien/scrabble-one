@@ -70,7 +70,7 @@ class ReserveServiceMock {
     }
 }
 
-describe('PlayerService', () => {
+fdescribe('PlayerService', () => {
     let service: PlayerService;
     let reserveService: ReserveService;
     let letterToRemoveFromRack: string;
@@ -180,11 +180,16 @@ describe('PlayerService', () => {
     });
 
     it('should notify player change if completeTurn', (done) => {
+        service.completeTurn();
         service.turnComplete.subscribe((playerType) => {
             expect(playerType).toEqual(PlayerType.Local);
             done();
         });
         timerServiceMock.countdownStopped.next(PlayerType.Local);
+    });
+
+    it('should add not affect rack if letters to place not in rack', () => {
+
     });
 
     it('should add specified amount of letters to rack if valid number of letters to add is entered', () => {
