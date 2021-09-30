@@ -1,14 +1,71 @@
 /* eslint-disable dot-notation */
 import { Injectable } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
+import { PlayerType } from '@app/classes/player-type';
+import { TimeSpan } from '@app/classes/time/timespan';
 import { BoardService } from '@app/services/board/board.service';
 import { MockBoardService } from '@app/services/board/mock-board.service';
 import { PlayerService } from '@app/services/player/player.service';
 import { ReserveService } from '@app/services/reserve/reserve.service';
+import { TimerService } from '../timer/timer.service';
+import { Subscription } from 'rxjs';
+import { Subject } from 'rxjs';
+import { Timer } from '@app/classes/time/timer';
 
 @Injectable({
     providedIn: 'root',
 })
+
+const MAX_PLAYTIME_SECONDS = 20;
+
+class TimerServiceStub {
+    readonly countdownStopped: Subject<PlayerType> = new Subject();
+
+    private timer: Timer | null = null;
+    private countdownSubscription: Subscription | null = null;
+
+    gotStarted = false;
+    gotStopped = false;
+
+    start(span: TimeSpan, playerType: PlayerType) {
+        expect(playerType).toEqual(PlayerType.Virtual);
+        expect(span.seconds).toEqual(MAX_PLAYTIME_SECONDS);
+
+        this.gotStarted = true;
+    }
+
+    reset() {
+        this.gotStopped = true;
+    }
+}
+
+
+// class MockTimerService {
+//     private timer: Timer | null = null;
+//     readonly countdownStopped: Subject<PlayerType> = new Subject();
+//     private countdownSubscription: Subscription | null = null;
+
+//     start(delay: TimeSpan, playerType: PlayerType): void {
+//         this.timer = new Timer(delay);
+//         this.timer.start();
+//         this.countdownSubscription = this.timer.timerUpdated.subscribe((timeSpan) => {
+//             if (timeSpan.totalMilliseconds <= 0) {
+//                 this.reset();
+//                 this.countdownStopped.next(playerType);
+//             }
+//         });
+//     }
+
+//     reset() {
+//         if (this.countdownSubscription !== null) {
+//             this.countdownSubscription.unsubscribe();
+//             this.countdownSubscription = null;
+//         }
+//         this.timer = null;
+//     }
+
+// }
+
 class MockReserveService {
     reserve: string[];
 
@@ -34,7 +91,7 @@ class MockReserveService {
         if (letterIndex !== -1) {
             this.reserve.splice(letterIndex, 0, letterToExchange);
         }
-        if (letterToExchange.match(/^[a-z]+$/) || letterToExchange === '*') this.reserve.push(letterToExchange);
+        else if (letterToExchange.match(/^[a-z]$/) || letterToExchange === '*') this.reserve.push(letterToExchange);
     }
 
     get length(): number {
@@ -45,10 +102,12 @@ class MockReserveService {
 describe('PlayerService', () => {
     let service: PlayerService;
     let reserveService: ReserveService;
+    let timerService: TimerService;
     let letterToRemoveFromRack: string;
     let invalidLetter: string;
     let lettersToPlace: string;
     let lettersToExchange: string;
+    let playTime: TimeSpan;
 
     beforeEach(() => {
         letterToRemoveFromRack = 'e';
@@ -61,10 +120,12 @@ describe('PlayerService', () => {
             providers: [
                 { provide: BoardService, useClass: MockBoardService },
                 { provide: ReserveService, useClass: MockReserveService },
+                { provide: TimerService, useClass: TimerServiceStub },
             ],
         });
         service = TestBed.inject(PlayerService);
         reserveService = TestBed.inject(ReserveService);
+        timerService = TestBed.inject(TimerService) as unknown as TimerServiceStub;
 
         service.setRack(mockRack);
     });
@@ -87,11 +148,12 @@ describe('PlayerService', () => {
     });
 
     it('should not affect rack size if reserve length bigger than 7', () => {
+        const currentRackLength = service['rack'].length;
         const newReserve = ['a', 'b', 'c', 'd', 'e', 'f', 'g'];
         reserveService.setReserve(newReserve);
 
         service.exchangeLetters(lettersToExchange);
-        expect(service['rack'].length).toBe(7);
+        expect(service['rack'].length).toBe(currentRackLength);
     });
 
     it('should successfully remove lettersToExchange from rack if reserve length bigger than 7', () => {
@@ -137,10 +199,19 @@ describe('PlayerService', () => {
         expect(service.rackUpdated.getValue()).toBe(false);
     });
 
+    it('should notify player change', (done) => {
+        service.turnComplete.subscribe((playerType) => {
+            expect(playerType).toEqual(PlayerType.Local);
+            done();
+        });
+        service.startTurn(playTime);
+    });
+
     it('should add specified amount of letters to rack if valid number of letters to add is entered', () => {
+        const amountlettersToAdd = 10;
         const currentLength = service.length;
-        service.fillRack(10);
-        expect(service.length).toBe(currentLength + 10);
+        service.fillRack(amountlettersToAdd);
+        expect(service.length).toBe(currentLength + amountlettersToAdd);
     });
 
     it('should not affect rack if invalid number of letters entered', () => {
@@ -211,11 +282,11 @@ describe('PlayerService', () => {
     it('should successfully change the length of rack if new rack has different size', () => {
         const smallerRack = ['a', 'b', 'c', 'd'];
         service.setRack(smallerRack);
-        expect(service.length).toBe(4);
+        expect(service.length).toBe(smallerRack.length);
 
         const biggerRack = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
         service.setRack(biggerRack);
-        expect(service.length).toBe(8);
+        expect(service.length).toBe(biggerRack.length);
     });
 
     it('should return an error message if the reserve is empty', () => {
@@ -258,7 +329,7 @@ describe('PlayerService', () => {
         reserveService.setReserve(newReserve);
 
         service['updateReserve'](lettersToPlace.length);
-        expect(service['rack'].length).toBe(7);
+        expect(service['rack'].length).toBe(rackToFill.length + lettersToPlace.length);
     });
 
     it('should increase rack length by reserve length if reserve length smaller than amount of letters to place', () => {
@@ -269,7 +340,7 @@ describe('PlayerService', () => {
         reserveService.setReserve(newReserve);
 
         service['updateReserve'](lettersToPlace.length);
-        expect(service['rack'].length).toBe(6);
+        expect(service['rack'].length).toBe(rackToFill.length + newReserve.length);
     });
 
     it('should increase rack length by reserve length if reserve length equal to amount of letters to place', () => {
@@ -280,7 +351,7 @@ describe('PlayerService', () => {
         reserveService.setReserve(newReserve);
 
         service['updateReserve'](lettersToPlace.length);
-        expect(service['rack'].length).toBe(7);
+        expect(service['rack'].length).toBe(rackToFill.length + newReserve.length);
     });
 
     it('should decrease length of rack if valid letter successfully removed from rack', () => {
@@ -329,6 +400,7 @@ describe('PlayerService', () => {
     });
 
     it('should return current size of rack', () => {
-        expect(service.length).toBe(7);
+        const mockRack = ['k', 'e', 's', 'e', 'i', 'o', 'v'];
+        expect(service.length).toBe(mockRack.length);
     });
 });
