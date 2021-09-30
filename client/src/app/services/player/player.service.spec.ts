@@ -106,12 +106,15 @@ fdescribe('PlayerService', () => {
         expect(service).toBeTruthy();
     });
 
-    // it('should return error message if lettersToExchange not in rack', () => {
-    //     const spy = spyOn<any>(service, 'checkIfLettersInRack').withArgs('lettersToPlace').and.returnValue('error');
-    //     expect(service['checkIfLettersInRack']).toHaveBeenCalled();
-    // });
+    it('should send error message if reserve length less than 7', () => {
+        const smallReserve = ['a', 'b'];
+        reserveService.setReserve(smallReserve);
+        const spy = spyOn(service['messagingService'], 'send');
+        service.exchangeLetters(lettersToExchange);
+        expect(spy).toHaveBeenCalledWith(SystemMessages.ImpossibleAction, SystemMessages.NotEnoughLetters, MessageType.Error);
+    });
 
-    it('should return error message if reserve length less than 7', () => {
+    it('should send error message if reserve length less than 7', () => {
         const smallReserve = ['a', 'b'];
         reserveService.setReserve(smallReserve);
         const spy = spyOn(service['messagingService'], 'send');
@@ -188,10 +191,6 @@ fdescribe('PlayerService', () => {
             done();
         });
         timerServiceMock.countdownStopped.next(PlayerType.Local);
-    });
-
-    it('should add not affect rack if letters to place not in rack', () => {
-        // TODO:
     });
 
     it('should add specified amount of letters to rack if valid number of letters to add is entered', () => {
@@ -276,14 +275,15 @@ fdescribe('PlayerService', () => {
         expect(service.length).toBe(biggerRack.length);
     });
 
-    /* it('should return an error message if the reserve is empty', () => {
+    it('should return an error message if the reserve is empty', () => {
         const newReserve: string[] = [];
         reserveService.setReserve(newReserve);
+        const spy = spyOn(service['messagingService'], 'send');
 
-        const message = service['updateReserve'](lettersToPlace.length);
-        expect(message).toBe('The reserve is empty. You cannot draw any letters.');
+        service['updateReserve'](lettersToPlace.length);
+        expect(spy).toHaveBeenCalledWith(SystemMessages.ImpossibleAction, SystemMessages.EmptyReserveError, MessageType.Error);
     });
- */
+
     it('should call fillRack if the reserve size is bigger than the amount of letters to place', () => {
         const newReserve: string[] = ['a', 'c', 'c', 'd', 'e', 'f', 'g', 'h', 'h'];
         reserveService.setReserve(newReserve);
@@ -380,12 +380,12 @@ fdescribe('PlayerService', () => {
     });
 
     it('should return an empty string if lettersToPlace are in rack ', () => {
-        expect(service['checkIfLettersInRack'](lettersToPlace)).toBeTruthy();
+        expect(service['areLettersInRack'](lettersToPlace)).toBeTruthy();
     });
 
     it('should return an error message if the letter is not in rack', () => {
         const spy = spyOn(service['messagingService'], 'send');
-        service['checkIfLettersInRack'](invalidLetter);
+        service['areLettersInRack'](invalidLetter);
         expect(spy).toHaveBeenCalledWith(SystemMessages.ImpossibleAction, SystemMessages.LetterPossessionError + invalidLetter, MessageType.Error);
     });
 
