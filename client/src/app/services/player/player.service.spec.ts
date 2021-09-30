@@ -1,11 +1,14 @@
 /* eslint-disable dot-notation */
 import { TestBed } from '@angular/core/testing';
 import { BoardService } from '@app/services/board/board.service';
-import { MockBoardService } from '@app/services/board/mock-board.service';
 import { PlayerService } from '@app/services/player/player.service';
+// eslint-disable-next-line no-restricted-imports
+import { ReserveService } from '../reserve/reserve.service';
 
 describe('PlayerService', () => {
     let service: PlayerService;
+    let reserveServiceSpy: jasmine.SpyObj<ReserveService>;
+    let boardServiceSpy: jasmine.SpyObj<BoardService>;
     let letterToRemoveFromRack: string;
     let invalidLetter: string;
 
@@ -13,9 +16,23 @@ describe('PlayerService', () => {
         letterToRemoveFromRack = 'E';
         invalidLetter = 'Z';
         const mockRack = ['K', 'E', 'S', 'E', 'I', 'O', 'V'];
+        reserveServiceSpy = jasmine.createSpyObj('ReserveService', ['drawLetter', 'length', 'putBackLetter', 'resetReserve']);
+        reserveServiceSpy.drawLetter.and.returnValue('E');
+        reserveServiceSpy.putBackLetter.and.returnValue();
+        reserveServiceSpy.resetReserve.and.returnValue();
+        reserveServiceSpy.length.valueOf();
+
+        boardServiceSpy = jasmine.createSpyObj('BoardService', ['resetBoardService', 'placeLetters', 'lookupLetters', 'retrieveNewLetters']);
+        boardServiceSpy.resetBoardService.and.returnValue();
+        boardServiceSpy.placeLetters.and.stub();
+        boardServiceSpy.lookupLetters.and.stub();
+        boardServiceSpy.retrieveNewLetters.and.stub();
 
         TestBed.configureTestingModule({
-            providers: [{ provide: BoardService, useClass: MockBoardService }],
+            providers: [
+                { provide: BoardService, useValue: boardServiceSpy },
+                { provide: ReserveService, useValue: reserveServiceSpy },
+            ],
         });
         service = TestBed.inject(PlayerService);
 
@@ -65,5 +82,15 @@ describe('PlayerService', () => {
         const emptyRackLength = 0;
         service.emptyRack();
         expect(service.length).toBe(emptyRackLength);
+    });
+
+    it('should call resetReserve when resetReserveNewGame is called', () => {
+        service.resetReserveNewGame();
+        expect(reserveServiceSpy.resetReserve).toHaveBeenCalled();
+    });
+
+    it('should call resetBoardService when resetBoard is called', () => {
+        service.resetBoard();
+        expect(boardServiceSpy.resetBoardService).toHaveBeenCalled();
     });
 });

@@ -160,7 +160,7 @@ describe('BoardService', () => {
         expect(newLetters).toEqual([]);
     });
 
-    it('should fail if word conflicts', () => {
+    it('should resetBoard when called', () => {
         service.resetBoardService();
         expect(service.gameBoard).toBeTruthy();
     });
