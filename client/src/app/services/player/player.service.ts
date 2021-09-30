@@ -1,17 +1,17 @@
 import { Injectable } from '@angular/core';
 import { Direction } from '@app/classes/board/direction';
+import { MessageType } from '@app/classes/message';
 import { PlayerType } from '@app/classes/player-type';
+import { TimeSpan } from '@app/classes/time/timespan';
 import { Vec2 } from '@app/classes/vec2';
 import { Constants } from '@app/constants/global.constants';
+import { SystemMessages } from '@app/constants/system-messages.constants';
 import { BoardService } from '@app/services/board/board.service';
 import { ReserveService } from '@app/services/reserve/reserve.service';
+import { TimerService } from '@app/services/timer/timer.service';
 import { Subject } from 'rxjs';
 import { BehaviorSubject } from 'rxjs/internal/BehaviorSubject';
-import { MessagingService } from '@app/services/messaging/messaging.service';
-import { MessageType } from '@app/classes/message';
-import { SystemMessages } from '@app/constants/system-messages.constants';
-import { TimerService } from '@app/services/timer/timer.service';
-import { TimeSpan } from '@app/classes/time/timespan';
+import { MessagingService } from '../messaging/messaging.service';
 
 @Injectable({
     providedIn: 'root',
@@ -20,7 +20,7 @@ export class PlayerService {
     points: number = 0;
     turnComplete: Subject<PlayerType>;
     rackUpdated: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(true);
-    private rack: string[] = [];
+    rack: string[] = [];
 
     constructor(
         private readonly reserveService: ReserveService,
