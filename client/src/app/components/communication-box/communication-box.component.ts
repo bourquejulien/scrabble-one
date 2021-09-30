@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, OnDestroy } from '@angular/core';
+import { AfterViewInit, ChangeDetectionStrategy, Component, ElementRef, OnDestroy, ViewChild } from '@angular/core';
 import { Message, MessageType } from '@app/classes/message';
 import { PlayerType } from '@app/classes/player-type';
 import { CommandsService } from '@app/services/commands/commands.service';
@@ -10,15 +10,29 @@ import { Subscription } from 'rxjs';
     styleUrls: ['./communication-box.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class CommunicationBoxComponent implements OnDestroy {
+export class CommunicationBoxComponent implements OnDestroy, AfterViewInit {
+    @ViewChild('messageContainer') private messageContainer: ElementRef<HTMLDivElement>;
     messages: Message[] = [];
     subscription: Subscription;
     inputValue: string;
 
-    constructor(private commandsService: CommandsService, private messagingService: MessagingService) {
+    constructor(private commandsService: CommandsService, private messagingService: MessagingService) {}
+
+    ngAfterViewInit(): void {
         this.subscription = this.messagingService.onMessage().subscribe((message) => {
             this.messages.push(message);
+            this.scroll();
         });
+    }
+
+    scroll(): void {
+        if (this.messageContainer) {
+            this.messageContainer.nativeElement.scroll({
+                top: this.messageContainer.nativeElement.scrollHeight,
+                left: 0,
+                behavior: 'smooth',
+            });
+        }
     }
 
     send(input: string): boolean {

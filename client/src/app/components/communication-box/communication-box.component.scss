@@ -1,12 +1,13 @@
 .message-card {
     display: block;
     margin: 6px;
+    word-wrap: break-word;
 }
 
 .command-input {
-    position: absolute;
     bottom: 0px;
     width: 100%;
+    background-color: white;
 }
 
 .message-container {
@@ -14,6 +15,8 @@
     overflow: scroll;
 }
 
-#col-rev {
-    flex-direction: column-reverse;
+.chat-container {
+    display: flex;
+    flex-direction: column;
+    align-content: space-between;
 }
