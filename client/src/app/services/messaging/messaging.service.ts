@@ -1,23 +1,28 @@
 import { Injectable } from '@angular/core';
-import { Message } from '@app/classes/message';
+import { Message, MessageType } from '@app/classes/message';
+import { PlayerType } from '@app/classes/player-type';
 import { Observable, Subject } from 'rxjs';
 
 @Injectable({
     providedIn: 'root',
 })
 export class MessagingService {
-    debuggingMode: boolean; // When debugging is on, we send error and log messages
-    private subject = new Subject<Message>();
+    debuggingMode: boolean;
+    protected subject = new Subject<Message>();
 
-    sendMessage(message: Message) {
+    send(title: string, body: string, messageType: MessageType): void {
+        const message = {
+            title,
+            body,
+            messageType,
+            userId: PlayerType.Local,
+            timestamp: Date.now(),
+        };
+
         if (this.debuggingMode) {
-            // Every message passes through when debugging is on
             this.subject.next(message);
-        } else {
-            // If debugging is turned off, then we only show user messages
-            // if (message.messageType === 'Log') {
+        } else if (message.messageType !== MessageType.Log) {
             this.subject.next(message);
-            // }
         }
     }
 
