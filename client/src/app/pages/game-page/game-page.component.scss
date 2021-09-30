@@ -16,7 +16,7 @@
 mat-drawer-container {
     height: 100%;
 }
-#scoreboardPlayerOne{
+#scoreboardPlayerOne {
     position: absolute;
     top: 270px;
     right: 350px;
@@ -25,9 +25,9 @@ mat-drawer-container {
     display: flex;
     flex-direction: column;
     align-items: center;
-    background-color: #45CB85;
+    background-color: #45cb85;
 }
-#scoreboardPlayerTwo{
+#scoreboardPlayerTwo {
     position: absolute;
     top: 520px;
     right: 350px;
@@ -36,9 +36,9 @@ mat-drawer-container {
     display: flex;
     flex-direction: column;
     align-items: center;
-    background-color: #F44336;
+    background-color: #f44336;
 }
-.verticalFlexItems{
+.verticalFlexItems {
     margin-top: 20px;
     font-size: large;
     color: #fff;

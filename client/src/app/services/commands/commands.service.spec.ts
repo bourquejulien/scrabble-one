@@ -1,3 +1,4 @@
+/* eslint-disable dot-notation */
 /* eslint-disable @typescript-eslint/no-magic-numbers */
 /* eslint-disable max-classes-per-file */
 /* eslint-disable @typescript-eslint/naming-convention */
@@ -12,12 +13,11 @@ import { Injectable } from '@angular/core';
 import { Direction } from '@app/classes/board/direction';
 import { Vec2 } from '@app/classes/vec2';
 import { PlayerType } from '@app/classes/player-type';
-import { GameService } from '../game/game.service';
+import { GameService } from '@app/services/game/game.service';
 @Injectable({
     providedIn: 'root',
 })
 class MockMessagingService extends MessagingService {
-    //
     // For test purposes
     // eslint-disable-next-line @typescript-eslint/no-magic-numbers
     static MOCK_TIMESTAMP: number = 100000000;
@@ -146,5 +146,11 @@ describe('CommandsService', () => {
             expect(message.messageType).toEqual(MessageType.Error);
         });
         service.parseInput('!skip');
+    });
+
+    it('should remove accents', () => {
+        const accentedMessage = 'Ôde à la crème brûlée';
+        const resultMessage = 'Ode a la creme brulee';
+        expect(service['removeAccents'](accentedMessage)).toEqual(resultMessage);
     });
 });
