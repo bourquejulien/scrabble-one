@@ -2,8 +2,8 @@
 /* eslint-disable @typescript-eslint/no-empty-function */
 /* eslint-disable no-unused-vars */
 
-import { Direction } from '@app/classes/board/direction';
 import { Injectable } from '@angular/core';
+import { Direction } from '@app/classes/board/direction';
 import { Vec2 } from '@app/classes/vec2';
 import { BehaviorSubject } from 'rxjs/internal/BehaviorSubject';
 

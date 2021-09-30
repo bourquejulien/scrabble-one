@@ -1,7 +1,7 @@
 /* eslint-disable no-restricted-imports */
 import { TestBed } from '@angular/core/testing';
-import { FakePlayerService } from '../player/mock-player.service.spec';
-import { PlayerService } from '../player/player.service';
+//import { FakePlayerService } from '@../player/mock-player.service.spec';
+//import { PlayerService } from '../player/player.service';
 import { CommandsService } from './commands.service';
 
 describe('CommandsService', () => {
@@ -9,7 +9,7 @@ describe('CommandsService', () => {
 
     beforeEach(() => {
         TestBed.configureTestingModule({
-            providers: [{ provide: PlayerService, useClass: FakePlayerService }],
+            //providers: [{ provide: PlayerService, useClass: FakePlayerService }],
         });
         service = TestBed.inject(CommandsService);
     });
