@@ -11,8 +11,6 @@ import { Vec2 } from '@app/classes/vec2';
 import { CommandsService } from '@app/services/commands/commands.service';
 import { GameService } from '@app/services/game/game.service';
 import { MessagingService } from '@app/services/messaging/messaging.service';
-// import { FakePlayerService } from '@app/services/player/mock-player.service.spec';
-import { PlayerService } from '@app/services/player/player.service';
 import { Subject } from 'rxjs';
 @Injectable({
     providedIn: 'root',
@@ -50,7 +48,7 @@ describe('CommandsService', () => {
     beforeEach(() => {
         TestBed.configureTestingModule({
             providers: [
-                { provide: PlayerService, useClass: FakePlayerService },
+                // { provide: PlayerService, useClass: FakePlayerService },
                 { provide: MessagingService, useClass: MockMessagingService },
                 { provide: GameService, useClass: MockGameService },
             ],
