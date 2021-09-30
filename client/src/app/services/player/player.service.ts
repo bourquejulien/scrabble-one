@@ -1,19 +1,20 @@
 import { Injectable } from '@angular/core';
 import { Direction } from '@app/classes/board/direction';
 import { PlayerType } from '@app/classes/player-type';
-import { TimeSpan } from '@app/classes/time/timespan';
 import { Vec2 } from '@app/classes/vec2';
 import { Constants } from '@app/constants/global.constants';
 import { BoardService } from '@app/services/board/board.service';
 import { ReserveService } from '@app/services/reserve/reserve.service';
-import { TimerService } from '@app/services/timer-service/timer.service';
 import { Subject } from 'rxjs';
 import { BehaviorSubject } from 'rxjs/internal/BehaviorSubject';
+import { TimerService } from '@app/services/timer/timer.service';
+import { TimeSpan } from '@app/classes/time/timespan';
 
 @Injectable({
     providedIn: 'root',
 })
 export class PlayerService {
+    points: number = 0;
     turnComplete: Subject<PlayerType>;
     rackUpdated: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(true);
     private rack: string[] = [];
@@ -41,6 +42,7 @@ export class PlayerService {
         if (rackMessage !== '') return rackMessage;
 
         const validationData = this.boardService.lookupLetters(positionToPlace);
+        this.points += validationData.points;
 
         if (!validationData.isSuccess) return validationData.description;
 

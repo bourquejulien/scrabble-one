@@ -11,6 +11,8 @@ import { BehaviorSubject } from 'rxjs';
     providedIn: 'root',
 })
 export class GameService {
+    firstPlayerPoints: number = 0;
+    secondPlayerPoints: number = 0;
     currentTurn: PlayerType = PlayerType.Local;
     onTurn: BehaviorSubject<PlayerType>;
     gameConfig: GameConfig = {
@@ -43,6 +45,8 @@ export class GameService {
     }
 
     nextTurn() {
+        this.firstPlayerPoints = this.playerService.points;
+        this.secondPlayerPoints = this.virtualPlayerService.points;
         // TODO Use an interface for services
         if (this.currentTurn === PlayerType.Local) {
             this.onVirtualPlayerTurn();

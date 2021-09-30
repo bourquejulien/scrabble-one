@@ -1,11 +1,11 @@
 import { Injectable } from '@angular/core';
 import { PlayerType } from '@app/classes/player-type';
-import { Timer } from '@app/classes/time/timer';
-import { TimeSpan } from '@app/classes/time/timespan';
 import { Constants } from '@app/constants/global.constants';
 import { BoardService } from '@app/services/board/board.service';
+import { TimerService } from '@app/services/timer/timer.service';
+import { TimeSpan } from '@app/classes/time/timespan';
+import { Timer } from '@app/classes/time/timer';
 import { ReserveService } from '@app/services/reserve/reserve.service';
-import { TimerService } from '@app/services/timer-service/timer.service';
 import { PlayGeneratorService } from '@app/services/virtual-player/play-generator.service';
 import { Subject } from 'rxjs';
 const MAX_PLAYTIME_SECONDS = 20;
@@ -15,10 +15,10 @@ const MIN_PLAYTIME_SECONDS = 3;
     providedIn: 'root',
 })
 export class VirtualPlayerService {
+    points: number = 0;
     turnComplete: Subject<PlayerType>;
     private rack: string[] = [];
     private minTimer: Timer;
-
     constructor(
         private readonly playGeneratorService: PlayGeneratorService,
         private readonly reserveService: ReserveService,
@@ -31,7 +31,7 @@ export class VirtualPlayerService {
 
     startTurn() {
         this.timerService.start(TimeSpan.fromSeconds(MAX_PLAYTIME_SECONDS), PlayerType.Virtual);
-        this.minTimer.startTimer();
+        this.minTimer.start();
         this.fillRack();
 
         let random = Math.random();
@@ -53,9 +53,9 @@ export class VirtualPlayerService {
     }
 
     async endTurn() {
-        await this.minTimer.timerCompleted;
+        await this.minTimer.completed;
 
-        this.minTimer.stopTimer();
+        this.minTimer.stop();
         this.timerService.reset();
         this.turnComplete.next(PlayerType.Virtual);
     }
@@ -100,9 +100,9 @@ export class VirtualPlayerService {
 
         const play = filteredPlays[Math.floor(Math.random() * filteredPlays.length)];
 
-        await this.minTimer.timerCompleted;
+        await this.minTimer.completed;
 
-        this.boardService.placeLetters(play.letters);
+        this.points += this.boardService.placeLetters(play.letters).points;
         play.letters.forEach((letter) => this.rack.splice(this.rack.findIndex((rackLetter) => letter.letter === rackLetter)));
     }
 

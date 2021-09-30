@@ -16,6 +16,34 @@
 mat-drawer-container {
     height: 100%;
 }
+#scoreboardPlayerOne {
+    position: absolute;
+    top: 270px;
+    right: 350px;
+    width: 100px;
+    height: 60px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background-color: #45cb85;
+}
+#scoreboardPlayerTwo {
+    position: absolute;
+    top: 520px;
+    right: 350px;
+    width: 100px;
+    height: 60px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background-color: #f44336;
+}
+.verticalFlexItems {
+    margin-top: 20px;
+    font-size: large;
+    color: #fff;
+    justify-content: center;
+}
 
 .play-area-container > * {
     flex: 1 1 auto;
@@ -35,16 +63,16 @@ mat-drawer-container {
     right: 0;
 }
 
-.comm-box-sidenav-content > * {
+.comm-box-sidenav-content {
     display: inline-flex;
     flex-direction: column;
     align-items: center;
     margin-right: 0;
-    padding-right: 0;
+    margin-bottom: 0;
 }
 
 .comm-box-sidenav {
-    width: 25%; // the drawer takes 25% of the screen when open
+    width: 25%;
 }
 
 .button-bar {
