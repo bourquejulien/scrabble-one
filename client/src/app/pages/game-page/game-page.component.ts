@@ -6,9 +6,17 @@ import { ConfirmQuitDialogComponent } from '@app/components/confirm-quit-dialog/
 import { GameService } from '@app/services/game/game.service';
 import { TimerService } from '@app/services/timer/timer.service';
 
+export enum Icon {
+    Logout = 'exit_to_app',
+    Message = 'question_answer',
+    Skip = 'block'
+}
+
 interface ButtonConfig {
     color: string;
     routerLink?: string;
+    icon: Icon;
+    hover: string;
 }
 
 @Component({
@@ -33,22 +41,20 @@ export class GamePageComponent {
             {
                 color: 'warn',
                 routerLink: '/',
+                icon: Icon.Logout,
+                hover: 'Quitter la partie',
             },
             {
                 color: 'primary',
+                icon: Icon.Message,
+                hover: 'Ouvrir/Fermer la boite de communication'
             },
             {
                 color: 'warn',
-            },
-            {
-                color: 'primary',
-            },
-            {
-                color: 'warn',
-            },
+                icon: Icon.Skip,
+                hover: 'Passer son tour',
+            }
         ];
-        this.iconList = ['home', 'question_answer', 'logout', 'autorenew', 'settings'];
-
         gameService.onTurn.subscribe((e) => (this.playerType = e));
     }
 
@@ -63,6 +69,9 @@ export class GamePageComponent {
                 break;
             case 1:
                 this.toggleDrawer();
+                break;
+            case 2:
+                this.gameService.nextTurn();
                 break;
             default:
                 break;
