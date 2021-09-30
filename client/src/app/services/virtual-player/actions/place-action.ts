@@ -8,8 +8,8 @@ export class PlaceAction implements Action {
 
     execute(): Action | null {
         this.boardService.placeLetters(this.play.letters);
-        this.playerData.score += this.play.score;
 
+        this.playerData.score += this.play.score;
         this.play.letters.forEach((letter) =>
             this.playerData.rack.splice(this.playerData.rack.findIndex((rackLetter) => letter.letter === rackLetter)),
         );

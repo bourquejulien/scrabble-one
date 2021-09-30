@@ -9,6 +9,7 @@ import { PlayAction } from './actions/play-action';
 import { SkipAction } from './actions/skip-action';
 import { PlayGenerator } from '@app/classes/virtual-player/play-generator';
 import { PlayerData } from '@app/classes/player-data';
+import { Action } from './actions/action';
 
 @Injectable({
     providedIn: 'root',
@@ -21,15 +22,15 @@ export class VirtualPlayerActionService {
         private readonly dictionaryService: DictionaryService,
     ) {}
 
-    getNextAction(playerData: PlayerData) {
+    getNextAction(playerData: PlayerData): Action {
         let random = Math.random();
 
-        if (random <= Constants.virtualPlayer.SKIP_PERCENTAGE) {
+        if (random < Constants.virtualPlayer.SKIP_PERCENTAGE) {
             return new SkipAction();
         }
         random -= Constants.virtualPlayer.SKIP_PERCENTAGE;
 
-        if (random <= Constants.virtualPlayer.EXCHANGE_PERCENTAGE) {
+        if (random < Constants.virtualPlayer.EXCHANGE_PERCENTAGE) {
             return new ExchangeAction(this.reserveService, playerData.rack);
         }
 

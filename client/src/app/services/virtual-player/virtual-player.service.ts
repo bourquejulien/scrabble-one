@@ -33,7 +33,6 @@ export class VirtualPlayerService {
     async startTurn() {
         this.timerService.start(TimeSpan.fromSeconds(MAX_PLAYTIME_SECONDS), PlayerType.Virtual);
         this.minTimer.start();
-        this.fillRack();
 
         const action = this.virtualPlayerActionService.getNextAction(this.playerData);
 
@@ -43,6 +42,7 @@ export class VirtualPlayerService {
 
         nextAction?.execute();
 
+        this.fillRack();
         this.endTurn();
     }
 
