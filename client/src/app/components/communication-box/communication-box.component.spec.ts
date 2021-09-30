@@ -23,12 +23,10 @@ fdescribe('CommunicationBoxComponent', () => {
         messagingServiceSpy = jasmine.createSpyObj('MessagingService', ['subject', 'onMessage']);
         messagingServiceSpy['subject'] = new Subject<Message>();
         messagingServiceSpy.onMessage.and.returnValue(messagingServiceSpy['subject'].asObservable());
+
         await TestBed.configureTestingModule({
             declarations: [CommunicationBoxComponent],
-            providers: [
-                // { provide: CommandsService, useClass: commandsServiceSpy },
-                { provide: MessagingService, useValue: messagingServiceSpy },
-            ],
+            providers: [{ provide: MessagingService, useValue: messagingServiceSpy }],
             imports: [AppMaterialModule, BrowserAnimationsModule, FormsModule, HttpClientModule],
             schemas: [CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA],
         }).compileComponents();
@@ -49,12 +47,18 @@ fdescribe('CommunicationBoxComponent', () => {
         };
     });
 
+
     it('should create', () => {
         expect(component).toBeTruthy();
     });
 
     it('should not send a message when the input is empty', () => {
         expect(component.send('')).toBeFalsy();
+    });
+
+    it('should return true when the input is not empty', () => {
+        spyOn(component['commandsService'], 'parseInput').and.returnValue(true);
+        expect(component.send('Message.')).toBeTruthy();
     });
 
     it('should have subscribed', () => {
