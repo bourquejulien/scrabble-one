@@ -9,7 +9,7 @@ import { TimerService } from '@app/services/timer/timer.service';
 export enum Icon {
     Logout = 'exit_to_app',
     Message = 'question_answer',
-    Skip = 'block'
+    Skip = 'block',
 }
 
 interface ButtonConfig {
@@ -47,13 +47,13 @@ export class GamePageComponent {
             {
                 color: 'primary',
                 icon: Icon.Message,
-                hover: 'Ouvrir/Fermer la boite de communication'
+                hover: 'Ouvrir/Fermer la boite de communication',
             },
             {
                 color: 'warn',
                 icon: Icon.Skip,
                 hover: 'Passer son tour',
-            }
+            },
         ];
         gameService.onTurn.subscribe((e) => (this.playerType = e));
     }
