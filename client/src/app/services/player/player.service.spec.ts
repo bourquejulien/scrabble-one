@@ -1,4 +1,6 @@
-/* eslint-disable dot-notation */
+/* eslint-disable dot-notation -- Need access to private functions and properties*/
+/* eslint-disable max-classes-per-file -- Multiple stubs/mocks are used */
+/* eslint-disable max-lines  -- Max lines should not be applied to tests*/
 import { Injectable } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { PlayerType } from '@app/classes/player-type';
@@ -7,28 +9,22 @@ import { BoardService } from '@app/services/board/board.service';
 import { MockBoardService } from '@app/services/board/mock-board.service';
 import { PlayerService } from '@app/services/player/player.service';
 import { ReserveService } from '@app/services/reserve/reserve.service';
-import { TimerService } from '../timer/timer.service';
-import { Subscription } from 'rxjs';
+import { TimerService } from '@app/services/timer/timer.service';
 import { Subject } from 'rxjs';
-import { Timer } from '@app/classes/time/timer';
+
+const MAX_PLAYTIME_SECONDS = 1;
 
 @Injectable({
     providedIn: 'root',
 })
-
-const MAX_PLAYTIME_SECONDS = 20;
-
-class TimerServiceStub {
+class TimerServiceMock {
     readonly countdownStopped: Subject<PlayerType> = new Subject();
-
-    private timer: Timer | null = null;
-    private countdownSubscription: Subscription | null = null;
 
     gotStarted = false;
     gotStopped = false;
 
     start(span: TimeSpan, playerType: PlayerType) {
-        expect(playerType).toEqual(PlayerType.Virtual);
+        expect(playerType).toEqual(PlayerType.Local);
         expect(span.seconds).toEqual(MAX_PLAYTIME_SECONDS);
 
         this.gotStarted = true;
@@ -39,34 +35,10 @@ class TimerServiceStub {
     }
 }
 
-
-// class MockTimerService {
-//     private timer: Timer | null = null;
-//     readonly countdownStopped: Subject<PlayerType> = new Subject();
-//     private countdownSubscription: Subscription | null = null;
-
-//     start(delay: TimeSpan, playerType: PlayerType): void {
-//         this.timer = new Timer(delay);
-//         this.timer.start();
-//         this.countdownSubscription = this.timer.timerUpdated.subscribe((timeSpan) => {
-//             if (timeSpan.totalMilliseconds <= 0) {
-//                 this.reset();
-//                 this.countdownStopped.next(playerType);
-//             }
-//         });
-//     }
-
-//     reset() {
-//         if (this.countdownSubscription !== null) {
-//             this.countdownSubscription.unsubscribe();
-//             this.countdownSubscription = null;
-//         }
-//         this.timer = null;
-//     }
-
-// }
-
-class MockReserveService {
+@Injectable({
+    providedIn: 'root',
+})
+class ReserveServiceMock {
     reserve: string[];
 
     constructor() {
@@ -90,8 +62,7 @@ class MockReserveService {
         const letterIndex = this.reserve.indexOf(letterToExchange);
         if (letterIndex !== -1) {
             this.reserve.splice(letterIndex, 0, letterToExchange);
-        }
-        else if (letterToExchange.match(/^[a-z]$/) || letterToExchange === '*') this.reserve.push(letterToExchange);
+        } else if (letterToExchange.match(/^[a-z]$/) || letterToExchange === '*') this.reserve.push(letterToExchange);
     }
 
     get length(): number {
@@ -102,12 +73,11 @@ class MockReserveService {
 describe('PlayerService', () => {
     let service: PlayerService;
     let reserveService: ReserveService;
-    let timerService: TimerService;
     let letterToRemoveFromRack: string;
     let invalidLetter: string;
     let lettersToPlace: string;
     let lettersToExchange: string;
-    let playTime: TimeSpan;
+    let timerServiceMock: TimerService;
 
     beforeEach(() => {
         letterToRemoveFromRack = 'e';
@@ -119,13 +89,13 @@ describe('PlayerService', () => {
         TestBed.configureTestingModule({
             providers: [
                 { provide: BoardService, useClass: MockBoardService },
-                { provide: ReserveService, useClass: MockReserveService },
-                { provide: TimerService, useClass: TimerServiceStub },
+                { provide: ReserveService, useClass: ReserveServiceMock },
+                { provide: TimerService, useClass: TimerServiceMock },
             ],
         });
         service = TestBed.inject(PlayerService);
         reserveService = TestBed.inject(ReserveService);
-        timerService = TestBed.inject(TimerService) as unknown as TimerServiceStub;
+        timerServiceMock = TestBed.inject(TimerService);
 
         service.setRack(mockRack);
     });
@@ -140,8 +110,8 @@ describe('PlayerService', () => {
     // });
 
     it('should return error message if reserve length less than 7', () => {
-        const newReserve = ['a', 'b'];
-        reserveService.setReserve(newReserve);
+        const smallReserve = ['a', 'b'];
+        reserveService.setReserve(smallReserve);
 
         const message = service.exchangeLetters(lettersToExchange);
         expect(message).toBe('There are not enough letters in the reserve. You may not use this command.');
@@ -199,12 +169,22 @@ describe('PlayerService', () => {
         expect(service.rackUpdated.getValue()).toBe(false);
     });
 
-    it('should notify player change', (done) => {
+    it('should notify player if startTurn', (done) => {
         service.turnComplete.subscribe((playerType) => {
             expect(playerType).toEqual(PlayerType.Local);
             done();
         });
-        service.startTurn(playTime);
+        service.startTurn(TimeSpan.fromSeconds(MAX_PLAYTIME_SECONDS));
+        timerServiceMock.countdownStopped.next(PlayerType.Local);
+        service.turnComplete.unsubscribe();
+    });
+
+    it('should notify player change if completeTurn', (done) => {
+        service.turnComplete.subscribe((playerType) => {
+            expect(playerType).toEqual(PlayerType.Local);
+            done();
+        });
+        timerServiceMock.countdownStopped.next(PlayerType.Local);
     });
 
     it('should add specified amount of letters to rack if valid number of letters to add is entered', () => {

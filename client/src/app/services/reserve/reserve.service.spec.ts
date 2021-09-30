@@ -1,3 +1,4 @@
+/* eslint-disable dot-notation -- reserve is private and we need access for the test */
 import { TestBed } from '@angular/core/testing';
 import { ReserveService } from '@app/services/reserve/reserve.service';
 
@@ -21,7 +22,7 @@ describe('ReserveService', () => {
 
     it('should have added letter in reserve at the correct index', () => {
         service.putBackLetter(letterToExchange);
-        // eslint-disable-next-line dot-notation -- reserve is private and we need access for the test
+
         expect(service['reserve'][3]).toBe('a');
     });
 
@@ -37,6 +38,24 @@ describe('ReserveService', () => {
         letterToExchange = '';
 
         service.putBackLetter(letterToExchange);
+        expect(service.length).toBe(currentLength);
+    });
+
+    it('should put back the letter at the end of reserve if letter not currently stored', () => {
+        service.putBackLetter('z');
+        expect(service['reserve'][6]).toBe('z');
+    });
+
+    it('should put back * at the end of reserve if * not currently stored', () => {
+        service.putBackLetter('*');
+        expect(service['reserve'][6]).toBe('*');
+    });
+
+    it('should not affect reserve if trying to put back anything but a lower case letter', () => {
+        const currentLength = service.length;
+        service.putBackLetter('3');
+        service.putBackLetter('N');
+        service.putBackLetter('$');
         expect(service.length).toBe(currentLength);
     });
 
@@ -66,7 +85,6 @@ describe('ReserveService', () => {
     });
 
     it('should return reserve length', () => {
-        // eslint-disable-next-line dot-notation -- reserve is private and we need access for the test
         expect(service.length).toBe(service['reserve'].length);
     });
 });
