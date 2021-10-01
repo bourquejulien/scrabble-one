@@ -1,4 +1,4 @@
-import { Component, ViewChild } from '@angular/core';
+import { Component, OnDestroy, ViewChild } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { MatDrawer } from '@angular/material/sidenav';
 import { PlayerType } from '@app/classes/player-type';
@@ -6,6 +6,7 @@ import { ConfirmQuitDialogComponent } from '@app/components/confirm-quit-dialog/
 import { EndGameComponent } from '@app/components/end-game/end-game.component';
 import { GameService } from '@app/services/game/game.service';
 import { TimerService } from '@app/services/timer/timer.service';
+import { Subscription } from 'rxjs';
 
 export enum Icon {
     Logout = 'exit_to_app',
@@ -25,7 +26,7 @@ interface ButtonConfig {
     templateUrl: './game-page.component.html',
     styleUrls: ['./game-page.component.scss'],
 })
-export class GamePageComponent {
+export class GamePageComponent implements OnDestroy {
     @ViewChild('drawer', { static: true }) drawer: MatDrawer;
 
     gameService: GameService;
@@ -34,8 +35,10 @@ export class GamePageComponent {
     buttonConfig: ButtonConfig[] = [];
     iconList: string[];
 
+    private onTurnSubscription: Subscription;
+    private gameEndingSubscription: Subscription;
+
     constructor(gameService: GameService, timerService: TimerService, public dialog: MatDialog) {
-        gameService.gameEnding.subscribe(() => this.endGame());
         this.gameService = gameService;
         this.playerType = gameService.onTurn.getValue();
         this.timerService = timerService;
@@ -56,7 +59,14 @@ export class GamePageComponent {
                 hover: 'Passer son tour',
             },
         ];
-        gameService.onTurn.subscribe((e) => (this.playerType = e));
+
+        this.gameEndingSubscription = gameService.gameEnding.subscribe(() => this.endGame());
+        this.onTurnSubscription = gameService.onTurn.subscribe((e) => (this.playerType = e));
+    }
+
+    ngOnDestroy(): void {
+        this.gameEndingSubscription.unsubscribe();
+        this.onTurnSubscription.unsubscribe();
     }
 
     toggleDrawer() {
@@ -88,13 +98,11 @@ export class GamePageComponent {
     }
 
     endGame() {
-        this.gameService.gameEnding.unsubscribe();
         this.gameService.sendRackInCommunication();
         const dialogRef = this.dialog.open(EndGameComponent);
         dialogRef.afterClosed().subscribe((result) => {
             if (result === true) {
                 this.gameService.reset();
-                this.gameService.gameEnding.subscribe(() => this.endGame());
             }
         });
     }
