@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { letterDefinitions } from '@app/classes/letter';
 import { PlayerService } from '@app/services/player/player.service';
 
@@ -7,7 +7,7 @@ import { PlayerService } from '@app/services/player/player.service';
     templateUrl: './rack.component.html',
     styleUrls: ['./rack.component.scss'],
 })
-export class RackComponent implements OnInit {
+export class RackComponent implements OnInit, OnDestroy {
     rack: string[] = [];
 
     constructor(private playerService: PlayerService) {}

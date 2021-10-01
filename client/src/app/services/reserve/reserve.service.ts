@@ -15,7 +15,6 @@ export class ReserveService {
         }
     }
 
-    // dont forget test
     putBackLetter(letterToExchange: string): void {
         const letterIndex = this.reserve.indexOf(letterToExchange);
         if (letterIndex !== -1) {

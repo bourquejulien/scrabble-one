@@ -18,7 +18,6 @@ import { Subject } from 'rxjs';
 
 const MAX_PLAYTIME_SECONDS = 1;
 
-
 @Injectable({
     providedIn: 'root',
 })
@@ -157,16 +156,18 @@ describe('PlayerService', () => {
         boardServiceSpy['lookupLetters'].and.returnValue(validationResponse);
         boardServiceSpy['placeLetters'].and.returnValue(validationResponse);
 
+        // eslint-disable-next-line  @typescript-eslint/no-explicit-any
         const spy = spyOn<any>(service, 'updateRack');
         service.placeLetters('k', { x: 11, y: 3 }, Direction.Up);
         expect(spy).toHaveBeenCalled();
     });
 
     it('should enter first if statement if letters are not in rack', () => {
+        // eslint-disable-next-line  @typescript-eslint/no-explicit-any
         const spy = spyOn<any>(service, 'areLettersInRack');
         service.exchangeLetters(invalidLetter);
         expect(spy).toHaveBeenCalled();
-    })
+    });
 
     it('should send error message if reserve length less than 7', () => {
         const smallReserve = ['a', 'b'];

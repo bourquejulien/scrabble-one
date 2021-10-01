@@ -44,8 +44,8 @@ export class PlayerService {
 
         if (!this.areLettersInRack(lettersToPlace)) {
             this.completeTurn();
-            return
-        };
+            return;
+        }
 
         const validationData = this.boardService.lookupLetters(positionToPlace);
         if (!validationData.isSuccess) {
@@ -56,8 +56,8 @@ export class PlayerService {
         this.points += validationData.points;
 
         this.updateRack(lettersToPlace);
-        this.rackUpdated.next(!this.rackUpdated.getValue());
         this.updateReserve(positionToPlace.length);
+        this.rackUpdated.next(!this.rackUpdated.getValue());
 
         this.boardService.placeLetters(positionToPlace);
 
