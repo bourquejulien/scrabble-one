@@ -143,10 +143,16 @@ describe('InitSoloModeComponent', () => {
         component.buttonDetect(keyEvent);
         expect(spy).toHaveBeenCalled();
     }));
-    it('should Initialize when pressing enter ', fakeAsync(() => {
+    it('should not Initialize when pressing something else than enter ', fakeAsync(() => {
         const keyEvent = new KeyboardEvent('keypress', { key: 'y', cancelable: true });
         const spy = spyOn(component, 'initialize').and.callThrough();
         component.buttonDetect(keyEvent);
         expect(spy).not.toHaveBeenCalled();
     }));
+    it('should continue if nameform is null', () => {
+        component.gameConfig.firstPlayerName = NAMES[6];
+        component.nameForm.controls[0] = null;
+        component.initialize();
+        expect(component.errorsList).toEqual(['*Le nom doit contenir au moins 3 caractères.\n', '*Le nom doit seulement être composé de lettres.\n']);
+    });
 });
