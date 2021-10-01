@@ -48,7 +48,7 @@ class GameServiceStub {
     }
 
     skipTurn(): void {
-        // Used
+        this.nextTurn();
     }
 }
 

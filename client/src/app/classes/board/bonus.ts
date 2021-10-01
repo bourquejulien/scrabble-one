@@ -16,5 +16,5 @@ const BONUS_VALUE = new Map<Bonus, { score: number; isLetterBonus: boolean }>([
     [Bonus.None, { score: 0, isLetterBonus: false }],
 ]);
 
-export const getBonusDetails = (bonus: Bonus): { score: number; isLetterBonus: boolean } =>
-    BONUS_VALUE.get(bonus) ?? { score: 0, isLetterBonus: false };
+// eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- All enum values are present in the map
+export const getBonusDetails = (bonus: Bonus): { score: number; isLetterBonus: boolean } => BONUS_VALUE.get(bonus)!;

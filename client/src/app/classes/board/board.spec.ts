@@ -4,6 +4,7 @@ import { Board } from './board';
 import { Bonus } from './bonus';
 import { BoardOverflowError } from '@app/exceptions/board-overflow-error';
 import { Direction } from './direction';
+import { BoardMergeError } from '@app/exceptions/board-merge-error';
 
 const BONUS: [Vec2, Bonus][] = [
     [{ x: 0, y: 0 }, Bonus.L2],
@@ -58,6 +59,17 @@ describe('Board', () => {
             const square = board.getSquare(letter.position);
             expect(square.letter).toEqual(letter.letter);
         }
+    });
+
+    it('should not merge on already filled squares', () => {
+        const letters = [
+            { letter: 'a', position: { x: 0, y: 0 } },
+            { letter: 'a', position: { x: 1, y: 0 } },
+            { letter: 'a', position: { x: 2, y: 0 } },
+        ];
+        board.merge(letters);
+
+        expect(() => board.merge(letters)).toThrowError(BoardMergeError);
     });
 
     it('should be cloned', () => {

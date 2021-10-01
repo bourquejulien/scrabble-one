@@ -33,7 +33,7 @@ describe('GameService', () => {
     beforeEach(() => {
         const mockRack = ['K', 'E', 'S', 'E', 'I', 'O', 'V'];
         virtualPlayerServiceSpy = jasmine.createSpyObj('VirtualPlayerService', ['reset', 'turnComplete', 'fillRack', 'startTurn'], {
-            rackContent: mockRack,
+            playerData: { score: 0, skippedTurns: 0, rack: mockRack },
         });
         virtualPlayerServiceSpy.reset.and.returnValue();
         virtualPlayerServiceSpy.fillRack.and.returnValue();
