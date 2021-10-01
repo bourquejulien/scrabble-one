@@ -1,7 +1,7 @@
-/* eslint-disable dot-notation */
-/* eslint-disable @typescript-eslint/no-magic-numbers */
-/* eslint-disable max-classes-per-file */
-/* eslint-disable @typescript-eslint/naming-convention */
+/* eslint-disable dot-notation -- Need to access private properties and functions*/
+/* eslint-disable @typescript-eslint/no-magic-numbers -- Not necessary in tests*/
+/* eslint-disable max-classes-per-file -- Multiple mock needed for tests*/
+/* eslint-disable @typescript-eslint/naming-convention  -- Need SCREAMING_SNAKE_CASE for static property in mock class */
 import { HttpClientModule } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
@@ -17,9 +17,8 @@ import { Subject } from 'rxjs';
     providedIn: 'root',
 })
 class MockMessagingService extends MessagingService {
-    // For test purposes
-    // eslint-disable-next-line @typescript-eslint/no-magic-numbers
     static MOCK_TIMESTAMP: number = 100000000;
+
     constuctor() {
         this.subject = new Subject<Message>();
     }
