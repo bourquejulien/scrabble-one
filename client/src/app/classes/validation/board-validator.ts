@@ -43,6 +43,18 @@ export class BoardValidator {
         return false;
     }
 
+    private static getFirstPosition(clonedBoard: Board, startPosition: Vec2, direction: Direction): Vec2 {
+        let square = clonedBoard.getRelative(startPosition, reverseDirection(direction));
+        let position = startPosition;
+
+        while (square != null && square.letter !== '') {
+            position = square.position;
+            square = clonedBoard.getRelative(square.position, reverseDirection(direction));
+        }
+
+        return position;
+    }
+
     validate(letters: { letter: string; position: Vec2 }[]): ValidationResponse {
         if (letters.length === 0) {
             return { isSuccess: false, description: 'Empty placement', points: 0 };
@@ -84,10 +96,6 @@ export class BoardValidator {
     }
 
     getLetterPoints(letter: string): number {
-        if (letter.length !== 1) {
-            return 0;
-        }
-
         return this.letterPoints[letter] ?? 0;
     }
 
@@ -169,7 +177,7 @@ export class BoardValidator {
     }
 
     private validateWord(clonedBoard: Board, initialPosition: Vec2, direction: Direction): ValidationResponse {
-        const firstPosition = this.getFirstPosition(clonedBoard, initialPosition, direction);
+        const firstPosition = BoardValidator.getFirstPosition(clonedBoard, initialPosition, direction);
 
         let nextSquare: Square | null = clonedBoard.getSquare(firstPosition);
         let word = '';
@@ -206,17 +214,5 @@ export class BoardValidator {
         } else {
             return { isSuccess: false, description: `Word: (${word}) cannot be found in dictionary`, points: 0 };
         }
-    }
-
-    private getFirstPosition(clonedBoard: Board, initialPosition: Vec2, direction: Direction): Vec2 {
-        let square = clonedBoard.getRelative(initialPosition, reverseDirection(direction));
-        let position = initialPosition;
-
-        while (square != null && square.letter !== '') {
-            position = square.position;
-            square = clonedBoard.getRelative(square.position, reverseDirection(direction));
-        }
-
-        return position;
     }
 }

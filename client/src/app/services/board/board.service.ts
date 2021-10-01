@@ -42,9 +42,9 @@ export class BoardService implements Validation {
 
     retrieveNewLetters(word: string, initialPosition: Vec2, direction: Direction): { letter: string; position: Vec2 }[] {
         const newLetters: { letter: string; position: Vec2 }[] = [];
-        let lastSquare: Square | null = this.board.getSquare(initialPosition);
 
         try {
+            let lastSquare: Square | null = this.board.getSquare(initialPosition);
             for (const letter of word) {
                 if (lastSquare === null) return [];
 

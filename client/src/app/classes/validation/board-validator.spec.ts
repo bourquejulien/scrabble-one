@@ -1,28 +1,206 @@
-import { CanvasTestHelper } from '@app/classes/canvas-test-helper';
 import { Board } from '@app/classes/board/board';
 import { BoardValidator } from './board-validator';
 import { Constants } from '@app/constants/global.constants';
+import { Direction } from '@app/classes/board/direction';
+import { Vec2 } from '@app/classes/vec2';
+import { letterDefinitions } from '@app/classes/letter';
+import { Dictionary } from '@app/classes/dictionary/dictionary';
+import JsonBonuses from '@assets/bonus.json';
+import { Bonus } from '@app/classes/board/bonus';
+
+const WORDS: string[] = ['pomme', 'orange', 'poire', 'raisin', 'peche', 'banane', 'bananes'];
+const mockedDictionary: Set<string> = new Set(WORDS);
+
+const generatePlacement = (word: string, initialPosition: Vec2, direction: Direction): { letter: string; position: Vec2 }[] => {
+    const letters: { letter: string; position: Vec2 }[] = [];
+
+    let xIncr: number;
+    let yIncr: number;
+
+    switch (direction) {
+        case Direction.Down:
+            xIncr = 0;
+            yIncr = 1;
+            break;
+
+        case Direction.Up:
+            xIncr = 0;
+            yIncr = -1;
+            break;
+
+        case Direction.Right:
+            xIncr = 1;
+            yIncr = 0;
+            break;
+
+        case Direction.Left:
+            xIncr = -1;
+            yIncr = 0;
+            break;
+
+        default:
+            xIncr = 0;
+            yIncr = 0;
+            break;
+    }
+
+    for (let i = 0; i < word.length; i++) {
+        letters.push({ letter: word[i], position: { x: initialPosition.x + xIncr * i, y: initialPosition.y + yIncr * i } });
+    }
+
+    return letters;
+};
+
+const generateLetters = (): { [key: string]: number } => {
+    const letterValues: { [key: string]: number } = {};
+
+    for (const [letter, data] of letterDefinitions) {
+        letterValues[letter] = data.points;
+    }
+
+    return letterValues;
+};
+
+const retrieveBonuses = (): [Vec2, Bonus][] => {
+    const bonuses: [Vec2, Bonus][] = new Array<[Vec2, Bonus]>();
+
+    for (const jsonBonus of JsonBonuses) {
+        bonuses.push([jsonBonus.Position, Bonus[jsonBonus.Bonus as keyof typeof Bonus]]);
+    }
+
+    return bonuses;
+};
+
+class StubDictionary implements Dictionary {
+    lookup(word: string): boolean {
+        return mockedDictionary.has(word) ?? false;
+    }
+
+    // eslint-disable-next-line no-unused-vars -- Unused method in BoardValidator
+    lookUpStart(word: string): { isWord: boolean; isOther: boolean } {
+        throw new Error('Method not implemented.');
+    }
+
+    // eslint-disable-next-line no-unused-vars -- Unused method in BoardValidator
+    lookUpEnd(word: string): boolean {
+        throw new Error('Method not implemented.');
+    }
+}
 
 describe('BoardValidator', () => {
     let board: Board;
     let boardValidator: BoardValidator;
+    let stubDictionaryService: StubDictionary;
+    let centerPosition: Vec2;
 
     beforeEach(() => {
-        board = new Board(Constants.GRID.GRID_SIZE);
-        boardValidator = new BoardValidator(board, );
+        board = new Board(Constants.GRID.GRID_SIZE, retrieveBonuses());
+        stubDictionaryService = new StubDictionary();
+        boardValidator = new BoardValidator(board, stubDictionaryService, generateLetters());
+        const halfBoardSize = Math.floor(board.size / 2);
+        centerPosition = { x: halfBoardSize, y: halfBoardSize };
     });
 
     it('should be created', () => {
         expect(boardValidator).toBeTruthy();
     });
 
-    it('createCanvas should create a HTMLCanvasElement with good dimensions', () => {
-        const width = 15;
-        const height = 25;
-        // eslint-disable-next-line -- createCanvas is private and we need access for the test
-        const canvas = CanvasTestHelper.createCanvas(width, height);
-        expect(canvas).toBeInstanceOf(HTMLCanvasElement);
-        expect(canvas.width).toBe(width);
-        expect(canvas.height).toBe(height);
+    it('should accept a valid word', () => {
+        const response = boardValidator.validate(generatePlacement(WORDS[0], centerPosition, Direction.Right));
+        expect(response.isSuccess).toBeTrue();
+    });
+
+    it('should fail to add an invalid word', () => {
+        const response = boardValidator.validate(generatePlacement('thisisnotaword', centerPosition, Direction.Right));
+        expect(response.isSuccess).toBeFalse();
+    });
+
+    it('should fail to add a word written from right to left', () => {
+        const response = boardValidator.validate(generatePlacement(WORDS[0], centerPosition, Direction.Left));
+        expect(response.isSuccess).toBeFalse();
+    });
+
+    it('should fail to overflow the board', () => {
+        const response = boardValidator.validate(generatePlacement('aaaaaaaaaaaaaaa', centerPosition, Direction.Right));
+        expect(response.isSuccess).toBeFalse();
+    });
+
+    it('should fail to add an un-centered first word', () => {
+        const response = boardValidator.validate(generatePlacement(WORDS[0], { x: 0, y: 0 }, Direction.Right));
+        expect(response.isSuccess).toBeFalse();
+    });
+
+    it('should succeed and return correct score on valid placement', () => {
+        const expectedScore = 18;
+        const response = boardValidator.validate(generatePlacement(WORDS[5], centerPosition, Direction.Down));
+        expect(response.isSuccess).toBeTrue();
+        expect(response.points).toEqual(expectedScore);
+    });
+
+    it('should succeed and return correct score on valid combination', () => {
+        // eslint-disable-next-line @typescript-eslint/no-magic-numbers -- Need to set expected score
+        const expectedScores = [20, 13];
+        const FIRST_PLACEMENT = generatePlacement('pomme', centerPosition, Direction.Right);
+        const COMBINED_WORD: { letter: string; position: Vec2 }[] = [
+            { letter: 'e', position: { x: 7, y: 8 } },
+            { letter: 'c', position: { x: 7, y: 9 } },
+            { letter: 'h', position: { x: 7, y: 10 } },
+            { letter: 'e', position: { x: 7, y: 11 } },
+        ];
+
+        expect(boardValidator.validate(FIRST_PLACEMENT)).toEqual({ isSuccess: true, points: expectedScores[0], description: '' });
+        board.merge(FIRST_PLACEMENT);
+
+        expect(boardValidator.validate(COMBINED_WORD)).toEqual({ isSuccess: true, points: expectedScores[1], description: '' });
+    });
+
+    it('should fail if word combination is invalid', () => {
+        board.merge(generatePlacement('pomme', centerPosition, Direction.Right));
+        expect(
+            boardValidator.validate(generatePlacement('raisin', { x: centerPosition.x - 1, y: centerPosition.y }, Direction.Down)).isSuccess,
+        ).toBeFalse();
+    });
+
+    it('should fail if word coherence is invalid', () => {
+        const COMBINED_WORD: Vec2[] = [
+            { x: 11, y: 3 },
+            { x: 11, y: 4 },
+            { x: 11, y: 5 },
+            { x: 11, y: 6 },
+            { x: 11, y: 8 },
+        ];
+
+        // eslint-disable-next-line dot-notation -- Needs to access private property for testing
+        expect(BoardValidator['ensureCoherence'](board, COMBINED_WORD, Direction.Down)).toBeFalse();
+    });
+
+    it('should fail if placement is empty', () => {
+        expect(boardValidator.validate([]).isSuccess).toBeFalse();
+    });
+
+    it('should fail if not aggregated with other placements', () => {
+        expect(boardValidator.validate([]).isSuccess).toBeFalse();
+    });
+
+    it('should fail if letters are placed on different lines', () => {
+        const COMBINED_WORD: { letter: string; position: Vec2 }[] = [
+            { letter: 'p', position: { x: 7, y: 7 } },
+            { letter: 'o', position: { x: 7, y: 8 } },
+            { letter: 'm', position: { x: 7, y: 9 } },
+            { letter: 'm', position: { x: 7, y: 10 } },
+            { letter: 'e', position: { x: 7, y: 11 } },
+            { letter: 'e', position: { x: 8, y: 9 } },
+        ];
+        expect(boardValidator.validate(COMBINED_WORD).isSuccess).toBeFalse();
+    });
+
+    it('should fail if all words are not connected', () => {
+        board.merge(generatePlacement(WORDS[0], centerPosition, Direction.Right));
+
+        expect(boardValidator.validate(generatePlacement(WORDS[0], { x: 0, y: 0 }, Direction.Right)).isSuccess).toBeFalse();
+    });
+
+    it('should fail if first placement as only one letter', () => {
+        expect(boardValidator.validate(generatePlacement('a', centerPosition, Direction.Right)).isSuccess).toBeFalse();
     });
 });
