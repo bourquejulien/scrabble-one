@@ -16,6 +16,7 @@ const MIN_PLAYTIME_SECONDS = 3;
 })
 export class VirtualPlayerService {
     points: number = 0;
+    skipTurnNb: number = 0;
     turnComplete: Subject<PlayerType>;
     private rack: string[] = [];
     private minTimer: Timer;
@@ -45,10 +46,12 @@ export class VirtualPlayerService {
         if (random < Constants.virtualPlayer.EXCHANGE_PERCENTAGE) {
             this.exchange();
             this.skipTurn();
+            this.skipTurnNb = 0;
             return;
         }
 
         this.play();
+        this.skipTurnNb = 0;
         this.endTurn();
     }
 
@@ -61,6 +64,9 @@ export class VirtualPlayerService {
     }
 
     skipTurn() {
+        if (this.skipTurnNb < 3) {
+            this.skipTurnNb++;
+        }
         this.endTurn();
     }
 
@@ -72,6 +78,14 @@ export class VirtualPlayerService {
 
     emptyRack(): void {
         this.rack = [];
+    }
+
+    setRack(mockRack: string[]): void {
+        this.rack = [];
+
+        for (const letter of mockRack) {
+            this.rack.push(letter);
+        }
     }
 
     private exchange() {
@@ -122,5 +136,9 @@ export class VirtualPlayerService {
 
     get length(): number {
         return this.rack.length;
+    }
+
+    get rackContent(): string[] {
+        return this.rack;
     }
 }

@@ -40,7 +40,6 @@ export class GamePageComponent {
         this.buttonConfig = [
             {
                 color: 'warn',
-                routerLink: '/',
                 icon: Icon.Logout,
                 hover: 'Quitter la partie',
             },
@@ -83,8 +82,7 @@ export class GamePageComponent {
 
         dialogRef.afterClosed().subscribe((result) => {
             if (result === true) {
-                this.gameService.endGame();
-                // TODO: call endGame
+                this.gameService.resetGame();
             }
         });
     }

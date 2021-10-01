@@ -15,6 +15,7 @@ import { TimeSpan } from '@app/classes/time/timespan';
 })
 export class PlayerService {
     points: number = 0;
+    skipTurnNb: number = 0;
     turnComplete: Subject<PlayerType>;
     rackUpdated: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(true);
     private rack: string[] = [];
@@ -51,7 +52,7 @@ export class PlayerService {
         this.rackUpdated.next(!this.rackUpdated.getValue());
 
         this.boardService.placeLetters(positionToPlace);
-
+        this.skipTurnNb = 0;
         this.completeTurn();
 
         return '';
@@ -78,12 +79,16 @@ export class PlayerService {
         this.updateRack(lettersToExchange);
         this.rackUpdated.next(!this.rackUpdated.getValue());
 
+        this.skipTurnNb = 0;
         this.completeTurn();
 
         return '';
     }
 
     completeTurn(): void {
+        if (this.skipTurnNb < 3) {
+            this.skipTurnNb++;
+        }
         this.turnComplete.next(PlayerType.Local);
     }
 
@@ -103,6 +108,10 @@ export class PlayerService {
 
     resetBoard(): void {
         this.boardService.resetBoardService();
+    }
+
+    reserveContent(): number {
+        return this.reserveService.length;
     }
 
     get rackContent(): string[] {

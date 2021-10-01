@@ -18,4 +18,5 @@ export class Constants {
     static readonly dictionary = new Dictionary();
     static readonly virtualPlayer = new VirtualPlayer();
     static readonly MIN_SIZE = 7;
+    static readonly MAX_SKIP_TURN = 6;
 }

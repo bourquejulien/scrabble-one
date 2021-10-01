@@ -38,8 +38,6 @@ export class FakePlayerService {
 
     updateRack(lettersToPlace: string): void {}
 
-    resetBoard(): void {}
-
     get length(): number {
         return 0;
     }

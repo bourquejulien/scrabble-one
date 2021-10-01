@@ -31,7 +31,10 @@ describe('GameService', () => {
     let virtualPlayerServiceSpy: jasmine.SpyObj<VirtualPlayerService>;
 
     beforeEach(() => {
-        virtualPlayerServiceSpy = jasmine.createSpyObj('VirtualPlayerService', ['emptyRack', 'turnComplete', 'fillRack', 'startTurn']);
+        const mockRack = ['K', 'E', 'S', 'E', 'I', 'O', 'V'];
+        virtualPlayerServiceSpy = jasmine.createSpyObj('VirtualPlayerService', ['emptyRack', 'turnComplete', 'fillRack', 'startTurn'], {
+            rackContent: mockRack,
+        });
         virtualPlayerServiceSpy.emptyRack.and.returnValue();
         virtualPlayerServiceSpy.fillRack.and.returnValue();
         virtualPlayerServiceSpy.startTurn.and.returnValue();
@@ -45,6 +48,7 @@ describe('GameService', () => {
         });
         playerService = TestBed.inject(PlayerService);
         service = TestBed.inject(GameService);
+        playerService.setRack(mockRack);
     });
 
     it('should be created', () => {
@@ -55,10 +59,18 @@ describe('GameService', () => {
         const spyEmpty = spyOn(playerService, 'emptyRack').and.callThrough();
         const spyResetReserve = spyOn(playerService, 'resetReserveNewGame').and.callThrough();
         const spyResetBoard = spyOn(playerService, 'resetBoard').and.callThrough();
-        service.endGame();
+        service.resetGame();
         expect(spyEmpty).toHaveBeenCalled();
         expect(spyResetReserve).toHaveBeenCalled();
         expect(spyResetBoard).toHaveBeenCalled();
         expect(virtualPlayerServiceSpy.emptyRack).toHaveBeenCalled();
+    });
+
+    it('should have the right amount of point when virtualPlayerRackPoint is called ', () => {
+        const expectRackPoint = 19;
+        const virRackPoint = service.playerRackPoint(virtualPlayerServiceSpy.rackContent);
+        const plaRackPoint = service.playerRackPoint(playerService.rackContent);
+        expect(virRackPoint).toBe(expectRackPoint);
+        expect(plaRackPoint).toBe(expectRackPoint);
     });
 });
