@@ -11,7 +11,7 @@ import { GameService } from './game.service';
     providedIn: 'root',
 })
 class MockPlayerService {
-    turnComplete: Subject<PlayerType> = new Subject();
+    turnComplete: Subject<PlayerType> = new Subject<PlayerType>();
     points: number = 0;
     rack: string[] = [];
     fillRack() {
@@ -39,7 +39,6 @@ class MockVirtualPlayerService {
 
 fdescribe('GameService', () => {
     let service: GameService;
-
     beforeEach(() => {
         TestBed.configureTestingModule({
             providers: [
@@ -54,17 +53,15 @@ fdescribe('GameService', () => {
         expect(service).toBeTruthy();
     });
     it('start should define currentTurn and swap Virtual to Local', () => {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const spy = spyOn(Math, 'random').and.returnValue(1);
         service.startGame(service.gameConfig);
         expect(spy).toHaveBeenCalled();
         expect(service.currentTurn).toBe(PlayerType.Local);
     });
-    it('start should define currentTurn and swap local to Virtual', () => {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    it('start should define currentTurn and come back from Local to Local', () => {
         const spy = spyOn(Math, 'random').and.returnValue(0);
         service.startGame(service.gameConfig);
         expect(spy).toHaveBeenCalled();
-        expect(service.currentTurn).toBe(PlayerType.Virtual);
+        expect(service.currentTurn).toBe(PlayerType.Local);
     });
 });

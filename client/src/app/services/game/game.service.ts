@@ -49,7 +49,6 @@ export class GameService {
     }
 
     nextTurn() {
-        console.log('nextTurn');
         this.firstPlayerStats.points = this.playerService.points;
         this.secondPlayerStats.points = this.virtualPlayerService.points;
         this.firstPlayerStats.rackSize = this.playerService.rack.length;
