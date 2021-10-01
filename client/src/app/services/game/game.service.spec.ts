@@ -55,7 +55,7 @@ describe('GameService', () => {
         expect(service).toBeTruthy();
     });
 
-    it('should call EmptyRack, resetReserveNewGame, resetBoard from playerService and emptyrack from virtualPlayer when endGame', () => {
+    it('should call EmptyRack, resetReserveNewGame, resetBoard from playerService and emptyrack from virtualPlayer when ResetGame', () => {
         const spyEmpty = spyOn(playerService, 'emptyRack').and.callThrough();
         const spyResetReserve = spyOn(playerService, 'resetReserveNewGame').and.callThrough();
         const spyResetBoard = spyOn(playerService, 'resetBoard').and.callThrough();
@@ -66,11 +66,28 @@ describe('GameService', () => {
         expect(virtualPlayerServiceSpy.emptyRack).toHaveBeenCalled();
     });
 
-    it('should have the right amount of point when virtualPlayerRackPoint is called ', () => {
+    it('should have the right amount of point when playerRackPoint is called', () => {
         const expectRackPoint = 19;
         const virRackPoint = service.playerRackPoint(virtualPlayerServiceSpy.rackContent);
         const plaRackPoint = service.playerRackPoint(playerService.rackContent);
         expect(virRackPoint).toBe(expectRackPoint);
         expect(plaRackPoint).toBe(expectRackPoint);
+    });
+
+    it('should reset all player stats to 0 when resetGame is called', () => {
+        service.resetGame();
+        expect(playerService.points).toBe(0);
+        expect(playerService.skipTurnNb).toBe(0);
+    });
+
+    it('should reset all virtualPlayer stats to 0 when resetGame is called', () => {
+        service.resetGame();
+        expect(virtualPlayerServiceSpy.skipTurnNb).toBe(0);
+        expect(virtualPlayerServiceSpy.points).toBe(0);
+    });
+
+    it('should reset skipTurnNb to 0 when resetGame is called', () => {
+        service.resetGame();
+        expect(service.skipTurnNb).toBe(0);
     });
 });
