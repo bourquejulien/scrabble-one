@@ -2,6 +2,7 @@
 /* eslint-disable @typescript-eslint/no-magic-numbers */
 /* eslint-disable max-classes-per-file */
 /* eslint-disable @typescript-eslint/naming-convention */
+import { HttpClientModule } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { Direction } from '@app/classes/board/direction';
@@ -48,10 +49,10 @@ describe('CommandsService', () => {
     beforeEach(() => {
         TestBed.configureTestingModule({
             providers: [
-                // { provide: PlayerService, useClass: FakePlayerService },
                 { provide: MessagingService, useClass: MockMessagingService },
                 { provide: GameService, useClass: MockGameService },
             ],
+            imports: [HttpClientModule],
         });
         service = TestBed.inject(CommandsService);
         service.messagingService.debuggingMode = true;
