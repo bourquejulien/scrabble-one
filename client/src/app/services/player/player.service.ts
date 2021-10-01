@@ -56,8 +56,8 @@ export class PlayerService {
         this.points += validationData.points;
 
         this.updateRack(lettersToPlace);
-        this.updateReserve(positionToPlace.length);
         this.rackUpdated.next(!this.rackUpdated.getValue());
+        this.updateReserve(positionToPlace.length);
 
         this.boardService.placeLetters(positionToPlace);
 

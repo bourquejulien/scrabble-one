@@ -3,18 +3,21 @@
 /* eslint-disable max-lines  -- Max lines should not be applied to tests*/
 import { Injectable } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
+import { Direction } from '@app/classes/board/direction';
 import { MessageType } from '@app/classes/message';
 import { PlayerType } from '@app/classes/player-type';
 import { TimeSpan } from '@app/classes/time/timespan';
+import { ValidationResponse } from '@app/classes/validation/validation-response';
+import { Vec2 } from '@app/classes/vec2';
 import { SystemMessages } from '@app/constants/system-messages.constants';
 import { BoardService } from '@app/services/board/board.service';
-import { MockBoardService } from '@app/services/board/mock-board.service';
 import { PlayerService } from '@app/services/player/player.service';
 import { ReserveService } from '@app/services/reserve/reserve.service';
 import { TimerService } from '@app/services/timer/timer.service';
 import { Subject } from 'rxjs';
 
 const MAX_PLAYTIME_SECONDS = 1;
+
 
 @Injectable({
     providedIn: 'root',
@@ -40,7 +43,7 @@ class TimerServiceMock {
 @Injectable({
     providedIn: 'root',
 })
-class ReserveServiceMock {
+class ReserveServiceStub {
     reserve: string[];
 
     constructor() {
@@ -79,25 +82,31 @@ fdescribe('PlayerService', () => {
     let invalidLetter: string;
     let lettersToPlace: string;
     let lettersToExchange: string;
-    let timerServiceMock: TimerService;
+    let timerService: TimerService;
+    let boardServiceSpy: jasmine.SpyObj<BoardService>;
+    let letterToPlace: { letter: string; position: Vec2 }[];
+    let validationResponse: ValidationResponse;
+    let validLetter: string;
 
     beforeEach(() => {
         letterToRemoveFromRack = 'e';
         invalidLetter = 'z';
+        validLetter = 'k';
         lettersToPlace = 'ios';
         lettersToExchange = 'kee';
         const mockRack = ['k', 'e', 's', 'e', 'i', 'o', 'v'];
+        boardServiceSpy = jasmine.createSpyObj('BoardService', ['retrieveNewLetters', 'lookupLetters', 'placeLetters']);
 
         TestBed.configureTestingModule({
             providers: [
-                { provide: BoardService, useClass: MockBoardService },
-                { provide: ReserveService, useClass: ReserveServiceMock },
+                { provide: BoardService, useValue: boardServiceSpy },
+                { provide: ReserveService, useClass: ReserveServiceStub },
                 { provide: TimerService, useClass: TimerServiceMock },
             ],
         });
         service = TestBed.inject(PlayerService);
         reserveService = TestBed.inject(ReserveService);
-        timerServiceMock = TestBed.inject(TimerService);
+        timerService = TestBed.inject(TimerService);
 
         service.setRack(mockRack);
     });
@@ -106,13 +115,44 @@ fdescribe('PlayerService', () => {
         expect(service).toBeTruthy();
     });
 
-    it('should send error message if reserve length less than 7', () => {
-        const smallReserve = ['a', 'b'];
-        reserveService.setReserve(smallReserve);
+    it('should send error message if lettersToPlace not in rack', () => {
+        letterToPlace = [{ letter: 'z', position: { x: 11, y: 3 } }];
+        boardServiceSpy['retrieveNewLetters'].and.returnValue(letterToPlace);
+        boardServiceSpy['lookupLetters'].and.returnValue(validationResponse);
+
         const spy = spyOn(service['messagingService'], 'send');
-        service.exchangeLetters(lettersToExchange);
-        expect(spy).toHaveBeenCalledWith(SystemMessages.ImpossibleAction, SystemMessages.NotEnoughLetters, MessageType.Error);
+        service.placeLetters('z', { x: 11, y: 3 }, Direction.Up);
+        expect(spy).toHaveBeenCalledWith(SystemMessages.ImpossibleAction, SystemMessages.LetterPossessionError + 'z', MessageType.Error);
     });
+
+    it('should send error message if validation fail', () => {
+        validationResponse = { isSuccess: false, points: 15, description: 'Error' };
+        letterToPlace = [{ letter: 'k', position: { x: 11, y: 3 } }];
+        boardServiceSpy['retrieveNewLetters'].and.returnValue(letterToPlace);
+        boardServiceSpy['lookupLetters'].and.returnValue(validationResponse);
+
+        const spy = spyOn(service['messagingService'], 'send');
+        service.placeLetters('k', { x: 11, y: 3 }, Direction.Up);
+        expect(spy).toHaveBeenCalledWith('', validationResponse.description, MessageType.Log);
+    });
+
+    it('should update rack if validation success and letters in rack', () => {
+        validationResponse = { isSuccess: true, points: 15, description: 'Error' };
+        letterToPlace = [{ letter: 'k', position: { x: 11, y: 3 } }];
+        boardServiceSpy['retrieveNewLetters'].and.returnValue(letterToPlace);
+        boardServiceSpy['lookupLetters'].and.returnValue(validationResponse);
+        boardServiceSpy['placeLetters'].and.returnValue(validationResponse);
+
+        const spy = spyOn<any>(service, 'updateRack');
+        service.placeLetters('k', { x: 11, y: 3 }, Direction.Up);
+        expect(spy).toHaveBeenCalled();
+    });
+
+    it('should break if letters are not in rack', () => {
+        const spy = spyOn<any>(service, 'areLettersInRack');
+        service.exchangeLetters(validLetter);
+        expect(spy).toHaveBeenCalled();
+    })
 
     it('should send error message if reserve length less than 7', () => {
         const smallReserve = ['a', 'b'];
@@ -180,7 +220,7 @@ fdescribe('PlayerService', () => {
             done();
         });
         service.startTurn(TimeSpan.fromSeconds(MAX_PLAYTIME_SECONDS));
-        timerServiceMock.countdownStopped.next(PlayerType.Local);
+        timerService.countdownStopped.next(PlayerType.Local);
         service.turnComplete.unsubscribe();
     });
 
@@ -190,7 +230,7 @@ fdescribe('PlayerService', () => {
             expect(playerType).toEqual(PlayerType.Local);
             done();
         });
-        timerServiceMock.countdownStopped.next(PlayerType.Local);
+        timerService.countdownStopped.next(PlayerType.Local);
     });
 
     it('should add specified amount of letters to rack if valid number of letters to add is entered', () => {
