@@ -1,11 +1,10 @@
 /* eslint-disable @typescript-eslint/no-useless-constructor */
 /* eslint-disable @typescript-eslint/no-empty-function */
 /* eslint-disable no-unused-vars */
+import { HttpClientModule } from '@angular/common/http';
 import { CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { AppMaterialModule } from '@app/modules/material.module';
-import { FakePlayerService } from '@app/services/player/mock-player.service.spec';
-import { PlayerService } from '@app/services/player/player.service';
 import { RackComponent } from './rack.component';
 
 describe('RackComponent', () => {
@@ -15,8 +14,7 @@ describe('RackComponent', () => {
     beforeEach(async () => {
         await TestBed.configureTestingModule({
             declarations: [RackComponent],
-            providers: [{ provide: PlayerService, useClass: FakePlayerService }],
-            imports: [AppMaterialModule],
+            imports: [AppMaterialModule, HttpClientModule],
             schemas: [CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA],
         }).compileComponents();
     });

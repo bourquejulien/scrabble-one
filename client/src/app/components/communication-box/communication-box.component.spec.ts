@@ -12,7 +12,6 @@ import { AppMaterialModule } from '@app/modules/material.module';
 import { MessagingService } from '@app/services/messaging/messaging.service';
 import { Subject } from 'rxjs';
 import { CommunicationBoxComponent } from './communication-box.component';
-
 describe('CommunicationBoxComponent', () => {
     let component: CommunicationBoxComponent;
     let fixture: ComponentFixture<CommunicationBoxComponent>;
@@ -72,7 +71,10 @@ describe('CommunicationBoxComponent', () => {
     });
 
     it('should scroll when receiving new message', () => {
+        const spy = spyOn(component['messageContainer']['nativeElement'], 'scroll');
+        component.ngAfterContentInit();
         expect(component['messagingService']).toBeDefined();
+        expect(spy).toHaveBeenCalled();
     });
 
     it('should return the title of the message', () => {

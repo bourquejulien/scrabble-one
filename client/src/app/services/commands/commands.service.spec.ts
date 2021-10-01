@@ -3,8 +3,6 @@
 /* eslint-disable max-classes-per-file */
 /* eslint-disable @typescript-eslint/naming-convention */
 import { TestBed } from '@angular/core/testing';
-import { FakePlayerService } from '@app/services/player/mock-player.service.spec';
-import { PlayerService } from '@app/services/player/player.service';
 import { CommandsService } from '@app/services/commands/commands.service';
 import { Message, MessageType } from '@app/classes/message';
 import { MessagingService } from '@app/services/messaging/messaging.service';
@@ -14,6 +12,7 @@ import { Direction } from '@app/classes/board/direction';
 import { Vec2 } from '@app/classes/vec2';
 import { PlayerType } from '@app/classes/player-type';
 import { GameService } from '@app/services/game/game.service';
+import { HttpClientModule } from '@angular/common/http';
 @Injectable({
     providedIn: 'root',
 })
@@ -50,10 +49,10 @@ describe('CommandsService', () => {
     beforeEach(() => {
         TestBed.configureTestingModule({
             providers: [
-                { provide: PlayerService, useClass: FakePlayerService },
                 { provide: MessagingService, useClass: MockMessagingService },
                 { provide: GameService, useClass: MockGameService },
             ],
+            imports: [HttpClientModule],
         });
         service = TestBed.inject(CommandsService);
         service.messagingService.debuggingMode = true;

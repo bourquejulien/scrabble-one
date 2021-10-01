@@ -28,15 +28,6 @@ export class CommunicationBoxComponent implements OnDestroy, AfterViewInit, Afte
         });
     }
 
-    scroll(): void {
-        if (this.messageContainer) {
-            this.messageContainer.nativeElement.scroll({
-                top: this.messageContainer.nativeElement.scrollHeight,
-                behavior: 'smooth',
-            });
-        }
-    }
-
     send(input: string): boolean {
         if (input === '') return false;
         if (this.commandsService.parseInput(input)) {
@@ -74,5 +65,14 @@ export class CommunicationBoxComponent implements OnDestroy, AfterViewInit, Afte
 
     ngOnDestroy() {
         this.subscription.unsubscribe();
+    }
+
+    private scroll(): void {
+        if (this.messageContainer) {
+            this.messageContainer.nativeElement.scroll({
+                top: this.messageContainer.nativeElement.scrollHeight,
+                behavior: 'smooth',
+            });
+        }
     }
 }
