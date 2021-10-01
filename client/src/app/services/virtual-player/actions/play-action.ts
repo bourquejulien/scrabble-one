@@ -6,6 +6,8 @@ import { TimerService } from '@app/services/timer/timer.service';
 import { Action } from './action';
 import { PlaceAction } from './place-action';
 
+const MAX_PLAYTIME_SECONDS = 20;
+
 export class PlayAction implements Action {
     constructor(
         private readonly boardService: BoardService,
@@ -17,7 +19,9 @@ export class PlayAction implements Action {
     execute(): Action | null {
         const scoreRange = this.getScoreRange();
 
-        while (this.timerService.time.totalMilliseconds > 0 && this.playGenerator.generateNext());
+        const startTime = this.timerService.time;
+
+        while (startTime.totalMilliseconds - this.timerService.time.totalMilliseconds > MAX_PLAYTIME_SECONDS && this.playGenerator.generateNext());
 
         const filteredPlays = this.playGenerator.orderedPlays.filter((e) => e.score >= scoreRange.min && e.score <= scoreRange.max);
 

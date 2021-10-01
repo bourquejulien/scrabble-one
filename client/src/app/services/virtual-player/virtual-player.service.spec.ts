@@ -1,15 +1,15 @@
 /* eslint-disable max-classes-per-file -- Multiple stubs are used */
 import { Injectable } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
-import { VirtualPlayerService } from '@app/services/virtual-player/virtual-player.service';
-import { TimerService } from '@app/services/timer/timer.service';
-import { ReserveService } from '@app/services/reserve/reserve.service';
-import { TimeSpan } from '@app/classes/time/timespan';
-import { PlayerType } from '@app/classes/player-type';
-import { VirtualPlayerActionService } from './virtual-player-action.service';
-import { Action } from './actions/action';
 import { PlayerData } from '@app/classes/player-data';
+import { PlayerType } from '@app/classes/player-type';
 import { Timer } from '@app/classes/time/timer';
+import { TimeSpan } from '@app/classes/time/timespan';
+import { ReserveService } from '@app/services/reserve/reserve.service';
+import { TimerService } from '@app/services/timer/timer.service';
+import { VirtualPlayerService } from '@app/services/virtual-player/virtual-player.service';
+import { Action } from './actions/action';
+import { VirtualPlayerActionService } from './virtual-player-action.service';
 
 const LETTERS = ['a', 'b', 'c', 'd', 'e', 'f', 'g'];
 const MAX_PLAYTIME_SECONDS = 20;
@@ -98,14 +98,14 @@ describe('VirtualPlayerService', () => {
     });
 
     it('should execute action', async () => {
-        await service.startTurn();
+        await service.startTurn(TimeSpan.fromSeconds(MAX_PLAYTIME_SECONDS));
 
         expect(virtualPlayerActionServiceMock.actionCalled).toEqual(2);
     });
 
     it('should not throw on null second action', async () => {
         virtualPlayerActionServiceMock.returnSecondAction = false;
-        await service.startTurn();
+        await service.startTurn(TimeSpan.fromSeconds(MAX_PLAYTIME_SECONDS));
 
         expect(virtualPlayerActionServiceMock.actionCalled).toEqual(1);
     });
@@ -116,7 +116,7 @@ describe('VirtualPlayerService', () => {
             done();
         });
 
-        service.startTurn();
+        service.startTurn(TimeSpan.fromSeconds(MAX_PLAYTIME_SECONDS));
     });
 
     it('should fill rack', () => {
@@ -126,7 +126,7 @@ describe('VirtualPlayerService', () => {
     });
 
     it('should start and stop timer', async () => {
-        await service.startTurn();
+        await service.startTurn(TimeSpan.fromSeconds(MAX_PLAYTIME_SECONDS));
 
         expect(timerServiceStub.gotStarted).toBeTrue();
         expect(timerServiceStub.gotStopped).toBeTrue();

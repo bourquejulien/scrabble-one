@@ -1,16 +1,16 @@
 import { Injectable } from '@angular/core';
 import { GameConfig } from '@app/classes/game-config';
+import { letterDefinitions } from '@app/classes/letter';
+import { MessageType } from '@app/classes/message';
 import { PlayerType } from '@app/classes/player-type';
 import { PlayerStats } from '@app/classes/player/player-stats';
 import { TimeSpan } from '@app/classes/time/timespan';
 import { Constants } from '@app/constants/global.constants';
+import { MessagingService } from '@app/services/messaging/messaging.service';
 import { PlayerService } from '@app/services/player/player.service';
+import { ReserveService } from '@app/services/reserve/reserve.service';
 import { VirtualPlayerService } from '@app/services/virtual-player/virtual-player.service';
 import { BehaviorSubject, Subject } from 'rxjs';
-import { letterDefinitions } from '@app/classes/letter';
-import { MessagingService } from '@app/services/messaging/messaging.service';
-import { MessageType } from '@app/classes/message';
-import { ReserveService } from '@app/services/reserve/reserve.service';
 
 @Injectable({
     providedIn: 'root',
@@ -145,12 +145,12 @@ export class GameService {
         this.messaging.send(
             'Fin de partie - lettres restantes',
             this.gameConfig.firstPlayerName +
-                ' : ' +
-                this.playerService.rack +
-                ' ' +
-                this.gameConfig.secondPlayerName +
-                ' : ' +
-                this.virtualPlayerService.playerData.rack,
+            ' : ' +
+            this.playerService.rack +
+            ' ' +
+            this.gameConfig.secondPlayerName +
+            ' : ' +
+            this.virtualPlayerService.playerData.rack,
             MessageType.System,
         );
     }
@@ -172,7 +172,7 @@ export class GameService {
     private onVirtualPlayerTurn() {
         this.currentTurn = PlayerType.Virtual;
         this.onTurn.next(this.currentTurn);
-        this.virtualPlayerService.startTurn();
+        this.virtualPlayerService.startTurn(this.gameConfig.playTime);
     }
 
     private randomizeTurn(): PlayerType {
