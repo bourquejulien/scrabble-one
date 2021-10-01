@@ -32,6 +32,7 @@ export class GamePageComponent {
     playerType: PlayerType;
     buttonConfig: ButtonConfig[] = [];
     iconList: string[];
+    isOpen: boolean = true;
 
     constructor(gameService: GameService, timerService: TimerService, public dialog: MatDialog) {
         this.gameService = gameService;
@@ -58,8 +59,9 @@ export class GamePageComponent {
         gameService.onTurn.subscribe((e) => (this.playerType = e));
     }
 
-    toggleDrawer() {
+    toggleDrawer(): void {
         this.drawer.toggle();
+        this.isOpen = !this.isOpen;
     }
 
     callFunction(buttonIndex: number): void {

@@ -1,5 +1,5 @@
 <mat-drawer-container autosize>
-    <mat-toolbar [ngClass]="playerType" class="mat-app-background" color="primary" class="toolbar">
+    <mat-toolbar [ngClass]="playerType" class="mat-app-background" color="primary" class="tool-bar">
         <span>Scrabble</span>
         <span>{{ gameService.gameConfig.firstPlayerName }} contre {{ gameService.gameConfig.secondPlayerName }}</span>
         <span>Minuteur: {{ timerService.time | time }}</span>
@@ -7,15 +7,17 @@
     <mat-drawer #drawer autoFocus class="comm-box-sidenav" mode="side" opened>
         <app-communication-box></app-communication-box>
     </mat-drawer>
-    <mat-card id="scoreboardPlayerOne">
-        <span class="verticalFlexItems">{{ gameService.gameConfig.firstPlayerName }}</span>
-        <span class="verticalFlexItems">Score: {{ gameService.firstPlayerStats.points }} </span>
-        <span class="verticalFlexItems" *ngIf="gameService.firstPlayerStats.rackSize < 7">Lettres: {{ gameService.firstPlayerStats.rackSize }} </span>
+    <mat-card [ngClass]="isOpen ? 'scoreboard-player-one-open' : 'scoreboard-player-one-closed'">
+        <span class="vertical-flex-items">{{ gameService.gameConfig.firstPlayerName }}</span>
+        <span class="vertical-flex-items">Score: {{ gameService.firstPlayerStats.points }} </span>
+        <span class="vertical-flex-items" *ngIf="gameService.firstPlayerStats.rackSize < 7"
+            >Lettres: {{ gameService.firstPlayerStats.rackSize }}
+        </span>
     </mat-card>
-    <mat-card id="scoreboardPlayerTwo">
-        <span class="verticalFlexItems">{{ gameService.gameConfig.secondPlayerName }}</span>
-        <span class="verticalFlexItems">Score: {{ gameService.secondPlayerStats.points }} </span>
-        <span class="verticalFlexItems" *ngIf="gameService.secondPlayerStats.rackSize < 7"
+    <mat-card [ngClass]="isOpen ? 'scoreboard-player-two-open' : 'scoreboard-player-two-closed'">
+        <span class="vertical-flex-items">{{ gameService.gameConfig.secondPlayerName }}</span>
+        <span class="vertical-flex-items">Score: {{ gameService.secondPlayerStats.points }} </span>
+        <span class="vertical-flex-items" *ngIf="gameService.secondPlayerStats.rackSize < 7"
             >Lettres: {{ gameService.secondPlayerStats.rackSize }}
         </span>
     </mat-card>
@@ -37,8 +39,8 @@
                 </button>
             </div>
         </div>
-        <section class="play-area-container">
-            <app-play-area class="play-area" [playerType]="playerType"></app-play-area>
+        <section [ngClass]="isOpen ? 'play-area-container-open' : 'play-area-container-closed'">
+            <app-play-area></app-play-area>
         </section>
     </div>
 </mat-drawer-container>
