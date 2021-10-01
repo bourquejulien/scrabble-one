@@ -1,6 +1,6 @@
 <h2 mat-dialog-title>Fin de la partie</h2>
-<mat-dialog-content class="mat-typography">{{winner}}</mat-dialog-content>
+<mat-dialog-content class="mat-typography">{{winner()}}</mat-dialog-content>
 <mat-dialog-actions align="end">
     <button mat-button mat-dialog-close>Continuer</button>
-    <button mat-button [mat-dialog-close]="true" routerLink='home' cdkFocusInitial (click)="confirmQuit">Quitter la partie</button>
+    <button mat-button [mat-dialog-close]="true" routerLink='home' cdkFocusInitial>Quitter la partie</button>
 </mat-dialog-actions>

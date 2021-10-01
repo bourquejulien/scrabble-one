@@ -54,7 +54,6 @@ export class PlayerService {
         this.boardService.placeLetters(positionToPlace);
         this.skipTurnNb = 0;
         this.completeTurn();
-
         return '';
     }
 
@@ -86,9 +85,7 @@ export class PlayerService {
     }
 
     completeTurn(): void {
-        if (this.skipTurnNb < 3) {
-            this.skipTurnNb++;
-        }
+        console.log('skip');
         this.turnComplete.next(PlayerType.Local);
     }
 

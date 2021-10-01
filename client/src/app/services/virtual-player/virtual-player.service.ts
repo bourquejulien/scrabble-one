@@ -46,7 +46,6 @@ export class VirtualPlayerService {
         if (random < Constants.virtualPlayer.EXCHANGE_PERCENTAGE) {
             this.exchange();
             this.skipTurn();
-            this.skipTurnNb = 0;
             return;
         }
 
@@ -98,6 +97,7 @@ export class VirtualPlayerService {
             this.reserveService.putBackLetter(letter);
             this.rack[letterToReplace] = this.reserveService.drawLetter();
         }
+        this.skipTurnNb = 0;
     }
 
     private async play() {

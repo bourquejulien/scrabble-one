@@ -19,7 +19,7 @@ export class EndGameComponent {
             return (
                 'Félicitation aux gagnants ' +
                 this.gameService.gameConfig.firstPlayerName +
-                'et' +
+                ' et ' +
                 this.gameService.gameConfig.secondPlayerName +
                 ' égalité'
             );

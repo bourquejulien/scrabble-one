@@ -47,6 +47,9 @@ export class GameService {
     }
 
     resetGame() {
+        this.skipTurnNb = 0;
+        this.playerService.skipTurnNb = 0;
+        this.virtualPlayerService.skipTurnNb = 0;
         this.virtualPlayerService.points = 0;
         this.playerService.points = 0;
         this.playerService.emptyRack();
@@ -89,9 +92,11 @@ export class GameService {
     }
 
     skipTurnLimit() {
-        if (this.playerService.skipTurnNb + this.virtualPlayerService.skipTurnNb === Constants.MAX_SKIP_TURN) {
+        if (this.playerService.skipTurnNb === Constants.MAX_SKIP_TURN && this.virtualPlayerService.skipTurnNb === Constants.MAX_SKIP_TURN) {
             this.gameEnding.next();
         }
+        console.log('player ' + this.playerService.skipTurnNb);
+        console.log('virtual ' + this.virtualPlayerService.skipTurnNb);
     }
 
     // endGame() {

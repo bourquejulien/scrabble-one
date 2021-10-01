@@ -3,6 +3,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { MatDrawer } from '@angular/material/sidenav';
 import { PlayerType } from '@app/classes/player-type';
 import { ConfirmQuitDialogComponent } from '@app/components/confirm-quit-dialog/confirm-quit-dialog.component';
+import { EndGameComponent } from '@app/components/end-game/end-game.component';
 import { GameService } from '@app/services/game/game.service';
 import { TimerService } from '@app/services/timer/timer.service';
 
@@ -34,6 +35,7 @@ export class GamePageComponent {
     iconList: string[];
 
     constructor(gameService: GameService, timerService: TimerService, public dialog: MatDialog) {
+        gameService.gameEnding.subscribe(() => this.endGame());
         this.gameService = gameService;
         this.playerType = gameService.onTurn.getValue();
         this.timerService = timerService;
@@ -80,6 +82,15 @@ export class GamePageComponent {
     confirmQuit(): void {
         const dialogRef = this.dialog.open(ConfirmQuitDialogComponent);
 
+        dialogRef.afterClosed().subscribe((result) => {
+            if (result === true) {
+                this.gameService.resetGame();
+            }
+        });
+    }
+
+    endGame() {
+        const dialogRef = this.dialog.open(EndGameComponent);
         dialogRef.afterClosed().subscribe((result) => {
             if (result === true) {
                 this.gameService.resetGame();
