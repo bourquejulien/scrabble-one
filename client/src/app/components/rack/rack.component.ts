@@ -18,6 +18,10 @@ export class RackComponent implements OnInit {
         });
     }
 
+    ngOnDestroy() {
+        this.playerService.rackUpdated.unsubscribe();
+    }
+
     retrievePoints(letter: string): number {
         const currentLetterData = letterDefinitions.get(letter);
 

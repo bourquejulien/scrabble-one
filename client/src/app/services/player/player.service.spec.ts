@@ -75,7 +75,7 @@ class ReserveServiceStub {
     }
 }
 
-fdescribe('PlayerService', () => {
+describe('PlayerService', () => {
     let service: PlayerService;
     let reserveService: ReserveService;
     let letterToRemoveFromRack: string;
@@ -86,12 +86,10 @@ fdescribe('PlayerService', () => {
     let boardServiceSpy: jasmine.SpyObj<BoardService>;
     let letterToPlace: { letter: string; position: Vec2 }[];
     let validationResponse: ValidationResponse;
-    let validLetter: string;
 
     beforeEach(() => {
         letterToRemoveFromRack = 'e';
         invalidLetter = 'z';
-        validLetter = 'k';
         lettersToPlace = 'ios';
         lettersToExchange = 'kee';
         const mockRack = ['k', 'e', 's', 'e', 'i', 'o', 'v'];
@@ -113,6 +111,22 @@ fdescribe('PlayerService', () => {
 
     it('should be created', () => {
         expect(service).toBeTruthy();
+    });
+
+    it('should be adfewghiduhasjdoi;qwadikpql;aJKFZLkmcx', () => {
+        const spy = spyOn(service, 'completeTurn');
+        timerService.countdownStopped.next();
+        expect(spy).toHaveBeenCalled();
+    });
+
+    it('should notify player if startTurn', (done) => {
+        service.turnComplete.subscribe((playerType) => {
+            expect(playerType).toEqual(PlayerType.Local);
+            done();
+        });
+        service.startTurn(TimeSpan.fromSeconds(MAX_PLAYTIME_SECONDS));
+        timerService.countdownStopped.next(PlayerType.Local);
+        service.turnComplete.unsubscribe();
     });
 
     it('should send error message if lettersToPlace not in rack', () => {
@@ -148,9 +162,9 @@ fdescribe('PlayerService', () => {
         expect(spy).toHaveBeenCalled();
     });
 
-    it('should break if letters are not in rack', () => {
+    it('should enter first if statement if letters are not in rack', () => {
         const spy = spyOn<any>(service, 'areLettersInRack');
-        service.exchangeLetters(validLetter);
+        service.exchangeLetters(invalidLetter);
         expect(spy).toHaveBeenCalled();
     })
 
@@ -212,16 +226,6 @@ fdescribe('PlayerService', () => {
 
         service.exchangeLetters(lettersToExchange);
         expect(service.rackUpdated.getValue()).toBe(false);
-    });
-
-    it('should notify player if startTurn', (done) => {
-        service.turnComplete.subscribe((playerType) => {
-            expect(playerType).toEqual(PlayerType.Local);
-            done();
-        });
-        service.startTurn(TimeSpan.fromSeconds(MAX_PLAYTIME_SECONDS));
-        timerService.countdownStopped.next(PlayerType.Local);
-        service.turnComplete.unsubscribe();
     });
 
     it('should notify player change if completeTurn', (done) => {
