@@ -112,7 +112,7 @@ describe('PlayerService', () => {
         expect(service).toBeTruthy();
     });
 
-    it('should be adfewghiduhasjdoi;qwadikpql;aJKFZLkmcx', () => {
+    it('should complete turn if countdown is stopped', () => {
         const spy = spyOn(service, 'completeTurn');
         timerService.countdownStopped.next();
         expect(spy).toHaveBeenCalled();
