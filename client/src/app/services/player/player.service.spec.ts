@@ -112,12 +112,6 @@ describe('PlayerService', () => {
         expect(service).toBeTruthy();
     });
 
-    it('should complete turn if countdown is stopped', () => {
-        const spy = spyOn(service, 'completeTurn');
-        timerService.countdownStopped.next();
-        expect(spy).toHaveBeenCalled();
-    });
-
     it('should notify player if startTurn', (done) => {
         service.turnComplete.subscribe((playerType) => {
             expect(playerType).toEqual(PlayerType.Local);

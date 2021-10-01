@@ -1,71 +1,64 @@
+/* eslint-disable max-classes-per-file -- Need more than one stub class */
 import { Injectable } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
+import { ImmutableBoard } from '@app/classes/board/board';
 import { Direction } from '@app/classes/board/direction';
+import { BoardValidator } from '@app/classes/validation/board-validator';
+import { ValidationResponse } from '@app/classes/validation/validation-response';
 import { Vec2 } from '@app/classes/vec2';
 import { BoardService } from '@app/services/board/board.service';
-import { DictionaryService } from '@app/services/dictionary/dictionary.service';
+import { BoardValidatorGeneratorService } from '@app/services/validation/board-validator-generator.service';
 
-const WORDS: string[] = ['pomme', 'orange', 'poire', 'raisin', 'peche', 'banane', 'bananes'];
-const mockedDictionary: Set<string> = new Set(WORDS);
+const WORD = 'pomme';
+const COMBINED_WORD: { letter: string; position: Vec2 }[] = [
+    { letter: 'p', position: { x: 7, y: 7 } },
+    { letter: 'o', position: { x: 8, y: 7 } },
+    { letter: 'm', position: { x: 9, y: 7 } },
+    { letter: 'm', position: { x: 10, y: 7 } },
+    { letter: 'e', position: { x: 11, y: 7 } },
+];
 
-const generatePlacement = (word: string, initialPosition: Vec2, direction: Direction): { letter: string; position: Vec2 }[] => {
-    const letters: { letter: string; position: Vec2 }[] = [];
+class BoardValidatorStub {
+    lastLetters: { letter: string; position: Vec2 }[] = [];
+    isSuccess = false;
 
-    let xIncr: number;
-    let yIncr: number;
-
-    switch (direction) {
-        case Direction.Down:
-            xIncr = 0;
-            yIncr = 1;
-            break;
-
-        case Direction.Up:
-            xIncr = 0;
-            yIncr = -1;
-            break;
-
-        case Direction.Right:
-            xIncr = 1;
-            yIncr = 0;
-            break;
-
-        case Direction.Left:
-            xIncr = -1;
-            yIncr = 0;
-            break;
-
-        default:
-            xIncr = 0;
-            yIncr = 0;
-            break;
+    validate(letters: { letter: string; position: Vec2 }[]): ValidationResponse {
+        this.lastLetters = letters;
+        return { isSuccess: this.isSuccess, points: 0, description: '' };
     }
-
-    for (let i = 0; i < word.length; i++) {
-        letters.push({ letter: word[i], position: { x: initialPosition.x + xIncr * i, y: initialPosition.y + yIncr * i } });
+    // eslint-disable-next-line no-unused-vars -- Parameter useless for stub
+    getLetterPoints(letter: string): number {
+        return 0;
     }
-
-    return letters;
-};
+}
 
 @Injectable({
     providedIn: 'root',
 })
-class StubDictionaryService {
-    lookup(word: string): boolean {
-        return mockedDictionary.has(word);
+class BoardValidatorGeneratorServiceStub {
+    readonly validator: BoardValidatorStub;
+
+    constructor() {
+        this.validator = new BoardValidatorStub();
+    }
+
+    // eslint-disable-next-line no-unused-vars -- board is useless for stub
+    generator(board: ImmutableBoard): BoardValidator {
+        return this.validator as unknown as BoardValidator;
     }
 }
 
 describe('BoardService', () => {
     let service: BoardService;
+    let boardValidatorGeneratorServiceStub: BoardValidatorGeneratorServiceStub;
     let centerPosition: Vec2;
 
     beforeEach(() => {
         TestBed.configureTestingModule({
-            providers: [{ provide: DictionaryService, useClass: StubDictionaryService }],
+            providers: [{ provide: BoardValidatorGeneratorService, useClass: BoardValidatorGeneratorServiceStub }],
         });
         service = TestBed.inject(BoardService);
+        boardValidatorGeneratorServiceStub = TestBed.inject(BoardValidatorGeneratorService) as unknown as BoardValidatorGeneratorServiceStub;
         const halfBoardSize = Math.floor(service.gameBoard.size / 2);
         centerPosition = { x: halfBoardSize, y: halfBoardSize };
     });
@@ -74,89 +67,46 @@ describe('BoardService', () => {
         expect(service).toBeTruthy();
     });
 
-    it('should accept a valid word', () => {
-        const response = service.lookupLetters(generatePlacement(WORDS[0], centerPosition, Direction.Right));
-        expect(response.isSuccess).toBeTrue();
+    it('should validate letters', () => {
+        service.lookupLetters(COMBINED_WORD);
+        expect(boardValidatorGeneratorServiceStub.validator.lastLetters).toEqual(COMBINED_WORD);
     });
 
-    it('should fail to add an invalid word', () => {
-        const response = service.lookupLetters(generatePlacement('thisisnotaword', centerPosition, Direction.Right));
-        expect(response.isSuccess).toBeFalse();
+    it('should validate before placing letters', () => {
+        const clonedBoard = service.gameBoard.clone();
+        service.placeLetters(COMBINED_WORD);
+        expect(boardValidatorGeneratorServiceStub.validator.lastLetters).toEqual(COMBINED_WORD);
+        expect(clonedBoard).toEqual(service.gameBoard.clone());
     });
 
-    it('should fail to add a word written from right to left', () => {
-        const response = service.lookupLetters(generatePlacement(WORDS[0], centerPosition, Direction.Left));
-        expect(response.isSuccess).toBeFalse();
-    });
+    it('should palace letters when validation is successful', () => {
+        boardValidatorGeneratorServiceStub.validator.isSuccess = true;
 
-    it('should fail to overflow the board', () => {
-        const response = service.lookupLetters(generatePlacement('aaaaaaaaaaaaaaa', centerPosition, Direction.Right));
-        expect(response.isSuccess).toBeFalse();
-    });
-
-    it('should fail to add an un-centered first word', () => {
-        const response = service.lookupLetters(generatePlacement(WORDS[0], { x: 0, y: 0 }, Direction.Right));
-        expect(response.isSuccess).toBeFalse();
-    });
-
-    it('should succeed and return correct score on valid placement', () => {
-        const expectedScore = 18;
-        const response = service.placeLetters(generatePlacement(WORDS[5], centerPosition, Direction.Down));
-        expect(response.isSuccess).toBeTrue();
-        expect(response.points).toEqual(expectedScore);
-    });
-
-    it('should succeed and return correct score on valid combination', () => {
-        // eslint-disable-next-line @typescript-eslint/no-magic-numbers -- Need to set expected score
-        const expectedScores = [20, 24];
-        const combinedWord: { letter: string; position: Vec2 }[] = [
-            { letter: 'p', position: { x: 11, y: 3 } },
-            { letter: 'e', position: { x: 11, y: 4 } },
-            { letter: 'c', position: { x: 11, y: 5 } },
-            { letter: 'h', position: { x: 11, y: 6 } },
-        ];
-        const responses = [service.placeLetters(generatePlacement('pomme', centerPosition, Direction.Right)), service.placeLetters(combinedWord)];
-        for (let i = 0; i < responses.length; i++) {
-            expect(responses[i].isSuccess).toBe(true);
-            expect(responses[i].points).toEqual(expectedScores[i]);
-        }
-    });
-
-    it('should fail if word combination is invalid', () => {
-        const responses = [
-            service.placeLetters(generatePlacement(WORDS[0], centerPosition, Direction.Right)),
-            service.placeLetters(generatePlacement(WORDS[1], { x: centerPosition.x + WORDS[1].length, y: centerPosition.y - 1 }, Direction.Down)),
-        ];
-
-        expect(responses[0].isSuccess).toBe(true);
-        expect(responses[1].isSuccess).toBe(false);
-    });
-
-    it('should fail if all words are not connected', () => {
-        const responses = [
-            service.placeLetters(generatePlacement(WORDS[0], centerPosition, Direction.Right)),
-            service.placeLetters(generatePlacement(WORDS[1], { x: centerPosition.x + WORDS[1].length + 1, y: centerPosition.y - 1 }, Direction.Down)),
-        ];
-
-        expect(responses[0].isSuccess).toBe(true);
-        expect(responses[1].isSuccess).toBe(false);
-    });
-
-    it('should fail if word conflicts', () => {
-        expect(service.placeLetters(generatePlacement(WORDS[0], centerPosition, Direction.Right)).isSuccess).toBe(true);
-        expect(service.placeLetters(generatePlacement(WORDS[0], centerPosition, Direction.Right)).isSuccess).toBe(false);
+        service.placeLetters(COMBINED_WORD);
+        expect(boardValidatorGeneratorServiceStub.validator.lastLetters).toEqual(COMBINED_WORD);
+        expect(service.gameBoard.getSquare(COMBINED_WORD[0].position).letter).toEqual(COMBINED_WORD[0].letter);
     });
 
     it('should retrieve only new letters', () => {
-        service.placeLetters(generatePlacement(WORDS[5], centerPosition, Direction.Right));
+        boardValidatorGeneratorServiceStub.validator.isSuccess = true;
+        const NEW_WORD = WORD + 's';
 
-        let newLetters = service.retrieveNewLetters(WORDS[6], centerPosition, Direction.Right);
-        expect(newLetters).toEqual([{ letter: 's', position: { x: centerPosition.x + WORDS[6].length - 1, y: centerPosition.y } }]);
+        service.placeLetters(COMBINED_WORD);
+        let newLetters = service.retrieveNewLetters(NEW_WORD, centerPosition, Direction.Right);
+        expect(newLetters).toEqual([{ letter: 's', position: { x: centerPosition.x + NEW_WORD.length - 1, y: centerPosition.y } }]);
 
-        newLetters = service.retrieveNewLetters(WORDS[5], centerPosition, Direction.Right);
+        newLetters = service.retrieveNewLetters(WORD, centerPosition, Direction.Right);
+        expect(newLetters).toEqual([]);
+    });
+
+    it('should not retrieve new letters on out of board', () => {
+        boardValidatorGeneratorServiceStub.validator.isSuccess = true;
+        service.placeLetters(COMBINED_WORD);
+
+        let newLetters = service.retrieveNewLetters(WORD + WORD, centerPosition, Direction.Right);
         expect(newLetters).toEqual([]);
 
-        newLetters = service.retrieveNewLetters(WORDS[5] + WORDS[5], centerPosition, Direction.Right);
+        newLetters = service.retrieveNewLetters(WORD, { x: centerPosition.x * 3, y: centerPosition.x * 3 }, Direction.Right);
         expect(newLetters).toEqual([]);
     });
 });
