@@ -9,6 +9,7 @@ import { PlayerType } from '@app/classes/player-type';
 import { VirtualPlayerActionService } from './virtual-player-action.service';
 import { Action } from './actions/action';
 import { PlayerData } from '@app/classes/player-data';
+import { Timer } from '@app/classes/time/timer';
 
 const LETTERS = ['a', 'b', 'c', 'd', 'e', 'f', 'g'];
 const MAX_PLAYTIME_SECONDS = 20;
@@ -47,7 +48,7 @@ class TimerServiceStub {
         this.gotStarted = true;
     }
 
-    reset() {
+    stop() {
         this.gotStopped = true;
     }
 }
@@ -84,6 +85,10 @@ describe('VirtualPlayerService', () => {
             ],
         });
         service = TestBed.inject(VirtualPlayerService);
+
+        // eslint-disable-next-line dot-notation -- Need to replacer the real timer
+        service['minTimer'] = jasmine.createSpyObj('Timer', ['start', 'stop'], [{ completed: Promise.resolve() }]) as Timer;
+
         timerServiceStub = TestBed.inject(TimerService) as unknown as TimerServiceStub;
         virtualPlayerActionServiceMock = TestBed.inject(VirtualPlayerActionService) as unknown as VirtualPlayerActionServiceMock;
     });
