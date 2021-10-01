@@ -74,8 +74,6 @@ export class GamePageComponent {
             case 2:
                 this.gameService.skipTurn();
                 break;
-            default:
-                break;
         }
     }
 
@@ -84,7 +82,7 @@ export class GamePageComponent {
 
         dialogRef.afterClosed().subscribe((result) => {
             if (result === true) {
-                this.gameService.resetGame();
+                this.gameService.reset();
             }
         });
     }
@@ -95,7 +93,7 @@ export class GamePageComponent {
         const dialogRef = this.dialog.open(EndGameComponent);
         dialogRef.afterClosed().subscribe((result) => {
             if (result === true) {
-                this.gameService.resetGame();
+                this.gameService.reset();
                 this.gameService.gameEnding.subscribe(() => this.endGame());
             }
         });

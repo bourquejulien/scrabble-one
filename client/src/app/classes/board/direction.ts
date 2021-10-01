@@ -6,19 +6,12 @@ export enum Direction {
     None,
 }
 
-export const reverseDirection = (direction: Direction): Direction => {
-    switch (direction) {
-        case Direction.Down:
-            return Direction.Up;
-        case Direction.Up:
-            return Direction.Down;
-        case Direction.Left:
-            return Direction.Right;
-        case Direction.Right:
-            return Direction.Left;
-        case Direction.None:
-            return Direction.None;
-        default:
-            return Direction.None;
-    }
-};
+const REVERSE_DIRECTIONS = new Map<Direction, Direction>([
+    [Direction.Down, Direction.Up],
+    [Direction.Up, Direction.Down],
+    [Direction.Left, Direction.Right],
+    [Direction.Right, Direction.Left],
+    [Direction.None, Direction.None],
+]);
+
+export const reverseDirection = (direction: Direction): Direction => REVERSE_DIRECTIONS.get(direction) ?? Direction.None;

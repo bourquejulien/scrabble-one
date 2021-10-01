@@ -8,17 +8,15 @@ export class ReserveService {
     private reserve: string[] = [];
 
     constructor() {
-        for (const [letter, letterData] of letterDefinitions) {
-            for (let i = 0; i < letterData.maxQuantity; i++) {
-                this.reserve.push(letter);
-            }
-        }
+        this.reset();
     }
 
     putBackLetter(letterToExchange: string): void {
         const letterIndex = this.reserve.indexOf(letterToExchange);
         if (letterIndex !== -1) {
             this.reserve.splice(letterIndex, 0, letterToExchange);
+        } else if (letterToExchange.match(/^[a-z]$/) || letterToExchange === '*') {
+            this.reserve.push(letterToExchange);
         }
     }
 
@@ -40,7 +38,7 @@ export class ReserveService {
         }
     }
 
-    resetReserve(): void {
+    reset(): void {
         this.reserve = [];
         for (const [letter, letterData] of letterDefinitions) {
             for (let i = 0; i < letterData.maxQuantity; i++) {

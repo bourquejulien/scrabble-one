@@ -32,12 +32,12 @@ describe('GameService', () => {
 
     beforeEach(() => {
         const mockRack = ['K', 'E', 'S', 'E', 'I', 'O', 'V'];
-        virtualPlayerServiceSpy = jasmine.createSpyObj('VirtualPlayerService', ['emptyRack', 'turnComplete', 'fillRack', 'startTurn'], {
+        virtualPlayerServiceSpy = jasmine.createSpyObj('VirtualPlayerService', ['reset', 'turnComplete', 'fillRack', 'startTurn'], {
             rackContent: mockRack,
         });
-        virtualPlayerServiceSpy.emptyRack.and.returnValue();
+        virtualPlayerServiceSpy.reset.and.returnValue();
         virtualPlayerServiceSpy.fillRack.and.returnValue();
-        virtualPlayerServiceSpy.startTurn.and.returnValue();
+        virtualPlayerServiceSpy.startTurn.and.returnValue(Promise.resolve());
         virtualPlayerServiceSpy.turnComplete = new Subject<PlayerType>();
         TestBed.configureTestingModule({
             imports: [HttpClientModule],
@@ -57,37 +57,35 @@ describe('GameService', () => {
 
     it('should call EmptyRack, resetReserveNewGame, resetBoard from playerService and emptyrack from virtualPlayer when ResetGame', () => {
         const spyEmpty = spyOn(playerService, 'emptyRack').and.callThrough();
-        const spyResetReserve = spyOn(playerService, 'resetReserveNewGame').and.callThrough();
-        const spyResetBoard = spyOn(playerService, 'resetBoard').and.callThrough();
-        service.resetGame();
+        const spyResetBoard = spyOn(playerService, 'reset').and.callThrough();
+        service.reset();
         expect(spyEmpty).toHaveBeenCalled();
-        expect(spyResetReserve).toHaveBeenCalled();
         expect(spyResetBoard).toHaveBeenCalled();
-        expect(virtualPlayerServiceSpy.emptyRack).toHaveBeenCalled();
+        expect(virtualPlayerServiceSpy.reset).toHaveBeenCalled();
     });
 
     it('should have the right amount of point when playerRackPoint is called', () => {
         const expectRackPoint = 19;
-        const virRackPoint = service.playerRackPoint(virtualPlayerServiceSpy.rackContent);
+        const virRackPoint = service.playerRackPoint(virtualPlayerServiceSpy.playerData.rack);
         const plaRackPoint = service.playerRackPoint(playerService.rackContent);
         expect(virRackPoint).toBe(expectRackPoint);
         expect(plaRackPoint).toBe(expectRackPoint);
     });
 
     it('should reset all player stats to 0 when resetGame is called', () => {
-        service.resetGame();
+        service.reset();
         expect(playerService.points).toBe(0);
         expect(playerService.skipTurnNb).toBe(0);
     });
 
     it('should reset all virtualPlayer stats to 0 when resetGame is called', () => {
-        service.resetGame();
-        expect(virtualPlayerServiceSpy.skipTurnNb).toBe(0);
-        expect(virtualPlayerServiceSpy.points).toBe(0);
+        service.reset();
+        expect(virtualPlayerServiceSpy.playerData.skippedTurns).toBe(0);
+        expect(virtualPlayerServiceSpy.playerData.score).toBe(0);
     });
 
     it('should reset skipTurnNb to 0 when resetGame is called', () => {
-        service.resetGame();
+        service.reset();
         expect(service.skipTurnNb).toBe(0);
     });
 });

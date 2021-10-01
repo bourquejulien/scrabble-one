@@ -8,9 +8,9 @@ import { PlayerService } from '@app/services/player/player.service';
 import { VirtualPlayerService } from '@app/services/virtual-player/virtual-player.service';
 import { BehaviorSubject, Subject } from 'rxjs';
 import { letterDefinitions } from '@app/classes/letter';
-import { MatDialog } from '@angular/material/dialog';
 import { MessagingService } from '@app/services/messaging/messaging.service';
 import { MessageType } from '@app/classes/message';
+import { ReserveService } from '@app/services/reserve/reserve.service';
 
 @Injectable({
     providedIn: 'root',
@@ -31,7 +31,7 @@ export class GameService {
     gameEnding: Subject<void>;
     gameConfig: GameConfig = {
         gameType: '',
-        playTime: TimeSpan.fromSeconds(0),
+        playTime: TimeSpan.fromMinutesSeconds(1, 0),
         firstPlayerName: '',
         secondPlayerName: '',
     };
@@ -40,7 +40,7 @@ export class GameService {
         private readonly playerService: PlayerService,
         private readonly virtualPlayerService: VirtualPlayerService,
         private readonly messaging: MessagingService,
-        public dialog: MatDialog,
+        private readonly reserveService: ReserveService,
     ) {
         this.onTurn = new BehaviorSubject<PlayerType>(PlayerType.Local);
         this.gameEnding = new Subject<void>();
@@ -53,37 +53,32 @@ export class GameService {
         this.currentTurn = this.randomizeTurn();
 
         this.virtualPlayerService.fillRack();
-        this.playerService.fillRack(Constants.MIN_SIZE);
+        this.playerService.fillRack(Constants.RACK_SIZE);
         this.nextTurn();
     }
 
-    resetGame() {
+    reset() {
         this.skipTurnNb = 0;
-        this.playerService.skipTurnNb = 0;
-        this.virtualPlayerService.skipTurnNb = 0;
-        this.virtualPlayerService.points = 0;
-        this.playerService.points = 0;
         this.endGame = false;
-        this.playerService.emptyRack();
-        this.virtualPlayerService.emptyRack();
-        this.playerService.resetReserveNewGame();
-        this.playerService.resetBoard();
+        this.virtualPlayerService.reset();
+        this.playerService.reset();
+        this.reserveService.reset();
     }
 
     nextTurn() {
-        if (!this.endGame) {
-            this.emptyRackAndReserve();
-            this.skipTurnLimit();
-            this.firstPlayerStats.points = this.playerService.points;
-            this.secondPlayerStats.points = this.virtualPlayerService.points;
-            this.firstPlayerStats.rackSize = this.playerService.rack.length;
-            this.secondPlayerStats.rackSize = this.virtualPlayerService.rack.length;
-            // TODO Use an interface for services
-            if (this.currentTurn === PlayerType.Local) {
-                this.onVirtualPlayerTurn();
-            } else {
-                this.onPlayerTurn();
-            }
+        if (this.endGame) return;
+
+        this.emptyRackAndReserve();
+        this.skipTurnLimit();
+        this.firstPlayerStats.points = this.playerService.points;
+        this.secondPlayerStats.points = this.virtualPlayerService.playerData.score;
+        this.firstPlayerStats.rackSize = this.playerService.rack.length;
+        this.secondPlayerStats.rackSize = this.virtualPlayerService.playerData.rack.length;
+
+        if (this.currentTurn === PlayerType.Local) {
+            this.onVirtualPlayerTurn();
+        } else {
+            this.onPlayerTurn();
         }
     }
 
@@ -102,12 +97,12 @@ export class GameService {
     }
 
     emptyRackAndReserve() {
-        if (this.playerService.reserveContent() === 0 && (this.playerService.length === 0 || this.virtualPlayerService.length === 0)) {
+        if (this.reserveService.length === 0 && (this.playerService.length === 0 || this.virtualPlayerService.playerData.rack.length === 0)) {
             this.endGamePoint();
             if (this.playerService.length === 0) {
-                this.playerService.points += this.playerRackPoint(this.virtualPlayerService.rack);
+                this.playerService.points += this.playerRackPoint(this.virtualPlayerService.playerData.rack);
             } else {
-                this.virtualPlayerService.points += this.playerRackPoint(this.playerService.rack);
+                this.virtualPlayerService.playerData.score += this.playerRackPoint(this.playerService.rack);
             }
             this.endGame = true;
             this.gameEnding.next();
@@ -118,18 +113,21 @@ export class GameService {
         if (this.firstPlayerStats.points - this.playerRackPoint(this.playerService.rack) < 0) {
             this.playerService.points = 0;
         }
-        if (this.secondPlayerStats.points - this.playerRackPoint(this.virtualPlayerService.rack) < 0) {
-            this.virtualPlayerService.points = 0;
+        if (this.secondPlayerStats.points - this.playerRackPoint(this.virtualPlayerService.playerData.rack) < 0) {
+            this.virtualPlayerService.playerData.score = 0;
         } else {
             this.firstPlayerStats.points -= this.playerRackPoint(this.playerService.rack);
-            this.secondPlayerStats.points -= this.playerRackPoint(this.virtualPlayerService.rack);
+            this.secondPlayerStats.points -= this.playerRackPoint(this.virtualPlayerService.playerData.rack);
         }
     }
 
     skipTurnLimit() {
-        if (this.playerService.skipTurnNb === Constants.MAX_SKIP_TURN && this.virtualPlayerService.skipTurnNb === Constants.MAX_SKIP_TURN) {
+        if (
+            this.playerService.skipTurnNb === Constants.MAX_SKIP_TURN &&
+            this.virtualPlayerService.playerData.skippedTurns === Constants.MAX_SKIP_TURN
+        ) {
             this.playerService.skipTurnNb = 0;
-            this.virtualPlayerService.skipTurnNb = 0;
+            this.virtualPlayerService.playerData.skippedTurns = 0;
             this.endGamePoint();
             this.endGame = true;
             this.gameEnding.next();
@@ -152,7 +150,7 @@ export class GameService {
                 ' ' +
                 this.gameConfig.secondPlayerName +
                 ' : ' +
-                this.virtualPlayerService.rack,
+                this.virtualPlayerService.playerData.rack,
             MessageType.System,
         );
     }
