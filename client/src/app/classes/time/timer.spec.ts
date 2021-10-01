@@ -17,32 +17,32 @@ describe('Timer', () => {
     });
 
     it('should create an instance', () => {
-        const timer = new Timer(TimeSpan.fromMilliseconds(0));
+        const timer = new Timer();
         expect(timer).toBeTruthy();
     });
 
     it('should return initial time when stopped', () => {
-        const timer = new Timer(TimeSpan.fromMilliseconds(0));
+        const timer = new Timer();
         expect(timer).toBeTruthy();
     });
 
-    it('should return initial time when stopped', () => {
+    it('should return 0 time when stopped', () => {
         const INITIAL_TIME_MS = 1000;
-        const timer = new Timer(TimeSpan.fromMilliseconds(INITIAL_TIME_MS));
-        timer.start();
+        const timer = new Timer();
+        timer.start(TimeSpan.fromMilliseconds(INITIAL_TIME_MS));
         timer.stop();
 
-        expect(timer.time.totalMilliseconds).toEqual(INITIAL_TIME_MS);
+        expect(timer.time.totalMilliseconds).toEqual(0);
     });
 
     it('should be completed when stopped', (done) => {
         const INITIAL_TIME_MS = 1000;
-        const timer = new Timer(TimeSpan.fromMilliseconds(INITIAL_TIME_MS));
+        const timer = new Timer();
 
-        timer.start();
+        timer.start(TimeSpan.fromMilliseconds(INITIAL_TIME_MS));
 
         timer.completed.then(() => {
-            expect(timer.time.totalMilliseconds).toEqual(INITIAL_TIME_MS);
+            expect(timer.time.totalMilliseconds).toEqual(0);
             done();
         });
 
@@ -52,9 +52,9 @@ describe('Timer', () => {
     it('should decrease each seconds', fakeAsync(() => {
         const INITIAL_TIME_MS = 5000;
         const PERIOD = 1000;
-        const timer = new Timer(TimeSpan.fromMilliseconds(INITIAL_TIME_MS));
+        const timer = new Timer();
 
-        timer.start();
+        timer.start(TimeSpan.fromMilliseconds(INITIAL_TIME_MS));
 
         for (let i = 1; i < INITIAL_TIME_MS / PERIOD; i++) {
             changeTime(PERIOD);
@@ -63,7 +63,7 @@ describe('Timer', () => {
 
         changeTime(PERIOD);
 
-        timer.start();
+        timer.start(TimeSpan.fromMilliseconds(INITIAL_TIME_MS));
 
         discardPeriodicTasks();
 
