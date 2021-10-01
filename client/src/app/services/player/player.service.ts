@@ -65,7 +65,7 @@ export class PlayerService {
 
         if (!this.checkIfLettersInRack(lettersToExchange)) return;
 
-        if (this.reserveService.length < Constants.MIN_SIZE) {
+        if (this.reserveService.length < Constants.RACK_SIZE) {
             this.messagingService.send(SystemMessages.ImpossibleAction, SystemMessages.NotEnoughLetters, MessageType.Error);
             return;
         }

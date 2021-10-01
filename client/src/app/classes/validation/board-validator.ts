@@ -6,11 +6,8 @@ import { Vec2 } from '@app/classes/vec2';
 import { Direction, reverseDirection } from '@app/classes/board/direction';
 import { Bonus, getBonusDetails } from '@app/classes/board/bonus';
 import { Dictionary } from '@app/classes/dictionary/dictionary';
+import { Constants } from '@app/constants/global.constants';
 
-// TODO
-// Add placement class
-// Add letter class
-// Better handling of bonuses (split tables?)
 export class BoardValidator {
     constructor(private readonly board: ImmutableBoard, private readonly dictionary: Dictionary, private letterPoints: { [key: string]: number }) {}
 
@@ -173,6 +170,8 @@ export class BoardValidator {
             totalPoint += response.points;
         }
 
+        totalPoint += this.getBingoBonus(sortedPositions.length);
+
         return { isSuccess: true, description: '', points: totalPoint };
     }
 
@@ -214,5 +213,10 @@ export class BoardValidator {
         } else {
             return { isSuccess: false, description: `Word: (${word}) cannot be found in dictionary`, points: 0 };
         }
+    }
+
+    private getBingoBonus(placementLength: number): number {
+        const BINGO_BONUS = 50;
+        return placementLength > Constants.RACK_SIZE ? BINGO_BONUS : 0;
     }
 }
