@@ -13,7 +13,7 @@ const TURN_LENGTH_MINUTES = [0, 1, 2, 3, 4, 5] as const;
 // eslint-disable-next-line @typescript-eslint/no-magic-numbers -- Lists all option, the list is a constant
 const TURN_LENGTH_SECONDS = [0, 30] as const;
 // eslint-disable-next-line @typescript-eslint/no-magic-numbers -- Default play time is readable and immutable
-const DEFAULT_PLAY_TIME = TimeSpan.fromMinutesSeconds(1, 30);
+const DEFAULT_PLAY_TIME = TimeSpan.fromMinutesSeconds(1, 0);
 const MAX_SIZE_NAME = 16;
 const MIN_SIZE_NAME = 3;
 
