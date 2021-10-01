@@ -1,6 +1,7 @@
 /* eslint-disable max-classes-per-file -- Needs many stubbed classes in order to test*/
 import { Injectable } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
+import { PlayerData } from '@app/classes/player-data';
 import { PlayerType } from '@app/classes/player-type';
 import { PlayerService } from '@app/services/player/player.service';
 import { VirtualPlayerService } from '@app/services/virtual-player/virtual-player.service';
@@ -27,8 +28,10 @@ class MockPlayerService {
 })
 class MockVirtualPlayerService {
     turnComplete: Subject<PlayerType> = new Subject();
-    points: number = 0;
-    rack: string[] = [''];
+    playerData: PlayerData = {
+        score: 0,
+        rack: [],
+    };
     fillRack() {
         // Does Nothing
     }
@@ -37,7 +40,7 @@ class MockVirtualPlayerService {
     }
 }
 
-fdescribe('GameService', () => {
+describe('GameService', () => {
     let service: GameService;
     beforeEach(() => {
         TestBed.configureTestingModule({
