@@ -90,11 +90,13 @@ export class GamePageComponent {
     }
 
     endGame() {
+        this.gameService.gameEnding.unsubscribe();
         this.gameService.sendRackInCommunication();
         const dialogRef = this.dialog.open(EndGameComponent);
         dialogRef.afterClosed().subscribe((result) => {
             if (result === true) {
                 this.gameService.resetGame();
+                this.gameService.gameEnding.subscribe(() => this.endGame());
             }
         });
     }

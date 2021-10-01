@@ -24,6 +24,7 @@ export class GameService {
         points: 0,
         rackSize: 0,
     };
+    endGame: boolean = false;
     skipTurnNb: number = 0;
     currentTurn: PlayerType = PlayerType.Local;
     onTurn: BehaviorSubject<PlayerType>;
@@ -62,6 +63,7 @@ export class GameService {
         this.virtualPlayerService.skipTurnNb = 0;
         this.virtualPlayerService.points = 0;
         this.playerService.points = 0;
+        this.endGame = false;
         this.playerService.emptyRack();
         this.virtualPlayerService.emptyRack();
         this.playerService.resetReserveNewGame();
@@ -69,17 +71,19 @@ export class GameService {
     }
 
     nextTurn() {
-        this.emptyRackAndReserve();
-        this.skipTurnLimit();
-        this.firstPlayerStats.points = this.playerService.points;
-        this.secondPlayerStats.points = this.virtualPlayerService.points;
-        this.firstPlayerStats.rackSize = this.playerService.rack.length;
-        this.secondPlayerStats.rackSize = this.virtualPlayerService.rack.length;
-        // TODO Use an interface for services
-        if (this.currentTurn === PlayerType.Local) {
-            this.onVirtualPlayerTurn();
-        } else {
-            this.onPlayerTurn();
+        if (!this.endGame) {
+            this.emptyRackAndReserve();
+            this.skipTurnLimit();
+            this.firstPlayerStats.points = this.playerService.points;
+            this.secondPlayerStats.points = this.virtualPlayerService.points;
+            this.firstPlayerStats.rackSize = this.playerService.rack.length;
+            this.secondPlayerStats.rackSize = this.virtualPlayerService.rack.length;
+            // TODO Use an interface for services
+            if (this.currentTurn === PlayerType.Local) {
+                this.onVirtualPlayerTurn();
+            } else {
+                this.onPlayerTurn();
+            }
         }
     }
 
@@ -99,7 +103,26 @@ export class GameService {
 
     emptyRackAndReserve() {
         if (this.playerService.reserveContent() === 0 && (this.playerService.length === 0 || this.virtualPlayerService.length === 0)) {
+            this.endGamePoint();
+            if (this.playerService.length === 0) {
+                this.playerService.points += this.playerRackPoint(this.virtualPlayerService.rack);
+            } else {
+                this.virtualPlayerService.points += this.playerRackPoint(this.playerService.rack);
+            }
+            this.endGame = true;
             this.gameEnding.next();
+        }
+    }
+
+    endGamePoint() {
+        if (this.firstPlayerStats.points - this.playerRackPoint(this.playerService.rack) < 0) {
+            this.playerService.points = 0;
+        }
+        if (this.secondPlayerStats.points - this.playerRackPoint(this.virtualPlayerService.rack) < 0) {
+            this.virtualPlayerService.points = 0;
+        } else {
+            this.firstPlayerStats.points -= this.playerRackPoint(this.playerService.rack);
+            this.secondPlayerStats.points -= this.playerRackPoint(this.virtualPlayerService.rack);
         }
     }
 
@@ -107,15 +130,8 @@ export class GameService {
         if (this.playerService.skipTurnNb === Constants.MAX_SKIP_TURN && this.virtualPlayerService.skipTurnNb === Constants.MAX_SKIP_TURN) {
             this.playerService.skipTurnNb = 0;
             this.virtualPlayerService.skipTurnNb = 0;
-            if (this.firstPlayerStats.points - this.playerRackPoint(this.playerService.rack) < 0) {
-                this.firstPlayerStats.points = 0;
-            }
-            if (this.secondPlayerStats.points - this.playerRackPoint(this.virtualPlayerService.rack) < 0) {
-                this.secondPlayerStats.points = 0;
-            } else {
-                this.firstPlayerStats.points -= this.playerRackPoint(this.playerService.rack);
-                this.secondPlayerStats.points -= this.playerRackPoint(this.virtualPlayerService.rack);
-            }
+            this.endGamePoint();
+            this.endGame = true;
             this.gameEnding.next();
         }
     }
@@ -128,7 +144,17 @@ export class GameService {
     }
 
     sendRackInCommunication() {
-        this.messaging.send('Fin de partie - lettres restantes', this.gameConfig.firstPlayerName + ' : ' + 'lettre', MessageType.System);
+        this.messaging.send(
+            'Fin de partie - lettres restantes',
+            this.gameConfig.firstPlayerName +
+                ' : ' +
+                this.playerService.rack +
+                ' ' +
+                this.gameConfig.secondPlayerName +
+                ' : ' +
+                this.virtualPlayerService.rack,
+            MessageType.System,
+        );
     }
 
     private handleTurnCompletion(playerType: PlayerType) {
