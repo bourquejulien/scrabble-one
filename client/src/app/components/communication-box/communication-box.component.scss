@@ -1,21 +1,22 @@
-.comm-box-container {
-    display: block;
-    height: 100%;
-    width: 100%;
-    overflow: scroll;
-}
-
 .message-card {
-    display: flex;
-    align-items: center;
-}
-
-.card-icon {
-    margin: 4px;
+    display: block;
+    margin: 6px;
+    word-wrap: break-word;
 }
 
 .command-input {
-    position: absolute;
-    bottom: 0%;
+    bottom: 0px;
     width: 100%;
+    background-color: white;
+}
+
+.message-container {
+    overflow: auto;
+}
+
+.chat-container {
+    display: flex;
+    flex-direction: column;
+    align-content: space-between;
+    max-height: 100vh;
 }

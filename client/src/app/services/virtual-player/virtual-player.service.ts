@@ -1,10 +1,10 @@
 import { Injectable } from '@angular/core';
 import { PlayerType } from '@app/classes/player-type';
-import { Constants } from '@app/constants/global.constants';
-import { TimerService } from '@app/services/timer/timer.service';
-import { TimeSpan } from '@app/classes/time/timespan';
 import { Timer } from '@app/classes/time/timer';
+import { TimeSpan } from '@app/classes/time/timespan';
+import { Constants } from '@app/constants/global.constants';
 import { ReserveService } from '@app/services/reserve/reserve.service';
+import { TimerService } from '@app/services/timer/timer.service';
 import { Subject } from 'rxjs';
 import { VirtualPlayerActionService } from './virtual-player-action.service';
 import { PlayerData } from '@app/classes/player-data';
@@ -17,7 +17,7 @@ const MIN_PLAYTIME_SECONDS = 3;
 })
 export class VirtualPlayerService {
     turnComplete: Subject<PlayerType>;
-    private playerData: PlayerData;
+    playerData: PlayerData;
     private minTimer: Timer;
 
     constructor(
@@ -53,7 +53,7 @@ export class VirtualPlayerService {
     }
 
     fillRack(): void {
-        while (this.reserveService.length > 0 && this.playerData.rack.length < Constants.MIN_SIZE) {
+        while (this.reserveService.length > 0 && this.playerData.rack.length < Constants.RACK_SIZE) {
             this.playerData.rack.push(this.reserveService.drawLetter());
         }
     }
