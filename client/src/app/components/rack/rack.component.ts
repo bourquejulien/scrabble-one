@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { letterDefinitions } from '@app/classes/letter';
 import { PlayerService } from '@app/services/player/player.service';
 
@@ -7,20 +7,8 @@ import { PlayerService } from '@app/services/player/player.service';
     templateUrl: './rack.component.html',
     styleUrls: ['./rack.component.scss'],
 })
-export class RackComponent implements OnInit, OnDestroy {
-    rack: string[] = [];
-
-    constructor(private playerService: PlayerService) {}
-
-    ngOnInit() {
-        this.playerService.rackUpdated.subscribe(() => {
-            this.refreshRack();
-        });
-    }
-
-    ngOnDestroy() {
-        this.playerService.rackUpdated.unsubscribe();
-    }
+export class RackComponent {
+    constructor(readonly playerService: PlayerService) {}
 
     retrievePoints(letter: string): number {
         const currentLetterData = letterDefinitions.get(letter);
@@ -28,25 +16,5 @@ export class RackComponent implements OnInit, OnDestroy {
         if (currentLetterData?.points === undefined) return -1;
 
         return currentLetterData.points;
-    }
-
-    refreshRack(): void {
-        this.rack = [];
-        const playerRack: string[] = this.playerService.rackContent;
-
-        if (playerRack === undefined) return;
-
-        for (const letter of playerRack) {
-            this.rack.push(letter);
-        }
-    }
-
-    // For testing
-    setRack(mockRack: string[]): void {
-        this.rack = [];
-
-        for (const letter of mockRack) {
-            this.rack.push(letter);
-        }
     }
 }

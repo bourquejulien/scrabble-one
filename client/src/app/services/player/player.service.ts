@@ -11,15 +11,14 @@ import { MessagingService } from '@app/services/messaging/messaging.service';
 import { ReserveService } from '@app/services/reserve/reserve.service';
 import { TimerService } from '@app/services/timer/timer.service';
 import { Subject } from 'rxjs';
-import { BehaviorSubject } from 'rxjs/internal/BehaviorSubject';
 
 @Injectable({
     providedIn: 'root',
 })
 export class PlayerService {
     points: number = 0;
+    skipTurnNb: number = 0;
     turnComplete: Subject<PlayerType>;
-    rackUpdated: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(true);
     rack: string[] = [];
 
     constructor(
@@ -57,10 +56,10 @@ export class PlayerService {
 
         this.updateRack(lettersToPlace);
         this.updateReserve(positionToPlace.length);
-        this.rackUpdated.next(!this.rackUpdated.getValue());
 
         this.boardService.placeLetters(positionToPlace);
 
+        this.skipTurnNb = 0;
         this.completeTurn();
     }
 
@@ -83,7 +82,7 @@ export class PlayerService {
         }
 
         this.updateRack(lettersToExchange);
-        this.rackUpdated.next(!this.rackUpdated.getValue());
+        this.skipTurnNb = 0;
         this.completeTurn();
     }
 
@@ -101,16 +100,24 @@ export class PlayerService {
         this.rack = [];
     }
 
-    get rackContent(): string[] {
-        return this.rack;
-    }
-
     setRack(mockRack: string[]): void {
         this.emptyRack();
 
         for (const letter of mockRack) {
             this.rack.push(letter);
         }
+    }
+
+    reset() {
+        this.skipTurnNb = 0;
+        this.points = 0;
+        this.emptyRack();
+        this.boardService.resetBoardService();
+        this.timerService.stop();
+    }
+
+    get rackContent(): string[] {
+        return this.rack;
     }
 
     private updateReserve(lettersToPlaceLength: number): void {
@@ -150,6 +157,7 @@ export class PlayerService {
         return true;
     }
 
+    // For testing
     get length(): number {
         return this.rack.length;
     }

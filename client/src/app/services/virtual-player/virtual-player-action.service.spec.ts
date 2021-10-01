@@ -34,7 +34,7 @@ describe('VirtualPlayerActionService', () => {
             ],
         });
 
-        playerData = { score: 0, rack: [] };
+        playerData = { score: 0, skippedTurns: 0, rack: [] };
         service = TestBed.inject(VirtualPlayerActionService);
     });
 

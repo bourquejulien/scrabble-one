@@ -8,11 +8,7 @@ export class ReserveService {
     private reserve: string[] = [];
 
     constructor() {
-        for (const [letter, letterData] of letterDefinitions) {
-            for (let i = 0; i < letterData.maxQuantity; i++) {
-                this.reserve.push(letter);
-            }
-        }
+        this.reset();
     }
 
     putBackLetter(letterToExchange: string): void {
@@ -39,6 +35,15 @@ export class ReserveService {
 
         for (const letter of mockReserve) {
             this.reserve.push(letter);
+        }
+    }
+
+    reset(): void {
+        this.reserve = [];
+        for (const [letter, letterData] of letterDefinitions) {
+            for (let i = 0; i < letterData.maxQuantity; i++) {
+                this.reserve.push(letter);
+            }
         }
     }
 }

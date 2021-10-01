@@ -14,4 +14,5 @@ const REVERSE_DIRECTIONS = new Map<Direction, Direction>([
     [Direction.None, Direction.None],
 ]);
 
-export const reverseDirection = (direction: Direction): Direction => REVERSE_DIRECTIONS.get(direction) ?? Direction.None;
+// eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- All enum values are present in the map
+export const reverseDirection = (direction: Direction): Direction => REVERSE_DIRECTIONS.get(direction)!;

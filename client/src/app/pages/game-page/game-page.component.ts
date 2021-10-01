@@ -3,6 +3,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { MatDrawer } from '@angular/material/sidenav';
 import { PlayerType } from '@app/classes/player-type';
 import { ConfirmQuitDialogComponent } from '@app/components/confirm-quit-dialog/confirm-quit-dialog.component';
+import { EndGameComponent } from '@app/components/end-game/end-game.component';
 import { GameService } from '@app/services/game/game.service';
 import { TimerService } from '@app/services/timer/timer.service';
 
@@ -34,13 +35,13 @@ export class GamePageComponent {
     iconList: string[];
 
     constructor(gameService: GameService, timerService: TimerService, public dialog: MatDialog) {
+        gameService.gameEnding.subscribe(() => this.endGame());
         this.gameService = gameService;
         this.playerType = gameService.onTurn.getValue();
         this.timerService = timerService;
         this.buttonConfig = [
             {
                 color: 'warn',
-                routerLink: '/',
                 icon: Icon.Logout,
                 hover: 'Quitter la partie',
             },
@@ -71,7 +72,7 @@ export class GamePageComponent {
                 this.toggleDrawer();
                 break;
             case 2:
-                this.gameService.nextTurn();
+                this.gameService.skipTurn();
                 break;
         }
     }
@@ -81,7 +82,19 @@ export class GamePageComponent {
 
         dialogRef.afterClosed().subscribe((result) => {
             if (result === true) {
-                // TODO: call endGame
+                this.gameService.reset();
+            }
+        });
+    }
+
+    endGame() {
+        this.gameService.gameEnding.unsubscribe();
+        this.gameService.sendRackInCommunication();
+        const dialogRef = this.dialog.open(EndGameComponent);
+        dialogRef.afterClosed().subscribe((result) => {
+            if (result === true) {
+                this.gameService.reset();
+                this.gameService.gameEnding.subscribe(() => this.endGame());
             }
         });
     }

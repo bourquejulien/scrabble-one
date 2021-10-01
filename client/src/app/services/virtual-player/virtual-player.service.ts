@@ -25,7 +25,7 @@ export class VirtualPlayerService {
         private readonly reserveService: ReserveService,
         private readonly timerService: TimerService,
     ) {
-        this.playerData = { score: 0, rack: [] };
+        this.playerData = { score: 0, skippedTurns: 0, rack: [] };
         this.turnComplete = new Subject<PlayerType>();
         this.minTimer = new Timer();
     }
@@ -56,5 +56,10 @@ export class VirtualPlayerService {
         while (this.reserveService.length > 0 && this.playerData.rack.length < Constants.RACK_SIZE) {
             this.playerData.rack.push(this.reserveService.drawLetter());
         }
+    }
+
+    reset(): void {
+        this.playerData = { score: 0, skippedTurns: 0, rack: [] };
+        this.minTimer.stop();
     }
 }

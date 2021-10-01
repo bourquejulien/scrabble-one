@@ -87,4 +87,10 @@ describe('ReserveService', () => {
     it('should return reserve length', () => {
         expect(service.length).toBe(service['reserve'].length);
     });
+
+    it('should reset reserve to original length when resetReserve is called', () => {
+        const reserveLength = 102;
+        service.reset();
+        expect(service.length).toBe(reserveLength);
+    });
 });

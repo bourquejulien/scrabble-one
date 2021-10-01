@@ -10,7 +10,7 @@ import { TimePipe } from '@app/classes/time/time.pipe';
 import { TimeSpan } from '@app/classes/time/timespan';
 import { AppMaterialModule } from '@app/modules/material.module';
 import { GameService } from '@app/services/game/game.service';
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, Subject } from 'rxjs';
 import { GamePageComponent } from './game-page.component';
 
 const GAME_TYPES_LIST = ['Mode Solo Débutant'];
@@ -23,11 +23,14 @@ class GameServiceStub {
         points: 0,
         rackSize: 0,
     };
+
     secondPlayerStats: PlayerStats = {
         points: 0,
         rackSize: 0,
     };
+
     onTurn: BehaviorSubject<PlayerType> = new BehaviorSubject<PlayerType>(PlayerType.Local);
+    gameEnding: Subject<void> = new Subject<void>();
     currentTurn: PlayerType = PlayerType.Local;
     gameConfig: GameConfig = {
         gameType: GAME_TYPES_LIST[0],
@@ -42,6 +45,10 @@ class GameServiceStub {
         } else {
             this.currentTurn = PlayerType.Local;
         }
+    }
+
+    skipTurn(): void {
+        this.nextTurn();
     }
 }
 
@@ -97,7 +104,7 @@ describe('GamePageComponent', () => {
         expect(component.gameService.currentTurn).toEqual(PlayerType.Virtual);
     });
 
-    it('should call angular material toggle function if toggleDrawer called', () => {
+    it('should call toggle function if toggleDrawer called', () => {
         const spy = spyOn(component.drawer, 'toggle');
 
         component.toggleDrawer();

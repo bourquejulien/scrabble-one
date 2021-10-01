@@ -26,12 +26,12 @@ export class VirtualPlayerActionService {
         let random = Math.random();
 
         if (random < Constants.virtualPlayer.SKIP_PERCENTAGE) {
-            return new SkipAction();
+            return new SkipAction(playerData);
         }
         random -= Constants.virtualPlayer.SKIP_PERCENTAGE;
 
         if (random < Constants.virtualPlayer.EXCHANGE_PERCENTAGE) {
-            return new ExchangeAction(this.reserveService, playerData.rack);
+            return new ExchangeAction(this.reserveService, playerData);
         }
 
         const playGenerator = new PlayGenerator(this.dictionaryService, this.boardService, playerData.rack);

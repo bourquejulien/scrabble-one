@@ -109,4 +109,9 @@ describe('BoardService', () => {
         newLetters = service.retrieveNewLetters(WORD, { x: centerPosition.x * 3, y: centerPosition.x * 3 }, Direction.Right);
         expect(newLetters).toEqual([]);
     });
+
+    it('should resetBoard when called', () => {
+        service.resetBoardService();
+        expect(service.gameBoard).toBeTruthy();
+    });
 });
