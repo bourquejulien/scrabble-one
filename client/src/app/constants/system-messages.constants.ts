@@ -1,6 +1,6 @@
 export enum SystemMessages {
-    DebugOff = 'Affichages de débogages désactivés',
-    DebugOn = 'Affichages de débogages activés',
+    DebugOff = 'Affichage du débogage désactivé',
+    DebugOn = 'Affichage du débogage activé',
     HelpMessage = 'Commandes disponibles: !placer <rangée><colonne><direction: h ou v> <mot>: permet de placer une lettre\n!\n!aide\n!debug\n ',
     HelpTitle = "Capsule d'aide",
     ImpossibleAction = 'Action impossible à réaliser',

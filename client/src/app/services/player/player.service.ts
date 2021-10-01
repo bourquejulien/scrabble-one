@@ -7,11 +7,11 @@ import { Vec2 } from '@app/classes/vec2';
 import { Constants } from '@app/constants/global.constants';
 import { SystemMessages } from '@app/constants/system-messages.constants';
 import { BoardService } from '@app/services/board/board.service';
+import { MessagingService } from '@app/services/messaging/messaging.service';
 import { ReserveService } from '@app/services/reserve/reserve.service';
 import { TimerService } from '@app/services/timer/timer.service';
 import { Subject } from 'rxjs';
 import { BehaviorSubject } from 'rxjs/internal/BehaviorSubject';
-import { MessagingService } from '@app/services/messaging/messaging.service';
 
 @Injectable({
     providedIn: 'root',
@@ -42,11 +42,15 @@ export class PlayerService {
         const positionToPlace = this.boardService.retrieveNewLetters(word, position, direction);
         const lettersToPlace = positionToPlace.map((element) => element.letter).join('');
 
-        if (!this.checkIfLettersInRack(lettersToPlace)) return;
+        if (!this.areLettersInRack(lettersToPlace)) {
+            this.completeTurn();
+            return;
+        }
 
         const validationData = this.boardService.lookupLetters(positionToPlace);
         if (!validationData.isSuccess) {
             this.messagingService.send('', validationData.description, MessageType.Log);
+            this.completeTurn();
             return;
         }
         this.points += validationData.points;
@@ -63,7 +67,7 @@ export class PlayerService {
     exchangeLetters(lettersToExchange: string): void {
         const lettersToExchangeLength = lettersToExchange.length;
 
-        if (!this.checkIfLettersInRack(lettersToExchange)) return;
+        if (!this.areLettersInRack(lettersToExchange)) return;
 
         if (this.reserveService.length < Constants.RACK_SIZE) {
             this.messagingService.send(SystemMessages.ImpossibleAction, SystemMessages.NotEnoughLetters, MessageType.Error);
@@ -102,14 +106,14 @@ export class PlayerService {
     }
 
     setRack(mockRack: string[]): void {
-        this.rack = [];
+        this.emptyRack();
 
         for (const letter of mockRack) {
             this.rack.push(letter);
         }
     }
 
-    private updateReserve(lettersToPlaceLength: number) {
+    private updateReserve(lettersToPlaceLength: number): void {
         const reserveLength = this.reserveService.length;
 
         if (this.reserveService.length === 0) {
@@ -136,7 +140,7 @@ export class PlayerService {
         }
     }
 
-    private checkIfLettersInRack(lettersToPlace: string): boolean {
+    private areLettersInRack(lettersToPlace: string): boolean {
         for (const letter of lettersToPlace) {
             if (this.rack.indexOf(letter) === -1) {
                 this.messagingService.send(SystemMessages.ImpossibleAction, SystemMessages.LetterPossessionError + letter, MessageType.Error);

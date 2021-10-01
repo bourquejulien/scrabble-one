@@ -73,8 +73,6 @@ export class GamePageComponent {
             case 2:
                 this.gameService.nextTurn();
                 break;
-            default:
-                break;
         }
     }
 

@@ -95,7 +95,7 @@ describe('InitSoloModeComponent', () => {
     it('Should have error for not containing only letters and minimum length', () => {
         init.gameConfig.firstPlayerName = NAMES[6];
         init.initialize();
-        expect(init.errorsList).toEqual(['*Le nom doit contenir au moins 3 caractères.\n', '*Le nom doit seulement être composé de lettres.\n']);
+        expect(init.errorsList).toEqual(['*Le nom doit seulement être composé de lettres.\n', '*Le nom doit contenir au moins 3 caractères.\n']);
     });
     it('Should call botNameChange', fakeAsync(() => {
         const spy = spyOn(init, 'botNameChange');
