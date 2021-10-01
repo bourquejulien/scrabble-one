@@ -24,7 +24,7 @@ class PlayerServiceStub {
     }
 }
 
-fdescribe('RackComponent', () => {
+describe('RackComponent', () => {
     let component: RackComponent;
     let fixture: ComponentFixture<RackComponent>;
 
