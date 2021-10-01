@@ -72,7 +72,7 @@ export class GamePageComponent {
                 this.toggleDrawer();
                 break;
             case 2:
-                this.gameService.nextTurn();
+                this.gameService.skipTurn();
                 break;
             default:
                 break;
@@ -90,6 +90,7 @@ export class GamePageComponent {
     }
 
     endGame() {
+        this.gameService.sendRackInCommunication();
         const dialogRef = this.dialog.open(EndGameComponent);
         dialogRef.afterClosed().subscribe((result) => {
             if (result === true) {

@@ -9,6 +9,8 @@ import { VirtualPlayerService } from '@app/services/virtual-player/virtual-playe
 import { BehaviorSubject, Subject } from 'rxjs';
 import { letterDefinitions } from '@app/classes/letter';
 import { MatDialog } from '@angular/material/dialog';
+import { MessagingService } from '@app/services/messaging/messaging.service';
+import { MessageType } from '@app/classes/message';
 
 @Injectable({
     providedIn: 'root',
@@ -36,6 +38,7 @@ export class GameService {
     constructor(
         private readonly playerService: PlayerService,
         private readonly virtualPlayerService: VirtualPlayerService,
+        private readonly messaging: MessagingService,
         public dialog: MatDialog,
     ) {
         this.onTurn = new BehaviorSubject<PlayerType>(PlayerType.Local);
@@ -95,27 +98,38 @@ export class GameService {
     }
 
     emptyRackAndReserve() {
-        if (this.playerService.reserveContent() === 0 && this.playerService.length === 0 && this.virtualPlayerService.length === 0) {
+        if (this.playerService.reserveContent() === 0 && (this.playerService.length === 0 || this.virtualPlayerService.length === 0)) {
             this.gameEnding.next();
         }
     }
 
     skipTurnLimit() {
         if (this.playerService.skipTurnNb === Constants.MAX_SKIP_TURN && this.virtualPlayerService.skipTurnNb === Constants.MAX_SKIP_TURN) {
+            this.playerService.skipTurnNb = 0;
+            this.virtualPlayerService.skipTurnNb = 0;
+            if (this.firstPlayerStats.points - this.playerRackPoint(this.playerService.rack) < 0) {
+                this.firstPlayerStats.points = 0;
+            }
+            if (this.secondPlayerStats.points - this.playerRackPoint(this.virtualPlayerService.rack) < 0) {
+                this.secondPlayerStats.points = 0;
+            } else {
+                this.firstPlayerStats.points -= this.playerRackPoint(this.playerService.rack);
+                this.secondPlayerStats.points -= this.playerRackPoint(this.virtualPlayerService.rack);
+            }
             this.gameEnding.next();
         }
-        // console.log('player ' + this.playerService.skipTurnNb);
-        // console.log('virtual ' + this.virtualPlayerService.skipTurnNb);
     }
 
-    // endGame() {
-    //     const dialogRef = this.dialog.open(EndGameComponent);
-    //     dialogRef.afterClosed().subscribe((result) => {
-    //         if (result === true) {
-    //             this.resetGame();
-    //         }
-    //     });
-    // }
+    skipTurn() {
+        if (this.playerService.skipTurnNb < 3) {
+            this.playerService.skipTurnNb++;
+        }
+        this.nextTurn();
+    }
+
+    sendRackInCommunication() {
+        this.messaging.send('Fin de partie - lettres restantes', this.gameConfig.firstPlayerName + ' : ' + 'lettre', MessageType.System);
+    }
 
     private handleTurnCompletion(playerType: PlayerType) {
         if (playerType !== this.currentTurn) {
