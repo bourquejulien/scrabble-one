@@ -2,6 +2,7 @@ import { Component, HostListener, OnInit } from '@angular/core';
 import { FormControl, FormGroup, ValidatorFn, Validators } from '@angular/forms';
 import { MatDialogRef } from '@angular/material/dialog';
 import { Router } from '@angular/router';
+import { Error } from '@app/classes/errorName/error';
 import { GameConfig } from '@app/classes/game-config';
 import { TimeSpan } from '@app/classes/time/timespan';
 import { GameService } from '@app/services/game/game.service';
@@ -16,7 +17,27 @@ const TURN_LENGTH_SECONDS = [0, 30] as const;
 const DEFAULT_PLAY_TIME = TimeSpan.fromMinutesSeconds(1, 30);
 const MAX_SIZE_NAME = 16;
 const MIN_SIZE_NAME = 3;
-
+const MIN_LENGTH_ERROR: Error = {
+    validationRule: 'minlength',
+    validationMessage: '*Le nom doit contenir au moins 3 caractères.\n',
+};
+const MAX_LENGTH_ERROR: Error = {
+    validationRule: 'maxlength',
+    validationMessage: '*Le nom doit au maximum contenir 16 lettres.\n',
+};
+const REQUIRED_ERROR: Error = {
+    validationRule: 'required',
+    validationMessage: '*Un nom doit être entré.\n',
+};
+const CONTAINS_NOT_LETTERS_ERROR: Error = {
+    validationRule: 'containsOnlyLetters',
+    validationMessage: '*Le nom doit seulement être composé de lettres.\n',
+};
+const STARTS_LOWER_LETTER_ERROR: Error = {
+    validationRule: 'startsWithLowerLetter',
+    validationMessage: '*Le nom doit débuter par une majuscule.\n',
+};
+const POSSIBLE_ERRORS: Error[] = [STARTS_LOWER_LETTER_ERROR, CONTAINS_NOT_LETTERS_ERROR, REQUIRED_ERROR, MAX_LENGTH_ERROR, MIN_LENGTH_ERROR];
 @Component({
     selector: 'app-init-solo-mode',
     templateUrl: './init-solo-mode.component.html',
@@ -100,11 +121,15 @@ export class InitSoloModeComponent implements OnInit {
             return true;
         } else {
             this.errorsList = [];
-            if (nameForm.get('control')?.hasError('startsWithLowerLetter')) this.errorsList.push('*Le nom doit débuter par une majuscule.\n');
-            if (nameForm.get('control')?.hasError('maxlength')) this.errorsList.push('*Le nom doit au maximum contenir 16 lettres.\n');
-            if (nameForm.get('control')?.hasError('minlength')) this.errorsList.push('*Le nom doit contenir au moins 3 caractères.\n');
-            if (nameForm.get('control')?.hasError('required')) this.errorsList.push('*Un nom doit être entré.\n');
-            if (nameForm.get('control')?.hasError('containsOnlyLetters')) this.errorsList.push('*Le nom doit seulement être composé de lettres.\n');
+            for (const error of POSSIBLE_ERRORS) {
+                const abstractControl = this.nameForm.get('control');
+                if (abstractControl === null) {
+                    continue;
+                }
+                if (abstractControl.hasError(error.validationRule)) {
+                    this.errorsList.push(error.validationMessage);
+                }
+            }
         }
         return false;
     }

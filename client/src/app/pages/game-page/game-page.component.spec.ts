@@ -5,6 +5,7 @@ import { MatToolbar } from '@angular/material/toolbar';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { GameConfig } from '@app/classes/game-config';
 import { PlayerType } from '@app/classes/player-type';
+import { PlayerStats } from '@app/classes/player/player-stats';
 import { TimePipe } from '@app/classes/time/time.pipe';
 import { TimeSpan } from '@app/classes/time/timespan';
 import { AppMaterialModule } from '@app/modules/material.module';
@@ -18,13 +19,30 @@ const GAME_TYPES_LIST = ['Mode Solo Débutant'];
     providedIn: 'root',
 })
 class GameServiceStub {
+    firstPlayerStats: PlayerStats = {
+        points: 0,
+        rackSize: 0,
+    };
+    secondPlayerStats: PlayerStats = {
+        points: 0,
+        rackSize: 0,
+    };
     onTurn: BehaviorSubject<PlayerType> = new BehaviorSubject<PlayerType>(PlayerType.Local);
+    currentTurn: PlayerType = PlayerType.Local;
     gameConfig: GameConfig = {
         gameType: GAME_TYPES_LIST[0],
         playTime: TimeSpan.fromSeconds(0),
         firstPlayerName: '',
         secondPlayerName: '',
     };
+
+    nextTurn(): void {
+        if (this.currentTurn === PlayerType.Local) {
+            this.currentTurn = PlayerType.Virtual;
+        } else {
+            this.currentTurn = PlayerType.Local;
+        }
+    }
 }
 
 @Component({
@@ -54,5 +72,35 @@ describe('GamePageComponent', () => {
 
     it('should create', () => {
         expect(component).toBeTruthy();
+    });
+
+    it('should call confirmQuit function if first button index', () => {
+        const currentButtonIndex = 0;
+        const spy = spyOn(component, 'confirmQuit');
+
+        component.callFunction(currentButtonIndex);
+        expect(spy).toHaveBeenCalled();
+    });
+
+    it('should call toggleDrawer function if second button index', () => {
+        const currentButtonIndex = 1;
+        const spy = spyOn(component, 'toggleDrawer');
+
+        component.callFunction(currentButtonIndex);
+        expect(spy).toHaveBeenCalled();
+    });
+
+    it('should call nextTurn function if third button index', () => {
+        const currentButtonIndex = 2;
+        component.callFunction(currentButtonIndex);
+
+        expect(component.gameService.currentTurn).toEqual(PlayerType.Virtual);
+    });
+
+    it('should call angular material toggle function if toggleDrawer called', () => {
+        const spy = spyOn(component.drawer, 'toggle');
+
+        component.toggleDrawer();
+        expect(spy).toHaveBeenCalled();
     });
 });
