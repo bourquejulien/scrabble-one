@@ -1,25 +1,24 @@
-/* eslint-disable dot-notation */
-/* eslint-disable @typescript-eslint/no-magic-numbers */
-/* eslint-disable max-classes-per-file */
-/* eslint-disable @typescript-eslint/naming-convention */
+/* eslint-disable dot-notation -- Need to access private properties and functions*/
+/* eslint-disable @typescript-eslint/no-magic-numbers -- Not necessary in tests*/
+/* eslint-disable max-classes-per-file -- Multiple mock needed for tests*/
+/* eslint-disable @typescript-eslint/naming-convention  -- Need SCREAMING_SNAKE_CASE for static property in mock class */
+import { HttpClientModule } from '@angular/common/http';
+import { Injectable } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
-import { CommandsService } from '@app/services/commands/commands.service';
+import { Direction } from '@app/classes/board/direction';
 import { Message, MessageType } from '@app/classes/message';
+import { PlayerType } from '@app/classes/player-type';
+import { Vec2 } from '@app/classes/vec2';
+import { CommandsService } from '@app/services/commands/commands.service';
+import { GameService } from '@app/services/game/game.service';
 import { MessagingService } from '@app/services/messaging/messaging.service';
 import { Subject } from 'rxjs';
-import { Injectable } from '@angular/core';
-import { Direction } from '@app/classes/board/direction';
-import { Vec2 } from '@app/classes/vec2';
-import { PlayerType } from '@app/classes/player-type';
-import { GameService } from '@app/services/game/game.service';
-import { HttpClientModule } from '@angular/common/http';
 @Injectable({
     providedIn: 'root',
 })
 class MockMessagingService extends MessagingService {
-    // For test purposes
-    // eslint-disable-next-line @typescript-eslint/no-magic-numbers
     static MOCK_TIMESTAMP: number = 100000000;
+
     constuctor() {
         this.subject = new Subject<Message>();
     }
