@@ -24,7 +24,7 @@ export class GameService {
         points: 0,
         rackSize: 0,
     };
-    endGame: boolean = false;
+    gameRunning: boolean = false;
     skipTurnNb: number = 0;
     currentTurn: PlayerType = PlayerType.Local;
     onTurn: BehaviorSubject<PlayerType>;
@@ -51,6 +51,7 @@ export class GameService {
     startGame(gameConfig: GameConfig) {
         this.gameConfig = gameConfig;
         this.currentTurn = this.randomizeTurn();
+        this.gameRunning = true;
 
         this.virtualPlayerService.fillRack();
         this.playerService.fillRack(Constants.RACK_SIZE);
@@ -59,21 +60,23 @@ export class GameService {
 
     reset() {
         this.skipTurnNb = 0;
-        this.endGame = false;
+        this.gameRunning = false;
         this.virtualPlayerService.reset();
         this.playerService.reset();
         this.reserveService.reset();
     }
 
     nextTurn() {
-        if (this.endGame) return;
+        if (!this.gameRunning) return;
 
         this.emptyRackAndReserve();
-        this.skipTurnLimit();
+
         this.firstPlayerStats.points = this.playerService.points;
         this.secondPlayerStats.points = this.virtualPlayerService.playerData.score;
         this.firstPlayerStats.rackSize = this.playerService.rack.length;
         this.secondPlayerStats.rackSize = this.virtualPlayerService.playerData.rack.length;
+
+        this.skipTurnLimit();
 
         if (this.currentTurn === PlayerType.Local) {
             this.onVirtualPlayerTurn();
@@ -84,9 +87,7 @@ export class GameService {
 
     playerRackPoint(rack: string[]): number {
         let playerPoint = 0;
-        // eslint-disable-next-line @typescript-eslint/prefer-for-of
-        for (let i = 0; i < rack.length; i++) {
-            const letter = rack[i];
+        for (const letter of rack) {
             const currentLetterData = letterDefinitions.get(letter.toLowerCase());
             if (currentLetterData?.points === undefined) {
                 return -1;
@@ -104,7 +105,7 @@ export class GameService {
             } else {
                 this.virtualPlayerService.playerData.score += this.playerRackPoint(this.playerService.rack);
             }
-            this.endGame = true;
+            this.gameRunning = false;
             this.gameEnding.next();
         }
     }
@@ -129,7 +130,7 @@ export class GameService {
             this.playerService.skipTurnNb = 0;
             this.virtualPlayerService.playerData.skippedTurns = 0;
             this.endGamePoint();
-            this.endGame = true;
+            this.gameRunning = false;
             this.gameEnding.next();
         }
     }

@@ -94,15 +94,18 @@ describe('GridService', () => {
     });
 
     it(' drawSquares should call drawImage and drawSymbol once', () => {
-        const spyImage = spyOn<GridService>(service, 'drawImage' as never);
-        const spySymbol = spyOn<GridService>(service, 'drawSymbol' as never);
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Needed for spy
+        const spyImage = spyOn<any>(service, 'drawImage');
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Needed for spy
+        const spySymbol = spyOn<any>(service, 'drawSymbol');
         service.drawSquares(ctxStub);
         expect(spyImage).toHaveBeenCalledTimes(1);
         expect(spySymbol).toHaveBeenCalledTimes(1);
     });
 
     it(' drawSquares should be called 4 times', () => {
-        const spy = spyOn<GridService>(service, 'drawBonus' as never);
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Needed for spy
+        const spy = spyOn<any>(service, 'drawBonus');
         const timesCalled = 4;
         service.drawSquares(ctxStub);
         expect(spy).toHaveBeenCalledTimes(timesCalled);

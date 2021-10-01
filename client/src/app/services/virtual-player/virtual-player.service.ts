@@ -60,5 +60,6 @@ export class VirtualPlayerService {
 
     reset(): void {
         this.playerData = { score: 0, skippedTurns: 0, rack: [] };
+        this.minTimer.stop();
     }
 }

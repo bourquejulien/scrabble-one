@@ -215,14 +215,6 @@ describe('PlayerService', () => {
         expect(reserveService['reserve'][6]).toBe('e');
     });
 
-    it('should change value of rack updated subject if letters successfully exchanged', () => {
-        const newReserve = ['a', 'a', 'a', 'a', 'a', 'a', 'a'];
-        reserveService.setReserve(newReserve);
-
-        service.exchangeLetters(lettersToExchange);
-        expect(service.rackUpdated.getValue()).toBe(false);
-    });
-
     it('should notify player change if completeTurn', (done) => {
         service.completeTurn();
         service.turnComplete.subscribe((playerType) => {
