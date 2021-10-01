@@ -27,12 +27,12 @@ export class VirtualPlayerService {
     ) {
         this.playerData = { score: 0, rack: [] };
         this.turnComplete = new Subject<PlayerType>();
-        this.minTimer = new Timer(TimeSpan.fromSeconds(MIN_PLAYTIME_SECONDS));
+        this.minTimer = new Timer();
     }
 
     async startTurn() {
         this.timerService.start(TimeSpan.fromSeconds(MAX_PLAYTIME_SECONDS), PlayerType.Virtual);
-        this.minTimer.start();
+        this.minTimer.start(TimeSpan.fromSeconds(MIN_PLAYTIME_SECONDS));
 
         const action = this.virtualPlayerActionService.getNextAction(this.playerData);
 
@@ -48,7 +48,7 @@ export class VirtualPlayerService {
 
     endTurn() {
         this.minTimer.stop();
-        this.timerService.reset();
+        this.timerService.stop();
         this.turnComplete.next(PlayerType.Virtual);
     }
 

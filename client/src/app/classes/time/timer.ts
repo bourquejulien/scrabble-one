@@ -1,5 +1,5 @@
 import { BehaviorSubject, Observable, Subject, timer } from 'rxjs';
-import { repeatWhen, takeWhile } from 'rxjs/operators';
+import { takeWhile } from 'rxjs/operators';
 import { TimeSpan } from './timespan';
 
 const TIME_PERIOD = 1000;
@@ -7,42 +7,35 @@ const TIME_PERIOD = 1000;
 export class Timer {
     time: TimeSpan;
 
-    readonly countdownStarted: Subject<void>;
     readonly timerUpdated: BehaviorSubject<TimeSpan>;
 
     private readonly timerInstance: Observable<number>;
-    private readonly timeLimit: TimeSpan;
     private isStarted: boolean;
     private timerStopped: Subject<void>;
 
-    constructor(timeLimit: TimeSpan) {
-        this.timeLimit = timeLimit;
-        this.time = timeLimit;
+    constructor() {
+        this.time = TimeSpan.fromMilliseconds(0);
         this.isStarted = false;
 
         this.timerUpdated = new BehaviorSubject<TimeSpan>(this.time);
-        this.countdownStarted = new Subject<void>();
         this.timerStopped = new Subject();
 
         this.timerInstance = new Observable<number>();
 
-        this.timerInstance = timer(TIME_PERIOD, TIME_PERIOD).pipe(
-            takeWhile(() => this.isRunning),
-            repeatWhen(() => this.countdownStarted),
-        );
+        this.timerInstance = timer(TIME_PERIOD, TIME_PERIOD).pipe(takeWhile(() => true));
 
         this.timerInstance.subscribe(() => this.refresh());
     }
 
-    start(): void {
+    start(time: TimeSpan): void {
+        this.time = time;
+
         this.timerStopped = new Subject();
-        this.time = this.timeLimit;
         this.isStarted = true;
-        this.countdownStarted.next();
     }
 
     stop(): void {
-        this.time = this.timeLimit;
+        this.time = TimeSpan.fromMilliseconds(0);
         this.isStarted = false;
         this.timerStopped.complete();
     }
@@ -52,11 +45,10 @@ export class Timer {
     }
 
     private refresh(): void {
-        this.time = this.time.sub(TimeSpan.fromMilliseconds(TIME_PERIOD));
-
-        this.timerUpdated.next(this.time);
-
-        if (!this.isRunning) {
+        if (this.isRunning) {
+            this.time = this.time.sub(TimeSpan.fromMilliseconds(TIME_PERIOD));
+            this.timerUpdated.next(this.time);
+        } else {
             this.stop();
         }
     }
