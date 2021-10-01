@@ -35,7 +35,7 @@ const CONTAINS_NOT_LETTERS_ERROR: Error = {
 };
 const STARTS_LOWER_LETTER_ERROR: Error = {
     validationRule: 'startsWithLowerLetter',
-    validationMessage: '*Le nom doit seulement être composé de lettres.\n',
+    validationMessage: '*Le nom doit débuter par une majuscule.\n',
 };
 const POSSIBLE_ERRORS: Error[] = [STARTS_LOWER_LETTER_ERROR, CONTAINS_NOT_LETTERS_ERROR, REQUIRED_ERROR, MAX_LENGTH_ERROR, MIN_LENGTH_ERROR];
 @Component({
@@ -122,7 +122,13 @@ export class InitSoloModeComponent implements OnInit {
         } else {
             this.errorsList = [];
             for (const error of POSSIBLE_ERRORS) {
-                if (this.nameForm.get('control')?.hasError(error.validationRule)) this.errorsList.push(error.validationMessage);
+                const abstractControl = this.nameForm.get('control');
+                if (abstractControl === null) {
+                    continue;
+                }
+                if (abstractControl.hasError(error.validationRule)) {
+                    this.errorsList.push(error.validationMessage);
+                }
             }
         }
         return false;
