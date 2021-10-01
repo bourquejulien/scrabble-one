@@ -10,30 +10,32 @@ import { PlayerType } from '@app/classes/player-type';
 export class TimerService {
     readonly countdownStopped: Subject<PlayerType> = new Subject();
 
-    private timer: Timer | null = null;
+    private timer: Timer;
     private countdownSubscription: Subscription | null = null;
 
+    constructor() {
+        this.timer = new Timer();
+    }
+
     start(delay: TimeSpan, playerType: PlayerType): void {
-        this.timer = new Timer(delay);
-        this.timer.start();
-        this.countdownSubscription = this.timer.timerUpdated.subscribe((timeSpan) => {
-            if (timeSpan.totalMilliseconds <= 0) {
-                this.reset();
+        this.timer.start(delay);
+        this.countdownSubscription = this.timer.timerUpdated.subscribe(() => {
+            if (this.timer.time.totalMilliseconds <= 0) {
+                this.stop();
                 this.countdownStopped.next(playerType);
             }
         });
     }
 
-    reset() {
+    stop() {
         if (this.countdownSubscription !== null) {
             this.countdownSubscription.unsubscribe();
             this.countdownSubscription = null;
         }
-        this.timer = null;
     }
 
     get time(): TimeSpan {
-        if (this.timer !== null) {
+        if (this.countdownSubscription !== null) {
             return this.timer.time;
         } else {
             return TimeSpan.fromMilliseconds(0);
