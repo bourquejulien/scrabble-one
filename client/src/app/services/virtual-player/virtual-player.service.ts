@@ -1,11 +1,11 @@
 import { Injectable } from '@angular/core';
 import { PlayerType } from '@app/classes/player-type';
+import { Timer } from '@app/classes/time/timer';
+import { TimeSpan } from '@app/classes/time/timespan';
 import { Constants } from '@app/constants/global.constants';
 import { BoardService } from '@app/services/board/board.service';
-import { TimerService } from '@app/services/timer/timer.service';
-import { TimeSpan } from '@app/classes/time/timespan';
-import { Timer } from '@app/classes/time/timer';
 import { ReserveService } from '@app/services/reserve/reserve.service';
+import { TimerService } from '@app/services/timer/timer.service';
 import { PlayGeneratorService } from '@app/services/virtual-player/play-generator.service';
 import { Subject } from 'rxjs';
 const MAX_PLAYTIME_SECONDS = 20;
@@ -18,7 +18,7 @@ export class VirtualPlayerService {
     points: number = 0;
     skipTurnNb: number = 0;
     turnComplete: Subject<PlayerType>;
-    private rack: string[] = [];
+    rack: string[] = [];
     private minTimer: Timer;
     constructor(
         private readonly playGeneratorService: PlayGeneratorService,

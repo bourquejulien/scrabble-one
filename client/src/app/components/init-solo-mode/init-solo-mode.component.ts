@@ -28,9 +28,9 @@ export class InitSoloModeComponent implements OnInit {
     readonly minutesList = TURN_LENGTH_MINUTES;
     readonly secondsList = TURN_LENGTH_SECONDS;
     nameForm: FormGroup;
+    errorsList: string[] = [];
     minutes: number = DEFAULT_PLAY_TIME.totalMinutes;
     seconds: number = DEFAULT_PLAY_TIME.seconds;
-    errorsList: string[];
 
     gameConfig: GameConfig = {
         gameType: GAME_TYPES_LIST[0],
@@ -53,7 +53,7 @@ export class InitSoloModeComponent implements OnInit {
     }
 
     initialize(): void {
-        const needsToReroute: boolean = this.confirmInitialization(this.gameConfig.firstPlayerName);
+        const needsToReroute: boolean = this.confirmInitialization();
 
         if (needsToReroute) {
             this.dialogRef.close();
@@ -67,6 +67,7 @@ export class InitSoloModeComponent implements OnInit {
     }
 
     botNameChange(firstPlayerName: string): void {
+        // Statistiquement, cette boucle ne devrait pas s'éxécuter plus de 3 fois. (Excepté dans de très rares cas)
         while (firstPlayerName === this.gameConfig.secondPlayerName) {
             this.gameConfig.secondPlayerName = this.randomizeBotName(BOT_NAMES);
         }
@@ -81,9 +82,9 @@ export class InitSoloModeComponent implements OnInit {
         return this.nameValidatorFunction as ValidatorFn;
     }
 
-    private confirmInitialization(name: string): boolean {
+    private confirmInitialization(): boolean {
         const nameForm = new FormGroup({
-            control: new FormControl(name, [
+            control: new FormControl(this.gameConfig.firstPlayerName, [
                 Validators.required,
                 Validators.minLength(MIN_SIZE_NAME),
                 Validators.maxLength(MAX_SIZE_NAME),
@@ -94,8 +95,6 @@ export class InitSoloModeComponent implements OnInit {
         this.nameForm = nameForm;
 
         if (nameForm.valid) {
-            this.gameConfig.firstPlayerName = name;
-            this.botNameChange(this.gameConfig.firstPlayerName);
             this.gameConfig.playTime = TimeSpan.fromMinutesSeconds(this.minutes, this.seconds);
 
             return true;
@@ -115,7 +114,7 @@ export class InitSoloModeComponent implements OnInit {
         const playerName = control.value as string;
         if (playerName !== undefined && playerName !== null && playerName !== '') {
             for (let index = 0; index < playerName.length; index++) {
-                if (!/[a-zA-Z||ÉéÎîÉéÇçÏï]/.test(playerName.charAt(index))) return { ['containsOnlyLetters']: true };
+                if (!/[a-zA-ZÉéÎîÉéÇçÏï]/.test(playerName.charAt(index))) return { ['containsOnlyLetters']: true };
             }
 
             const firstLetter = playerName[0];

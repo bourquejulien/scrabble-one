@@ -42,7 +42,6 @@ describe('PlayerService', () => {
     it('should be created', () => {
         expect(service).toBeTruthy();
     });
-
     it('should decrease length of rack if valid letter successfully removed from rack', () => {
         const currentLength = service.length;
         service['updateRack'](letterToRemoveFromRack);

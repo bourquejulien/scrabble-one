@@ -20,29 +20,30 @@ mat-drawer-container {
     position: absolute;
     top: 270px;
     right: 350px;
-    width: 100px;
-    height: 60px;
+    width: 120px;
+    height: 90px;
     display: flex;
     flex-direction: column;
     align-items: center;
+    justify-content: center;
     background-color: #45cb85;
 }
 #scoreboardPlayerTwo {
     position: absolute;
     top: 520px;
     right: 350px;
-    width: 100px;
-    height: 60px;
+    width: 120px;
+    height: 90px;
     display: flex;
     flex-direction: column;
     align-items: center;
+    justify-content: center;
     background-color: #f44336;
 }
 .verticalFlexItems {
     margin-top: 20px;
     font-size: large;
     color: #fff;
-    justify-content: center;
 }
 
 .play-area-container > * {

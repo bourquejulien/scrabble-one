@@ -18,7 +18,7 @@ export class PlayerService {
     skipTurnNb: number = 0;
     turnComplete: Subject<PlayerType>;
     rackUpdated: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(true);
-    private rack: string[] = [];
+    rack: string[] = [];
 
     constructor(
         private readonly reserveService: ReserveService,
@@ -85,7 +85,6 @@ export class PlayerService {
     }
 
     completeTurn(): void {
-        console.log('skip');
         this.turnComplete.next(PlayerType.Local);
     }
 

@@ -10,11 +10,19 @@ export class EndGameComponent {
     constructor(private readonly gameService: GameService) {}
 
     winner(): string {
-        if (this.gameService.firstPlayerPoints > this.gameService.secondPlayerPoints) {
-            return 'Félicitation au gagnant ' + this.gameService.gameConfig.firstPlayerName + ':' + this.gameService.firstPlayerPoints + ' points';
+        if (this.gameService.firstPlayerStats.points > this.gameService.secondPlayerStats.points) {
+            return (
+                'Félicitation au gagnant ' + this.gameService.gameConfig.firstPlayerName + ':' + this.gameService.firstPlayerStats.points + ' points'
+            );
         }
-        if (this.gameService.firstPlayerPoints < this.gameService.secondPlayerPoints) {
-            return 'Félicitation au gagnant ' + this.gameService.gameConfig.secondPlayerName + ':' + this.gameService.secondPlayerPoints + ' points';
+        if (this.gameService.firstPlayerStats.points < this.gameService.secondPlayerStats.points) {
+            return (
+                'Félicitation au gagnant ' +
+                this.gameService.gameConfig.secondPlayerName +
+                ':' +
+                this.gameService.secondPlayerStats.points +
+                ' points'
+            );
         } else {
             return (
                 'Félicitation aux gagnants ' +
