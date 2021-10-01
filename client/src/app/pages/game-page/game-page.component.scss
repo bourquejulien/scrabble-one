@@ -9,65 +9,107 @@
 }
 
 .virtual.mat-toolbar.mat-primary {
-    background: #b03a2e;
+    background: #f44336;
     color: #fff;
 }
 
 mat-drawer-container {
     height: 100%;
 }
-#scoreboardPlayerOne {
-    position: absolute;
-    top: 270px;
-    right: 350px;
-    width: 120px;
-    height: 90px;
+.scoreboard-player-one-open {
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
+    position: absolute;
     background-color: #45cb85;
+    margin-left: 70rem;
+    left: 0rem;
+    top: 15rem;
+    width: 7.5rem;
+    height: 5rem;
+    transition: 0.45s;
 }
-#scoreboardPlayerTwo {
-    position: absolute;
-    top: 520px;
-    right: 350px;
-    width: 120px;
-    height: 90px;
+.scoreboard-player-two-open {
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
+    position: absolute;
     background-color: #f44336;
+    margin-left: 70rem;
+    left: 0rem;
+    top: 31rem;
+    width: 7.5rem;
+    height: 5rem;
+    transition: 0.45s;
 }
-.verticalFlexItems {
+
+.scoreboard-player-one-closed {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    position: absolute;
+    background-color: #45cb85;
+    margin-left: 92.5rem;
+    left: 0rem;
+    top: 15rem;
+    width: 7.5rem;
+    height: 5rem;
+    transition: 0.45s;
+}
+
+.scoreboard-player-two-closed {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    position: absolute;
+    background-color: #f44336;
+    margin-left: 92.5rem;
+    left: 0rem;
+    top: 31rem;
+    width: 7.5rem;
+    height: 5rem;
+    transition: 0.45s;
+}
+
+.vertical-flex-items {
     margin-top: 20px;
     font-size: large;
     color: #fff;
 }
 
-.play-area-container > * {
+.play-area-container-open {
     flex: 1 1 auto;
     align-items: center;
-    position: fixed;
+    position: absolute;
     z-index: 1;
+    margin-top: 5rem;
+    top: 0rem;
+    margin-left: 19rem;
+    left: 0rem;
+    transition: 0.55s;
 }
 
-.play-area {
-    display: grid;
-    width: min-content;
-    outline: none;
+.play-area-container-closed {
+    flex: 1 1 auto;
+    align-items: center;
     position: absolute;
-    margin-left: auto;
-    margin-right: auto;
-    left: 0;
-    right: 0;
+    z-index: 1;
+    margin-top: 5rem;
+    top: 0rem;
+    margin-left: 33.5rem;
+    left: 0rem;
+    transition: 0.55s;
 }
 
 .comm-box-sidenav-content {
-    display: inline-flex;
+    display: flex;
     flex-direction: column;
     align-items: center;
+    position: sticky;
     margin-right: 0;
     margin-bottom: 0;
 }
@@ -90,7 +132,7 @@ mat-drawer-container {
     min-width: inherit;
 }
 
-.toolbar {
+.tool-bar {
     justify-content: space-between;
     z-index: 2;
 }
