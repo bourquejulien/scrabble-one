@@ -29,8 +29,8 @@ export class PlayerService {
         private readonly messagingService: MessagingService,
     ) {
         this.turnComplete = new Subject<PlayerType>();
-        this.timerService.countdownStopped.subscribe(() => {
-            if (PlayerType.Local) this.completeTurn();
+        this.timerService.countdownStopped.subscribe((playerType) => {
+            if (PlayerType.Local === playerType) this.completeTurn();
         });
     }
 
@@ -69,7 +69,7 @@ export class PlayerService {
 
         if (!this.areLettersInRack(lettersToExchange)) return;
 
-        if (this.reserveService.length < Constants.MIN_SIZE) {
+        if (this.reserveService.length < Constants.RACK_SIZE) {
             this.messagingService.send(SystemMessages.ImpossibleAction, SystemMessages.NotEnoughLetters, MessageType.Error);
             return;
         }

@@ -24,7 +24,7 @@ export class GameService {
     onTurn: BehaviorSubject<PlayerType>;
     gameConfig: GameConfig = {
         gameType: '',
-        playTime: TimeSpan.fromSeconds(0),
+        playTime: TimeSpan.fromMinutesSeconds(1, 0),
         firstPlayerName: '',
         secondPlayerName: '',
     };
@@ -40,7 +40,7 @@ export class GameService {
         this.currentTurn = this.randomizeTurn();
 
         this.virtualPlayerService.fillRack();
-        this.playerService.fillRack(Constants.MIN_SIZE);
+        this.playerService.fillRack(Constants.RACK_SIZE);
         this.nextTurn();
     }
 
@@ -50,9 +50,9 @@ export class GameService {
 
     nextTurn() {
         this.firstPlayerStats.points = this.playerService.points;
-        this.secondPlayerStats.points = this.virtualPlayerService.points;
+        this.secondPlayerStats.points = this.virtualPlayerService.playerData.score;
         this.firstPlayerStats.rackSize = this.playerService.rack.length;
-        this.secondPlayerStats.rackSize = this.virtualPlayerService.rack.length;
+        this.secondPlayerStats.rackSize = this.virtualPlayerService.playerData.rack.length;
         // TODO Use an interface for services
         if (this.currentTurn === PlayerType.Local) {
             this.onVirtualPlayerTurn();

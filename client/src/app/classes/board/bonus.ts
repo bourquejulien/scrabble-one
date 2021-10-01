@@ -7,32 +7,14 @@ export enum Bonus {
     Star,
 }
 
-export const getBonusValue = (bonus: Bonus): number => {
-    switch (bonus) {
-        case Bonus.L2:
-            return 2;
-        case Bonus.L3:
-            return 3;
-        case Bonus.W2:
-            return 2;
-        case Bonus.W3:
-            return 3;
-        case Bonus.Star:
-            return 2;
-        default:
-            return 1;
-    }
-};
+const BONUS_VALUE = new Map<Bonus, { score: number; isLetterBonus: boolean }>([
+    [Bonus.L2, { score: 2, isLetterBonus: true }],
+    [Bonus.L3, { score: 3, isLetterBonus: true }],
+    [Bonus.W2, { score: 2, isLetterBonus: false }],
+    [Bonus.W3, { score: 3, isLetterBonus: false }],
+    [Bonus.Star, { score: 2, isLetterBonus: false }],
+    [Bonus.None, { score: 0, isLetterBonus: false }],
+]);
 
-export const isLetterBonus = (bonus: Bonus): boolean => {
-    switch (bonus) {
-        case Bonus.L2:
-        case Bonus.L3:
-            return true;
-        case Bonus.W2:
-        case Bonus.W3:
-        case Bonus.Star:
-        default:
-            return false;
-    }
-};
+export const getBonusDetails = (bonus: Bonus): { score: number; isLetterBonus: boolean } =>
+    BONUS_VALUE.get(bonus) ?? { score: 0, isLetterBonus: false };

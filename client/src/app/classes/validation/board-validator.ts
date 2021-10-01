@@ -4,20 +4,12 @@ import { Square } from '@app/classes/board/square';
 import { ValidationResponse } from './validation-response';
 import { Vec2 } from '@app/classes/vec2';
 import { Direction, reverseDirection } from '@app/classes/board/direction';
-import { Bonus, getBonusValue, isLetterBonus } from '@app/classes/board/bonus';
-import { DictionaryLookup } from '@app/classes/dictionary/dictionary-lookup';
-
-// TODO
-// Add placement class
-// Add letter class
-// Better handling of bonuses (split tables?)
+import { Bonus, getBonusDetails } from '@app/classes/board/bonus';
+import { Dictionary } from '@app/classes/dictionary/dictionary';
+import { Constants } from '@app/constants/global.constants';
 
 export class BoardValidator {
-    constructor(
-        private readonly board: ImmutableBoard,
-        private readonly dictionaryLookup: DictionaryLookup,
-        private letterPoints: { [key: string]: number },
-    ) {}
+    constructor(private readonly board: ImmutableBoard, private readonly dictionary: Dictionary, private letterPoints: { [key: string]: number }) {}
 
     private static validateSquare(square: Square | null): boolean {
         return square != null && square.letter !== '';
@@ -46,6 +38,18 @@ export class BoardValidator {
         }
 
         return false;
+    }
+
+    private static getFirstPosition(clonedBoard: Board, startPosition: Vec2, direction: Direction): Vec2 {
+        let square = clonedBoard.getRelative(startPosition, reverseDirection(direction));
+        let position = startPosition;
+
+        while (square != null && square.letter !== '') {
+            position = square.position;
+            square = clonedBoard.getRelative(square.position, reverseDirection(direction));
+        }
+
+        return position;
     }
 
     validate(letters: { letter: string; position: Vec2 }[]): ValidationResponse {
@@ -89,10 +93,6 @@ export class BoardValidator {
     }
 
     getLetterPoints(letter: string): number {
-        if (letter.length !== 1) {
-            return 0;
-        }
-
         return this.letterPoints[letter] ?? 0;
     }
 
@@ -170,11 +170,13 @@ export class BoardValidator {
             totalPoint += response.points;
         }
 
+        totalPoint += this.getBingoBonus(sortedPositions.length);
+
         return { isSuccess: true, description: '', points: totalPoint };
     }
 
     private validateWord(clonedBoard: Board, initialPosition: Vec2, direction: Direction): ValidationResponse {
-        const firstPosition = this.getFirstPosition(clonedBoard, initialPosition, direction);
+        const firstPosition = BoardValidator.getFirstPosition(clonedBoard, initialPosition, direction);
 
         let nextSquare: Square | null = clonedBoard.getSquare(firstPosition);
         let word = '';
@@ -193,11 +195,12 @@ export class BoardValidator {
                 continue;
             }
 
-            if (isLetterBonus(currentSquare.bonus)) {
-                totalPoint += this.getLetterPoints(currentSquare.letter) * getBonusValue(currentSquare.bonus);
+            const bonusDetails = getBonusDetails(currentSquare.bonus);
+            if (bonusDetails.isLetterBonus) {
+                totalPoint += this.getLetterPoints(currentSquare.letter) * bonusDetails.score;
             } else {
                 totalPoint += this.getLetterPoints(currentSquare.letter);
-                multiplier *= getBonusValue(currentSquare.bonus);
+                multiplier *= bonusDetails.score;
             }
         }
 
@@ -205,22 +208,15 @@ export class BoardValidator {
             return { isSuccess: true, description: '', points: 0 };
         }
 
-        if (this.dictionaryLookup.lookup(word)) {
+        if (this.dictionary.lookup(word)) {
             return { isSuccess: true, description: '', points: totalPoint * multiplier };
         } else {
             return { isSuccess: false, description: `Word: (${word}) cannot be found in dictionary`, points: 0 };
         }
     }
 
-    private getFirstPosition(clonedBoard: Board, initialPosition: Vec2, direction: Direction): Vec2 {
-        let square = clonedBoard.getRelative(initialPosition, reverseDirection(direction));
-        let position = initialPosition;
-
-        while (square != null && square.letter !== '') {
-            position = square.position;
-            square = clonedBoard.getRelative(square.position, reverseDirection(direction));
-        }
-
-        return position;
+    private getBingoBonus(placementLength: number): number {
+        const BINGO_BONUS = 50;
+        return placementLength > Constants.RACK_SIZE ? BINGO_BONUS : 0;
     }
 }

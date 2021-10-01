@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { DictionaryLookup } from '@app/classes/dictionary/dictionary-lookup';
+import { Dictionary } from '@app/classes/dictionary/dictionary';
 import { JsonDictionary } from '@app/classes/dictionary/json-dictionary';
 import { Trie } from '@app/classes/trie/trie';
 import { Constants } from '@app/constants/global.constants';
@@ -8,7 +8,7 @@ import { Constants } from '@app/constants/global.constants';
 @Injectable({
     providedIn: 'root',
 })
-export class DictionaryService implements DictionaryLookup {
+export class DictionaryService implements Dictionary {
     private readonly dictionary: Trie;
     private readonly reverseDictionary: Trie;
 
@@ -37,7 +37,7 @@ export class DictionaryService implements DictionaryLookup {
     }
 
     lookUpEnd(word: string): boolean {
-        return this.dictionary.startsWith(DictionaryService.flipWord(word)).isOther;
+        return this.reverseDictionary.startsWith(DictionaryService.flipWord(word)).isOther;
     }
 
     private retrieveDictionary(): void {
