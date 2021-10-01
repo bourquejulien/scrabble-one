@@ -34,6 +34,7 @@ export class GamePageComponent implements OnDestroy {
     playerType: PlayerType;
     buttonConfig: ButtonConfig[] = [];
     iconList: string[];
+    isOpen: boolean = true;
 
     private onTurnSubscription: Subscription;
     private gameEndingSubscription: Subscription;
@@ -69,8 +70,9 @@ export class GamePageComponent implements OnDestroy {
         this.onTurnSubscription.unsubscribe();
     }
 
-    toggleDrawer() {
+    toggleDrawer(): void {
         this.drawer.toggle();
+        this.isOpen = !this.isOpen;
     }
 
     callFunction(buttonIndex: number): void {
