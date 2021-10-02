@@ -23,6 +23,7 @@ export class CommandsService {
     parseInput(input: string): boolean {
         // Arguments: [COMMAND, OPTIONS, WORD]
         if (input.startsWith('!')) {
+            let successfulCommand = true;
             const args = input.split(' ');
             switch (args[0]) {
                 case '!aide':
@@ -32,15 +33,19 @@ export class CommandsService {
                     this.toggleDebug();
                     break;
                 case '!placer':
-                    return this.checkPlaceCommand(args[1], this.removeAccents(args[2]));
+                    successfulCommand = this.checkPlaceCommand(args[1], this.removeAccents(args[2]));
+                    break;
                 case '!passer':
-                    return this.skipTurn();
+                    successfulCommand = this.skipTurn();
+                    break;
                 case '!echanger':
-                    return this.exchangeLetters(this.removeAccents(args[1]));
+                    successfulCommand = this.exchangeLetters(this.removeAccents(args[1]));
+                    break;
                 default:
                     this.messagingService.send('', SystemMessages.InvalidCommand, MessageType.Error);
                     return false;
             }
+            if (successfulCommand) this.messagingService.send('Commande réussie', input, MessageType.System, this.gameService.currentTurn);
         } else {
             if (this.messageRegex.test(input)) {
                 this.messagingService.send('', input, MessageType.Message);

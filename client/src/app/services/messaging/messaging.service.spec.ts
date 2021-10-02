@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-magic-numbers */
 import { TestBed } from '@angular/core/testing';
 import { MessageType } from '@app/classes/message';
 import { MessagingService } from './messaging.service';
@@ -46,6 +47,7 @@ describe('MessagingService', () => {
         service.send('title2', 'body2', MessageType.Log);
         service.send('title3', 'body3', MessageType.Message);
         service.send('title4', 'body4', MessageType.System);
-        expect(timerCallback).toHaveBeenCalledTimes(3);
+        service.send('title4', 'body4', MessageType.Game);
+        expect(timerCallback).toHaveBeenCalledTimes(4);
     });
 });

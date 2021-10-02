@@ -12,7 +12,7 @@ import { CommandsService } from '@app/services/commands/commands.service';
 import { MessagingService } from '@app/services/messaging/messaging.service';
 import { Subject } from 'rxjs';
 
-describe('CommandsService', () => {
+fdescribe('CommandsService', () => {
     let messagingServiceSpy: jasmine.SpyObj<MessagingService>;
     let service: CommandsService;
 
@@ -79,6 +79,8 @@ describe('CommandsService', () => {
         const vecCoordinate: Vec2 = { x: 7, y: 7 };
         service.parseInput('!placer h8v word');
         expect(spy).toHaveBeenCalledWith('word', vecCoordinate, Direction.Down);
+        service.parseInput('!placer h8h word');
+        expect(spy).toHaveBeenCalledWith('word', vecCoordinate, Direction.Down);
     });
 
     it('#parseInput should send an error message if the user message is not in the right format', () => {
@@ -115,6 +117,13 @@ describe('CommandsService', () => {
             expect(message.messageType).toEqual(MessageType.Error);
         });
         service.parseInput('!skip');
+    });
+
+    it("should fail when it is not the user's turn", () => {
+        service.gameService.currentTurn = PlayerType.Virtual;
+        expect(service['skipTurn']()).toBeFalsy();
+        expect(service['exchangeLetters']('wtv')).toBeFalsy();
+        expect(service['checkPlaceCommand']('h8h', 'test')).toBeFalsy();
     });
 
     it('should remove accents', () => {
