@@ -12,6 +12,7 @@ import { AppMaterialModule } from '@app/modules/material.module';
 import { GameService } from '@app/services/game/game.service';
 import { BehaviorSubject, Subject } from 'rxjs';
 import { GamePageComponent } from './game-page.component';
+import { MatDialog } from '@angular/material/dialog';
 
 const GAME_TYPES_LIST = ['Mode Solo Débutant'];
 
@@ -50,6 +51,10 @@ class GameServiceStub {
     skipTurn(): void {
         this.nextTurn();
     }
+
+    sendRackInCommunication(): void {
+        // this function does nothing
+    }
 }
 
 @Component({
@@ -61,6 +66,7 @@ class PlayAreaStubComponent {}
 describe('GamePageComponent', () => {
     let component: GamePageComponent;
     let fixture: ComponentFixture<GamePageComponent>;
+    let gameService: GameService;
 
     beforeEach(async () => {
         await TestBed.configureTestingModule({
@@ -75,6 +81,7 @@ describe('GamePageComponent', () => {
         fixture = TestBed.createComponent(GamePageComponent);
         component = fixture.componentInstance;
         fixture.detectChanges();
+        gameService = TestBed.inject(GameService);
     });
 
     it('should create', () => {
@@ -110,4 +117,23 @@ describe('GamePageComponent', () => {
         component.toggleDrawer();
         expect(spy).toHaveBeenCalled();
     });
+
+    it('should call sendRackInCommunication function if endGame called', () => {
+        const spy = spyOn(gameService, 'sendRackInCommunication').and.callThrough();
+
+        component.endGame();
+        expect(spy).toHaveBeenCalled();
+    });
+
+    // it('should call gameService.resetGame function if endGame is called and dialog is closed', () => {
+    //     const response = true;
+
+    //     spyOn(component, 'endGame').and.returnValue();
+
+    //     component.endGame();
+
+    //     fixture.detectChanges();
+
+    //     expect(homeComponent.listOfUsers).toEqual(response);
+    // });
 });
