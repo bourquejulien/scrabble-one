@@ -54,13 +54,6 @@ describe('PlayAction', () => {
         expect(playAction['getScoreRange']()).toEqual({ min: 0, max: 0 });
     });
 
-    it('should not generate word when no time is left', () => {
-        stubbedTime = TimeSpan.fromMilliseconds(0);
-        playAction.execute();
-
-        expect(playGeneratorStub.timesCalled).toEqual(0);
-    });
-
     it('should generate words until no time is left', () => {
         const TIME_TO_ELAPSE = 20;
         playGeneratorStub.canGenerate = true;

@@ -50,6 +50,6 @@ export class PlayAction implements Action {
     }
 
     private shouldRun(startTime: TimeSpan) {
-        return this.timerService.time.seconds > 0 && startTime.seconds - this.timerService.time.seconds < MAX_PLAYTIME_SECONDS;
+        return this.timerService.time.seconds >= 0 && startTime.seconds - this.timerService.time.seconds < MAX_PLAYTIME_SECONDS;
     }
 }
