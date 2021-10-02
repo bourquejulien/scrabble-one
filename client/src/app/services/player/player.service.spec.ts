@@ -216,11 +216,23 @@ describe('PlayerService', () => {
     });
 
     it('should notify player change if completeTurn', (done) => {
-        service.completeTurn();
         service.turnComplete.subscribe((playerType) => {
             expect(playerType).toEqual(PlayerType.Local);
             done();
         });
+        service.completeTurn();
+
+        timerService.countdownStopped.next(PlayerType.Local);
+    });
+
+    it('should skip turn', (done) => {
+        service.turnComplete.subscribe((playerType) => {
+            expect(playerType).toEqual(PlayerType.Local);
+            done();
+        });
+        service.skipTurn();
+
+        expect(service.skipTurnNb).toEqual(1);
         timerService.countdownStopped.next(PlayerType.Local);
     });
 
