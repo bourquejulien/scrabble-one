@@ -12,7 +12,6 @@ import { AppMaterialModule } from '@app/modules/material.module';
 import { GameService } from '@app/services/game/game.service';
 import { BehaviorSubject, Subject } from 'rxjs';
 import { GamePageComponent } from './game-page.component';
-import { MatDialog } from '@angular/material/dialog';
 
 const GAME_TYPES_LIST = ['Mode Solo Débutant'];
 
