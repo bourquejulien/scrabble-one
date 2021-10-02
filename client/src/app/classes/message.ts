@@ -5,11 +5,11 @@ export enum MessageType {
     Log,
     Error,
     System,
+    Game,
 }
 export interface Message {
     title: string;
     body: string;
     messageType: MessageType;
     userId: PlayerType;
-    timestamp: number;
 }
