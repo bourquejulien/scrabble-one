@@ -1,5 +1,7 @@
 import { MessageType } from '@app/classes/message';
 import { PlayerData } from '@app/classes/player-data';
+import { PlayerType } from '@app/classes/player-type';
+import { TimeSpan } from '@app/classes/time/timespan';
 import { PlayGenerator } from '@app/classes/virtual-player/play-generator';
 import { Constants } from '@app/constants/global.constants';
 import { BoardService } from '@app/services/board/board.service';
@@ -7,6 +9,8 @@ import { MessagingService } from '@app/services/messaging/messaging.service';
 import { TimerService } from '@app/services/timer/timer.service';
 import { Action } from './action';
 import { PlaceAction } from './place-action';
+
+const MAX_PLAYTIME_SECONDS = 20;
 
 export class PlayAction implements Action {
     constructor(
@@ -20,7 +24,9 @@ export class PlayAction implements Action {
     execute(): Action | null {
         const scoreRange = this.getScoreRange();
 
-        while (this.timerService.time.totalMilliseconds > 0 && this.playGenerator.generateNext());
+        const startTime = this.timerService.time;
+
+        while (this.shouldRun(startTime) && this.playGenerator.generateNext());
 
         const filteredPlays = this.playGenerator.orderedPlays.filter((e) => e.score >= scoreRange.min && e.score <= scoreRange.max);
 
@@ -33,9 +39,9 @@ export class PlayAction implements Action {
         let alternatives = '';
         for (let i = 0; i < Constants.NB_ALTERNATIVES; i++) {
             const alternativeIndex = (chosenPlay + i) % filteredPlays.length;
-            alternatives += filteredPlays[alternativeIndex] + ' ';
+            alternatives += filteredPlays[alternativeIndex].word + ' ';
         }
-        this.messagingService.send('', 'Mot alternatifs: ' + alternatives, MessageType.Game);
+        this.messagingService.send('', 'Mot alternatifs: ' + alternatives, MessageType.Log, PlayerType.Virtual);
         return new PlaceAction(this.boardService, play, this.playerData);
     }
 
@@ -51,5 +57,9 @@ export class PlayAction implements Action {
         }
 
         return { min: 0, max: 0 };
+    }
+
+    private shouldRun(startTime: TimeSpan) {
+        return this.timerService.time.seconds >= 0 && startTime.seconds - this.timerService.time.seconds < MAX_PLAYTIME_SECONDS;
     }
 }

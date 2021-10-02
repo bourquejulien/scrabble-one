@@ -103,7 +103,12 @@ export class PlayerService {
         this.completeTurn();
     }
 
-    completeTurn() {
+    skipTurn(): void {
+        this.skipTurnNb++;
+        this.completeTurn();
+    }
+
+    completeTurn(): void {
         this.turnComplete.next(PlayerType.Local);
     }
 

@@ -9,6 +9,8 @@ const STAR_IMAGE_PATH = 'assets/img/star.svg';
 const LINE_WIDTH = 3;
 const STROKE_STYLE = 'black';
 const FONT_FACE: FontFace = { font: 'BenchNine', size: 30 };
+const MIN_FONT_SIZE = 25;
+const MAX_FONT_SIZE = 35;
 const FONT_FACE_SCALE_FACTOR = 0.75;
 const TEXT_STYLE = 'black';
 const BONUS_COLORS = new Map([
@@ -24,6 +26,8 @@ const BONUS_COLORS = new Map([
     providedIn: 'root',
 })
 export class GridService {
+    readonly minFontSize: number = MIN_FONT_SIZE;
+    readonly maxFontSize: number = MAX_FONT_SIZE;
     letterFontFace = FONT_FACE;
 
     private readonly canvasSize: Vec2 = Constants.GRID.CANVAS_SIZE;

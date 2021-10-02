@@ -9,7 +9,6 @@ import { TimerService } from '@app/services/timer/timer.service';
 import { Subject } from 'rxjs';
 import { VirtualPlayerActionService } from './virtual-player-action.service';
 
-const MAX_PLAYTIME_SECONDS = 20;
 const MIN_PLAYTIME_SECONDS = 3;
 
 @Injectable({
@@ -30,8 +29,8 @@ export class VirtualPlayerService {
         this.minTimer = new Timer();
     }
 
-    async startTurn() {
-        this.timerService.start(TimeSpan.fromSeconds(MAX_PLAYTIME_SECONDS), PlayerType.Virtual);
+    async startTurn(playTime: TimeSpan) {
+        this.timerService.start(playTime, PlayerType.Virtual);
         this.minTimer.start(TimeSpan.fromSeconds(MIN_PLAYTIME_SECONDS));
 
         const action = this.virtualPlayerActionService.getNextAction(this.playerData);

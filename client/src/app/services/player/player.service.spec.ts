@@ -150,14 +150,14 @@ describe('PlayerService', () => {
         boardServiceSpy['lookupLetters'].and.returnValue(validationResponse);
         boardServiceSpy['placeLetters'].and.returnValue(validationResponse);
 
-        // eslint-disable-next-line  @typescript-eslint/no-explicit-any
+        // eslint-disable-next-line  @typescript-eslint/no-explicit-any  -- Needed for spyOn service
         const spy = spyOn<any>(service, 'updateRack');
         service.placeLetters('k', { x: 11, y: 3 }, Direction.Up);
         expect(spy).toHaveBeenCalled();
     });
 
     it('should enter first if statement if letters are not in rack', () => {
-        // eslint-disable-next-line  @typescript-eslint/no-explicit-any
+        // eslint-disable-next-line  @typescript-eslint/no-explicit-any -- Needed for spyOn service
         const spy = spyOn<any>(service, 'areLettersInRack');
         service.exchangeLetters(invalidLetter);
         expect(spy).toHaveBeenCalled();
@@ -216,11 +216,23 @@ describe('PlayerService', () => {
     });
 
     it('should notify player change if completeTurn', (done) => {
-        service.completeTurn();
         service.turnComplete.subscribe((playerType) => {
             expect(playerType).toEqual(PlayerType.Local);
             done();
         });
+        service.completeTurn();
+
+        timerService.countdownStopped.next(PlayerType.Local);
+    });
+
+    it('should skip turn', (done) => {
+        service.turnComplete.subscribe((playerType) => {
+            expect(playerType).toEqual(PlayerType.Local);
+            done();
+        });
+        service.skipTurn();
+
+        expect(service.skipTurnNb).toEqual(1);
         timerService.countdownStopped.next(PlayerType.Local);
     });
 

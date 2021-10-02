@@ -1,10 +1,8 @@
-/* eslint-disable dot-notation */
+/* eslint-disable dot-notation -- Need to access private properties for testing*/
 /* eslint-disable max-classes-per-file -- Needs many stubbed classes in order to test*/
 import { HttpClientModule } from '@angular/common/http';
-// import { Injectable } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { MessageType } from '@app/classes/message';
-// import { PlayerData } from '@app/classes/player-data';
 import { PlayerType } from '@app/classes/player-type';
 import { Constants } from '@app/constants/global.constants';
 import { PlayerService } from '@app/services/player/player.service';
@@ -133,8 +131,8 @@ describe('GameService', () => {
     });
     it('should end game', () => {
         const spy = spyOn(service, 'endGamePoint');
-        playerService.skipTurnNb = Constants.MAX_SKIP_TURN;
-        virtualPlayerServiceSpy.playerData.skippedTurns = Constants.MAX_SKIP_TURN;
+        playerService.skipTurnNb = Constants.MAX_SKIP_TURN + 1;
+        virtualPlayerServiceSpy.playerData.skippedTurns = Constants.MAX_SKIP_TURN + 1;
         service.skipTurnLimit();
         expect(spy).toHaveBeenCalled();
     });

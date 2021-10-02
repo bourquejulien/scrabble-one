@@ -69,13 +69,12 @@ export class GameService {
     nextTurn() {
         if (!this.gameRunning) return;
 
-        this.emptyRackAndReserve();
-
         this.firstPlayerStats.points = this.playerService.points;
         this.secondPlayerStats.points = this.virtualPlayerService.playerData.score;
         this.firstPlayerStats.rackSize = this.playerService.rack.length;
         this.secondPlayerStats.rackSize = this.virtualPlayerService.playerData.rack.length;
 
+        this.emptyRackAndReserve();
         this.skipTurnLimit();
 
         if (this.currentTurn === PlayerType.Local) {
@@ -124,10 +123,7 @@ export class GameService {
     }
 
     skipTurnLimit() {
-        if (
-            this.playerService.skipTurnNb === Constants.MAX_SKIP_TURN &&
-            this.virtualPlayerService.playerData.skippedTurns === Constants.MAX_SKIP_TURN
-        ) {
+        if (this.playerService.skipTurnNb > Constants.MAX_SKIP_TURN && this.virtualPlayerService.playerData.skippedTurns > Constants.MAX_SKIP_TURN) {
             this.playerService.skipTurnNb = 0;
             this.virtualPlayerService.playerData.skippedTurns = 0;
             this.endGamePoint();
@@ -173,7 +169,7 @@ export class GameService {
     private onVirtualPlayerTurn() {
         this.currentTurn = PlayerType.Virtual;
         this.onTurn.next(this.currentTurn);
-        this.virtualPlayerService.startTurn();
+        this.virtualPlayerService.startTurn(this.gameConfig.playTime);
     }
 
     private randomizeTurn(): PlayerType {

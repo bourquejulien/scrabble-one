@@ -22,8 +22,8 @@
     </div>
     <app-size-selector
         id="size-selector"
-        [minSize]="25"
-        [maxSize]="35"
+        [minSize]="gridService.minFontSize"
+        [maxSize]="gridService.maxFontSize"
         [size]="gridService.letterFontFace.size"
         (sizeUpdated)="updateFontSize($event)"
     ></app-size-selector>

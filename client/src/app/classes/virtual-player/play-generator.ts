@@ -62,7 +62,7 @@ export class PlayGenerator {
             );
             const response = this.validation.lookupLetters(letters);
             if (response.isSuccess) {
-                this.plays.push({ score: response.points, letters });
+                this.plays.push({ score: response.points, word: positionedWord.word, letters });
             }
         }
     }

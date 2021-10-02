@@ -12,16 +12,21 @@ import { Subject } from 'rxjs';
 import { PlaceAction } from './place-action';
 import { PlayAction } from './play-action';
 
+let stubbedTime = TimeSpan.fromSeconds(1);
+
 class TimerServiceStub {
-    time = TimeSpan.fromSeconds(1);
+    get time(): TimeSpan {
+        return stubbedTime;
+    }
 }
 
 class PlayGeneratorStub {
-    orderedPlays: Play[] = [{ score: 0, letters: [] }];
+    orderedPlays: Play[] = [{ score: 0, word: '', letters: [] }];
     canGenerate = false;
-    gotCalled = false;
+    timesCalled = 0;
     generateNext(): boolean {
-        this.gotCalled = true;
+        stubbedTime = stubbedTime.sub(TimeSpan.fromSeconds(1));
+        this.timesCalled++;
         return this.canGenerate;
     }
 }
@@ -62,11 +67,14 @@ describe('PlayAction', () => {
         expect(playAction['getScoreRange']()).toEqual({ min: 0, max: 0 });
     });
 
-    it('should not generate word when no time is left', () => {
-        timerServiceStub.time = TimeSpan.fromMilliseconds(0);
+    it('should generate words until no time is left', () => {
+        const TIME_TO_ELAPSE = 20;
+        playGeneratorStub.canGenerate = true;
+
+        stubbedTime = TimeSpan.fromSeconds(TIME_TO_ELAPSE);
         playAction.execute();
 
-        expect(playGeneratorStub.gotCalled).toBeFalse();
+        expect(playGeneratorStub.timesCalled).toEqual(TIME_TO_ELAPSE);
     });
 
     it('should return PlaceAction instance when words are generated', () => {
