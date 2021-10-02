@@ -131,4 +131,14 @@ describe('VirtualPlayerService', () => {
         expect(timerServiceStub.gotStarted).toBeTrue();
         expect(timerServiceStub.gotStopped).toBeTrue();
     });
+
+    it('should be reset', () => {
+        service.playerData = { score: 3, skippedTurns: 3, rack: [] };
+        service.startTurn(TimeSpan.fromSeconds(MAX_PLAYTIME_SECONDS));
+        service.reset();
+
+        expect(service.playerData).toEqual({ score: 0, skippedTurns: 0, rack: [] });
+        // eslint-disable-next-line dot-notation -- Need to validate private property
+        expect(service['minTimer'].stop).toHaveBeenCalled();
+    });
 });

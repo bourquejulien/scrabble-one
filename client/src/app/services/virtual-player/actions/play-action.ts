@@ -1,4 +1,5 @@
 import { PlayerData } from '@app/classes/player-data';
+import { TimeSpan } from '@app/classes/time/timespan';
 import { PlayGenerator } from '@app/classes/virtual-player/play-generator';
 import { Constants } from '@app/constants/global.constants';
 import { BoardService } from '@app/services/board/board.service';
@@ -21,7 +22,7 @@ export class PlayAction implements Action {
 
         const startTime = this.timerService.time;
 
-        while (startTime.totalMilliseconds - this.timerService.time.totalMilliseconds <= MAX_PLAYTIME_SECONDS && this.playGenerator.generateNext());
+        while (this.shouldRun(startTime) && this.playGenerator.generateNext());
 
         const filteredPlays = this.playGenerator.orderedPlays.filter((e) => e.score >= scoreRange.min && e.score <= scoreRange.max);
 
@@ -46,5 +47,9 @@ export class PlayAction implements Action {
         }
 
         return { min: 0, max: 0 };
+    }
+
+    private shouldRun(startTime: TimeSpan) {
+        return this.timerService.time.seconds > 0 && startTime.seconds - this.timerService.time.seconds < MAX_PLAYTIME_SECONDS;
     }
 }
