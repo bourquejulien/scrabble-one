@@ -14,7 +14,7 @@ import { Subject } from 'rxjs';
 import { GameService } from './game.service';
 const MAX_LENGTH_RACK = 7;
 const PLAYER_POINTS = 100;
-fdescribe('GameService', () => {
+describe('GameService', () => {
     let service: GameService;
     let playerService: PlayerService;
     let reserveService: ReserveService;

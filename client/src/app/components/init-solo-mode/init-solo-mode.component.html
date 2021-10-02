@@ -11,13 +11,13 @@
     <div class="playersFlex">
         <mat-form-field class="inputs" style="margin-right: 15px" appearance="fill">
             <mat-label>Minutes</mat-label>
-            <mat-select name="minutesPerTurn" id="selectMinutes" [(ngModel)]="minutes" (selectionChange)="forceSecondsToZero()">
+            <mat-select name="minutesPerTurn" id="selectMinutes" [(ngModel)]="minutes" (selectionChange)="manageTimeLimits()">
                 <mat-option *ngFor="let minutes of minutesList" [value]="minutes">{{ minutes }} </mat-option>
             </mat-select>
         </mat-form-field>
         <mat-form-field class="inputs" appearance="fill">
             <mat-label>Secondes</mat-label>
-            <mat-select name="secondsPerTurn" [(ngModel)]="seconds" [disabled]="minutes === 5">
+            <mat-select name="secondsPerTurn" [(ngModel)]="seconds" [disabled]="minutes === 5 || minutes === 0">
                 <mat-option *ngFor="let seconds of secondsList" [value]="seconds">{{ seconds }}</mat-option>
             </mat-select>
         </mat-form-field>
