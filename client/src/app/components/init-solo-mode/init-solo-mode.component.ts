@@ -82,16 +82,22 @@ export class InitSoloModeComponent implements OnInit {
             this.gameService.startGame(this.gameConfig);
         }
     }
-
-    forceSecondsToZero(): void {
-        if (this.minutes === TURN_LENGTH_MINUTES[5]) this.seconds = 0;
+    manageTimeLimits() {
+        this.forceSecondsToThirty();
+        this.forceSecondsToZero();
     }
-
     botNameChange(firstPlayerName: string): void {
         // Statistiquement, cette boucle ne devrait pas s'éxécuter plus de 3 fois. (Excepté dans de très rares cas)
         while (firstPlayerName === this.gameConfig.secondPlayerName) {
             this.gameConfig.secondPlayerName = this.randomizeBotName(BOT_NAMES);
         }
+    }
+    private forceSecondsToZero(): void {
+        if (this.minutes === TURN_LENGTH_MINUTES[5]) this.seconds = 0;
+    }
+
+    private forceSecondsToThirty(): void {
+        if (this.minutes === TURN_LENGTH_MINUTES[0]) this.seconds = 30;
     }
 
     private randomizeBotName(nameArr: string[]): string {

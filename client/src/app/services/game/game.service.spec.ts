@@ -14,7 +14,7 @@ import { Subject } from 'rxjs';
 import { GameService } from './game.service';
 const MAX_LENGTH_RACK = 7;
 const PLAYER_POINTS = 100;
-fdescribe('GameService', () => {
+describe('GameService', () => {
     let service: GameService;
     let playerService: PlayerService;
     let reserveService: ReserveService;
@@ -154,15 +154,15 @@ fdescribe('GameService', () => {
         expect(spy).toHaveBeenCalledWith(
             'Fin de partie - lettres restantes',
             service.gameConfig.firstPlayerName +
-                ' : ' +
-                service.gameConfig.firstPlayerName +
-                service['playerService'].rack +
-                ' ' +
-                service.gameConfig.firstPlayerName +
-                service.gameConfig.secondPlayerName +
-                ' : ' +
-                service.gameConfig.firstPlayerName +
-                service['virtualPlayerService'].playerData.rack,
+            ' : ' +
+            service.gameConfig.firstPlayerName +
+            service['playerService'].rack +
+            ' ' +
+            service.gameConfig.firstPlayerName +
+            service.gameConfig.secondPlayerName +
+            ' : ' +
+            service.gameConfig.firstPlayerName +
+            service['virtualPlayerService'].playerData.rack,
             MessageType.System,
         );
     });

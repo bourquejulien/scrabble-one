@@ -115,7 +115,8 @@ describe('InitSoloModeComponent', () => {
         expect(component.gameConfig.secondPlayerName).not.toEqual('Alphonse');
     }));
     it('should call forceSecondsToZero ', fakeAsync(() => {
-        const spy = spyOn(component, 'forceSecondsToZero');
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const spy = spyOn<any>(component, 'forceSecondsToZero');
         const select = fixture.debugElement.query(By.css('#selectMinutes'));
         select.triggerEventHandler('selectionChange', {});
         tick();
@@ -136,6 +137,22 @@ describe('InitSoloModeComponent', () => {
         select.triggerEventHandler('selectionChange', {});
         tick();
         expect(component.seconds).not.toEqual(0);
+    }));
+    it('should force seconds to thirty', fakeAsync(() => {
+        const select = fixture.debugElement.query(By.css('#selectMinutes'));
+        component.minutes = 0;
+        component.seconds = 0;
+        select.triggerEventHandler('selectionChange', {});
+        tick();
+        expect(component.seconds).toEqual(THIRTY_SECONDS);
+    }));
+    it('should not force seconds to thirty', fakeAsync(() => {
+        const select = fixture.debugElement.query(By.css('#selectMinutes'));
+        component.minutes = FOUR_MINUTES;
+        component.seconds = 0;
+        select.triggerEventHandler('selectionChange', {});
+        tick();
+        expect(component.seconds).not.toEqual(THIRTY_SECONDS);
     }));
     it('should Initialize when pressing enter ', fakeAsync(() => {
         const keyEvent = new KeyboardEvent('keypress', { key: 'Enter', cancelable: true });
