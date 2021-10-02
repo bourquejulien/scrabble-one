@@ -55,8 +55,8 @@ export class CommunicationBoxComponent implements OnDestroy, AfterViewInit, Afte
 
     getTitle(message: Message): string {
         switch (message.messageType) {
-            case MessageType.Message:
             case MessageType.Game:
+            case MessageType.Message:
                 return message.userId === PlayerType.Local
                     ? this.gameService.gameConfig.firstPlayerName
                     : this.gameService.gameConfig.secondPlayerName;

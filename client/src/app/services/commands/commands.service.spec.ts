@@ -12,7 +12,7 @@ import { CommandsService } from '@app/services/commands/commands.service';
 import { MessagingService } from '@app/services/messaging/messaging.service';
 import { Subject } from 'rxjs';
 
-fdescribe('CommandsService', () => {
+describe('CommandsService', () => {
     let messagingServiceSpy: jasmine.SpyObj<MessagingService>;
     let service: CommandsService;
 
