@@ -1,16 +1,16 @@
 import { Injectable } from '@angular/core';
 import { GameConfig } from '@app/classes/game-config';
+import { letterDefinitions } from '@app/classes/letter';
+import { MessageType } from '@app/classes/message';
 import { PlayerType } from '@app/classes/player-type';
 import { PlayerStats } from '@app/classes/player/player-stats';
 import { TimeSpan } from '@app/classes/time/timespan';
 import { Constants } from '@app/constants/global.constants';
+import { MessagingService } from '@app/services/messaging/messaging.service';
 import { PlayerService } from '@app/services/player/player.service';
+import { ReserveService } from '@app/services/reserve/reserve.service';
 import { VirtualPlayerService } from '@app/services/virtual-player/virtual-player.service';
 import { BehaviorSubject, Subject } from 'rxjs';
-import { letterDefinitions } from '@app/classes/letter';
-import { MessagingService } from '@app/services/messaging/messaging.service';
-import { MessageType } from '@app/classes/message';
-import { ReserveService } from '@app/services/reserve/reserve.service';
 
 @Injectable({
     providedIn: 'root',
@@ -89,9 +89,7 @@ export class GameService {
         let playerPoint = 0;
         for (const letter of rack) {
             const currentLetterData = letterDefinitions.get(letter.toLowerCase());
-            if (currentLetterData?.points === undefined) {
-                return -1;
-            }
+            if (currentLetterData?.points === undefined) return -1;
             playerPoint += currentLetterData.points;
         }
         return playerPoint;
@@ -111,14 +109,17 @@ export class GameService {
     }
 
     endGamePoint() {
-        if (this.firstPlayerStats.points - this.playerRackPoint(this.playerService.rack) < 0) {
+        const finalScorePlayer = this.firstPlayerStats.points - this.playerRackPoint(this.playerService.rack);
+        const finalScoreVirtualPlayer = this.secondPlayerStats.points - this.playerRackPoint(this.virtualPlayerService.playerData.rack);
+        this.firstPlayerStats.points = finalScorePlayer;
+        this.secondPlayerStats.points = finalScoreVirtualPlayer;
+        if (finalScorePlayer < 0) {
             this.playerService.points = 0;
+            this.firstPlayerStats.points = 0;
         }
-        if (this.secondPlayerStats.points - this.playerRackPoint(this.virtualPlayerService.playerData.rack) < 0) {
+        if (finalScoreVirtualPlayer < 0) {
             this.virtualPlayerService.playerData.score = 0;
-        } else {
-            this.firstPlayerStats.points -= this.playerRackPoint(this.playerService.rack);
-            this.secondPlayerStats.points -= this.playerRackPoint(this.virtualPlayerService.playerData.rack);
+            this.secondPlayerStats.points = 0;
         }
     }
 
@@ -146,12 +147,12 @@ export class GameService {
         this.messaging.send(
             'Fin de partie - lettres restantes',
             this.gameConfig.firstPlayerName +
-                ' : ' +
-                this.playerService.rack +
-                ' ' +
-                this.gameConfig.secondPlayerName +
-                ' : ' +
-                this.virtualPlayerService.playerData.rack,
+            ' : ' +
+            this.playerService.rack +
+            ' ' +
+            this.gameConfig.secondPlayerName +
+            ' : ' +
+            this.virtualPlayerService.playerData.rack,
             MessageType.System,
         );
     }
@@ -160,7 +161,6 @@ export class GameService {
         if (playerType !== this.currentTurn) {
             return;
         }
-
         this.nextTurn();
     }
 
