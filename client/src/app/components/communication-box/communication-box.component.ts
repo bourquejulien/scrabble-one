@@ -76,7 +76,7 @@ export class CommunicationBoxComponent implements OnDestroy, AfterViewInit, Afte
     private scroll(): void {
         if (this.messageContainer) {
             this.messageContainer.nativeElement.scroll({
-                top: this.messageContainer.nativeElement.scrollHeight,
+                top: this.messageContainer.nativeElement.scrollHeight + this.messageContainer.nativeElement.offsetHeight,
                 behavior: 'smooth',
             });
         }

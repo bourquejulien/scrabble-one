@@ -31,11 +31,9 @@ export class PlayAction implements Action {
         const chosenPlay = Math.floor(Math.random() * filteredPlays.length);
         const play = filteredPlays[chosenPlay];
         let alternatives = '';
-        const index = Math.floor(Math.random() * filteredPlays.length);
-        for (let i = 0; i < Constants.NB_ALTERNATIVES; i) {
-            if (chosenPlay !== index) {
-                alternatives += filteredPlays[index];
-            }
+        for (let i = 0; i < Constants.NB_ALTERNATIVES; i++) {
+            const alternativeIndex = (chosenPlay + i) % filteredPlays.length;
+            alternatives += filteredPlays[alternativeIndex] + ' ';
         }
         this.messagingService.send('', 'Mot alternatifs: ' + alternatives, MessageType.Game);
         return new PlaceAction(this.boardService, play, this.playerData);

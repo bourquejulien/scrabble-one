@@ -85,14 +85,18 @@ describe('CommunicationBoxComponent', () => {
     it('should return the correct title', () => {
         const firstPlayerName = 'Alberto';
         const secondPlayerName = 'Monique';
+
         spyOn<any>(component['gameService']['gameConfig'], 'firstPlayerName').and.returnValue(firstPlayerName);
         spyOn<any>(component['gameService']['gameConfig'], 'secondPlayerName').and.returnValue(secondPlayerName);
+
         expect(component.getTitle(dummyMessage)).toBe(dummyMessage.title);
+
         dummyMessage.messageType = MessageType.Message;
-        dummyMessage.userId = PlayerType.Virtual;
-        expect(component.getTitle(dummyMessage)).toBe(secondPlayerName);
         dummyMessage.userId = PlayerType.Local;
         expect(component.getTitle(dummyMessage)).toBe(firstPlayerName);
+
+        dummyMessage.userId = PlayerType.Virtual;
+        expect(component.getTitle(dummyMessage)).toBe(secondPlayerName);
     });
 
     it("should not show the other user's system messages", () => {
