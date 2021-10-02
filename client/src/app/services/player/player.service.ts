@@ -38,7 +38,7 @@ export class PlayerService {
     }
 
     placeLetters(word: string, position: Vec2, direction: Direction): void {
-        let starLetter: string = '';
+        let starLetter = '';
 
         for (let letter of word) {
             if (letter.match(/^[A-Z]$/)) {
@@ -51,11 +51,11 @@ export class PlayerService {
         let lettersToPlace = positionToPlace.map((element) => element.letter).join('');
 
         if (starLetter !== '') {
-            let splitLetters = lettersToPlace.split("");
+            const splitLetters = lettersToPlace.split('');
             const indexOfStar = lettersToPlace.indexOf(starLetter);
             splitLetters.splice(indexOfStar, 1);
             splitLetters.splice(indexOfStar, 0, '*');
-            lettersToPlace = splitLetters.join("");
+            lettersToPlace = splitLetters.join('');
         }
 
         if (!this.areLettersInRack(lettersToPlace)) {
