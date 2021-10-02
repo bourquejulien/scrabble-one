@@ -16,6 +16,7 @@ import { InitSoloModeComponent } from './components/init-solo-mode/init-solo-mod
 import { RackComponent } from './components/rack/rack.component';
 import { SizeSelectorComponent } from './components/size-selector/size-selector/size-selector.component';
 import { GameModePageComponent } from './pages/game-mode-page/game-mode-page.component';
+import { EndGameComponent } from './components/end-game/end-game.component';
 
 /**
  * Main module that is used in main.ts.
@@ -36,6 +37,7 @@ import { GameModePageComponent } from './pages/game-mode-page/game-mode-page.com
         SizeSelectorComponent,
         TimePipe,
         ConfirmQuitDialogComponent,
+        EndGameComponent,
     ],
     imports: [AppMaterialModule, AppRoutingModule, BrowserAnimationsModule, BrowserModule, FormsModule, HttpClientModule],
     providers: [],

@@ -1,3 +1,4 @@
+import { PlayerData } from '@app/classes/player-data';
 import { ReserveService } from '@app/services/reserve/reserve.service';
 import { ExchangeAction } from './exchange-action';
 
@@ -24,12 +25,12 @@ class ReserveServiceStub {
 describe('ExchangeAction', () => {
     let reserveServiceStub: ReserveServiceStub;
     let exchangeAction: ExchangeAction;
-    let rack: string[];
+    let playerData: PlayerData;
 
     beforeEach(() => {
         reserveServiceStub = new ReserveServiceStub();
-        rack = LETTERS.slice();
-        exchangeAction = new ExchangeAction(reserveServiceStub as unknown as ReserveService, rack);
+        playerData = { score: 0, skippedTurns: 0, rack: LETTERS.slice() };
+        exchangeAction = new ExchangeAction(reserveServiceStub as unknown as ReserveService, playerData);
     });
 
     it('should return null', () => {

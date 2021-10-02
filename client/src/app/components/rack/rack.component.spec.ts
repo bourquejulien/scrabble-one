@@ -74,17 +74,4 @@ describe('RackComponent', () => {
         points = component.retrievePoints('k');
         expect(points).toBe(kPoints);
     });
-
-    it('should update rack component if rack player modified', () => {
-        const mockCompRack = ['e', 'f', 'g'];
-        component.setRack(mockCompRack);
-
-        const mockPlayerRack = ['a', 'b', 'c'];
-        component['playerService'].setRack(mockPlayerRack);
-
-        component.refreshRack();
-
-        const refreshedComponentRack = component.rack;
-        expect(refreshedComponentRack).toEqual(component['playerService']['rack']);
-    });
 });

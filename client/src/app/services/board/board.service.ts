@@ -16,7 +16,7 @@ import { BoardValidator } from '@app/classes/validation/board-validator';
     providedIn: 'root',
 })
 export class BoardService implements Validation {
-    private readonly board: Board;
+    private board: Board;
 
     constructor(private readonly validatorGenerator: BoardValidatorGeneratorService) {
         this.board = new Board(Constants.GRID.GRID_SIZE, this.retrieveBonuses());
@@ -24,6 +24,10 @@ export class BoardService implements Validation {
 
     get gameBoard(): ImmutableBoard {
         return this.board;
+    }
+
+    resetBoardService(): void {
+        this.board = new Board(Constants.GRID.GRID_SIZE, this.retrieveBonuses());
     }
 
     lookupLetters(letters: { letter: string; position: Vec2 }[]): ValidationResponse {

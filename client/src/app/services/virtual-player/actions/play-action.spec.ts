@@ -33,7 +33,7 @@ describe('PlayAction', () => {
         boardService = jasmine.createSpyObj('BoardService', ['lookupLetters']);
         timerServiceStub = new TimerServiceStub();
         playGeneratorStub = new PlayGeneratorStub();
-        playerData = { score: 0, rack: [] };
+        playerData = { score: 0, skippedTurns: 0, rack: [] };
 
         playAction = new PlayAction(boardService, timerServiceStub as TimerService, playGeneratorStub as unknown as PlayGenerator, playerData);
     });

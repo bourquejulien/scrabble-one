@@ -32,7 +32,7 @@ describe('PlaceAction', () => {
     beforeEach(() => {
         boardServiceStub = new BoardServiceStub();
         play = { score: 0, letters: LETTERS_PAIR };
-        playerData = { score: 0, rack: LETTERS };
+        playerData = { score: 0, skippedTurns: 0, rack: LETTERS };
 
         placeAction = new PlaceAction(boardServiceStub as unknown as BoardService, play, playerData);
     });

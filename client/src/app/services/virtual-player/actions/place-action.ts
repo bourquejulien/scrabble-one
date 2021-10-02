@@ -14,6 +14,8 @@ export class PlaceAction implements Action {
             this.playerData.rack.splice(this.playerData.rack.findIndex((rackLetter) => letter.letter === rackLetter)),
         );
 
+        this.playerData.skippedTurns = 0;
+
         return null;
     }
 }
