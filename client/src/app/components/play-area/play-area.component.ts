@@ -4,6 +4,7 @@ import { Constants } from '@app/constants/global.constants';
 import { GridService } from '@app/services/grid/grid.service';
 import { MouseHandlingService } from '@app/services/mouse-handling/mouse-handling.service';
 import FontFaceObserver from 'fontfaceobserver';
+
 @Component({
     selector: 'app-play-area',
     templateUrl: './play-area.component.html',
