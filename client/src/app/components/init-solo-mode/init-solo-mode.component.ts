@@ -122,11 +122,8 @@ export class InitSoloModeComponent implements OnInit {
         } else {
             this.errorsList = [];
             for (const error of POSSIBLE_ERRORS) {
-                const abstractControl = this.nameForm.get('control');
-                if (abstractControl === null) {
-                    continue;
-                }
-                if (abstractControl.hasError(error.validationRule)) {
+                // nameForm.get('control') cannot be null since we initialize it in the constructor
+                if (this.nameForm.get('control')?.hasError(error.validationRule)) {
                     this.errorsList.push(error.validationMessage);
                 }
             }

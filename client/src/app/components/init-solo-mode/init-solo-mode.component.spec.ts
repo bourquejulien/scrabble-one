@@ -24,15 +24,17 @@ class GameServiceStub {
     providedIn: 'root',
 })
 class MatDialogStub {
-    close(): void {
+    close() {
         // Does Nothing
     }
 }
-
+const THIRTY_SECONDS = 30;
+const FIVE_MINUTES = 5;
+const FOUR_MINUTES = 4;
 describe('InitSoloModeComponent', () => {
-    let init: InitSoloModeComponent;
+    let component: InitSoloModeComponent;
     let fixture: ComponentFixture<InitSoloModeComponent>;
-    const NAMES = ['Jean', 'RenÉéÎîÉéÇçÏï', 'moulon', 'Jo', 'Josiannnnnnnnnnne', 'Jean123', 'A1', 'Alphonse'];
+    const NAMES = ['Jean', 'RenÉéÎîÉéÇçÏï', 'moulon', 'Jo', 'Josiannnnnnnnnnne', 'Jean123', 'A1', 'Alphonse', ''];
     const routerMock = {
         navigate: jasmine.createSpy('navigate'),
     };
@@ -52,84 +54,99 @@ describe('InitSoloModeComponent', () => {
 
     beforeEach(() => {
         fixture = TestBed.createComponent(InitSoloModeComponent);
-        init = fixture.componentInstance;
+        component = fixture.componentInstance;
         fixture.detectChanges();
     });
     it('should create', () => {
-        expect(init).toBeTruthy();
+        expect(component).toBeTruthy();
     });
-    it('Should not contains any error', () => {
-        init.gameConfig.firstPlayerName = NAMES[0];
-        init.initialize();
-        expect(init.errorsList).toEqual([]);
+    it('should not contains any error', () => {
+        component.gameConfig.firstPlayerName = NAMES[0];
+        component.initialize();
+        expect(component.errorsList).toEqual([]);
     });
-    it('Should not contains any error', () => {
-        init.gameConfig.firstPlayerName = NAMES[1];
-        init.initialize();
-        expect(init.errorsList).toEqual([]);
+    it('should not contains any error', () => {
+        component.gameConfig.firstPlayerName = NAMES[1];
+        component.initialize();
+        expect(component.errorsList).toEqual([]);
     });
-    it('Should have error for lower letter', () => {
-        init.gameConfig.firstPlayerName = NAMES[2];
-        init.initialize();
-        expect(init.errorsList).toEqual(['*Le nom doit débuter par une majuscule.\n']);
+    it('should have error for lower letter', () => {
+        component.gameConfig.firstPlayerName = NAMES[2];
+        component.initialize();
+        expect(component.errorsList).toEqual(['*Le nom doit débuter par une majuscule.\n']);
     });
-    it('Should have error for minimum length', () => {
-        init.gameConfig.firstPlayerName = NAMES[3];
-        init.initialize();
-        expect(init.errorsList).toEqual(['*Le nom doit contenir au moins 3 caractères.\n']);
+    it('should have error for minimum length', () => {
+        component.gameConfig.firstPlayerName = NAMES[3];
+        component.initialize();
+        expect(component.errorsList).toEqual(['*Le nom doit contenir au moins 3 caractères.\n']);
     });
-    it('Should have error for maximum length', () => {
-        init.gameConfig.firstPlayerName = NAMES[4];
-        init.initialize();
-        expect(init.errorsList).toEqual(['*Le nom doit au maximum contenir 16 lettres.\n']);
+    it('should have error for maximum length', () => {
+        component.gameConfig.firstPlayerName = NAMES[4];
+        component.initialize();
+        expect(component.errorsList).toEqual(['*Le nom doit au maximum contenir 16 lettres.\n']);
     });
-    it('Should have error for not having name', () => {
-        init.initialize();
-        expect(init.errorsList).toEqual(['*Un nom doit être entré.\n']);
+    it('should have error for not having name', () => {
+        component.initialize();
+        expect(component.errorsList).toEqual(['*Un nom doit être entré.\n']);
     });
-    it('Should have error for not containing only letters', () => {
-        init.gameConfig.firstPlayerName = NAMES[5];
-        init.initialize();
-        expect(init.errorsList).toEqual(['*Le nom doit seulement être composé de lettres.\n']);
+    it('should have error for not containing only letters', () => {
+        component.gameConfig.firstPlayerName = NAMES[5];
+        component.initialize();
+        expect(component.errorsList).toEqual(['*Le nom doit seulement être composé de lettres.\n']);
     });
-    it('Should have error for not containing only letters and minimum length', () => {
-        init.gameConfig.firstPlayerName = NAMES[6];
-        init.initialize();
-        expect(init.errorsList).toEqual(['*Le nom doit contenir au moins 3 caractères.\n', '*Le nom doit seulement être composé de lettres.\n']);
+    it('should have error for not containing only letters and minimum length', () => {
+        component.gameConfig.firstPlayerName = NAMES[6];
+        component.initialize();
+        expect(component.errorsList).toEqual(['*Le nom doit seulement être composé de lettres.\n', '*Le nom doit contenir au moins 3 caractères.\n']);
     });
-    it('Should call botNameChange', fakeAsync(() => {
-        const spy = spyOn(init, 'botNameChange');
+    it('should call botNameChange', fakeAsync(() => {
+        const spy = spyOn(component, 'botNameChange');
         const input = fixture.debugElement.query(By.css('#inputName'));
         input.triggerEventHandler('input', {});
         tick();
         expect(spy).toHaveBeenCalled();
     }));
-    it('Should change bot name', fakeAsync(() => {
+    it('should change bot name', fakeAsync(() => {
         const input = fixture.debugElement.query(By.css('#inputName'));
-        init.gameConfig.firstPlayerName = 'Alphonse';
-        init.gameConfig.secondPlayerName = 'Alphonse';
+        component.gameConfig.firstPlayerName = NAMES[7];
+        component.gameConfig.secondPlayerName = NAMES[7];
         input.triggerEventHandler('input', {});
         tick();
-        expect(init.gameConfig.secondPlayerName).not.toEqual('Alphonse');
+        expect(component.gameConfig.secondPlayerName).not.toEqual('Alphonse');
     }));
-    it('Should call forceSecondsToZero ', fakeAsync(() => {
-        const spy = spyOn(init, 'forceSecondsToZero');
+    it('should call forceSecondsToZero ', fakeAsync(() => {
+        const spy = spyOn(component, 'forceSecondsToZero');
         const select = fixture.debugElement.query(By.css('#selectMinutes'));
         select.triggerEventHandler('selectionChange', {});
         tick();
         expect(spy).toHaveBeenCalled();
     }));
-    it('Should forceSecondsToZero ', fakeAsync(() => {
+    it('should forceSecondsToZero ', fakeAsync(() => {
         const select = fixture.debugElement.query(By.css('#selectMinutes'));
-        init.minutes = 5;
+        component.minutes = FIVE_MINUTES;
+        component.seconds = THIRTY_SECONDS;
         select.triggerEventHandler('selectionChange', {});
         tick();
-        expect(init.seconds).toEqual(0);
+        expect(component.seconds).toEqual(0);
     }));
-    it('Should Initialize when pressing enter ', fakeAsync(() => {
+    it('should not forceSecondsToZero ', fakeAsync(() => {
+        const select = fixture.debugElement.query(By.css('#selectMinutes'));
+        component.minutes = FOUR_MINUTES;
+        component.seconds = THIRTY_SECONDS;
+        select.triggerEventHandler('selectionChange', {});
+        tick();
+        expect(component.seconds).not.toEqual(0);
+    }));
+    it('should Initialize when pressing enter ', fakeAsync(() => {
         const keyEvent = new KeyboardEvent('keypress', { key: 'Enter', cancelable: true });
-        const spy = spyOn(init, 'initialize').and.callThrough();
-        init.buttonDetect(keyEvent);
+        const spy = spyOn(component, 'initialize').and.callThrough();
+        component.buttonDetect(keyEvent);
         expect(spy).toHaveBeenCalled();
+    }));
+    it('should not Initialize when pressing something else than enter ', fakeAsync(() => {
+        const keyEvent = new KeyboardEvent('keypress', { key: 'y', cancelable: true });
+        const spy = spyOn(component, 'initialize').and.callThrough();
+        component.buttonDetect(keyEvent);
+        expect(spy).not.toHaveBeenCalled();
     }));
 });
