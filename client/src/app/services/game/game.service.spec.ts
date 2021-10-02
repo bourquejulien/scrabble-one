@@ -154,15 +154,15 @@ fdescribe('GameService', () => {
         expect(spy).toHaveBeenCalledWith(
             'Fin de partie - lettres restantes',
             service.gameConfig.firstPlayerName +
-            ' : ' +
-            service.gameConfig.firstPlayerName +
-            service['playerService'].rack +
-            ' ' +
-            service.gameConfig.firstPlayerName +
-            service.gameConfig.secondPlayerName +
-            ' : ' +
-            service.gameConfig.firstPlayerName +
-            service['virtualPlayerService'].playerData.rack,
+                ' : ' +
+                service.gameConfig.firstPlayerName +
+                service['playerService'].rack +
+                ' ' +
+                service.gameConfig.firstPlayerName +
+                service.gameConfig.secondPlayerName +
+                ' : ' +
+                service.gameConfig.firstPlayerName +
+                service['virtualPlayerService'].playerData.rack,
             MessageType.System,
         );
     });
