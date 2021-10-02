@@ -20,4 +20,8 @@ export class Constants {
     static readonly MAX_SKIP_TURN = 3;
     static readonly RACK_SIZE = 7;
     static readonly CHAR_OFFSET = 97; // 'a' has ASCII value of 97
+    static readonly NB_ALTERNATIVES = 3;
+    static readonly MY_COLOR = 'aliceblue';
+    static readonly OTHERS_COLOR = 'blanchedalmond';
+    static readonly ERROR_COLOR = 'red';
 }

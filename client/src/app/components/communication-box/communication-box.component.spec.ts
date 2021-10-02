@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable dot-notation */
 /* eslint-disable max-classes-per-file */
 import { HttpClientModule } from '@angular/common/http';
@@ -8,6 +9,7 @@ import { FormsModule } from '@angular/forms';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { Message, MessageType } from '@app/classes/message';
 import { PlayerType } from '@app/classes/player-type';
+import { Constants } from '@app/constants/global.constants';
 import { AppMaterialModule } from '@app/modules/material.module';
 import { MessagingService } from '@app/services/messaging/messaging.service';
 import { Subject } from 'rxjs';
@@ -42,7 +44,6 @@ describe('CommunicationBoxComponent', () => {
             body: 'Body',
             messageType: MessageType.Error,
             userId: PlayerType.Virtual,
-            timestamp: Date.now(),
         };
     });
 
@@ -82,9 +83,16 @@ describe('CommunicationBoxComponent', () => {
     });
 
     it('should return the correct title', () => {
+        const firstPlayerName = 'Alberto';
+        const secondPlayerName = 'Monique';
+        component['gameService']['gameConfig']['firstPlayerName'] = firstPlayerName;
+        component['gameService']['gameConfig']['secondPlayerName'] = secondPlayerName;
         expect(component.getTitle(dummyMessage)).toBe(dummyMessage.title);
-        dummyMessage.messageType = MessageType.Message;
-        expect(component.getTitle(dummyMessage)).toBe('Utilisateur ' + dummyMessage.userId);
+        dummyMessage.messageType = MessageType.Game;
+        dummyMessage.userId = PlayerType.Local;
+        expect(component.getTitle(dummyMessage)).toEqual(firstPlayerName);
+        dummyMessage.userId = PlayerType.Virtual;
+        expect(component.getTitle(dummyMessage)).toEqual(secondPlayerName);
     });
 
     it("should not show the other user's system messages", () => {
@@ -95,15 +103,11 @@ describe('CommunicationBoxComponent', () => {
         expect(component.isError(dummyMessage)).toBeTrue();
     });
 
-    it('should differentiate error messages', () => {
-        expect(component.isError(dummyMessage)).toBeTrue();
-    });
-
     it('should return the correct CSS colors', () => {
-        expect(component.getMessageColor(dummyMessage)).toBe('red');
+        expect(component.getMessageColor(dummyMessage)).toBe(Constants.ERROR_COLOR);
         dummyMessage.messageType = MessageType.Message;
-        expect(component.getMessageColor(dummyMessage)).toBe('blanchedalmond');
+        expect(component.getMessageColor(dummyMessage)).toBe(Constants.OTHERS_COLOR);
         dummyMessage.userId = PlayerType.Local;
-        expect(component.getMessageColor(dummyMessage)).toBe('aliceblue');
+        expect(component.getMessageColor(dummyMessage)).toBe(Constants.MY_COLOR);
     });
 });

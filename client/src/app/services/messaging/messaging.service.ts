@@ -10,13 +10,13 @@ export class MessagingService {
     debuggingMode: boolean;
     protected subject = new Subject<Message>();
 
-    send(title: string, body: string, messageType: MessageType): void {
+    send(title: string, body: string, messageType: MessageType, user?: PlayerType): void {
+        if (!user) user = PlayerType.Local;
         const message = {
             title,
             body,
             messageType,
-            userId: PlayerType.Local,
-            timestamp: Date.now(),
+            userId: user,
         };
 
         if (this.debuggingMode) {

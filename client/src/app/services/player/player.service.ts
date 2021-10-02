@@ -103,7 +103,7 @@ export class PlayerService {
         this.completeTurn();
     }
 
-    completeTurn(): void {
+    completeTurn() {
         this.turnComplete.next(PlayerType.Local);
     }
 
