@@ -123,7 +123,7 @@ export class GameService {
     }
 
     skipTurnLimit() {
-        if (this.playerService.skipTurnNb > Constants.MAX_SKIP_TURN || this.virtualPlayerService.playerData.skippedTurns > Constants.MAX_SKIP_TURN) {
+        if (this.playerService.skipTurnNb > Constants.MAX_SKIP_TURN && this.virtualPlayerService.playerData.skippedTurns > Constants.MAX_SKIP_TURN) {
             this.playerService.skipTurnNb = 0;
             this.virtualPlayerService.playerData.skippedTurns = 0;
             this.endGamePoint();

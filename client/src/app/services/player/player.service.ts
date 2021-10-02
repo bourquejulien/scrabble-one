@@ -86,16 +86,12 @@ export class PlayerService {
         this.completeTurn();
     }
 
-<<<<<<< HEAD
     skipTurn(): void {
         this.skipTurnNb++;
         this.completeTurn();
     }
 
     completeTurn(): void {
-=======
-    completeTurn() {
->>>>>>> origin/development
         this.turnComplete.next(PlayerType.Local);
     }
 
