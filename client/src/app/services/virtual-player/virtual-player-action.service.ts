@@ -10,6 +10,7 @@ import { SkipAction } from './actions/skip-action';
 import { PlayGenerator } from '@app/classes/virtual-player/play-generator';
 import { PlayerData } from '@app/classes/player-data';
 import { Action } from './actions/action';
+import { MessagingService } from '@app/services/messaging/messaging.service';
 
 @Injectable({
     providedIn: 'root',
@@ -20,6 +21,7 @@ export class VirtualPlayerActionService {
         private readonly timerService: TimerService,
         private readonly reserveService: ReserveService,
         private readonly dictionaryService: DictionaryService,
+        private readonly messagingService: MessagingService,
     ) {}
 
     getNextAction(playerData: PlayerData): Action {
@@ -31,11 +33,11 @@ export class VirtualPlayerActionService {
         random -= Constants.virtualPlayer.SKIP_PERCENTAGE;
 
         if (random < Constants.virtualPlayer.EXCHANGE_PERCENTAGE) {
-            return new ExchangeAction(this.reserveService, playerData);
+            return new ExchangeAction(this.reserveService, this.messagingService, playerData);
         }
 
         const playGenerator = new PlayGenerator(this.dictionaryService, this.boardService, playerData.rack);
 
-        return new PlayAction(this.boardService, this.timerService, playGenerator, playerData);
+        return new PlayAction(this.boardService, this.timerService, playGenerator, playerData, this.messagingService);
     }
 }

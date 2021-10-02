@@ -3,54 +3,25 @@
 /* eslint-disable max-classes-per-file -- Multiple mock needed for tests*/
 /* eslint-disable @typescript-eslint/naming-convention  -- Need SCREAMING_SNAKE_CASE for static property in mock class */
 import { HttpClientModule } from '@angular/common/http';
-import { Injectable } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { Direction } from '@app/classes/board/direction';
 import { Message, MessageType } from '@app/classes/message';
 import { PlayerType } from '@app/classes/player-type';
 import { Vec2 } from '@app/classes/vec2';
 import { CommandsService } from '@app/services/commands/commands.service';
-import { GameService } from '@app/services/game/game.service';
 import { MessagingService } from '@app/services/messaging/messaging.service';
 import { Subject } from 'rxjs';
-@Injectable({
-    providedIn: 'root',
-})
-class MockMessagingService extends MessagingService {
-    static MOCK_TIMESTAMP: number = 100000000;
 
-    constuctor() {
-        this.subject = new Subject<Message>();
-    }
-
-    send(title: string, body: string, messageType: MessageType) {
-        const message = {
-            title,
-            body,
-            messageType,
-            userId: PlayerType.Local,
-            timestamp: MockMessagingService.MOCK_TIMESTAMP,
-        };
-
-        if (this.debuggingMode) {
-            this.subject.next(message);
-        } else if (message.messageType === MessageType.Message) {
-            this.subject.next(message);
-        }
-    }
-}
-class MockGameService {
-    currentTurn = PlayerType.Local;
-}
 describe('CommandsService', () => {
+    let messagingServiceSpy: jasmine.SpyObj<MessagingService>;
     let service: CommandsService;
 
     beforeEach(() => {
+        messagingServiceSpy = jasmine.createSpyObj('MessagingService', ['subject', 'onMessage']);
+        messagingServiceSpy['subject'] = new Subject<Message>();
+        messagingServiceSpy.onMessage.and.returnValue(messagingServiceSpy['subject'].asObservable());
+
         TestBed.configureTestingModule({
-            providers: [
-                { provide: MessagingService, useClass: MockMessagingService },
-                { provide: GameService, useClass: MockGameService },
-            ],
             imports: [HttpClientModule],
         });
         service = TestBed.inject(CommandsService);
@@ -83,7 +54,7 @@ describe('CommandsService', () => {
         service.parseInput('!echanger 12345678');
     });
 
-    it('#parseInputsend should call skip turn', () => {
+    it('#parseInput should call skip turn', () => {
         const spy = spyOn(service.playerService, 'exchangeLetters');
         service.parseInput('!echanger abc');
         expect(spy).toHaveBeenCalled();

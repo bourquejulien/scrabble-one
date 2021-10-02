@@ -16,7 +16,6 @@ export class MessagingService {
             body,
             messageType,
             userId: PlayerType.Local,
-            timestamp: Date.now(),
         };
 
         if (this.debuggingMode) {

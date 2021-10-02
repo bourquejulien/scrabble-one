@@ -1,7 +1,9 @@
 import { AfterContentInit, AfterViewInit, ChangeDetectionStrategy, Component, ElementRef, OnDestroy, ViewChild } from '@angular/core';
 import { Message, MessageType } from '@app/classes/message';
 import { PlayerType } from '@app/classes/player-type';
+import { Constants } from '@app/constants/global.constants';
 import { CommandsService } from '@app/services/commands/commands.service';
+import { GameService } from '@app/services/game/game.service';
 import { MessagingService } from '@app/services/messaging/messaging.service';
 import { Subscription } from 'rxjs';
 @Component({
@@ -16,7 +18,7 @@ export class CommunicationBoxComponent implements OnDestroy, AfterViewInit, Afte
     subscription: Subscription;
     inputValue: string;
 
-    constructor(private commandsService: CommandsService, private messagingService: MessagingService) {}
+    constructor(private commandsService: CommandsService, private messagingService: MessagingService, private gameService: GameService) {}
 
     ngAfterContentInit(): void {
         this.scroll();
@@ -43,19 +45,23 @@ export class CommunicationBoxComponent implements OnDestroy, AfterViewInit, Afte
     getMessageColor(message: Message): string {
         switch (message.messageType) {
             case MessageType.Error:
-                return 'red';
+                return Constants.ERROR_COLOR;
             case MessageType.Log:
             case MessageType.Message:
             default:
-                return message.userId === PlayerType.Local ? 'aliceblue' : 'blanchedalmond';
+                return message.userId === PlayerType.Local ? Constants.MY_COLOR : Constants.OTHERS_COLOR;
         }
     }
 
     getTitle(message: Message): string {
-        if (message.messageType === MessageType.Message) {
-            return 'Utilisateur ' + message.userId;
-        } else {
-            return message.title;
+        switch (message.messageType) {
+            case MessageType.Message:
+            case MessageType.Game:
+                return message.userId === PlayerType.Local
+                    ? this.gameService.gameConfig.firstPlayerName
+                    : this.gameService.gameConfig.secondPlayerName;
+            default:
+                return message.title;
         }
     }
 
