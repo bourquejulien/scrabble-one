@@ -88,9 +88,7 @@ export class GameService {
         let playerPoint = 0;
         for (const letter of rack) {
             const currentLetterData = letterDefinitions.get(letter.toLowerCase());
-            if (currentLetterData?.points === undefined) {
-                return -1;
-            }
+            if (currentLetterData?.points === undefined) return -1;
             playerPoint += currentLetterData.points;
         }
         return playerPoint;
@@ -110,14 +108,17 @@ export class GameService {
     }
 
     endGamePoint() {
-        if (this.firstPlayerStats.points - this.playerRackPoint(this.playerService.rack) < 0) {
+        const finalScorePlayer = this.firstPlayerStats.points - this.playerRackPoint(this.playerService.rack);
+        const finalScoreVirtualPlayer = this.secondPlayerStats.points - this.playerRackPoint(this.virtualPlayerService.playerData.rack);
+        this.firstPlayerStats.points = finalScorePlayer;
+        this.secondPlayerStats.points = finalScoreVirtualPlayer;
+        if (finalScorePlayer < 0) {
             this.playerService.points = 0;
+            this.firstPlayerStats.points = 0;
         }
-        if (this.secondPlayerStats.points - this.playerRackPoint(this.virtualPlayerService.playerData.rack) < 0) {
+        if (finalScoreVirtualPlayer < 0) {
             this.virtualPlayerService.playerData.score = 0;
-        } else {
-            this.firstPlayerStats.points -= this.playerRackPoint(this.playerService.rack);
-            this.secondPlayerStats.points -= this.playerRackPoint(this.virtualPlayerService.playerData.rack);
+            this.secondPlayerStats.points = 0;
         }
     }
 
@@ -156,7 +157,6 @@ export class GameService {
         if (playerType !== this.currentTurn) {
             return;
         }
-
         this.nextTurn();
     }
 
