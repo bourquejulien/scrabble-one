@@ -122,10 +122,7 @@ export class GameService {
     }
 
     skipTurnLimit() {
-        if (
-            this.playerService.skipTurnNb >= Constants.MAX_SKIP_TURN ||
-            this.virtualPlayerService.playerData.skippedTurns >= Constants.MAX_SKIP_TURN
-        ) {
+        if (this.playerService.skipTurnNb > Constants.MAX_SKIP_TURN || this.virtualPlayerService.playerData.skippedTurns > Constants.MAX_SKIP_TURN) {
             this.playerService.skipTurnNb = 0;
             this.virtualPlayerService.playerData.skippedTurns = 0;
             this.endGamePoint();
@@ -145,12 +142,12 @@ export class GameService {
         this.messaging.send(
             'Fin de partie - lettres restantes',
             this.gameConfig.firstPlayerName +
-            ' : ' +
-            this.playerService.rack +
-            ' ' +
-            this.gameConfig.secondPlayerName +
-            ' : ' +
-            this.virtualPlayerService.playerData.rack,
+                ' : ' +
+                this.playerService.rack +
+                ' ' +
+                this.gameConfig.secondPlayerName +
+                ' : ' +
+                this.virtualPlayerService.playerData.rack,
             MessageType.System,
         );
     }

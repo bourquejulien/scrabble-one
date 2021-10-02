@@ -21,7 +21,7 @@ export class PlayAction implements Action {
 
         const startTime = this.timerService.time;
 
-        while (startTime.totalMilliseconds - this.timerService.time.totalMilliseconds > MAX_PLAYTIME_SECONDS && this.playGenerator.generateNext());
+        while (startTime.totalMilliseconds - this.timerService.time.totalMilliseconds <= MAX_PLAYTIME_SECONDS && this.playGenerator.generateNext());
 
         const filteredPlays = this.playGenerator.orderedPlays.filter((e) => e.score >= scoreRange.min && e.score <= scoreRange.max);
 

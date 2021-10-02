@@ -58,7 +58,7 @@ export class PlayAreaComponent implements AfterViewInit, OnChanges {
         this.squareContext.scale(scaleFactor, scaleFactor);
     }
 
-    updateFontSize(size: number) {
+    updateFontSize(size: number): void {
         this.gridService.letterFontFace.size = size;
         this.gridService.drawGrid(this.gridContext);
         this.gridService.drawSquares(this.squareContext);
