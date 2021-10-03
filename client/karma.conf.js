@@ -39,10 +39,11 @@ module.exports = function (config) {
         singleRun: false,
         restartOnFileChange: true,
         browserDisconnectTimeout : 10000,
+        browserDisconnectTolerance: 3,
         customLaunchers: {
             ChromeHeadlessNoSandbox: {
                 base: 'ChromeHeadless',
-                flags: ['--no-sandbox'],
+                flags: ['--no-sandbox', '--disable-gpu',],
             },
         },
     });
