@@ -5,6 +5,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { EndGameComponent } from './end-game.component';
 import { AppMaterialModule } from '@app/modules/material.module';
 import { GameService } from '@app/services/game/game.service';
+import { cleanStyles } from '@app/classes/helpers/cleanup.helper';
 
 describe('EndGameComponent', () => {
     let component: EndGameComponent;
@@ -62,4 +63,6 @@ describe('EndGameComponent', () => {
             'Félicitation aux gagnants ' + gameService.gameConfig.firstPlayerName + ' et ' + gameService.gameConfig.secondPlayerName + ' égalité',
         );
     });
+
+    afterAll(() => cleanStyles());
 });

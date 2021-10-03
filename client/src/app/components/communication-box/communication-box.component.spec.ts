@@ -7,6 +7,7 @@ import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormsModule } from '@angular/forms';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { cleanStyles } from '@app/classes/helpers/cleanup.helper';
 import { Message, MessageType } from '@app/classes/message';
 import { PlayerType } from '@app/classes/player-type';
 import { Constants } from '@app/constants/global.constants';
@@ -110,4 +111,6 @@ describe('CommunicationBoxComponent', () => {
         dummyMessage.userId = PlayerType.Local;
         expect(component.getMessageColor(dummyMessage)).toBe(Constants.MY_COLOR);
     });
+
+    afterAll(() => cleanStyles());
 });

@@ -5,6 +5,7 @@
 import { HttpClientModule } from '@angular/common/http';
 import { CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { cleanStyles } from '@app/classes/helpers/cleanup.helper';
 import { RackComponent } from '@app/components/rack/rack.component';
 import { AppMaterialModule } from '@app/modules/material.module';
 import { PlayerService } from '@app/services/player/player.service';
@@ -74,4 +75,6 @@ describe('RackComponent', () => {
         points = component.retrievePoints('k');
         expect(points).toBe(kPoints);
     });
+
+    afterAll(() => cleanStyles());
 });

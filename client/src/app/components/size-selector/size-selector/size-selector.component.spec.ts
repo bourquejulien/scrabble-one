@@ -1,5 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MatIcon } from '@angular/material/icon';
+import { cleanStyles } from '@app/classes/helpers/cleanup.helper';
 import { SizeSelectorComponent } from './size-selector.component';
 
 const MAX_SIZE = 35;
@@ -50,4 +51,6 @@ describe('SizeSelectorComponent', () => {
         component.decrease();
         expect(component.size).toEqual(MIN_SIZE);
     });
+
+    afterAll(() => cleanStyles());
 });
