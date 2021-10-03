@@ -14,11 +14,14 @@ cache:
             - merge_requests
         changes:
             - client/**/*
+    before_script:
+        - if [ ! -d "node_modules" ]; then npm ci --prefix client .npm --prefer-offline; fi
     cache:
         key: "${CI_COMMIT_REF_SLUG}-client"
         paths:
             - client/node_modules/
-        policy: pull
+            - client/.npm/
+        policy: pull-push
 
 .only-server: &only-server
     only:
@@ -27,30 +30,8 @@ cache:
             - merge_requests
         changes:
             - server/**/*
-    cache:
-        key: "${CI_COMMIT_REF_SLUG}-server"
-        paths:
-            - server/node_modules/
-        policy: pull
-
-stages:
-    - install
-    - lint
-    - build
-    - test
-    - deploy
-
-before_script:
-    - cd client
-    - npm ci --cache .npm --prefer-offline
-    - cd ..
-
-install:client:
-    stage: install
-    <<: *only-client
-    script:
-        - cd client
-        - npm ci --cache .npm --prefer-offline
+    before_script:
+        - if [ ! -d "node_modules" ]; then npm ci --prefix client .npm --prefer-offline; fi
     cache:
         key: "${CI_COMMIT_REF_SLUG}-client"
         paths:
@@ -58,21 +39,15 @@ install:client:
             - client/.npm/
         policy: pull-push
 
-install:server:
-    stage: install
-    <<: *only-server
-    script:
-        - cd server
-        - npm ci --cache .npm --prefer-offline
-    cache:
-        key: "${CI_COMMIT_REF_SLUG}-server"
-        paths:
-            - server/node_modules/
-            - server/.npm/
-        policy: pull-push
+stages:
+    - lint
+    - build
+    - test
+    - deploy
 
 lint:client:
     stage: lint
+    needs: []
     allow_failure: true
     <<: *only-client
     script:
@@ -81,6 +56,7 @@ lint:client:
 
 lint:server:
     stage: lint
+    needs: []
     allow_failure: true
     <<: *only-server
     script:
@@ -89,6 +65,7 @@ lint:server:
 
 build:client:
     stage: build
+    needs: []
     <<: *only-client
     script:
         - cd client
@@ -99,6 +76,7 @@ build:client:
 
 build:server:
     stage: build
+    needs: []
     <<: *only-server
     script:
         - cd server
