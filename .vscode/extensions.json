@@ -9,6 +9,7 @@
         "abusaidm.html-snippets",
         "Gruntfuggly.todo-tree",
         "streetsidesoftware.code-spell-checker",
-        "streetsidesoftware.code-spell-checker-french"
+        "streetsidesoftware.code-spell-checker-french",
+        "raagh.angular-karma-test-explorer"
     ]
 }

@@ -16,6 +16,8 @@
         "vue",
         "markdown"
     ],
+    "angularKarmaTestExplorer.projectRootPath": "client/",
+    "angularKarmaTestExplorer.debugMode": true,
     "[typescript]": {
         "editor.defaultFormatter": "vscode.typescript-language-features"
     },
