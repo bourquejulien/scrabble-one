@@ -38,6 +38,7 @@ module.exports = function (config) {
         browsers: ['Chrome'],
         singleRun: false,
         restartOnFileChange: true,
+        browserDisconnectTimeout : 10000,
         customLaunchers: {
             ChromeHeadlessNoSandbox: {
                 base: 'ChromeHeadless',
