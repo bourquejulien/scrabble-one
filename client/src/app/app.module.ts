@@ -1,4 +1,3 @@
-import { HttpClientModule } from '@angular/common/http';
 import { NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
@@ -38,7 +37,7 @@ import { GameModePageComponent } from './pages/game-mode-page/game-mode-page.com
         ConfirmQuitDialogComponent,
         EndGameComponent,
     ],
-    imports: [AppMaterialModule, AppRoutingModule, BrowserAnimationsModule, BrowserModule, FormsModule, HttpClientModule],
+    imports: [AppMaterialModule, AppRoutingModule, BrowserAnimationsModule, BrowserModule, FormsModule],
     providers: [],
     bootstrap: [AppComponent],
 })

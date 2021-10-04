@@ -69,9 +69,9 @@ export class GameService {
     nextTurn() {
         if (!this.gameRunning) return;
 
-        this.firstPlayerStats.points = this.playerService.points;
+        this.firstPlayerStats.points = this.playerService.playerData.score;
         this.secondPlayerStats.points = this.virtualPlayerService.playerData.score;
-        this.firstPlayerStats.rackSize = this.playerService.rack.length;
+        this.firstPlayerStats.rackSize = this.playerService.playerData.rack.length;
         this.secondPlayerStats.rackSize = this.virtualPlayerService.playerData.rack.length;
 
         this.emptyRackAndReserve();
@@ -95,27 +95,35 @@ export class GameService {
     }
 
     emptyRackAndReserve() {
-        if (this.reserveService.length === 0 && (this.playerService.length === 0 || this.virtualPlayerService.playerData.rack.length === 0)) {
+        if (
+            this.reserveService.length === 0 &&
+            (this.playerService.playerData.rack.length === 0 || this.virtualPlayerService.playerData.rack.length === 0)
+        ) {
             this.endGamePoint();
-            if (this.playerService.length === 0) {
-                this.playerService.points += this.playerRackPoint(this.virtualPlayerService.playerData.rack);
+
+            if (this.playerService.playerData.rack.length === 0) {
+                this.playerService.playerData.score += this.playerRackPoint(this.virtualPlayerService.playerData.rack);
             } else {
-                this.virtualPlayerService.playerData.score += this.playerRackPoint(this.playerService.rack);
+                this.virtualPlayerService.playerData.score += this.playerRackPoint(this.playerService.playerData.rack);
             }
+
             this.gameRunning = false;
             this.gameEnding.next();
         }
     }
 
     endGamePoint() {
-        const finalScorePlayer = this.firstPlayerStats.points - this.playerRackPoint(this.playerService.rack);
+        const finalScorePlayer = this.firstPlayerStats.points - this.playerRackPoint(this.playerService.playerData.rack);
         const finalScoreVirtualPlayer = this.secondPlayerStats.points - this.playerRackPoint(this.virtualPlayerService.playerData.rack);
+
         this.firstPlayerStats.points = finalScorePlayer;
         this.secondPlayerStats.points = finalScoreVirtualPlayer;
+
         if (finalScorePlayer < 0) {
-            this.playerService.points = 0;
+            this.playerService.playerData.score = 0;
             this.firstPlayerStats.points = 0;
         }
+
         if (finalScoreVirtualPlayer < 0) {
             this.virtualPlayerService.playerData.score = 0;
             this.secondPlayerStats.points = 0;
@@ -123,8 +131,11 @@ export class GameService {
     }
 
     skipTurnLimit() {
-        if (this.playerService.skipTurnNb > Constants.MAX_SKIP_TURN && this.virtualPlayerService.playerData.skippedTurns > Constants.MAX_SKIP_TURN) {
-            this.playerService.skipTurnNb = 0;
+        if (
+            this.playerService.playerData.skippedTurns > Constants.MAX_SKIP_TURN &&
+            this.virtualPlayerService.playerData.skippedTurns > Constants.MAX_SKIP_TURN
+        ) {
+            this.playerService.playerData.skippedTurns = 0;
             this.virtualPlayerService.playerData.skippedTurns = 0;
             this.endGamePoint();
             this.gameRunning = false;
@@ -133,9 +144,10 @@ export class GameService {
     }
 
     skipTurn() {
-        if (this.playerService.skipTurnNb < 3) {
-            this.playerService.skipTurnNb++;
+        if (this.playerService.playerData.skippedTurns < 3) {
+            this.playerService.playerData.skippedTurns++;
         }
+
         this.nextTurn();
     }
 
@@ -144,7 +156,7 @@ export class GameService {
             'Fin de partie - lettres restantes',
             this.gameConfig.firstPlayerName +
                 ' : ' +
-                this.playerService.rack +
+                this.playerService.playerData.rack +
                 ' ' +
                 this.gameConfig.secondPlayerName +
                 ' : ' +
@@ -157,6 +169,7 @@ export class GameService {
         if (playerType !== this.currentTurn) {
             return;
         }
+
         this.nextTurn();
     }
 

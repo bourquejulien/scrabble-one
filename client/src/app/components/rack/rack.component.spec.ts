@@ -2,29 +2,33 @@
 /* eslint-disable @typescript-eslint/no-useless-constructor */
 /* eslint-disable @typescript-eslint/no-empty-function */
 /* eslint-disable no-unused-vars */
-import { HttpClientModule } from '@angular/common/http';
 import { CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { cleanStyles } from '@app/classes/helpers/cleanup.helper';
+import { PlayerData } from '@app/classes/player-data';
 import { RackComponent } from '@app/components/rack/rack.component';
 import { AppMaterialModule } from '@app/modules/material.module';
 import { PlayerService } from '@app/services/player/player.service';
 import { BehaviorSubject } from 'rxjs/internal/BehaviorSubject';
 
 class PlayerServiceStub {
-    rack: string[];
+    playerData: PlayerData = {
+        score: 0,
+        skippedTurns: 0,
+        rack: [],
+    };
     rackUpdated: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(true);
 
     setRack(mockRack: string[]): void {
-        this.rack = [];
+        this.playerData.rack = [];
 
         for (const letter of mockRack) {
-            this.rack.push(letter);
+            this.playerData.rack.push(letter);
         }
     }
 
     get rackContent(): string[] {
-        return this.rack;
+        return this.playerData.rack;
     }
 }
 
@@ -36,7 +40,7 @@ describe('RackComponent', () => {
         await TestBed.configureTestingModule({
             declarations: [RackComponent],
             providers: [{ provide: PlayerService, useClass: PlayerServiceStub }],
-            imports: [AppMaterialModule, HttpClientModule],
+            imports: [AppMaterialModule],
             schemas: [CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA],
         }).compileComponents();
     });

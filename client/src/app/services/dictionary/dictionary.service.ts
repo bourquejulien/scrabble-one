@@ -15,6 +15,7 @@ export class DictionaryService implements Dictionary {
     constructor(private http: HttpClient) {
         this.dictionary = new Trie();
         this.reverseDictionary = new Trie();
+
         this.retrieveDictionary();
     }
 

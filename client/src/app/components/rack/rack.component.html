@@ -1,5 +1,5 @@
 <mat-card class="rack">
-    <mat-card class="tile" *ngFor="let letter of playerService.rack">
+    <mat-card class="tile" *ngFor="let letter of playerService.playerData.rack">
         <div *ngIf="letter !== '*'">
             {{ letter.toUpperCase() }}
             <sub class="letter-point">

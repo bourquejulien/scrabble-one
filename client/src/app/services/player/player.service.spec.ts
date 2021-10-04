@@ -172,12 +172,12 @@ describe('PlayerService', () => {
     });
 
     it('should not affect rack size if reserve length bigger than 7', () => {
-        const currentRackLength = service['rack'].length;
+        const currentRackLength = service.playerData.rack.length;
         const newReserve = ['a', 'b', 'c', 'd', 'e', 'f', 'g'];
         reserveService.setReserve(newReserve);
 
         service.exchangeLetters(lettersToExchange);
-        expect(service['rack'].length).toBe(currentRackLength);
+        expect(service.playerData.rack.length).toBe(currentRackLength);
     });
 
     it('should successfully remove lettersToExchange from rack if reserve length bigger than 7', () => {
@@ -185,10 +185,10 @@ describe('PlayerService', () => {
         reserveService.setReserve(newReserve);
 
         service.exchangeLetters(lettersToExchange);
-        expect(service['rack'][0]).toBe('s');
-        expect(service['rack'][1]).toBe('i');
-        expect(service['rack'][2]).toBe('o');
-        expect(service['rack'][3]).toBe('v');
+        expect(service.playerData.rack[0]).toBe('s');
+        expect(service.playerData.rack[1]).toBe('i');
+        expect(service.playerData.rack[2]).toBe('o');
+        expect(service.playerData.rack[3]).toBe('v');
     });
 
     it('should successfully add new letters to rack if reserve length bigger than 7', () => {
@@ -196,9 +196,9 @@ describe('PlayerService', () => {
         reserveService.setReserve(newReserve);
 
         service.exchangeLetters(lettersToExchange);
-        expect(service['rack'][4]).toBe('a');
-        expect(service['rack'][5]).toBe('a');
-        expect(service['rack'][6]).toBe('a');
+        expect(service.playerData.rack[4]).toBe('a');
+        expect(service.playerData.rack[5]).toBe('a');
+        expect(service.playerData.rack[6]).toBe('a');
     });
 
     it('should successfully add lettersToExchange to reserve if reserve length bigger than 7', () => {
@@ -232,90 +232,90 @@ describe('PlayerService', () => {
         });
         service.skipTurn();
 
-        expect(service.skipTurnNb).toEqual(1);
+        expect(service.playerData.skippedTurns).toEqual(1);
         timerService.countdownStopped.next(PlayerType.Local);
     });
 
     it('should add specified amount of letters to rack if valid number of letters to add is entered', () => {
         const amountlettersToAdd = 10;
-        const currentLength = service.length;
+        const currentLength = service.rackLength;
         service.fillRack(amountlettersToAdd);
-        expect(service.length).toBe(currentLength + amountlettersToAdd);
+        expect(service.rackLength).toBe(currentLength + amountlettersToAdd);
     });
 
     it('should not affect rack if invalid number of letters entered', () => {
-        const currentLength = service.length;
+        const currentLength = service.rackLength;
         service.fillRack(-1);
-        expect(service.length).toBe(currentLength);
+        expect(service.rackLength).toBe(currentLength);
     });
 
     it('should not affect position of letters already in rack if letters added', () => {
         service.fillRack(3);
 
-        expect(service['rack'][0]).toBe('k');
-        expect(service['rack'][1]).toBe('e');
-        expect(service['rack'][2]).toBe('s');
-        expect(service['rack'][3]).toBe('e');
-        expect(service['rack'][4]).toBe('i');
-        expect(service['rack'][5]).toBe('o');
-        expect(service['rack'][6]).toBe('v');
+        expect(service.playerData.rack[0]).toBe('k');
+        expect(service.playerData.rack[1]).toBe('e');
+        expect(service.playerData.rack[2]).toBe('s');
+        expect(service.playerData.rack[3]).toBe('e');
+        expect(service.playerData.rack[4]).toBe('i');
+        expect(service.playerData.rack[5]).toBe('o');
+        expect(service.playerData.rack[6]).toBe('v');
     });
 
     it('should decrease rack length to 0 if successfully emptied', () => {
         service.emptyRack();
-        expect(service.length).toBe(0);
+        expect(service.rackLength).toBe(0);
     });
 
     it('should get rack content', () => {
         const content = service.rackContent;
-        expect(service['rack']).toBe(content);
+        expect(service.playerData.rack).toBe(content);
     });
 
     it('should successfully change the content of rack if new rack has same length', () => {
         const newRack = ['a', 'b', 'c', 'd', 'e', 'f', 'g'];
         service.setRack(newRack);
 
-        expect(service['rack'][0]).toBe('a');
-        expect(service['rack'][1]).toBe('b');
-        expect(service['rack'][2]).toBe('c');
-        expect(service['rack'][3]).toBe('d');
-        expect(service['rack'][4]).toBe('e');
-        expect(service['rack'][5]).toBe('f');
-        expect(service['rack'][6]).toBe('g');
+        expect(service.playerData.rack[0]).toBe('a');
+        expect(service.playerData.rack[1]).toBe('b');
+        expect(service.playerData.rack[2]).toBe('c');
+        expect(service.playerData.rack[3]).toBe('d');
+        expect(service.playerData.rack[4]).toBe('e');
+        expect(service.playerData.rack[5]).toBe('f');
+        expect(service.playerData.rack[6]).toBe('g');
     });
 
     it('should successfully change the content of rack if new rack has smaller length', () => {
         const newRack = ['a', 'b', 'c', 'd'];
         service.setRack(newRack);
 
-        expect(service['rack'][0]).toBe('a');
-        expect(service['rack'][1]).toBe('b');
-        expect(service['rack'][2]).toBe('c');
-        expect(service['rack'][3]).toBe('d');
+        expect(service.playerData.rack[0]).toBe('a');
+        expect(service.playerData.rack[1]).toBe('b');
+        expect(service.playerData.rack[2]).toBe('c');
+        expect(service.playerData.rack[3]).toBe('d');
     });
 
     it('should successfully change the content of rack if new rack has bigger length', () => {
         const newRack = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
         service.setRack(newRack);
 
-        expect(service['rack'][0]).toBe('a');
-        expect(service['rack'][1]).toBe('b');
-        expect(service['rack'][2]).toBe('c');
-        expect(service['rack'][3]).toBe('d');
-        expect(service['rack'][4]).toBe('e');
-        expect(service['rack'][5]).toBe('f');
-        expect(service['rack'][6]).toBe('g');
-        expect(service['rack'][7]).toBe('h');
+        expect(service.playerData.rack[0]).toBe('a');
+        expect(service.playerData.rack[1]).toBe('b');
+        expect(service.playerData.rack[2]).toBe('c');
+        expect(service.playerData.rack[3]).toBe('d');
+        expect(service.playerData.rack[4]).toBe('e');
+        expect(service.playerData.rack[5]).toBe('f');
+        expect(service.playerData.rack[6]).toBe('g');
+        expect(service.playerData.rack[7]).toBe('h');
     });
 
     it('should successfully change the length of rack if new rack has different size', () => {
         const smallerRack = ['a', 'b', 'c', 'd'];
         service.setRack(smallerRack);
-        expect(service.length).toBe(smallerRack.length);
+        expect(service.rackLength).toBe(smallerRack.length);
 
         const biggerRack = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
         service.setRack(biggerRack);
-        expect(service.length).toBe(biggerRack.length);
+        expect(service.rackLength).toBe(biggerRack.length);
     });
 
     it('should return an error message if the reserve is empty', () => {
@@ -362,7 +362,7 @@ describe('PlayerService', () => {
         reserveService.setReserve(newReserve);
 
         service['updateReserve'](lettersToPlace.length);
-        expect(service['rack'].length).toBe(rackToFill.length + lettersToPlace.length);
+        expect(service.playerData.rack.length).toBe(rackToFill.length + lettersToPlace.length);
     });
 
     it('should increase rack length by reserve length if reserve length smaller than amount of letters to place', () => {
@@ -373,7 +373,7 @@ describe('PlayerService', () => {
         reserveService.setReserve(newReserve);
 
         service['updateReserve'](lettersToPlace.length);
-        expect(service['rack'].length).toBe(rackToFill.length + newReserve.length);
+        expect(service.playerData.rack.length).toBe(rackToFill.length + newReserve.length);
     });
 
     it('should increase rack length by reserve length if reserve length equal to amount of letters to place', () => {
@@ -384,42 +384,42 @@ describe('PlayerService', () => {
         reserveService.setReserve(newReserve);
 
         service['updateReserve'](lettersToPlace.length);
-        expect(service['rack'].length).toBe(rackToFill.length + newReserve.length);
+        expect(service.playerData.rack.length).toBe(rackToFill.length + newReserve.length);
     });
 
     it('should decrease length of rack if valid letter successfully removed from rack', () => {
-        const currentLength = service.length;
+        const currentLength = service.rackLength;
         service['updateRack'](letterToRemoveFromRack);
 
-        expect(service.length).toBe(currentLength - 1);
+        expect(service.rackLength).toBe(currentLength - 1);
     });
 
     it('should successful remove first occurrence of valid letter of multiple occurrences from rack', () => {
         service['updateRack'](letterToRemoveFromRack);
 
-        expect(service['rack'][1]).toBe('s');
+        expect(service.playerData.rack[1]).toBe('s');
     });
 
     it('should decrease length of rack if valid letter with multiple occurrences successful removed from rack', () => {
-        const currentLength = service.length;
+        const currentLength = service.rackLength;
         service['updateRack'](letterToRemoveFromRack);
         service['updateRack'](letterToRemoveFromRack);
 
-        expect(service.length).toBe(currentLength - 2);
+        expect(service.rackLength).toBe(currentLength - 2);
     });
 
     it('should successfully remove first occurrence of valid letter from rack', () => {
         service['updateRack'](letterToRemoveFromRack);
         service['updateRack'](letterToRemoveFromRack);
 
-        expect(service['rack'][2]).toBe('i');
+        expect(service.playerData.rack[2]).toBe('i');
     });
 
     it('should not affect rack if invalid letter tries to be removed', () => {
-        const currentLength = service.length;
+        const currentLength = service.rackLength;
         service['updateRack'](invalidLetter);
 
-        expect(service.length).toBe(currentLength);
+        expect(service.rackLength).toBe(currentLength);
     });
 
     it('should return an empty string if lettersToPlace are in rack ', () => {
@@ -434,6 +434,6 @@ describe('PlayerService', () => {
 
     it('should return current size of rack', () => {
         const mockRack = ['k', 'e', 's', 'e', 'i', 'o', 'v'];
-        expect(service.length).toBe(mockRack.length);
+        expect(service.rackLength).toBe(mockRack.length);
     });
 });

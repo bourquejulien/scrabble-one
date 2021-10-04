@@ -1,4 +1,3 @@
-import { HttpClientModule } from '@angular/common/http';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
 import { cleanStyles } from '@app/classes/helpers/cleanup.helper';
@@ -11,7 +10,7 @@ describe('MainPageComponent', () => {
 
     beforeEach(async () => {
         await TestBed.configureTestingModule({
-            imports: [RouterTestingModule, HttpClientModule, AppMaterialModule],
+            imports: [RouterTestingModule, AppMaterialModule],
             declarations: [MainPageComponent],
         }).compileComponents();
     });
