@@ -22,6 +22,7 @@ class GameServiceStub {
         // Does Nothing
     }
 }
+
 @Injectable({
     providedIn: 'root',
 })
@@ -30,9 +31,11 @@ class MatDialogStub {
         // Does Nothing
     }
 }
+
 const THIRTY_SECONDS = 30;
 const FIVE_MINUTES = 5;
 const FOUR_MINUTES = 4;
+
 describe('InitSoloModeComponent', () => {
     let component: InitSoloModeComponent;
     let fixture: ComponentFixture<InitSoloModeComponent>;
@@ -111,22 +114,14 @@ describe('InitSoloModeComponent', () => {
         expect(component.errorsList).toEqual(['*Le nom doit seulement être composé de lettres.\n', '*Le nom doit contenir au moins 3 caractères.\n']);
     });
 
-    it('should call botNameChange', fakeAsync(() => {
-        const spy = spyOn(component, 'botNameChange');
-        const input = fixture.debugElement.query(By.css('#inputName'));
-        input.triggerEventHandler('input', {});
-        tick();
-        expect(spy).toHaveBeenCalled();
-    }));
-
-    it('should change bot name', fakeAsync(() => {
-        const input = fixture.debugElement.query(By.css('#inputName'));
+    it('should change bot name', () => {
+        const FIRST_PLAYER_NAME = 'Alphonse';
         component.gameConfig.firstPlayerName = NAMES[7];
         component.gameConfig.secondPlayerName = NAMES[7];
-        input.triggerEventHandler('input', {});
-        tick();
-        expect(component.gameConfig.secondPlayerName).not.toEqual('Alphonse');
-    }));
+
+        component.botNameChange(FIRST_PLAYER_NAME);
+        expect(component.gameConfig.secondPlayerName).not.toEqual(FIRST_PLAYER_NAME);
+    });
 
     it('should call forceSecondsToZero ', fakeAsync(() => {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any

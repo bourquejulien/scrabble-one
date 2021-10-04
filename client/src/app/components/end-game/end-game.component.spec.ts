@@ -2,10 +2,10 @@ import { NO_ERRORS_SCHEMA } from '@angular/compiler';
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { EndGameComponent } from './end-game.component';
-import { AppMaterialModule } from '@app/modules/material.module';
 import { GameService } from '@app/services/game/game.service';
 import { cleanStyles } from '@app/classes/helpers/cleanup.helper';
 import { TimeSpan } from '@app/classes/time/timespan';
+import { MatDialogClose, MatDialogModule } from '@angular/material/dialog';
 
 describe('EndGameComponent', () => {
     let component: EndGameComponent;
@@ -23,8 +23,8 @@ describe('EndGameComponent', () => {
 
     beforeEach(async () => {
         await TestBed.configureTestingModule({
-            imports: [AppMaterialModule],
-            declarations: [EndGameComponent],
+            imports: [MatDialogModule],
+            declarations: [EndGameComponent, MatDialogClose],
             schemas: [CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA],
         }).compileComponents();
     });

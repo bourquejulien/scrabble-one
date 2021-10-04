@@ -17,7 +17,7 @@ cache:
     before_script:
         - if [ ! -d "client/node_modules" ]; then npm ci --prefix client .npm --prefer-offline; fi
     cache:
-        key: "${CI_COMMIT_REF_SLUG}-server"
+        key: "${CI_COMMIT_REF_SLUG}-client"
         paths:
             - client/node_modules/
             - client/.npm/
@@ -33,7 +33,7 @@ cache:
     before_script:
         - if [ ! -d "server/node_modules" ]; then npm ci --prefix server .npm --prefer-offline; fi
     cache:
-        key: "${CI_COMMIT_REF_SLUG}-client"
+        key: "${CI_COMMIT_REF_SLUG}-server"
         paths:
             - server/node_modules/
             - server/.npm/
