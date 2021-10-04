@@ -38,6 +38,7 @@ const STARTS_LOWER_LETTER_ERROR: Error = {
     validationMessage: '*Le nom doit débuter par une majuscule.\n',
 };
 const POSSIBLE_ERRORS: Error[] = [STARTS_LOWER_LETTER_ERROR, CONTAINS_NOT_LETTERS_ERROR, REQUIRED_ERROR, MAX_LENGTH_ERROR, MIN_LENGTH_ERROR];
+
 @Component({
     selector: 'app-init-solo-mode',
     templateUrl: './init-solo-mode.component.html',
@@ -82,16 +83,18 @@ export class InitSoloModeComponent implements OnInit {
             this.gameService.startGame(this.gameConfig);
         }
     }
+
     manageTimeLimits() {
         this.forceSecondsToThirty();
         this.forceSecondsToZero();
     }
+
     botNameChange(firstPlayerName: string): void {
-        // Statistiquement, cette boucle ne devrait pas s'éxécuter plus de 3 fois. (Excepté dans de très rares cas)
         while (firstPlayerName === this.gameConfig.secondPlayerName) {
             this.gameConfig.secondPlayerName = this.randomizeBotName(BOT_NAMES);
         }
     }
+
     private forceSecondsToZero(): void {
         if (this.minutes === TURN_LENGTH_MINUTES[5]) this.seconds = 0;
     }
