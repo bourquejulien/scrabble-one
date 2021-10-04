@@ -1,3 +1,4 @@
+import { HttpClientModule } from '@angular/common/http';
 import { NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
@@ -16,6 +17,7 @@ import { InitSoloModeComponent } from './components/init-solo-mode/init-solo-mod
 import { RackComponent } from './components/rack/rack.component';
 import { SizeSelectorComponent } from './components/size-selector/size-selector/size-selector.component';
 import { GameModePageComponent } from './pages/game-mode-page/game-mode-page.component';
+
 /**
  * Main module that is used in main.ts.
  * All automatically generated components will appear in this module.
@@ -37,7 +39,7 @@ import { GameModePageComponent } from './pages/game-mode-page/game-mode-page.com
         ConfirmQuitDialogComponent,
         EndGameComponent,
     ],
-    imports: [AppMaterialModule, AppRoutingModule, BrowserAnimationsModule, BrowserModule, FormsModule],
+    imports: [AppMaterialModule, AppRoutingModule, BrowserAnimationsModule, BrowserModule, FormsModule, HttpClientModule],
     providers: [],
     bootstrap: [AppComponent],
 })
