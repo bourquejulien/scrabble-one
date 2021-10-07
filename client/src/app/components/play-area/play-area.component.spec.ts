@@ -4,6 +4,7 @@ import { Component, Injectable, NO_ERRORS_SCHEMA } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MatCard } from '@angular/material/card';
 import { MatIcon } from '@angular/material/icon';
+import { cleanStyles } from '@app/classes/helpers/cleanup.helper';
 import { PlayAreaComponent } from '@app/components/play-area/play-area.component';
 import { Constants } from '@app/constants/global.constants';
 import { AppMaterialModule } from '@app/modules/material.module';
@@ -77,4 +78,6 @@ describe('PlayAreaComponent', () => {
         expect(gridServiceStub.isDrawSquareCalled).toBeTrue();
         expect(gridServiceStub.isDrawGridCalled).toBeTrue();
     });
+
+    afterAll(() => cleanStyles());
 });

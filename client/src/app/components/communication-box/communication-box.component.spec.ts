@@ -1,24 +1,36 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable dot-notation */
 /* eslint-disable max-classes-per-file */
-import { HttpClientModule } from '@angular/common/http';
 import { NO_ERRORS_SCHEMA } from '@angular/compiler';
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormsModule } from '@angular/forms';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { cleanStyles } from '@app/classes/helpers/cleanup.helper';
 import { Message, MessageType } from '@app/classes/message';
 import { PlayerType } from '@app/classes/player-type';
+import { TimeSpan } from '@app/classes/time/timespan';
 import { Constants } from '@app/constants/global.constants';
 import { AppMaterialModule } from '@app/modules/material.module';
+import { CommandsService } from '@app/services/commands/commands.service';
+import { GameService } from '@app/services/game/game.service';
 import { MessagingService } from '@app/services/messaging/messaging.service';
 import { Subject } from 'rxjs';
 import { CommunicationBoxComponent } from './communication-box.component';
+
 describe('CommunicationBoxComponent', () => {
     let component: CommunicationBoxComponent;
     let fixture: ComponentFixture<CommunicationBoxComponent>;
     let dummyMessage: Message;
     let messagingServiceSpy: jasmine.SpyObj<MessagingService>;
+    const gameService = {
+        gameConfig: {
+            gameType: 'qwerty',
+            playTime: TimeSpan.fromMinutesSeconds(1, 0),
+            firstPlayerName: 'qwerty',
+            secondPlayerName: 'uiop',
+        },
+    };
 
     beforeEach(async () => {
         messagingServiceSpy = jasmine.createSpyObj('MessagingService', ['subject', 'onMessage']);
@@ -27,8 +39,12 @@ describe('CommunicationBoxComponent', () => {
 
         await TestBed.configureTestingModule({
             declarations: [CommunicationBoxComponent],
-            providers: [{ provide: MessagingService, useValue: messagingServiceSpy }],
-            imports: [AppMaterialModule, BrowserAnimationsModule, FormsModule, HttpClientModule],
+            providers: [
+                { provide: MessagingService, useValue: messagingServiceSpy },
+                { provide: GameService, useValue: gameService },
+                { provide: CommandsService, useValue: jasmine.createSpyObj('CommandsService', { parseInput: true }) },
+            ],
+            imports: [AppMaterialModule, BrowserAnimationsModule, FormsModule],
             schemas: [CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA],
         }).compileComponents();
     });
@@ -56,7 +72,6 @@ describe('CommunicationBoxComponent', () => {
     });
 
     it('should return true when the input is not empty', () => {
-        spyOn(component['commandsService'], 'parseInput').and.returnValue(true);
         expect(component.send('Message.')).toBeTruthy();
     });
 
@@ -110,4 +125,6 @@ describe('CommunicationBoxComponent', () => {
         dummyMessage.userId = PlayerType.Local;
         expect(component.getMessageColor(dummyMessage)).toBe(Constants.MY_COLOR);
     });
+
+    afterAll(() => cleanStyles());
 });

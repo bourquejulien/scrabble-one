@@ -8,7 +8,9 @@
     "watch": "ng build --watch --configuration development",
     "format": "prettier --config ../.prettierrc.yaml --ignore-path ../.prettierignore --write \"src/**/*\"",
     "test": "ng test",
+    "test:headless": "ng test --browsers ChromeHeadless",
     "coverage": "ng test --code-coverage --sourceMap=true",
+    "coverage:headless": "ng test --browsers ChromeHeadless --code-coverage --sourceMap=true",
     "lint": "ng lint --format stylish",
     "lint:fix": "npm run lint -- --fix"
   },

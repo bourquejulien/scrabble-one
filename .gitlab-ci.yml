@@ -14,11 +14,14 @@ cache:
             - merge_requests
         changes:
             - client/**/*
+    before_script:
+        - if [ ! -d "client/node_modules" ]; then npm ci --prefix client .npm --prefer-offline; fi
     cache:
         key: "${CI_COMMIT_REF_SLUG}-client"
         paths:
             - client/node_modules/
-        policy: pull
+            - client/.npm/
+        policy: pull-push
 
 .only-server: &only-server
     only:
@@ -27,27 +30,30 @@ cache:
             - merge_requests
         changes:
             - server/**/*
+    before_script:
+        - if [ ! -d "server/node_modules" ]; then npm ci --prefix server .npm --prefer-offline; fi
     cache:
         key: "${CI_COMMIT_REF_SLUG}-server"
         paths:
             - server/node_modules/
-        policy: pull
+            - server/.npm/
+        policy: pull-push
 
 stages:
     - install
-    - lint
     - build
+    - lint
     - test
     - deploy
 
-before_script:
-    - cd client
-    - npm ci --cache .npm --prefer-offline
-    - cd ..
-
 install:client:
     stage: install
-    <<: *only-client
+    only:
+        refs:
+            - master
+            - merge_requests
+        changes:
+            - client/package-lock.json
     script:
         - cd client
         - npm ci --cache .npm --prefer-offline
@@ -60,7 +66,12 @@ install:client:
 
 install:server:
     stage: install
-    <<: *only-server
+    only:
+        refs:
+            - master
+            - merge_requests
+        changes:
+            - server/package-lock.json
     script:
         - cd server
         - npm ci --cache .npm --prefer-offline
@@ -70,22 +81,6 @@ install:server:
             - server/node_modules/
             - server/.npm/
         policy: pull-push
-
-lint:client:
-    stage: lint
-    allow_failure: true
-    <<: *only-client
-    script:
-        - cd client
-        - npm run lint
-
-lint:server:
-    stage: lint
-    allow_failure: true
-    <<: *only-server
-    script:
-        - cd server
-        - npm run lint
 
 build:client:
     stage: build
@@ -107,27 +102,43 @@ build:server:
         paths:
             - server/out/
 
+lint:client:
+    stage: lint
+    needs: ["build:client"]
+    allow_failure: true
+    <<: *only-client
+    script:
+        - cd client
+        - npm run lint
+
+lint:server:
+    stage: lint
+    needs: ["build:server"]
+    allow_failure: true
+    <<: *only-server
+    script:
+        - cd server
+        - npm run lint
+
 test:client:
     stage: test
+    needs: ["build:client"]
     <<: *only-client
     script:
         - Xvfb :99 -ac -screen 0 1920x1080x24 &
         - cd client
         - npm run coverage -- --browsers=ChromeHeadlessNoSandbox --watch=false
-    dependencies:
-        - build:client
     artifacts:
         paths:
             - client/coverage/
 
 test:server:
     stage: test
+    needs: ["build:server"]
     <<: *only-server
     script:
         - cd server
         - npm run coverage
-    dependencies:
-        - build:server
     artifacts:
         paths:
             - server/coverage/

@@ -1,29 +1,42 @@
-import { HttpClientModule } from '@angular/common/http';
 import { NO_ERRORS_SCHEMA } from '@angular/compiler';
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { EndGameComponent } from './end-game.component';
-import { AppMaterialModule } from '@app/modules/material.module';
 import { GameService } from '@app/services/game/game.service';
+import { cleanStyles } from '@app/classes/helpers/cleanup.helper';
+import { TimeSpan } from '@app/classes/time/timespan';
+import { MatDialogClose, MatDialogModule } from '@angular/material/dialog';
 
 describe('EndGameComponent', () => {
     let component: EndGameComponent;
     let fixture: ComponentFixture<EndGameComponent>;
-    let gameService: GameService;
+    const gameService = {
+        firstPlayerStats: { points: 10, rackSize: 10 },
+        secondPlayerStats: { points: 20, rackSize: 30 },
+        gameConfig: {
+            gameType: 'qwerty',
+            playTime: TimeSpan.fromMinutesSeconds(1, 0),
+            firstPlayerName: 'qwerty',
+            secondPlayerName: 'uiop',
+        },
+    };
 
     beforeEach(async () => {
         await TestBed.configureTestingModule({
-            imports: [HttpClientModule, AppMaterialModule],
-            declarations: [EndGameComponent],
+            imports: [MatDialogModule],
+            declarations: [EndGameComponent, MatDialogClose],
             schemas: [CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA],
         }).compileComponents();
     });
 
     beforeEach(() => {
+        TestBed.configureTestingModule({
+            providers: [{ provide: GameService, useValue: gameService }],
+        }).compileComponents();
+
         fixture = TestBed.createComponent(EndGameComponent);
         component = fixture.componentInstance;
         fixture.detectChanges();
-        gameService = TestBed.inject(GameService);
     });
 
     it('should create', () => {
@@ -62,4 +75,6 @@ describe('EndGameComponent', () => {
             'Félicitation aux gagnants ' + gameService.gameConfig.firstPlayerName + ' et ' + gameService.gameConfig.secondPlayerName + ' égalité',
         );
     });
+
+    afterAll(() => cleanStyles());
 });

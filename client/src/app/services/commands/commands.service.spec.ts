@@ -2,7 +2,6 @@
 /* eslint-disable @typescript-eslint/no-magic-numbers -- Not necessary in tests*/
 /* eslint-disable max-classes-per-file -- Multiple mock needed for tests*/
 /* eslint-disable @typescript-eslint/naming-convention  -- Need SCREAMING_SNAKE_CASE for static property in mock class */
-import { HttpClientModule } from '@angular/common/http';
 import { TestBed } from '@angular/core/testing';
 import { Direction } from '@app/classes/board/direction';
 import { Message, MessageType } from '@app/classes/message';
@@ -11,9 +10,12 @@ import { Vec2 } from '@app/classes/vec2';
 import { CommandsService } from '@app/services/commands/commands.service';
 import { MessagingService } from '@app/services/messaging/messaging.service';
 import { Subject } from 'rxjs';
+import { PlayerService } from '@app/services/player/player.service';
+import { GameService } from '@app/services/game/game.service';
 
 describe('CommandsService', () => {
     let messagingServiceSpy: jasmine.SpyObj<MessagingService>;
+    let playerServiceSpy: jasmine.SpyObj<PlayerService>;
     let service: CommandsService;
 
     beforeEach(() => {
@@ -21,8 +23,13 @@ describe('CommandsService', () => {
         messagingServiceSpy['subject'] = new Subject<Message>();
         messagingServiceSpy.onMessage.and.returnValue(messagingServiceSpy['subject'].asObservable());
 
+        playerServiceSpy = jasmine.createSpyObj('PlayerService', ['completeTurn', 'exchangeLetters', 'placeLetters']);
+
         TestBed.configureTestingModule({
-            imports: [HttpClientModule],
+            providers: [
+                { provide: PlayerService, useValue: playerServiceSpy },
+                { provide: GameService, useValue: jasmine.createSpyObj('GameService', [], [{ currentTurn: PlayerType.Local }]) },
+            ],
         });
         service = TestBed.inject(CommandsService);
         service.messagingService.debuggingMode = true;
@@ -55,9 +62,8 @@ describe('CommandsService', () => {
     });
 
     it('#parseInput should call skip turn', () => {
-        const spy = spyOn(service.playerService, 'exchangeLetters');
         service.parseInput('!echanger abc');
-        expect(spy).toHaveBeenCalled();
+        expect(playerServiceSpy.exchangeLetters).toHaveBeenCalled();
     });
 
     it('#parseInput should send an error message when place command is passed an invalid word', () => {
@@ -75,12 +81,11 @@ describe('CommandsService', () => {
     });
 
     it('#parseInput should call placeLetters when the input is valid', () => {
-        const spy = spyOn(service.playerService, 'placeLetters');
         const vecCoordinate: Vec2 = { x: 7, y: 7 };
         service.parseInput('!placer h8v word');
-        expect(spy).toHaveBeenCalledWith('word', vecCoordinate, Direction.Down);
+        expect(playerServiceSpy.placeLetters).toHaveBeenCalledWith('word', vecCoordinate, Direction.Down);
         service.parseInput('!placer h8h word');
-        expect(spy).toHaveBeenCalledWith('word', vecCoordinate, Direction.Down);
+        expect(playerServiceSpy.placeLetters).toHaveBeenCalledWith('word', vecCoordinate, Direction.Down);
     });
 
     it('#parseInput should send an error message if the user message is not in the right format', () => {
@@ -106,9 +111,8 @@ describe('CommandsService', () => {
     });
 
     it('#parseInput should call skip turn', () => {
-        const spy = spyOn(service.playerService, 'completeTurn');
         service.parseInput('!passer');
-        expect(spy).toHaveBeenCalled();
+        expect(playerServiceSpy.completeTurn).toHaveBeenCalled();
     });
 
     it("#parseInput should fail when it is not the user's turn", () => {

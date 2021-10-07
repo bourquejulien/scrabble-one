@@ -4,6 +4,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MatToolbar } from '@angular/material/toolbar';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { GameConfig } from '@app/classes/game-config';
+import { cleanStyles } from '@app/classes/helpers/cleanup.helper';
 import { PlayerType } from '@app/classes/player-type';
 import { PlayerStats } from '@app/classes/player/player-stats';
 import { TimePipe } from '@app/classes/time/time.pipe';
@@ -124,15 +125,5 @@ describe('GamePageComponent', () => {
         expect(spy).toHaveBeenCalled();
     });
 
-    // it('should call gameService.resetGame function if endGame is called and dialog is closed', () => {
-    //     const response = true;
-
-    //     spyOn(component, 'endGame').and.returnValue();
-
-    //     component.endGame();
-
-    //     fixture.detectChanges();
-
-    //     expect(homeComponent.listOfUsers).toEqual(response);
-    // });
+    afterAll(() => cleanStyles());
 });

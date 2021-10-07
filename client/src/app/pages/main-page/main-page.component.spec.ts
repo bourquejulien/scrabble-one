@@ -1,6 +1,6 @@
-import { HttpClientModule } from '@angular/common/http';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
+import { cleanStyles } from '@app/classes/helpers/cleanup.helper';
 import { AppMaterialModule } from '@app/modules/material.module';
 import { MainPageComponent } from '@app/pages/main-page/main-page.component';
 
@@ -10,7 +10,7 @@ describe('MainPageComponent', () => {
 
     beforeEach(async () => {
         await TestBed.configureTestingModule({
-            imports: [RouterTestingModule, HttpClientModule, AppMaterialModule],
+            imports: [RouterTestingModule, AppMaterialModule],
             declarations: [MainPageComponent],
         }).compileComponents();
     });
@@ -28,4 +28,6 @@ describe('MainPageComponent', () => {
     it("should have as title 'LOG2990'", () => {
         expect(component.title).toEqual('LOG2990');
     });
+
+    afterAll(() => cleanStyles());
 });

@@ -3,6 +3,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { AppMaterialModule } from '@app/modules/material.module';
 import { GameModePageComponent } from './game-mode-page.component';
 import { MatDialogRef } from '@angular/material/dialog';
+import { cleanStyles } from '@app/classes/helpers/cleanup.helper';
 
 @Component({
     selector: 'app-init-solo-mode',
@@ -32,4 +33,6 @@ describe('GameModePageComponent', () => {
     it('should create', () => {
         expect(component).toBeTruthy();
     });
+
+    afterAll(() => cleanStyles());
 });

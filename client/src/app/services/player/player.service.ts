@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Direction } from '@app/classes/board/direction';
 import { MessageType } from '@app/classes/message';
+import { PlayerData } from '@app/classes/player-data';
 import { PlayerType } from '@app/classes/player-type';
 import { TimeSpan } from '@app/classes/time/timespan';
 import { Vec2 } from '@app/classes/vec2';
@@ -16,10 +17,12 @@ import { Subject } from 'rxjs';
     providedIn: 'root',
 })
 export class PlayerService {
-    points: number = 0;
-    skipTurnNb: number = 0;
     turnComplete: Subject<PlayerType>;
-    rack: string[] = [];
+    playerData: PlayerData = {
+        score: 0,
+        skippedTurns: 0,
+        rack: [],
+    };
 
     constructor(
         private readonly reserveService: ReserveService,
@@ -69,14 +72,14 @@ export class PlayerService {
             this.completeTurn();
             return;
         }
-        this.points += validationData.points;
+        this.playerData.score += validationData.points;
 
         this.updateRack(lettersToPlace);
         this.updateReserve(positionToPlace.length);
 
         this.boardService.placeLetters(positionToPlace);
 
-        this.skipTurnNb = 0;
+        this.playerData.skippedTurns = 0;
         this.completeTurn();
     }
 
@@ -91,7 +94,7 @@ export class PlayerService {
         }
 
         for (let i = 0; i < lettersToExchangeLength; i++) {
-            this.rack.push(this.reserveService.drawLetter());
+            this.playerData.rack.push(this.reserveService.drawLetter());
         }
 
         for (const letter of lettersToExchange) {
@@ -99,12 +102,12 @@ export class PlayerService {
         }
 
         this.updateRack(lettersToExchange);
-        this.skipTurnNb = 0;
+        this.playerData.skippedTurns = 0;
         this.completeTurn();
     }
 
     skipTurn(): void {
-        this.skipTurnNb++;
+        this.playerData.skippedTurns++;
         this.completeTurn();
     }
 
@@ -114,32 +117,36 @@ export class PlayerService {
 
     fillRack(lengthToFill: number): void {
         for (let i = 0; i < lengthToFill; i++) {
-            this.rack.push(this.reserveService.drawLetter());
+            this.playerData.rack.push(this.reserveService.drawLetter());
         }
     }
 
     emptyRack(): void {
-        this.rack = [];
+        this.playerData.rack = [];
     }
 
     setRack(mockRack: string[]): void {
         this.emptyRack();
 
         for (const letter of mockRack) {
-            this.rack.push(letter);
+            this.playerData.rack.push(letter);
         }
     }
 
-    reset() {
-        this.skipTurnNb = 0;
-        this.points = 0;
+    reset(): void {
+        this.playerData.skippedTurns = 0;
+        this.playerData.score = 0;
         this.emptyRack();
         this.boardService.resetBoardService();
         this.timerService.stop();
     }
 
     get rackContent(): string[] {
-        return this.rack;
+        return this.playerData.rack;
+    }
+
+    get rackLength(): number {
+        return this.playerData.rack.length;
     }
 
     private updateReserve(lettersToPlaceLength: number): void {
@@ -152,7 +159,7 @@ export class PlayerService {
 
         if (reserveLength <= lettersToPlaceLength) {
             for (let i = 0; i < reserveLength; i++) {
-                this.rack.push(this.reserveService.drawLetter());
+                this.playerData.rack.push(this.reserveService.drawLetter());
             }
             this.messagingService.send(SystemMessages.ImpossibleAction, SystemMessages.EmptyReserveError, MessageType.Error);
             return;
@@ -163,24 +170,19 @@ export class PlayerService {
 
     private updateRack(lettersToPlace: string): void {
         for (const letter of lettersToPlace) {
-            const letterIndex = this.rack.indexOf(letter);
+            const letterIndex = this.playerData.rack.indexOf(letter);
             if (letterIndex === -1) return;
-            this.rack.splice(letterIndex, 1);
+            this.playerData.rack.splice(letterIndex, 1);
         }
     }
 
     private areLettersInRack(lettersToPlace: string): boolean {
         for (const letter of lettersToPlace) {
-            if (this.rack.indexOf(letter) === -1) {
+            if (this.playerData.rack.indexOf(letter) === -1) {
                 this.messagingService.send(SystemMessages.ImpossibleAction, SystemMessages.LetterPossessionError + letter, MessageType.Error);
                 return false;
             }
         }
         return true;
-    }
-
-    // For testing
-    get length(): number {
-        return this.rack.length;
     }
 }
