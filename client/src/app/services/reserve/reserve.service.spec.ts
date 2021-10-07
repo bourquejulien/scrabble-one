@@ -2,7 +2,7 @@
 import { TestBed } from '@angular/core/testing';
 import { ReserveService } from '@app/services/reserve/reserve.service';
 
-fdescribe('ReserveService', () => {
+describe('ReserveService', () => {
     let letterToExchange: string;
     let service: ReserveService;
 
