@@ -55,7 +55,6 @@ export class InitSoloModeComponent implements OnInit {
     errorsList: string[] = [];
     minutes: number = DEFAULT_PLAY_TIME.totalMinutes;
     seconds: number = DEFAULT_PLAY_TIME.seconds;
-
     gameConfig: GameConfig = {
         gameType: GAME_TYPES_LIST[0],
         playTime: DEFAULT_PLAY_TIME,
