@@ -28,6 +28,7 @@ import { GameModePageComponent } from './pages/game-mode-page/game-mode-page.com
     declarations: [
         AppComponent,
         GamePageComponent,
+        GameModePageComponent,
         MainPageComponent,
         PlayAreaComponent,
         GameModePageComponent,

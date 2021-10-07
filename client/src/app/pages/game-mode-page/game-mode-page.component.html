@@ -6,16 +6,16 @@
             <h1>Options de jeu</h1>
             <div class="button-group">
                 <div class="dropdown">
-                    <button class="button1" mat-raised-button (click)="openDialog()">Jouer une partie en solo</button>
+                    <button class="button1" mat-raised-button (click)="openDialog(gameType.Solo)">Jouer une partie en solo</button>
                 </div>
                 <div class="dropdown">
-                    <button class="button1">Créer une partie multijoueur</button>
+                    <button class="button1" mat-raised-button (click)="openDialog(gameType.CreateOnline)">Créer une partie multijoueur</button>
                     <div class="dropdown-content2">
                         <h3>Mode indisponible<br /></h3>
                     </div>
                 </div>
                 <div class="dropdown">
-                    <button class="button1">Joindre une partie multijoueur</button>
+                    <button class="button1" mat-raised-button (click)="openDialog(gameType.JoinOnline)">Joindre une partie multijoueur</button>
                     <div class="dropdown-content2">
                         <h3>Mode indisponible<br /></h3>
                     </div>
