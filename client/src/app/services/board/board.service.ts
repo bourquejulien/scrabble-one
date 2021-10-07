@@ -16,7 +16,7 @@ import JsonBonuses from '@assets/bonus.json';
     providedIn: 'root',
 })
 export class BoardService implements Validation {
-    mustShuffle = true;
+    mustShuffle = false;
     private board: Board;
 
     constructor(private readonly validatorGenerator: BoardValidatorGeneratorService) {
