@@ -1,6 +1,5 @@
 /* eslint-disable @typescript-eslint/naming-convention -- Constants file*/
 /* eslint-disable @typescript-eslint/no-magic-numbers -- Constants file*/
-import { Bonus } from '@app/classes/board/bonus';
 import { Dictionary } from './dictionary.constants';
 import { Grid } from './grid.constants';
 import { VirtualPlayer } from './virtual-player.constants';
@@ -25,66 +24,4 @@ export class Constants {
     static readonly MY_COLOR = 'aliceblue';
     static readonly OTHERS_COLOR = 'blanchedalmond';
     static readonly ERROR_COLOR = 'red';
-    static readonly BONUSES_ARRAY = [
-        Bonus.L2,
-        Bonus.L2,
-        Bonus.L2,
-        Bonus.L2,
-        Bonus.L2,
-        Bonus.L2,
-        Bonus.L2,
-        Bonus.L2,
-        Bonus.L2,
-        Bonus.L2,
-        Bonus.L2,
-        Bonus.L2,
-        Bonus.L2,
-        Bonus.L2,
-        Bonus.L2,
-        Bonus.L2,
-        Bonus.L2,
-        Bonus.L2,
-        Bonus.L2,
-        Bonus.L2,
-        Bonus.L2,
-        Bonus.L2,
-        Bonus.L2,
-        Bonus.L2,
-        Bonus.W2,
-        Bonus.W2,
-        Bonus.W2,
-        Bonus.W2,
-        Bonus.W2,
-        Bonus.W2,
-        Bonus.W2,
-        Bonus.W2,
-        Bonus.W2,
-        Bonus.W2,
-        Bonus.W2,
-        Bonus.W2,
-        Bonus.W2,
-        Bonus.W2,
-        Bonus.W2,
-        Bonus.W2,
-        Bonus.L3,
-        Bonus.L3,
-        Bonus.L3,
-        Bonus.L3,
-        Bonus.L3,
-        Bonus.L3,
-        Bonus.L3,
-        Bonus.L3,
-        Bonus.L3,
-        Bonus.L3,
-        Bonus.L3,
-        Bonus.L3,
-        Bonus.W3,
-        Bonus.W3,
-        Bonus.W3,
-        Bonus.W3,
-        Bonus.W3,
-        Bonus.W3,
-        Bonus.W3,
-        Bonus.W3,
-    ];
 }

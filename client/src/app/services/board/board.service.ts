@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Board, ImmutableBoard } from '@app/classes/board/board';
-import { Bonus } from '@app/classes/board/bonus';
+import { Bonus, BonusInfos, BONUS_NUMBER } from '@app/classes/board/bonus';
 import { Direction } from '@app/classes/board/direction';
 import { Square } from '@app/classes/board/square';
 import { BoardValidator } from '@app/classes/validation/board-validator';
@@ -16,7 +16,7 @@ import JsonBonuses from '@assets/bonus.json';
     providedIn: 'root',
 })
 export class BoardService implements Validation {
-    mustShuffle = false;
+    mustShuffle = true;
     private board: Board;
 
     constructor(private readonly validatorGenerator: BoardValidatorGeneratorService) {
@@ -64,29 +64,40 @@ export class BoardService implements Validation {
 
         return newLetters;
     }
-    private retrieveBonuses(): [Vec2, Bonus][] {
-        let bonuses: [Vec2, Bonus][] = new Array<[Vec2, Bonus]>();
+
+    private retrieveBonuses(): BonusInfos[] {
+        let bonuses: BonusInfos[] = [];
         for (const jsonBonus of JsonBonuses) {
-            bonuses.push([jsonBonus.Position, Bonus[jsonBonus.Bonus as keyof typeof Bonus]]);
+            const bonusInfo: BonusInfos = { bonus: jsonBonus.Bonus as Bonus, position: jsonBonus.Position };
+            bonuses.push(bonusInfo);
         }
         if (this.mustShuffle) {
             bonuses = this.shuffleBonuses(bonuses);
         }
         return bonuses;
     }
-    private shuffleBonuses(bonusesArray: [Vec2, Bonus][]) {
-        const POSSIBLE_BONUSES = [Bonus.L2, Bonus.L3, Bonus.W2, Bonus.W3];
-        for (const bonus of bonusesArray) {
-            if (bonus[1] !== Bonus.Star) {
-                const bonusToPlace = POSSIBLE_BONUSES[Math.floor(Math.random() * POSSIBLE_BONUSES.length)];
-                bonus[1] = bonusToPlace;
-                const index = Constants.BONUSES_ARRAY.indexOf(bonusToPlace, 0);
+    private shuffleBonuses(bonusesArray: BonusInfos[]) {
+        const bonusBank: Bonus[] = this.initializeBonusBank();
+        for (const bonusInfo of bonusesArray) {
+            if (bonusInfo.bonus !== Bonus.Star) {
+                const bonusToPlace = bonusBank[Math.floor(Math.random() * bonusBank.length)];
+                bonusInfo.bonus = bonusToPlace;
+                const index = bonusBank.indexOf(bonusToPlace, 0);
                 if (index > -1) {
-                    Constants.BONUSES_ARRAY.splice(index, 1);
+                    bonusBank.splice(index, 1);
                 }
             }
         }
         return bonusesArray;
+    }
+    private initializeBonusBank() {
+        const bonusBank: Bonus[] = [];
+        for (const [bonusType, maxQuantity] of BONUS_NUMBER) {
+            for (let i = 0; i < maxQuantity; i++) {
+                bonusBank.push(bonusType);
+            }
+        }
+        return bonusBank;
     }
     private get validator(): BoardValidator {
         return this.validatorGenerator.generator(this.board);
