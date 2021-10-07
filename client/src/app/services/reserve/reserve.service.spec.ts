@@ -54,9 +54,7 @@ fdescribe('ReserveService', () => {
         service.setReserve(['a', 'a', 'b', 'c', 'e']);
         service.putBackLetter('d');
         expect(service['reserve'][letterIndex]).toBe('d');
-
     });
-    
 
     it('should decrease length of reserve if letter succesfully drawn', () => {
         const currentLength = service.length;

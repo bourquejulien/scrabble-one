@@ -27,7 +27,7 @@ export class ReserveService {
     }
 
     getLetterQuantity(letterToUpdate: string): number {
-        const firstIndex = this.reserve.indexOf(letterToUpdate); 
+        const firstIndex = this.reserve.indexOf(letterToUpdate);
         const lastIndex = this.reserve.lastIndexOf(letterToUpdate);
         const currentQuantity = lastIndex - firstIndex + 1;
         return currentQuantity;
