@@ -2,7 +2,7 @@
 import { TestBed } from '@angular/core/testing';
 import { ReserveService } from '@app/services/reserve/reserve.service';
 
-describe('ReserveService', () => {
+fdescribe('ReserveService', () => {
     let letterToExchange: string;
     let service: ReserveService;
 
@@ -41,16 +41,6 @@ describe('ReserveService', () => {
         expect(service.length).toBe(currentLength);
     });
 
-    it('should put back the letter at the end of reserve if letter not currently stored', () => {
-        service.putBackLetter('z');
-        expect(service['reserve'][6]).toBe('z');
-    });
-
-    it('should put back * at the end of reserve if * not currently stored', () => {
-        service.putBackLetter('*');
-        expect(service['reserve'][6]).toBe('*');
-    });
-
     it('should not affect reserve if trying to put back anything but a lower case letter', () => {
         const currentLength = service.length;
         service.putBackLetter('3');
@@ -58,6 +48,15 @@ describe('ReserveService', () => {
         service.putBackLetter('$');
         expect(service.length).toBe(currentLength);
     });
+
+    it('should correctly put back and sort the reserve if trying to put back a letter that was not previously in the reserve', () => {
+        const letterIndex = 4;
+        service.setReserve(['a', 'a', 'b', 'c', 'e']);
+        service.putBackLetter('d');
+        expect(service['reserve'][letterIndex]).toBe('d');
+
+    });
+    
 
     it('should decrease length of reserve if letter succesfully drawn', () => {
         const currentLength = service.length;
@@ -82,6 +81,13 @@ describe('ReserveService', () => {
         const spy = spyOn(Math, 'random').and.returnValue(1);
         expect(service.drawLetter()).toBe('c');
         expect(spy).toHaveBeenCalled();
+    });
+
+    it('should return letter quantity if valid letter', () => {
+        const firstletterQuantity = 3;
+        const secondLetterQuantity = 2;
+        expect(service.getLetterQuantity('a')).toBe(firstletterQuantity);
+        expect(service.getLetterQuantity('b')).toBe(secondLetterQuantity);
     });
 
     it('should return reserve length', () => {
