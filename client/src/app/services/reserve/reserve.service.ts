@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { letterDefinitions } from '@app/classes/letter';
+import { letterDefinitions } from '@common/letter';
 
 @Injectable({
     providedIn: 'root',

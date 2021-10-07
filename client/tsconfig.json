@@ -27,6 +27,7 @@
         "lib": ["es2018", "dom"],
         "paths": {
             "@app/*": ["./src/app/*"],
+            "@common/*": ["../common/*"],
             "@assets/*": ["./src/assets/*"]
         }
     },
