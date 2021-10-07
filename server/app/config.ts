@@ -5,4 +5,5 @@ export const Config = {
         GRID_SIZE: 15,
     },
     RACK_SIZE: 7,
+    DICTIONARY_PATH: 'assets/dictionary.json',
 };
