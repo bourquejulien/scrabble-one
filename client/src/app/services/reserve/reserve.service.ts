@@ -17,12 +17,20 @@ export class ReserveService {
             this.reserve.splice(letterIndex, 0, letterToExchange);
         } else if (letterToExchange.match(/^[a-z]$/) || letterToExchange === '*') {
             this.reserve.push(letterToExchange);
+            this.reserve.sort();
         }
     }
 
     drawLetter(): string {
         const randomLetterIndex = Math.floor(Math.random() * (this.reserve.length - 1));
         return this.reserve.splice(randomLetterIndex, 1)[0];
+    }
+
+    getLetterQuantity(letterToUpdate: string): number {
+        const firstIndex = this.reserve.indexOf(letterToUpdate);
+        const lastIndex = this.reserve.lastIndexOf(letterToUpdate);
+        const currentQuantity = lastIndex - firstIndex + 1;
+        return currentQuantity;
     }
 
     get length(): number {
