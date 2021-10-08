@@ -6,7 +6,7 @@ import { Direction } from '@app/classes/board/direction';
 import { Square } from '@app/classes/board/square';
 import { BoardValidator } from '@app/classes/validation/board-validator';
 import { ValidationResponse } from '@app/classes/validation/validation-response';
-import { Vec2 } from '@app/classes/vec2';
+import { Vec2 } from '@common/vec2';
 import { Constants } from '@app/constants/global.constants';
 
 @Injectable({

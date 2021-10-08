@@ -1,0 +1,429 @@
+[
+    {
+        "Bonus": "L2",
+        "Position": {
+            "x": 3,
+            "y": 0
+        }
+    },
+    {
+        "Bonus": "L2",
+        "Position": {
+            "x": 11,
+            "y": 0
+        }
+    },
+    {
+        "Bonus": "L2",
+        "Position": {
+            "x": 6,
+            "y": 2
+        }
+    },
+    {
+        "Bonus": "L2",
+        "Position": {
+            "x": 7,
+            "y": 3
+        }
+    },
+    {
+        "Bonus": "L2",
+        "Position": {
+            "x": 8,
+            "y": 2
+        }
+    },
+    {
+        "Bonus": "L2",
+        "Position": {
+            "x": 0,
+            "y": 3
+        }
+    },
+    {
+        "Bonus": "L2",
+        "Position": {
+            "x": 14,
+            "y": 3
+        }
+    },
+    {
+        "Bonus": "L2",
+        "Position": {
+            "x": 2,
+            "y": 6
+        }
+    },
+    {
+        "Bonus": "L2",
+        "Position": {
+            "x": 6,
+            "y": 6
+        }
+    },
+    {
+        "Bonus": "L2",
+        "Position": {
+            "x": 8,
+            "y": 6
+        }
+    },
+    {
+        "Bonus": "L2",
+        "Position": {
+            "x": 12,
+            "y": 6
+        }
+    },
+    {
+        "Bonus": "L2",
+        "Position": {
+            "x": 3,
+            "y": 7
+        }
+    },
+    {
+        "Bonus": "L2",
+        "Position": {
+            "x": 11,
+            "y": 7
+        }
+    },
+    {
+        "Bonus": "L2",
+        "Position": {
+            "x": 2,
+            "y": 8
+        }
+    },
+    {
+        "Bonus": "L2",
+        "Position": {
+            "x": 6,
+            "y": 8
+        }
+    },
+    {
+        "Bonus": "L2",
+        "Position": {
+            "x": 8,
+            "y": 8
+        }
+    },
+    {
+        "Bonus": "L2",
+        "Position": {
+            "x": 12,
+            "y": 8
+        }
+    },
+    {
+        "Bonus": "L2",
+        "Position": {
+            "x": 0,
+            "y": 11
+        }
+    },
+    {
+        "Bonus": "L2",
+        "Position": {
+            "x": 7,
+            "y": 11
+        }
+    },
+    {
+        "Bonus": "L2",
+        "Position": {
+            "x": 14,
+            "y": 11
+        }
+    },
+    {
+        "Bonus": "L2",
+        "Position": {
+            "x": 6,
+            "y": 12
+        }
+    },
+    {
+        "Bonus": "L2",
+        "Position": {
+            "x": 8,
+            "y": 12
+        }
+    },
+    {
+        "Bonus": "L2",
+        "Position": {
+            "x": 3,
+            "y": 14
+        }
+    },
+    {
+        "Bonus": "L2",
+        "Position": {
+            "x": 11,
+            "y": 14
+        }
+    },
+    {
+        "Bonus": "W2",
+        "Position": {
+            "x": 1,
+            "y": 1
+        }
+    },
+    {
+        "Bonus": "W2",
+        "Position": {
+            "x": 2,
+            "y": 2
+        }
+    },
+    {
+        "Bonus": "W2",
+        "Position": {
+            "x": 3,
+            "y": 3
+        }
+    },
+    {
+        "Bonus": "W2",
+        "Position": {
+            "x": 4,
+            "y": 4
+        }
+    },
+    {
+        "Bonus": "W2",
+        "Position": {
+            "x": 10,
+            "y": 10
+        }
+    },
+    {
+        "Bonus": "W2",
+        "Position": {
+            "x": 11,
+            "y": 11
+        }
+    },
+    {
+        "Bonus": "W2",
+        "Position": {
+            "x": 12,
+            "y": 12
+        }
+    },
+    {
+        "Bonus": "W2",
+        "Position": {
+            "x": 13,
+            "y": 13
+        }
+    },
+    {
+        "Bonus": "W2",
+        "Position": {
+            "x": 1,
+            "y": 13
+        }
+    },
+    {
+        "Bonus": "W2",
+        "Position": {
+            "x": 2,
+            "y": 12
+        }
+    },
+    {
+        "Bonus": "W2",
+        "Position": {
+            "x": 3,
+            "y": 11
+        }
+    },
+    {
+        "Bonus": "W2",
+        "Position": {
+            "x": 4,
+            "y": 10
+        }
+    },
+    {
+        "Bonus": "W2",
+        "Position": {
+            "x": 10,
+            "y": 4
+        }
+    },
+    {
+        "Bonus": "W2",
+        "Position": {
+            "x": 11,
+            "y": 3
+        }
+    },
+    {
+        "Bonus": "W2",
+        "Position": {
+            "x": 12,
+            "y": 2
+        }
+    },
+    {
+        "Bonus": "W2",
+        "Position": {
+            "x": 13,
+            "y": 1
+        }
+    },
+    {
+        "Bonus": "L3",
+        "Position": {
+            "x": 5,
+            "y": 1
+        }
+    },
+    {
+        "Bonus": "L3",
+        "Position": {
+            "x": 9,
+            "y": 1
+        }
+    },
+    {
+        "Bonus": "L3",
+        "Position": {
+            "x": 1,
+            "y": 5
+        }
+    },
+    {
+        "Bonus": "L3",
+        "Position": {
+            "x": 5,
+            "y": 5
+        }
+    },
+    {
+        "Bonus": "L3",
+        "Position": {
+            "x": 9,
+            "y": 5
+        }
+    },
+    {
+        "Bonus": "L3",
+        "Position": {
+            "x": 13,
+            "y": 5
+        }
+    },
+    {
+        "Bonus": "L3",
+        "Position": {
+            "x": 1,
+            "y": 9
+        }
+    },
+    {
+        "Bonus": "L3",
+        "Position": {
+            "x": 5,
+            "y": 9
+        }
+    },
+    {
+        "Bonus": "L3",
+        "Position": {
+            "x": 9,
+            "y": 9
+        }
+    },
+    {
+        "Bonus": "L3",
+        "Position": {
+            "x": 13,
+            "y": 9
+        }
+    },
+    {
+        "Bonus": "L3",
+        "Position": {
+            "x": 5,
+            "y": 13
+        }
+    },
+    {
+        "Bonus": "L3",
+        "Position": {
+            "x": 9,
+            "y": 13
+        }
+    },
+    {
+        "Bonus": "W3",
+        "Position": {
+            "x": 0,
+            "y": 0
+        }
+    },
+    {
+        "Bonus": "W3",
+        "Position": {
+            "x": 7,
+            "y": 0
+        }
+    },
+    {
+        "Bonus": "W3",
+        "Position": {
+            "x": 14,
+            "y": 0
+        }
+    },
+    {
+        "Bonus": "W3",
+        "Position": {
+            "x": 0,
+            "y": 7
+        }
+    },
+    {
+        "Bonus": "W3",
+        "Position": {
+            "x": 14,
+            "y": 7
+        }
+    },
+    {
+        "Bonus": "W3",
+        "Position": {
+            "x": 0,
+            "y": 14
+        }
+    },
+    {
+        "Bonus": "W3",
+        "Position": {
+            "x": 7,
+            "y": 14
+        }
+    },
+    {
+        "Bonus": "W3",
+        "Position": {
+            "x": 14,
+            "y": 14
+        }
+    },
+    {
+        "Bonus": "Star",
+        "Position": {
+            "x": 7,
+            "y": 7
+        }
+    }
+]

@@ -2,7 +2,7 @@ import { BoardError } from '@app/exceptions/board-error';
 import { Board, ImmutableBoard } from '@app/classes/board/board';
 import { Square } from '@app/classes/board/square';
 import { ValidationResponse } from './validation-response';
-import { Vec2 } from '@app/classes/vec2';
+import { Vec2 } from '@common/vec2';
 import { Direction, reverseDirection } from '@app/classes/board/direction';
 import { Bonus, getBonusDetails } from '@app/classes/board/bonus';
 import { Dictionary } from '@app/classes/dictionary/dictionary';

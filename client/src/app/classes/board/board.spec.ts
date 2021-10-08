@@ -1,5 +1,5 @@
 import { Constants } from '@app/constants/global.constants';
-import { Vec2 } from '@app/classes/vec2';
+import { Vec2 } from '@common/vec2';
 import { Board } from './board';
 import { Bonus } from './bonus';
 import { BoardOverflowError } from '@app/exceptions/board-overflow-error';

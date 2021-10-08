@@ -1,5 +1,5 @@
 import { Square } from './square';
-import { Vec2 } from '@app/classes/vec2';
+import { Vec2 } from '@common/vec2';
 import { BoardOverflowError } from '@app/exceptions/board-overflow-error';
 import { Bonus } from './bonus';
 import { BoardMergeError } from '@app/exceptions/board-merge-error';
