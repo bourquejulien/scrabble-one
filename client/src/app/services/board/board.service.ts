@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Board, ImmutableBoard } from '@app/classes/board/board';
-import { Bonus, BonusInfos, BONUS_NUMBER } from '@app/classes/board/bonus';
+import { Bonus, BonusInfos } from '@app/classes/board/bonus';
 import { Direction } from '@app/classes/board/direction';
 import { Square } from '@app/classes/board/square';
 import { BoardValidator } from '@app/classes/validation/board-validator';
@@ -16,7 +16,13 @@ import JsonBonuses from '@assets/bonus.json';
     providedIn: 'root',
 })
 export class BoardService implements Validation {
-    mustShuffle = false;
+    bonusNumber = new Map<Bonus, number>([
+        [Bonus.L2, 0],
+        [Bonus.W2, 0],
+        [Bonus.L3, 0],
+        [Bonus.W3, 0],
+    ]);
+    mustShuffle = true;
     private board: Board;
 
     constructor(private readonly validatorGenerator: BoardValidatorGeneratorService) {
@@ -92,7 +98,14 @@ export class BoardService implements Validation {
     }
     private initializeBonusBank() {
         const bonusBank: Bonus[] = [];
-        for (const [bonusType, maxQuantity] of BONUS_NUMBER) {
+        for (const jsonBonus of JsonBonuses) {
+            const jsonStringToEnum = Bonus[jsonBonus.Bonus as keyof typeof Bonus];
+            const valueOfKey = this.bonusNumber.get(jsonStringToEnum);
+            if (valueOfKey !== undefined) {
+                this.bonusNumber.set(jsonStringToEnum, valueOfKey + 1);
+            }
+        }
+        for (const [bonusType, maxQuantity] of this.bonusNumber) {
             for (let i = 0; i < maxQuantity; i++) {
                 bonusBank.push(bonusType);
             }

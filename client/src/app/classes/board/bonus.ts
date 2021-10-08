@@ -23,16 +23,5 @@ const BONUS_VALUE = new Map<Bonus, { score: number; isLetterBonus: boolean }>([
     [Bonus.None, { score: 0, isLetterBonus: false }],
 ]);
 
-const TIMES_TWO_LETTER = 24;
-const TIMES_TWO_WORD = 16;
-const TIMES_THREE_LETTER = 12;
-const TIMES_THREE_WORD = 8;
-export const BONUS_NUMBER = new Map<Bonus, number>([
-    [Bonus.L2, TIMES_TWO_LETTER],
-    [Bonus.W2, TIMES_TWO_WORD],
-    [Bonus.L3, TIMES_THREE_LETTER],
-    [Bonus.W3, TIMES_THREE_WORD],
-]);
-
 // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- All enum values are present in the map
 export const getBonusDetails = (bonus: Bonus): { score: number; isLetterBonus: boolean } => BONUS_VALUE.get(bonus)!;
