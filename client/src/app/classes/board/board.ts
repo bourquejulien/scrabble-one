@@ -1,4 +1,4 @@
-import { Vec2 } from '@app/classes/vec2';
+import { Vec2 } from '@common/vec2';
 import { BoardMergeError } from '@app/exceptions/board-merge-error';
 import { BoardOverflowError } from '@app/exceptions/board-overflow-error';
 import { Bonus, BonusInfos } from './bonus';

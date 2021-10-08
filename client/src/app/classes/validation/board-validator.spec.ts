@@ -1,9 +1,9 @@
 import { Board } from '@app/classes/board/board';
 import { Bonus, BonusInfos } from '@app/classes/board/bonus';
 import { Direction } from '@app/classes/board/direction';
+import { Vec2 } from '@common/vec2';
+import { letterDefinitions } from '@common/letter';
 import { Dictionary } from '@app/classes/dictionary/dictionary';
-import { letterDefinitions } from '@app/classes/letter';
-import { Vec2 } from '@app/classes/vec2';
 import { Constants } from '@app/constants/global.constants';
 import JsonBonuses from '@assets/bonus.json';
 import { BoardValidator } from './board-validator';

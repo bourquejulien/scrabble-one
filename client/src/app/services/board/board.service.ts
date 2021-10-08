@@ -6,7 +6,7 @@ import { Square } from '@app/classes/board/square';
 import { BoardValidator } from '@app/classes/validation/board-validator';
 import { Validation } from '@app/classes/validation/validation';
 import { ValidationResponse } from '@app/classes/validation/validation-response';
-import { Vec2 } from '@app/classes/vec2';
+import { Vec2 } from '@common/vec2';
 import { Constants } from '@app/constants/global.constants';
 import { BoardError } from '@app/exceptions/board-error';
 import { BoardValidatorGeneratorService } from '@app/services/validation/board-validator-generator.service';

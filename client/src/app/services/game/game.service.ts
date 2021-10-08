@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { GameConfig } from '@app/classes/game-config';
-import { letterDefinitions } from '@app/classes/letter';
+import { letterDefinitions } from '@common/letter';
 import { MessageType } from '@app/classes/message';
 import { PlayerType } from '@app/classes/player-type';
 import { PlayerStats } from '@app/classes/player/player-stats';
