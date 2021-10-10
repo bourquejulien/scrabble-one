@@ -2,7 +2,7 @@ import { Direction, reverseDirection } from '@app/classes/board/direction';
 import { ImmutableBoard } from '@app/classes/board/board';
 import { Dictionary } from '@app/classes/dictionary/dictionary';
 import { Validation } from '@app/classes/validation/validation';
-import { Vec2 } from '@common/vec2';
+import { Vec2 } from '@common';
 import { Play } from './play';
 import { Square } from '@app/classes/board/square';
 

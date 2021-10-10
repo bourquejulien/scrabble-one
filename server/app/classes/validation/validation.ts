@@ -1,4 +1,4 @@
-import { Vec2 } from '@common/vec2';
+import { Vec2 } from '@common';
 import { Direction } from '@app/classes/board/direction';
 import { ValidationResponse } from './validation-response';
 import { ImmutableBoard } from '@app/classes/board/board';

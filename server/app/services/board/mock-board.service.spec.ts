@@ -5,7 +5,7 @@ import { Direction } from '@app/classes/board/direction';
 import { Square } from '@app/classes/board/square';
 import { BoardValidator } from '@app/classes/validation/board-validator';
 import { ValidationResponse } from '@app/classes/validation/validation-response';
-import { Vec2 } from '@common/vec2';
+import { Vec2 } from '@common';
 import { Config } from '@app/config';
 import { Service } from 'typedi';
 

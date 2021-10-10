@@ -5,7 +5,7 @@ import { Direction } from '@app/classes/board/direction';
 import { Square } from '@app/classes/board/square';
 import { Validation } from '@app/classes/validation/validation';
 import { ValidationResponse } from '@app/classes/validation/validation-response';
-import { Vec2 } from '@common/vec2';
+import { Vec2 } from '@common';
 import { Config } from '@app/config';
 import { BoardError } from '@app/errors/board-error';
 import JsonBonuses from '@assets/bonus.json';

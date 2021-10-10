@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { letterDefinitions } from '@common/letter';
+import { letterDefinitions } from '@common';
 
 @Injectable({
     providedIn: 'root',
@@ -29,8 +29,7 @@ export class ReserveService {
     getLetterQuantity(letterToUpdate: string): number {
         const firstIndex = this.reserve.indexOf(letterToUpdate);
         const lastIndex = this.reserve.lastIndexOf(letterToUpdate);
-        const currentQuantity = lastIndex - firstIndex + 1;
-        return currentQuantity;
+        return lastIndex - firstIndex + 1;
     }
 
     get length(): number {

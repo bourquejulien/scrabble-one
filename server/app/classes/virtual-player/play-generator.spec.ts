@@ -7,7 +7,7 @@ import { Board, ImmutableBoard } from '@app/classes/board/board';
 import { Dictionary } from '@app/classes/dictionary/dictionary';
 import { Validation } from '@app/classes/validation/validation';
 import { ValidationResponse } from '@app/classes/validation/validation-response';
-import { Vec2 } from '@common/vec2';
+import { Vec2 } from '@common';
 import { Config } from '@app/config';
 import { PlayGenerator } from './play-generator';
 

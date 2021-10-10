@@ -6,7 +6,7 @@ import { ImmutableBoard } from '@app/classes/board/board';
 import { Direction } from '@app/classes/board/direction';
 import { BoardValidator } from '@app/classes/validation/board-validator';
 import { ValidationResponse } from '@app/classes/validation/validation-response';
-import { Vec2 } from '@common/vec2';
+import { Vec2 } from '@common';
 import { BoardService } from '@app/services/board/board.service';
 import { BoardValidatorGeneratorService } from '@app/services/validation/board-validator-generator.service';
 

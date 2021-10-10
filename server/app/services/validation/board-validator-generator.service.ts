@@ -1,6 +1,6 @@
 import { Service } from 'typedi';
 import { ImmutableBoard } from '@app/classes/board/board';
-import { letterDefinitions } from '@common/letter';
+import { letterDefinitions } from '@common';
 import { BoardValidator } from '@app/classes/validation/board-validator';
 import { DictionaryService } from '@app/services/dictionary/dictionary.service';
 
