@@ -20,6 +20,10 @@ export class BoardService implements Validation {
         this.board = new Board(Config.GRID.GRID_SIZE, this.retrieveBonuses());
     }
 
+    generateBoard(): Board {
+        return new Board(Config.GRID.GRID_SIZE, this.retrieveBonuses());
+    }
+
     get gameBoard(): ImmutableBoard {
         return this.board;
     }
