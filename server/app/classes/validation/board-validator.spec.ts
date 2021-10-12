@@ -5,10 +5,9 @@ import { Board } from '@app/classes/board/board';
 import { BoardValidator } from './board-validator';
 import { Config } from '@app/config';
 import { Direction } from '@app/classes/board/direction';
-import { Vec2, letterDefinitions } from '@common';
+import { Vec2, letterDefinitions, Bonus } from '@common';
 import { Dictionary } from '@app/classes/dictionary/dictionary';
 import JsonBonuses from '@assets/bonus.json';
-import { Bonus } from '@app/classes/board/bonus';
 
 const WORDS: string[] = ['pomme', 'orange', 'poire', 'raisin', 'peche', 'banane', 'bananes'];
 const mockedDictionary: Set<string> = new Set(WORDS);

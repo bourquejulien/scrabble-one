@@ -1,7 +1,5 @@
-import { Square } from './square';
-import { Vec2 } from '@common';
+import { Square, Vec2, Bonus } from '@common';
 import { BoardOverflowError } from '@app/errors/board-overflow-error';
-import { Bonus } from './bonus';
 import { BoardMergeError } from '@app/errors/board-merge-error';
 import { Direction } from './direction';
 
@@ -9,9 +7,13 @@ export interface ImmutableBoard {
     readonly size: number;
 
     getSquare(position: Vec2): Square;
+
     getRelative(position: Vec2, direction: Direction): Square | null;
+
     clone(): Board;
+
     get center(): Vec2;
+
     get positions(): Vec2[];
 }
 

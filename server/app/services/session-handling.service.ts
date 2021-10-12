@@ -21,4 +21,8 @@ export class SessionHandlingService {
 
         return this.sessionHandlers.slice(index, 1)[0];
     }
+
+    getHandler(id: string): SessionHandler | null {
+        return this.sessionHandlers.find((e) => e.sessionInfo.id === id) ?? null;
+    }
 }

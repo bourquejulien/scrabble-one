@@ -6,15 +6,15 @@ import { Board } from '@app/classes/board/board';
 import { Config } from '@app/config';
 import { DictionaryService } from '@app/services/dictionary/dictionary.service';
 import { Container } from 'typedi';
-import { BoardValidatorGeneratorService } from './board-validator-generator.service';
+import { BoardHandlingService } from './board-handling.service';
 
-describe('BoardValidatorGeneratorService', () => {
-    let service: BoardValidatorGeneratorService;
+describe('BoardHandlingService', () => {
+    let service: BoardHandlingService;
     let board: Board;
 
     beforeEach(() => {
         createStubInstance(DictionaryService);
-        service = Container.get(BoardValidatorGeneratorService);
+        service = Container.get(BoardHandlingService);
         board = new Board(Config.GRID.GRID_SIZE);
     });
 
@@ -22,7 +22,7 @@ describe('BoardValidatorGeneratorService', () => {
         expect(service).to.be.ok;
     });
 
-    it('should generate a board validator', () => {
+    it('should generate a board handler', () => {
         expect(service.generator(board)).to.be.ok;
     });
 });

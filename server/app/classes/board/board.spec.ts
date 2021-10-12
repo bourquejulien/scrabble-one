@@ -2,9 +2,8 @@
 /* eslint-disable @typescript-eslint/no-unused-expressions */
 import { expect } from 'chai';
 import { Config } from '@app/config';
-import { Vec2 } from '@common';
+import { Vec2, Bonus } from '@common';
 import { Board } from './board';
-import { Bonus } from './bonus';
 import { BoardOverflowError } from '@app/errors/board-overflow-error';
 import { Direction } from './direction';
 import { BoardMergeError } from '@app/errors/board-merge-error';

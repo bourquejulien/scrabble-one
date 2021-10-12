@@ -10,6 +10,7 @@ import swaggerJSDoc from 'swagger-jsdoc';
 import swaggerUi from 'swagger-ui-express';
 import { Service } from 'typedi';
 import { GameController } from '@app/controllers/game.controller';
+import { BoardController } from '@app/controllers/board.controller';
 
 @Service()
 export class Application {
@@ -17,7 +18,12 @@ export class Application {
     private readonly internalError: number = StatusCodes.INTERNAL_SERVER_ERROR;
     private readonly swaggerOptions: swaggerJSDoc.Options;
 
-    constructor(private readonly exampleController: ExampleController, private readonly dateController: DateController, private readonly gameController: GameController) {
+    constructor(
+        private readonly exampleController: ExampleController,
+        private readonly dateController: DateController,
+        private readonly gameController: GameController,
+        private readonly boardController: BoardController,
+    ) {
         this.app = express();
 
         this.swaggerOptions = {
@@ -41,7 +47,7 @@ export class Application {
         this.app.use('/api/example', this.exampleController.router);
         this.app.use('/api/date', this.dateController.router);
         this.app.use('/api/game', this.gameController.router);
-        //this.app.use('/api/board', this.baordController.router);
+        this.app.use('/api/board', this.boardController.router);
         this.app.use('/', (req, res) => {
             res.redirect('/api/docs');
         });
