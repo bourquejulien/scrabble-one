@@ -1,5 +1,5 @@
-import { randomUUID } from 'crypto';
+import * as uuid from 'uuid';
 
 export const generateId = (): string => {
-    return randomUUID().toString();
+    return uuid.v4();
 };
