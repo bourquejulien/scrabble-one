@@ -1,10 +1,17 @@
+import { Vec2 } from '@common/vec2';
+
 export enum Bonus {
-    None,
-    L2,
-    W2,
-    L3,
-    W3,
-    Star,
+    None = 'None',
+    L2 = 'L2',
+    W2 = 'W2',
+    L3 = 'L3',
+    W3 = 'W3',
+    Star = 'Star',
+}
+
+export interface BonusInfos {
+    bonus: Bonus;
+    position: Vec2;
 }
 
 const BONUS_VALUE = new Map<Bonus, { score: number; isLetterBonus: boolean }>([
