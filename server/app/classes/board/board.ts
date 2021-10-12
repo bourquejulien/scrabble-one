@@ -1,4 +1,4 @@
-import { Square, Vec2, Bonus } from '@common';
+import { Square, Vec2, Bonus, BoardData } from '@common';
 import { BoardOverflowError } from '@app/errors/board-overflow-error';
 import { BoardMergeError } from '@app/errors/board-merge-error';
 import { Direction } from './direction';
@@ -15,6 +15,8 @@ export interface ImmutableBoard {
     get center(): Vec2;
 
     get positions(): Vec2[];
+
+    get boardData(): BoardData;
 }
 
 export class Board implements ImmutableBoard {
@@ -109,6 +111,14 @@ export class Board implements ImmutableBoard {
 
     get positions(): Vec2[] {
         return Array.from(this.filledPositions);
+    }
+
+    get boardData(): BoardData {
+        const clonedBoard = this.clone();
+        return {
+            board: clonedBoard.board,
+            filledPositions: clonedBoard.filledPositions,
+        };
     }
 
     private setLetter(letter: string, position: Vec2): void {

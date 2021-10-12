@@ -1,4 +1,4 @@
-import { Board } from '@app/classes/board/board';
+import { Board, ImmutableBoard } from '@app/classes/board/board';
 import { Square, Vec2 } from '@common';
 import { Direction } from '@app/classes/board/direction';
 import { ValidationResponse } from '@app/classes/validation/validation-response';
@@ -17,7 +17,7 @@ export class BoardHandler {
         return this.boardValidator.validate(letters);
     }
 
-    placeLetters(id: string, letters: { letter: string; position: Vec2 }[]): ValidationResponse {
+    placeLetters(letters: { letter: string; position: Vec2 }[]): ValidationResponse {
         const response = this.boardValidator.validate(letters);
 
         if (!response.isSuccess) return response;
@@ -46,5 +46,9 @@ export class BoardHandler {
         }
 
         return newLetters;
+    }
+
+    get immutableBoard(): ImmutableBoard {
+        return this.board;
     }
 }

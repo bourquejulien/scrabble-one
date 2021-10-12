@@ -6,8 +6,9 @@
  */
 export const Constants = {
     HTTP_STATUS: {
-        HTTP_STATUS_CREATED: 201,
-        HTTP_STATUS_DELETED: 204,
-        HTTP_STATUS_BAD_REQUEST: 400,
+        OK: 201,
+        CREATED: 201,
+        DELETED: 204,
+        BAD_REQUEST: 400,
     },
 };

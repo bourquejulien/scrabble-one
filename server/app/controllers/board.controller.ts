@@ -1,12 +1,14 @@
 import { Request, Response, Router } from 'express';
 import { Service } from 'typedi';
 import { BoardHandlingService } from '@app/services/validation/board-handling.service';
+import { Constants } from '@app/constants';
+import { Placement } from '@common';
 
 @Service()
 export class BoardController {
     router: Router;
 
-    constructor(private readonly boardService: BoardHandlingService) {
+    constructor(private readonly boardHandlingService: BoardHandlingService) {
         this.configureRouter();
     }
 
@@ -17,49 +19,70 @@ export class BoardController {
          * @swagger
          *
          * /game/end:
-         *   remove:
-         *     description: Ends a game
+         *   post:
+         *     description: Validate a placement
          *     produces:
          *       - application/json
          *
          */
-        this.router.post('/place/:id', async (req: Request, res: Response) => {
-            this.boardService.getBoardHandler('');
-            // const answer = await this.gameService.stopGame(req.params.id);
-            // res.json(answer);
-            // res.sendStatus(HTTP_STATUS_DELETED);
+        this.router.post('/validate/:id', async (req: Request, res: Response) => {
+            const boardHandler = this.boardHandlingService.getBoardHandler(req.params.id);
+            const placement: Placement[] = JSON.parse(req.body);
+
+            if (boardHandler === null || placement === undefined) {
+                res.sendStatus(Constants.HTTP_STATUS.BAD_REQUEST);
+                return;
+            }
+
+            const response = boardHandler.lookupLetters(placement);
+            res.json(response);
+            res.sendStatus(Constants.HTTP_STATUS.OK);
         });
 
         /**
          * @swagger
          *
-         * /game/end:
-         *   remove:
-         *     description: Ends a game
+         * /board/place:
+         *   post:
+         *     description: Try merging a placement
          *     produces:
          *       - application/json
          *
          */
         this.router.post('/place/:id', async (req: Request, res: Response) => {
-            // const answer = await this.gameService.stopGame(req.params.id);
-            // res.json(answer);
-            // res.sendStatus(Constants.HTTP_STATUS.);
+            const boardHandler = this.boardHandlingService.getBoardHandler(req.params.id);
+            const placement: Placement[] = JSON.parse(req.body);
+
+            if (boardHandler === null || placement === undefined) {
+                res.sendStatus(Constants.HTTP_STATUS.BAD_REQUEST);
+                return;
+            }
+
+            const response = boardHandler.placeLetters(placement);
+            res.json(response);
+            res.sendStatus(Constants.HTTP_STATUS.OK);
         });
 
         /**
          * @swagger
          *
-         * /game/end:
-         *   remove:
-         *     description: Ends a game
+         * /board/get:
+         *   get:
+         *     description: Retrieve game board data
          *     produces:
          *       - application/json
          *
          */
-        this.router.get('/getBoard/:id', async (req: Request, res: Response) => {
-            // const answer = await this.gameService.stopGame(req.params.id);
-            // res.json(answer);
-            // res.sendStatus(Constants.HTTP_STATUS.);
+        this.router.get('/get/:id', async (req: Request, res: Response) => {
+            const boardHandler = this.boardHandlingService.getBoardHandler(req.params.id);
+            if (boardHandler === null) {
+                res.sendStatus(Constants.HTTP_STATUS.BAD_REQUEST);
+                return;
+            }
+
+            const boardData = boardHandler.immutableBoard.boardData;
+            res.json(boardData);
+            res.sendStatus(Constants.HTTP_STATUS.OK);
         });
     }
 }

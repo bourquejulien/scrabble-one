@@ -28,7 +28,7 @@ export class GameController {
         this.router.delete('/end/:id', async (req: Request, res: Response) => {
             const answer = await this.gameService.stopGame(req.params.id);
             res.json(answer);
-            res.sendStatus(Constants.HTTP_STATUS.HTTP_STATUS_DELETED);
+            res.sendStatus(Constants.HTTP_STATUS.DELETED);
         });
 
         /**
@@ -46,9 +46,9 @@ export class GameController {
                 const sessionInfo: SessionInfo = JSON.parse(req.body);
                 const answer = await this.gameService.startGame(sessionInfo);
                 res.json(answer);
-                res.sendStatus(Constants.HTTP_STATUS.HTTP_STATUS_CREATED);
+                res.sendStatus(Constants.HTTP_STATUS.CREATED);
             } catch (e: unknown) {
-                res.sendStatus(Constants.HTTP_STATUS.HTTP_STATUS_BAD_REQUEST);
+                res.sendStatus(Constants.HTTP_STATUS.BAD_REQUEST);
             }
         });
     }
