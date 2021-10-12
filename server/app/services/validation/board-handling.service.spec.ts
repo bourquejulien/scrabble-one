@@ -2,20 +2,24 @@
 /* eslint-disable @typescript-eslint/no-unused-expressions */
 import { expect } from 'chai';
 import { createStubInstance } from 'sinon';
-import { Board } from '@app/classes/board/board';
-import { Config } from '@app/config';
 import { DictionaryService } from '@app/services/dictionary/dictionary.service';
-import { Container } from 'typedi';
 import { BoardHandlingService } from './board-handling.service';
+import { Board } from '@app/classes/board/board';
+import { SessionHandlingService } from '@app/services/session-handling.service';
+import { SessionHandler } from '@app/classes/session-handler';
+
+const BOARD_SIZE = 5;
 
 describe('BoardHandlingService', () => {
     let service: BoardHandlingService;
     let board: Board;
 
     beforeEach(() => {
-        createStubInstance(DictionaryService);
-        service = Container.get(BoardHandlingService);
-        board = new Board(Config.GRID.GRID_SIZE);
+        board = new Board(BOARD_SIZE);
+        const sessionHandlingServiceStub = createStubInstance(SessionHandlingService);
+        const dictionaryServiceStub = createStubInstance(DictionaryService);
+        sessionHandlingServiceStub.getHandler.returns(new SessionHandler({ id: '', playerInfo: [] }, board));
+        service = new BoardHandlingService(dictionaryServiceStub as unknown as DictionaryService, sessionHandlingServiceStub);
     });
 
     it('should be created', () => {
@@ -23,6 +27,13 @@ describe('BoardHandlingService', () => {
     });
 
     it('should generate a board handler', () => {
-        expect(service.generator(board)).to.be.ok;
+        const boardHandler = service.getBoardHandler('');
+
+        expect(boardHandler).to.be.ok;
+        expect(boardHandler?.immutableBoard).to.equal(board);
+    });
+
+    it('should generate a board', () => {
+        expect(service.generateBoard()).to.be.ok;
     });
 });

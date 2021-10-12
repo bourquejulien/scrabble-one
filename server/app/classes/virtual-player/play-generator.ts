@@ -14,17 +14,17 @@ export class PlayGenerator {
     private readonly plays: Play[];
     private readonly board: ImmutableBoard;
     private readonly dictionary: Dictionary;
-    private readonly validation: BoardHandler;
+    private readonly boardHandler: BoardHandler;
     private readonly availableLetters: string[];
     private readonly positionsToTry: Vec2[];
 
-    constructor(dictionary: Dictionary, board: ImmutableBoard, boardHandler: BoardHandler, availableLetters: string[]) {
+    constructor(dictionary: Dictionary, boardHandler: BoardHandler, availableLetters: string[]) {
         this.plays = [];
 
-        this.board = board;
+        this.board = boardHandler.immutableBoard;
         this.positionsToTry = this.board.positions.length === 0 ? [this.board.center] : this.board.positions;
         this.dictionary = dictionary;
-        this.validation = boardHandler;
+        this.boardHandler = boardHandler;
         this.availableLetters = availableLetters;
     }
 
@@ -52,14 +52,14 @@ export class PlayGenerator {
         const foundWords = this.findWords(existingWord, direction === Direction.Right ? startPosition.x : startPosition.y);
 
         for (const positionedWord of foundWords) {
-            const letters = this.validation.retrieveNewLetters(
+            const letters = this.boardHandler.retrieveNewLetters(
                 positionedWord.word,
                 direction === Direction.Right
                     ? { x: positionedWord.startPosition, y: startPosition.y }
                     : { x: startPosition.x, y: positionedWord.startPosition },
                 direction,
             );
-            const response = this.validation.lookupLetters(letters);
+            const response = this.boardHandler.lookupLetters(letters);
             if (response.isSuccess) {
                 this.plays.push({ score: response.points, word: positionedWord.word, letters });
             }

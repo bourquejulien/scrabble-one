@@ -5,11 +5,11 @@ import { expect } from 'chai';
 import { Direction } from '@app/classes//board/direction';
 import { Board, ImmutableBoard } from '@app/classes/board/board';
 import { Dictionary } from '@app/classes/dictionary/dictionary';
-import { Validation } from '@app/classes/validation/validation';
 import { ValidationResponse } from '@app/classes/validation/validation-response';
 import { Placement, Vec2 } from '@common';
 import { Config } from '@app/config';
 import { PlayGenerator } from './play-generator';
+import { BoardHandler } from '@app/classes/board/board-handler';
 
 class StubDictionary implements Dictionary {
     words: string[] = [];
@@ -55,7 +55,7 @@ class StubDictionary implements Dictionary {
     }
 }
 
-class MockValidation implements Validation {
+class BoardHandlerMock {
     isValid = true;
     board = new Board(Config.GRID.GRID_SIZE);
     foundWords: { word: string; initialPosition: Vec2; direction: Direction }[] = [];
@@ -70,37 +70,37 @@ class MockValidation implements Validation {
         return [];
     }
 
-    get gameBoard(): ImmutableBoard {
+    get immutableBoard(): ImmutableBoard {
         return this.board;
     }
 }
 
 describe('PlayGenerator', () => {
-    let mockValidation: MockValidation;
+    let boardHandlerMock: BoardHandlerMock;
     let stubDictionary: StubDictionary;
 
     beforeEach(() => {
-        mockValidation = new MockValidation();
+        boardHandlerMock = new BoardHandlerMock();
         stubDictionary = new StubDictionary();
     });
 
     it('should be created', () => {
-        expect(new PlayGenerator(stubDictionary, mockValidation, [])).to.be.ok;
+        expect(new PlayGenerator(stubDictionary, boardHandlerMock as unknown as BoardHandler, [])).to.be.ok;
     });
 
     it('should generate word on empty board', () => {
         const WORD = 'angular';
         stubDictionary.words.push(WORD);
 
-        const playGenerator = new PlayGenerator(stubDictionary, mockValidation, WORD.split(''));
+        const playGenerator = new PlayGenerator(stubDictionary, boardHandlerMock as unknown as BoardHandler, WORD.split(''));
         playGenerator.generateNext();
 
-        expect(mockValidation.foundWords[0].word).to.equal(WORD);
+        expect(boardHandlerMock.foundWords[0].word).to.equal(WORD);
     });
 
     it('should retrieve existing word', () => {
         const WORD = 'scrabble';
-        mockValidation.board.merge([
+        boardHandlerMock.board.merge([
             { letter: 's', position: { x: 7, y: 7 } },
             { letter: 'c', position: { x: 8, y: 7 } },
             { letter: 'r', position: { x: 9, y: 7 } },
@@ -111,7 +111,7 @@ describe('PlayGenerator', () => {
             { letter: 'e', position: { x: 14, y: 7 } },
         ]);
 
-        const playGenerator = new PlayGenerator(stubDictionary, mockValidation, []);
+        const playGenerator = new PlayGenerator(stubDictionary, boardHandlerMock as unknown as BoardHandler, []);
         // eslint-disable-next-line dot-notation -- Needed for private method testing
         const startPosition = playGenerator['retrieveStartPosition']({ x: 14, y: 7 }, Direction.Right);
         // eslint-disable-next-line dot-notation -- Needed for private method testing
@@ -125,15 +125,15 @@ describe('PlayGenerator', () => {
         const GENERATED_WORD = 'lassitude';
         const RACK = ['s', 's', 'i', 't', 'u', 'd', 'e'];
         stubDictionary.words.push(GENERATED_WORD);
-        mockValidation.board.merge([
+        boardHandlerMock.board.merge([
             { letter: 'l', position: { x: 7, y: 7 } },
             { letter: 'a', position: { x: 8, y: 7 } },
         ]);
 
-        const playGenerator = new PlayGenerator(stubDictionary, mockValidation, RACK);
+        const playGenerator = new PlayGenerator(stubDictionary, boardHandlerMock as unknown as BoardHandler, RACK);
         playGenerator.generateNext();
 
-        expect(mockValidation.foundWords[0].word).to.equal(GENERATED_WORD);
+        expect(boardHandlerMock.foundWords[0].word).to.equal(GENERATED_WORD);
         expect(playGenerator.orderedPlays.length).to.equal(2);
     });
 
@@ -141,8 +141,8 @@ describe('PlayGenerator', () => {
         const WORD = 'angular';
         stubDictionary.words.push(WORD);
 
-        mockValidation.isValid = false;
-        const playGenerator = new PlayGenerator(stubDictionary, mockValidation, WORD.split(''));
+        boardHandlerMock.isValid = false;
+        const playGenerator = new PlayGenerator(stubDictionary, boardHandlerMock as unknown as BoardHandler, WORD.split(''));
         playGenerator.generateNext();
 
         expect(playGenerator.orderedPlays.length).to.equal(0);
