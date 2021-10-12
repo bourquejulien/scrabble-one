@@ -1,9 +1,9 @@
 import { Direction, reverseDirection } from '@app/classes/board/direction';
 import { ImmutableBoard } from '@app/classes/board/board';
 import { Dictionary } from '@app/classes/dictionary/dictionary';
-import { Validation } from '@app/classes/validation/validation';
 import { Vec2, Square } from '@common';
 import { Play } from './play';
+import { BoardHandler } from '@app/classes/board/board-handler';
 
 interface PositionedWord {
     word: string;
@@ -14,17 +14,17 @@ export class PlayGenerator {
     private readonly plays: Play[];
     private readonly board: ImmutableBoard;
     private readonly dictionary: Dictionary;
-    private readonly validation: Validation;
+    private readonly validation: BoardHandler;
     private readonly availableLetters: string[];
     private readonly positionsToTry: Vec2[];
 
-    constructor(dictionary: Dictionary, board: ImmutableBoard, validation: Validation, availableLetters: string[]) {
+    constructor(dictionary: Dictionary, board: ImmutableBoard, boardHandler: BoardHandler, availableLetters: string[]) {
         this.plays = [];
 
         this.board = board;
         this.positionsToTry = this.board.positions.length === 0 ? [this.board.center] : this.board.positions;
         this.dictionary = dictionary;
-        this.validation = validation;
+        this.validation = boardHandler;
         this.availableLetters = availableLetters;
     }
 

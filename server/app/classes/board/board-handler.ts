@@ -1,13 +1,12 @@
 import { Board } from '@app/classes/board/board';
 import { Square, Vec2 } from '@common';
 import { Direction } from '@app/classes/board/direction';
-import { Validation } from '@app/classes/validation/validation';
 import { ValidationResponse } from '@app/classes/validation/validation-response';
 import { BoardError } from '@app/errors/board-error';
 import { BoardValidatorFactory } from '@app/classes/validation/board-validator-factory';
 import { BoardValidator } from '@app/classes/validation/board-validator';
 
-export class BoardHandler implements Validation {
+export class BoardHandler {
     private readonly boardValidator: BoardValidator;
 
     constructor(private readonly board: Board, private readonly boardValidatorFactory: BoardValidatorFactory) {
