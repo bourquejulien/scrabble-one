@@ -5,7 +5,7 @@ import { Board } from '@app/classes/board/board';
 import { BoardValidator } from './board-validator';
 import { Config } from '@app/config';
 import { Direction } from '@app/classes/board/direction';
-import { Vec2, letterDefinitions, Bonus } from '@common';
+import { Vec2, letterDefinitions, Bonus, Placement } from '@common';
 import { Dictionary } from '@app/classes/dictionary/dictionary';
 import JsonBonuses from '@assets/bonus.json';
 
@@ -13,7 +13,7 @@ const WORDS: string[] = ['pomme', 'orange', 'poire', 'raisin', 'peche', 'banane'
 const mockedDictionary: Set<string> = new Set(WORDS);
 
 const generatePlacement = (word: string, initialPosition: Vec2, direction: Direction): { letter: string; position: Vec2 }[] => {
-    const letters: { letter: string; position: Vec2 }[] = [];
+    const letters: Placement[] = [];
 
     let xIncr: number;
     let yIncr: number;

@@ -6,9 +6,9 @@ import { ImmutableBoard } from '@app/classes/board/board';
 import { Direction } from '@app/classes/board/direction';
 import { BoardValidator } from '@app/classes/validation/board-validator';
 import { ValidationResponse } from '@app/classes/validation/validation-response';
-import { Vec2 } from '@common';
+import { Placement, Vec2 } from '@common';
 import { BoardService } from '@app/services/board/board.service';
-import { BoardValidatorGeneratorService } from '@app/services/validation/board-validator-generator.service';
+import { BoardHandlingService } from '@app/services/validation/board-handling.service';
 
 const WORD = 'pomme';
 const COMBINED_WORD: { letter: string; position: Vec2 }[] = [
@@ -20,10 +20,10 @@ const COMBINED_WORD: { letter: string; position: Vec2 }[] = [
 ];
 
 class BoardValidatorStub {
-    lastLetters: { letter: string; position: Vec2 }[] = [];
+    lastLetters: Placement[] = [];
     isSuccess = false;
 
-    validate(letters: { letter: string; position: Vec2 }[]): ValidationResponse {
+    validate(letters: Placement[]): ValidationResponse {
         this.lastLetters = letters;
         return { isSuccess: this.isSuccess, points: 0, description: '' };
     }
@@ -53,7 +53,7 @@ describe('BoardService', () => {
 
     beforeEach(() => {
         boardValidatorGeneratorServiceStub = new BoardValidatorGeneratorServiceStub();
-        service = new BoardService(boardValidatorGeneratorServiceStub as unknown as BoardValidatorGeneratorService);
+        service = new BoardService(boardValidatorGeneratorServiceStub as unknown as BoardHandlingService);
         const halfBoardSize = Math.floor(service.gameBoard.size / 2);
         centerPosition = { x: halfBoardSize, y: halfBoardSize };
     });

@@ -7,7 +7,7 @@ import { Board, ImmutableBoard } from '@app/classes/board/board';
 import { Dictionary } from '@app/classes/dictionary/dictionary';
 import { Validation } from '@app/classes/validation/validation';
 import { ValidationResponse } from '@app/classes/validation/validation-response';
-import { Vec2 } from '@common';
+import { Placement, Vec2 } from '@common';
 import { Config } from '@app/config';
 import { PlayGenerator } from './play-generator';
 
@@ -61,7 +61,7 @@ class MockValidation implements Validation {
     foundWords: { word: string; initialPosition: Vec2; direction: Direction }[] = [];
 
     // eslint-disable-next-line no-unused-vars -- Parameters are not needed here as we already got the in retrieveNewLetters.
-    lookupLetters(letters: { letter: string; position: Vec2 }[]): ValidationResponse {
+    lookupLetters(letters: Placement[]): ValidationResponse {
         return { isSuccess: this.isValid, points: 0, description: '' };
     }
 

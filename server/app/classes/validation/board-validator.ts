@@ -1,6 +1,6 @@
 import { BoardError } from '@app/errors/board-error';
 import { Board, ImmutableBoard } from '@app/classes/board/board';
-import { Square, Vec2, Bonus, getBonusDetails } from '@common';
+import { Square, Vec2, Bonus, getBonusDetails, Placement } from '@common';
 import { ValidationResponse } from './validation-response';
 import { Direction, reverseDirection } from '@app/classes/board/direction';
 import { Dictionary } from '@app/classes/dictionary/dictionary';
@@ -13,7 +13,7 @@ export class BoardValidator {
         return square != null && square.letter !== '';
     }
 
-    private static sortLetters(letters: { letter: string; position: Vec2 }[], direction: Direction): { letter: string; position: Vec2 }[] {
+    private static sortLetters(letters: Placement[], direction: Direction): { letter: string; position: Vec2 }[] {
         if (direction === Direction.Right) {
             return letters.sort((l1, l2) => l1.position.x - l2.position.x);
         } else {
@@ -50,7 +50,7 @@ export class BoardValidator {
         return position;
     }
 
-    validate(letters: { letter: string; position: Vec2 }[]): ValidationResponse {
+    validate(letters: Placement[]): ValidationResponse {
         if (letters.length === 0) {
             return { isSuccess: false, description: 'Empty placement', points: 0 };
         }
@@ -99,7 +99,7 @@ export class BoardValidator {
         return this.letterPoints[letter] ?? 0;
     }
 
-    private validateFirstPlacement(letters: { letter: string; position: Vec2 }[]): boolean {
+    private validateFirstPlacement(letters: Placement[]): boolean {
         if (letters.length < 2) {
             return false;
         }

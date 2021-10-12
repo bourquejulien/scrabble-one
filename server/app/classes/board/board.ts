@@ -1,4 +1,4 @@
-import { Square, Vec2, Bonus, BoardData } from '@common';
+import { Square, Vec2, Bonus, BoardData, Placement } from '@common';
 import { BoardOverflowError } from '@app/errors/board-overflow-error';
 import { BoardMergeError } from '@app/errors/board-merge-error';
 import { Direction } from './direction';
@@ -49,7 +49,7 @@ export class Board implements ImmutableBoard {
         return this.board[position.x][position.y];
     }
 
-    merge(letters: { letter: string; position: Vec2 }[]): void {
+    merge(letters: Placement[]): void {
         for (const { letter, position } of letters) {
             this.positionGuard(position);
 
