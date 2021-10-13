@@ -10,6 +10,8 @@
         "emitDecoratorMetadata": true,
         "experimentalDecorators": true,
         "noImplicitAny": true,
+        "resolveJsonModule": true,
+        "esModuleInterop": true,
         "noImplicitThis": true,
         "noFallthroughCasesInSwitch": true,
         "noUnusedLocals": true,
@@ -17,7 +19,9 @@
         "suppressImplicitAnyIndexErrors": true,
         "strictNullChecks": true,
         "paths": {
-            "@app/*": ["./app/*"]
+            "@app/*": ["./app/*"],
+            "@assets/*": ["./assets/*"],
+            "@common/*": ["../common/*"]
         }
     }
 }

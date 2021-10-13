@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Bonus } from '@app/classes/board/bonus';
 import { FontFace } from '@app/classes/font-face';
-import { Vec2 } from '@app/classes/vec2';
+import { Vec2 } from '@common/vec2';
 import { Constants } from '@app/constants/global.constants';
 import { BoardService } from '@app/services/board/board.service';
 
