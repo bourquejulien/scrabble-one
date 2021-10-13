@@ -2,6 +2,7 @@ import { Service } from 'typedi';
 import { SessionHandler } from '@app/classes/session-handler';
 import { SessionInfo } from '@app/classes/session-info';
 import { Board } from '@app/classes/board/board';
+import { generateId } from '@app/classes/id';
 
 @Service()
 export class SessionHandlingService {
@@ -11,18 +12,20 @@ export class SessionHandlingService {
         this.sessionHandlers = [];
     }
 
-    addHandler(sessionInfo: SessionInfo, board: Board) {
-        this.sessionHandlers.push(new SessionHandler(sessionInfo, board));
+    addHandler(sessionInfo: SessionInfo, board: Board): string {
+        const id = generateId();
+        this.sessionHandlers.push(new SessionHandler(id, sessionInfo, board));
+        return id;
     }
 
     removeHandler(id: string): SessionHandler | null {
-        const index = this.sessionHandlers.findIndex((e) => e.sessionInfo.id === id);
+        const index = this.sessionHandlers.findIndex((e) => e.id === id);
         if (index < 0) return null;
 
         return this.sessionHandlers.slice(index, 1)[0];
     }
 
     getHandler(id: string): SessionHandler | null {
-        return this.sessionHandlers.find((e) => e.sessionInfo.id === id) ?? null;
+        return this.sessionHandlers.find((e) => e.id === id) ?? null;
     }
 }

@@ -30,7 +30,7 @@ export class Application {
             swaggerDefinition: {
                 openapi: '3.0.0',
                 info: {
-                    title: 'Cadriciel Serveur',
+                    title: 'Scrabble server',
                     version: '1.0.0',
                 },
             },

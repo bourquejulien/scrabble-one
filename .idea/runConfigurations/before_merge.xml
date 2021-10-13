@@ -1,0 +1,11 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="before merge" type="CompoundRunConfigurationType">
+    <toRun name="lint client" type="js.build_tools.npm" />
+    <toRun name="lint server" type="js.build_tools.npm" />
+    <toRun name="test server" type="mocha-javascript-test-runner" />
+    <toRun name="build client" type="js.build_tools.npm" />
+    <toRun name="build server" type="js.build_tools.npm" />
+    <toRun name="test client" type="JavaScriptTestRunnerKarma" />
+    <method v="2" />
+  </configuration>
+</component>

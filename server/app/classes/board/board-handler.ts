@@ -14,7 +14,6 @@ export class BoardHandler {
     }
 
     lookupLetters(letters: Placement[]): ValidationResponse {
-        console.log(this.boardValidator);
         return this.boardValidator.validate(letters);
     }
 

@@ -17,12 +17,75 @@ export class BoardController {
 
         /**
          * @swagger
+         * tags:
+         *   - name: Board
+         *     description: Board functions
+         */
+
+        /**
+         * @swagger
          *
-         * /game/end:
+         * definitions:
+         *   Vec2:
+         *     type: object
+         *     properties:
+         *       x:
+         *         type: integer
+         *       y:
+         *         type: integer
+         */
+
+        /**
+         * @swagger
+         *
+         * definitions:
+         *   Placement:
+         *     type: object
+         *     properties:
+         *       letter:
+         *         type: string
+         *       position:
+         *         $ref: '#/definitions/Vec2'
+         */
+
+        /**
+         * @swagger
+         *
+         * definitions:
+         *   ArrayOfPlacement:
+         *     type: array
+         *     items:
+         *       $ref: '#/definitions/Placement'
+         */
+
+        /**
+         * @swagger
+         *
+         * /api/board/validate:
          *   post:
          *     description: Validate a placement
+         *     tags:
+         *       - Board
+         *     requestBody:
+         *         description: message object
+         *         required: true
+         *         content:
+         *           application/json:
+         *             schema:
+         *               $ref: '#/definitions/ArrayOfPlacement'
+         *     parameters:
+         *       - in: path
+         *         name: id
+         *         required: true
+         *         schema:
+         *           type: string
+         *         description: Game ID
          *     produces:
          *       - application/json
+         *     responses:
+         *       200:
+         *         schema:
+         *           $ref: '#/definitions/Answer'
          *
          */
         this.router.post('/validate/:id', async (req: Request, res: Response) => {
@@ -35,18 +98,38 @@ export class BoardController {
             }
 
             const response = boardHandler.lookupLetters(placement);
+            res.status(Constants.HTTP_STATUS.OK);
             res.json(response);
-            res.sendStatus(Constants.HTTP_STATUS.OK);
         });
 
         /**
          * @swagger
          *
-         * /board/place:
+         * /api/board/place:
          *   post:
          *     description: Try merging a placement
+         *     tags:
+         *       - Board
+         *     requestBody:
+         *         description: message object
+         *         required: true
+         *         content:
+         *           application/json:
+         *             schema:
+         *               $ref: '#/definitions/ArrayOfPlacement'
+         *     parameters:
+         *       - in: path
+         *         name: id
+         *         required: true
+         *         schema:
+         *           type: string
+         *         description: Game ID
          *     produces:
          *       - application/json
+         *     responses:
+         *       200:
+         *         schema:
+         *           $ref: '#/definitions/Answer'
          *
          */
         this.router.post('/place/:id', async (req: Request, res: Response) => {
@@ -59,21 +142,34 @@ export class BoardController {
             }
 
             const response = boardHandler.placeLetters(placement);
+            res.status(Constants.HTTP_STATUS.OK);
             res.json(response);
-            res.sendStatus(Constants.HTTP_STATUS.OK);
         });
 
         /**
          * @swagger
          *
-         * /board/get:
+         * /api/board/retrieve/{id}:
          *   get:
          *     description: Retrieve game board data
+         *     tags:
+         *       - Board
+         *     parameters:
+         *       - in: path
+         *         name: id
+         *         required: true
+         *         schema:
+         *           type: string
+         *         description: Game ID
          *     produces:
          *       - application/json
+         *     responses:
+         *       200:
+         *         schema:
+         *           $ref: '#/definitions/Answer'
          *
          */
-        this.router.get('/get/:id', async (req: Request, res: Response) => {
+        this.router.get('/retrieve/:id', async (req: Request, res: Response) => {
             const boardHandler = this.boardHandlingService.getBoardHandler(req.params.id);
             if (boardHandler === null) {
                 res.sendStatus(Constants.HTTP_STATUS.BAD_REQUEST);
@@ -81,8 +177,8 @@ export class BoardController {
             }
 
             const boardData = boardHandler.immutableBoard.boardData;
+            res.status(Constants.HTTP_STATUS.OK);
             res.json(boardData);
-            res.sendStatus(Constants.HTTP_STATUS.OK);
         });
     }
 }

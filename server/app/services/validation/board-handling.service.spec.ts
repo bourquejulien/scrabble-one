@@ -18,7 +18,7 @@ describe('BoardHandlingService', () => {
         board = new Board(BOARD_SIZE);
         const sessionHandlingServiceStub = createStubInstance(SessionHandlingService);
         const dictionaryServiceStub = createStubInstance(DictionaryService);
-        sessionHandlingServiceStub.getHandler.returns(new SessionHandler({ id: '', playerInfo: [] }, board));
+        sessionHandlingServiceStub.getHandler.returns(new SessionHandler('', { playerInfo: [] }, board));
         service = new BoardHandlingService(dictionaryServiceStub as unknown as DictionaryService, sessionHandlingServiceStub);
     });
 
