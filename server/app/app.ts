@@ -1,9 +1,9 @@
 import { HttpException } from '@app/classes/http.exception';
-import * as cookieParser from 'cookie-parser';
-import * as cors from 'cors';
-import * as express from 'express';
+import cookieParser from 'cookie-parser';
+import cors from 'cors';
+import express from 'express';
 import { StatusCodes } from 'http-status-codes';
-import * as logger from 'morgan';
+import logger from 'morgan';
 import { Service } from 'typedi';
 
 @Service()
