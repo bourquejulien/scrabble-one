@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { PlayerData } from '@app/classes/player-data';
-import { PlayerType } from '@app/classes/player-type';
+import { PlayerType } from '@common/player-type';
 import { Timer } from '@app/classes/time/timer';
 import { TimeSpan } from '@app/classes/time/timespan';
 import { Constants } from '@app/constants/global.constants';

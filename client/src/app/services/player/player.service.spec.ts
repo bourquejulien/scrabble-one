@@ -4,8 +4,8 @@
 import { Injectable } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { Direction } from '@app/classes/board/direction';
-import { MessageType } from '@app/classes/message';
-import { PlayerType } from '@app/classes/player-type';
+import { MessageType } from '@common/message';
+import { PlayerType } from '@common/player-type';
 import { TimeSpan } from '@app/classes/time/timespan';
 import { ValidationResponse } from '@app/classes/validation/validation-response';
 import { Vec2 } from '@common/vec2';

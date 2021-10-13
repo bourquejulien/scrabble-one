@@ -1,6 +1,6 @@
 /* eslint-disable dot-notation */
 /* eslint-disable max-classes-per-file */
-import { Message } from '@app/classes/message';
+import { Message } from '@common/message';
 import { PlayerData } from '@app/classes/player-data';
 import { TimeSpan } from '@app/classes/time/timespan';
 import { Play } from '@app/classes/virtual-player/play';

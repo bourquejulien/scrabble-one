@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-magic-numbers */
 import { TestBed } from '@angular/core/testing';
-import { MessageType } from '@app/classes/message';
+import { MessageType } from '@common/message';
 import { MessagingService } from './messaging.service';
 
 describe('MessagingService', () => {

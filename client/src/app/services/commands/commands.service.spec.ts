@@ -4,8 +4,8 @@
 /* eslint-disable @typescript-eslint/naming-convention  -- Need SCREAMING_SNAKE_CASE for static property in mock class */
 import { TestBed } from '@angular/core/testing';
 import { Direction } from '@app/classes/board/direction';
-import { Message, MessageType } from '@app/classes/message';
-import { PlayerType } from '@app/classes/player-type';
+import { Message, MessageType } from '@common/message';
+import { PlayerType } from '@common/player-type';
 import { Vec2 } from '@common/vec2';
 import { CommandsService } from '@app/services/commands/commands.service';
 import { MessagingService } from '@app/services/messaging/messaging.service';

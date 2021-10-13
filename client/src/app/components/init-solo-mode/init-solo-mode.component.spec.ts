@@ -8,7 +8,7 @@ import { By } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { Router } from '@angular/router';
 import { cleanStyles } from '@app/classes/helpers/cleanup.helper';
-import { PlayerType } from '@app/classes/player-type';
+import { PlayerType } from '@common/player-type';
 import { AppMaterialModule } from '@app/modules/material.module';
 import { GameService } from '@app/services/game/game.service';
 import { InitSoloModeComponent } from './init-solo-mode.component';

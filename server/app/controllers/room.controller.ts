@@ -1,6 +1,6 @@
 /* eslint-disable no-console */
-import { Message, MessageType } from '@app/message';
-import { PlayerType } from '@app/player-type';
+import { Message, MessageType } from '@common/message';
+import { PlayerType } from '@common/player-type';
 import * as http from 'http';
 import { Server } from 'socket.io';
 

@@ -1,5 +1,5 @@
 /* eslint-disable dot-notation */
-import { Message } from '@app/classes/message';
+import { Message } from '@common/message';
 import { PlayerData } from '@app/classes/player-data';
 import { MessagingService } from '@app/services/messaging/messaging.service';
 import { ReserveService } from '@app/services/reserve/reserve.service';

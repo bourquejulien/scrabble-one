@@ -1,6 +1,6 @@
 import { AfterViewInit, Component, ElementRef, OnDestroy, ViewChild } from '@angular/core';
-import { Message, MessageType } from '@app/classes/message';
-import { PlayerType } from '@app/classes/player-type';
+import { Message, MessageType } from '@common/message';
+import { PlayerType } from '@common/player-type';
 import { Constants } from '@app/constants/global.constants';
 import { CommandsService } from '@app/services/commands/commands.service';
 import { GameService } from '@app/services/game/game.service';

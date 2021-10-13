@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
-import { Message, MessageType } from '@app/classes/message';
-import { PlayerType } from '@app/classes/player-type';
+import { Message, MessageType } from '@common/message';
+import { PlayerType } from '@common/player-type';
 import { Observable, Subject } from 'rxjs';
 import { io, Socket } from 'socket.io-client';
 

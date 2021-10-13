@@ -2,7 +2,7 @@
 import { Injectable } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { PlayerData } from '@app/classes/player-data';
-import { PlayerType } from '@app/classes/player-type';
+import { PlayerType } from '@common/player-type';
 import { Timer } from '@app/classes/time/timer';
 import { TimeSpan } from '@app/classes/time/timespan';
 import { ReserveService } from '@app/services/reserve/reserve.service';
