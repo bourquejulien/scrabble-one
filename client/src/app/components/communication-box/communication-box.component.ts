@@ -1,32 +1,39 @@
-import { AfterContentInit, AfterViewInit, ChangeDetectionStrategy, Component, ElementRef, OnDestroy, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, OnDestroy, ViewChild } from '@angular/core';
 import { Message, MessageType } from '@app/classes/message';
 import { PlayerType } from '@app/classes/player-type';
 import { Constants } from '@app/constants/global.constants';
 import { CommandsService } from '@app/services/commands/commands.service';
 import { GameService } from '@app/services/game/game.service';
-import { MessagingService } from '@app/services/messaging/messaging.service';
 import { Subscription } from 'rxjs';
+import { io, Socket } from 'socket.io-client';
 @Component({
     selector: 'app-communication-box',
     templateUrl: './communication-box.component.html',
     styleUrls: ['./communication-box.component.scss'],
-    changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class CommunicationBoxComponent implements OnDestroy, AfterViewInit, AfterContentInit {
+export class CommunicationBoxComponent implements OnDestroy, AfterViewInit {
     @ViewChild('messageContainer') private messageContainer: ElementRef<HTMLDivElement>;
     messages: Message[] = [];
     subscription: Subscription;
     inputValue: string;
+    socketClient: Socket = io('http://localhost:3000/');
 
-    constructor(private commandsService: CommandsService, private messagingService: MessagingService, private gameService: GameService) {}
-
-    ngAfterContentInit(): void {
-        this.scroll();
-    }
+    constructor(private commandsService: CommandsService, private gameService: GameService) {}
 
     ngAfterViewInit(): void {
-        this.subscription = this.messagingService.onMessage().subscribe((message) => {
+        this.socketClient.on('message', (message: Message) => {
             this.messages.push(message);
+            this.scroll();
+        });
+
+        this.socketClient.on('connect_error', (err) => {
+            const socketErrorMsg: Message = {
+                title: 'Socket Error',
+                body: `${err.message}`,
+                messageType: MessageType.Log,
+                userId: PlayerType.Local,
+            };
+            this.messages.push(socketErrorMsg);
         });
     }
 

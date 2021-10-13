@@ -30,8 +30,7 @@ interface ButtonConfig {
 export class GamePageComponent implements OnDestroy {
     @ViewChild('drawer', { static: true }) drawer: MatDrawer;
 
-    urlString: string = `http://${window.location.hostname}:5020`;
-    socket = io(this.urlString);
+    socket = io(`http://${window.location.hostname}:5020`);
 
     gameService: GameService;
     timerService: TimerService;
@@ -118,17 +117,20 @@ export class GamePageComponent implements OnDestroy {
             if (!document.getElementById('socketField')) {
                 return;
             }
-            let doc = document.getElementById('messageField');
-            doc!.textContent = this.socket.id;
-        })
+            const doc = document.getElementById('messageField');
+            if (doc) {
+                doc.textContent = this.socket.id;
+            }
+        });
 
         this.socket.on('hello', (message) => {
             if (!document.getElementById('messageField')) {
                 return;
             }
-            let doc = document.getElementById('messageField');
-            doc!.textContent = message;
-        })
+            const doc = document.getElementById('messageField');
+            if (doc) {
+                doc.textContent = message;
+            }
+        });
     }
-
 }

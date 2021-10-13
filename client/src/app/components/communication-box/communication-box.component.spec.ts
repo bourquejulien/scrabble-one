@@ -52,7 +52,6 @@ describe('CommunicationBoxComponent', () => {
     beforeEach(() => {
         fixture = TestBed.createComponent(CommunicationBoxComponent);
         component = fixture.componentInstance;
-        component['messagingService'] = messagingServiceSpy;
         fixture.detectChanges();
 
         dummyMessage = {
@@ -77,20 +76,6 @@ describe('CommunicationBoxComponent', () => {
 
     it('should have subscribed', () => {
         expect(component['subscription']).toBeDefined();
-    });
-
-    it('should push a message into the array', () => {
-        component['messagingService'].onMessage().subscribe(() => {
-            expect(component['messages'].length).toBe(1);
-        });
-        component['messagingService']['subject'].next(dummyMessage);
-    });
-
-    it('should scroll when receiving new message', () => {
-        const spy = spyOn(component['messageContainer']['nativeElement'], 'scroll');
-        component.ngAfterContentInit();
-        expect(component['messagingService']).toBeDefined();
-        expect(spy).toHaveBeenCalled();
     });
 
     it('should return the title of the message', () => {

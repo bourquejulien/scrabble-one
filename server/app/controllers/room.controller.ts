@@ -1,10 +1,12 @@
-import { Message } from '@app/message';
+/* eslint-disable no-console */
+import { Message, MessageType } from '@app/message';
+import { PlayerType } from '@app/player-type';
 import * as http from 'http';
 import { Server } from 'socket.io';
 
 export class RoomController {
     private serverIO: Server;
-    // private testRoom: string = 'testRoom';
+
     constructor(server: http.Server) {
         this.serverIO = new Server(server, { cors: { origin: '*', methods: ['GET', 'POST'] } });
     }
@@ -12,7 +14,13 @@ export class RoomController {
     socketHandler(): void {
         this.serverIO.on('connection', (socket) => {
             console.log(`Connexion par l'utilisateur avec id : ${socket.id}`);
-            socket.emit('hello', 'Hello Wolrd!');
+            const helloMsg: Message = {
+                title: 'System',
+                body: 'Hello, World',
+                messageType: MessageType.Message,
+                userId: PlayerType.Virtual,
+            };
+            socket.emit('message', helloMsg);
 
             socket.on('disconnect', (reason) => {
                 console.log(`Deconnexion par l'utilisateur avec id : ${socket.id}`);
@@ -20,12 +28,10 @@ export class RoomController {
             });
 
             socket.on('message', (message: Message) => {
+                // TODO: when room are functional socket.broadcast.to('testroom').emit('message', message);
                 this.serverIO.emit('message', message);
+                console.log('Message sent on behalf of', socket.id);
             });
         });
     }
-
-    /* private emitTime(): void {
-        this.serverIO.sockets.emit('clock', new Date().toLocaleTimeString());
-    }*/
 }
