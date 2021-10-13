@@ -10,10 +10,10 @@ import { BoardService } from '@app/services/board/board.service';
 import { GridService } from '@app/services/grid/grid.service';
 
 const BOARD: Board = new Board(Constants.GRID.GRID_SIZE, [
-    [{ x: 0, y: 0 }, Bonus.L2],
-    [{ x: 0, y: 1 }, Bonus.L3],
-    [{ x: 0, y: 2 }, Bonus.W2],
-    [{ x: 0, y: 3 }, Bonus.W3],
+    { bonus: Bonus.L2, position: { x: 0, y: 0 } },
+    { bonus: Bonus.L3, position: { x: 0, y: 1 } },
+    { bonus: Bonus.W2, position: { x: 0, y: 2 } },
+    { bonus: Bonus.W3, position: { x: 0, y: 3 } },
 ]);
 
 @Injectable({

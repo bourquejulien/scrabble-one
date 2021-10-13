@@ -1,18 +1,17 @@
 import { Constants } from '@app/constants/global.constants';
-import { Vec2 } from '@common';
-import { Board } from './board';
-import { Bonus } from './bonus';
-import { BoardOverflowError } from '@app/exceptions/board-overflow-error';
-import { Direction } from './direction';
 import { BoardMergeError } from '@app/exceptions/board-merge-error';
+import { BoardOverflowError } from '@app/exceptions/board-overflow-error';
+import { Board } from './board';
+import { Bonus, BonusInfos } from './bonus';
+import { Direction } from './direction';
 
-const BONUS: [Vec2, Bonus][] = [
-    [{ x: 0, y: 0 }, Bonus.L2],
-    [{ x: 1, y: 0 }, Bonus.L3],
-    [{ x: 0, y: 1 }, Bonus.L3],
-    [{ x: 0, y: 2 }, Bonus.W2],
-    [{ x: 0, y: 3 }, Bonus.W3],
-    [{ x: 0, y: 4 }, Bonus.None],
+const BONUS: BonusInfos[] = [
+    { bonus: Bonus.L2, position: { x: 0, y: 0 } },
+    { bonus: Bonus.L3, position: { x: 1, y: 0 } },
+    { bonus: Bonus.L3, position: { x: 0, y: 1 } },
+    { bonus: Bonus.W2, position: { x: 0, y: 2 } },
+    { bonus: Bonus.W2, position: { x: 0, y: 3 } },
+    { bonus: Bonus.None, position: { x: 0, y: 4 } },
 ];
 
 const SIZE = Constants.GRID.GRID_SIZE;
