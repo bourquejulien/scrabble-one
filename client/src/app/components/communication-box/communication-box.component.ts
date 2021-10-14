@@ -1,20 +1,18 @@
-import { AfterViewInit, Component, ElementRef, OnDestroy, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, ViewChild } from '@angular/core';
 import { Message, MessageType } from '@common/message';
 import { PlayerType } from '@common/player-type';
 import { Constants } from '@app/constants/global.constants';
 import { CommandsService } from '@app/services/commands/commands.service';
 import { GameService } from '@app/services/game/game.service';
-import { Subscription } from 'rxjs';
 import { io, Socket } from 'socket.io-client';
 @Component({
     selector: 'app-communication-box',
     templateUrl: './communication-box.component.html',
     styleUrls: ['./communication-box.component.scss'],
 })
-export class CommunicationBoxComponent implements OnDestroy, AfterViewInit {
+export class CommunicationBoxComponent implements AfterViewInit {
     @ViewChild('messageContainer') private messageContainer: ElementRef<HTMLDivElement>;
     messages: Message[] = [];
-    subscription: Subscription;
     inputValue: string;
     socketClient: Socket = io('http://localhost:3000/');
 
@@ -74,10 +72,6 @@ export class CommunicationBoxComponent implements OnDestroy, AfterViewInit {
 
     shouldDisplay(message: Message) {
         return message.userId === PlayerType.Local || (message.userId === PlayerType.Virtual && message.messageType === MessageType.Message);
-    }
-
-    ngOnDestroy() {
-        this.subscription.unsubscribe();
     }
 
     private scroll(): void {

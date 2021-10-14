@@ -38,6 +38,9 @@ export class CommandsService {
                 case '!passer':
                     successfulCommand = this.skipTurn();
                     break;
+                case '!reserve':
+                    this.showReserve();
+                    break;
                 case '!echanger':
                     successfulCommand = this.exchangeLetters(this.removeAccents(args[1]));
                     break;
@@ -60,6 +63,10 @@ export class CommandsService {
     // Source: https://stackoverflow.com/questions/990904/remove-accents-diacritics-in-a-string-in-javascript by Lewis Diamond on 05/29/16
     private removeAccents(word: string): string {
         return word.normalize('NFD').replace(/\p{Diacritic}/gu, '');
+    }
+
+    private showReserve(){
+        // this.
     }
 
     private showHelp() {

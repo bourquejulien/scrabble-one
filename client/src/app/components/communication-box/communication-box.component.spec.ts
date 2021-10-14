@@ -17,12 +17,19 @@ import { GameService } from '@app/services/game/game.service';
 import { MessagingService } from '@app/services/messaging/messaging.service';
 import { Subject } from 'rxjs';
 import { CommunicationBoxComponent } from './communication-box.component';
+import { createServer } from 'http';
+import { io as Client } from 'socket.io-client';
+import { Server } from 'socket.io';
 
 describe('CommunicationBoxComponent', () => {
     let component: CommunicationBoxComponent;
     let fixture: ComponentFixture<CommunicationBoxComponent>;
     let dummyMessage: Message;
     let messagingServiceSpy: jasmine.SpyObj<MessagingService>;
+    let io:;
+    let serverSocket: Server;
+    let clientSocket: io;
+
     const gameService = {
         gameConfig: {
             gameType: 'qwerty',
@@ -74,10 +81,6 @@ describe('CommunicationBoxComponent', () => {
         expect(component.send('Message.')).toBeTruthy();
     });
 
-    it('should have subscribed', () => {
-        expect(component['subscription']).toBeDefined();
-    });
-
     it('should return the title of the message', () => {
         expect(component.getTitle(dummyMessage)).toBe(dummyMessage.title);
     });
@@ -110,6 +113,31 @@ describe('CommunicationBoxComponent', () => {
         dummyMessage.userId = PlayerType.Local;
         expect(component.getMessageColor(dummyMessage)).toBe(Constants.MY_COLOR);
     });
+/*
+    beforeEach((done) => {
+        const httpServer = createServer();
+        io = new Server(httpServer);
+        httpServer.listen(() => {
+            const port = httpServer.address().port;
+            clientSocket = new Client(`http://localhost:${port}`);
+            io.on('connection', (socket) => {
+                serverSocket = socket;
+            });
+            clientSocket.on('connect', done);
+        });
+    });
+ */
+    it('should call scroll when receiving a new message', () => {
+        component.ngAfterViewInit();
 
+        const spy = spyOn<any>(component, 'scroll').and.callThrough();
+        expect(spy).toHaveBeenCalled();
+    });
+/*
+    afterEach(() => {
+        io.close();
+        clientSocket.close();
+    });
+ */
     afterAll(() => cleanStyles());
 });
