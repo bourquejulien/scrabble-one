@@ -4,8 +4,7 @@
 import { expect } from 'chai';
 import { Board, ImmutableBoard } from '@app/classes/board/board';
 import { Dictionary } from '@app/classes/dictionary/dictionary';
-import { ValidationResponse } from '@app/classes/validation/validation-response';
-import { Placement, Vec2, Direction } from '@common';
+import { Placement, Vec2, Direction, ValidationResponse } from '@common';
 import { Config } from '@app/config';
 import { PlayGenerator } from './play-generator';
 import { BoardHandler } from '@app/classes/board/board-handler';

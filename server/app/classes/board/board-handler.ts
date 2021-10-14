@@ -1,6 +1,5 @@
 import { Board, ImmutableBoard } from '@app/classes/board/board';
-import { Placement, Square, Vec2, Direction } from '@common';
-import { ValidationResponse } from '@app/classes/validation/validation-response';
+import { Placement, Square, Vec2, Direction, ValidationResponse } from '@common';
 import { BoardError } from '@app/errors/board-error';
 import { BoardValidatorFactory } from '@app/classes/validation/board-validator-factory';
 import { BoardValidator } from '@app/classes/validation/board-validator';

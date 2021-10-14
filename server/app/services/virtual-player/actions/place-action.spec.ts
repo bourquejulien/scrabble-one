@@ -1,7 +1,6 @@
 /* eslint-disable max-classes-per-file */
 import { PlayerData } from '@app/classes/player-data';
-import { ValidationResponse } from '@app/classes/validation/validation-response';
-import { Vec2 } from '@common';
+import { Vec2, ValidationResponse} from '@common';
 import { Play } from '@app/classes/virtual-player/play';
 import { BoardService } from '@app/services/board/board.service';
 import { PlaceAction } from './place-action';

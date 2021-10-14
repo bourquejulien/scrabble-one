@@ -4,8 +4,7 @@
 import { expect } from 'chai';
 import { Board } from '@app/classes/board/board';
 import { BoardValidator } from '@app/classes/validation/board-validator';
-import { ValidationResponse } from '@app/classes/validation/validation-response';
-import { Placement, Vec2, Direction } from '@common';
+import { Placement, Vec2, Direction, ValidationResponse } from '@common';
 import { BoardHandler } from './board-handler';
 import { createStubInstance } from 'sinon';
 import { BoardValidatorFactory } from '@app/classes/validation/board-validator-factory';
