@@ -1,12 +1,11 @@
 import { Board, ImmutableBoard } from '@app/classes/board/board';
 import { Placement, ValidationResponse } from '@common';
-import { BoardError } from '@app/errors/board-error';
-import { BoardValidatorFactory } from '@app/classes/validation/board-validator-factory';
 import { BoardValidator } from '@app/classes/validation/board-validator';
+import { BoardValidatorFactory } from '@app/classes/validation/board-validator-factory';
+import { BoardError } from '@app/errors/board-error';
 
 export class BoardHandler {
     private readonly boardValidator: BoardValidator;
-
     constructor(private readonly board: Board, private readonly boardValidatorFactory: BoardValidatorFactory) {
         this.boardValidator = this.boardValidatorFactory.generate(board);
     }
