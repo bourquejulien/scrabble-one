@@ -1,10 +1,9 @@
 import { Injectable } from '@angular/core';
-import { Direction } from '@app/classes/board/direction';
 import { MessageType } from '@app/classes/message';
 import { PlayerData } from '@app/classes/player-data';
 import { PlayerType } from '@app/classes/player-type';
 import { TimeSpan } from '@app/classes/time/timespan';
-import { Vec2 } from '@common';
+import { Vec2, Direction } from '@common';
 import { Constants } from '@app/constants/global.constants';
 import { SystemMessages } from '@app/constants/system-messages.constants';
 import { BoardService } from '@app/services/board/board.service';
@@ -137,7 +136,6 @@ export class PlayerService {
         this.playerData.skippedTurns = 0;
         this.playerData.score = 0;
         this.emptyRack();
-        this.boardService.resetBoardService();
         this.timerService.stop();
     }
 

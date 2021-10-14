@@ -3,11 +3,9 @@ import { PlayerData } from '@app/classes/player-data';
 import { PlayerType } from '@app/classes/player-type';
 import { Timer } from '@app/classes/time/timer';
 import { TimeSpan } from '@app/classes/time/timespan';
-import { Constants } from '@app/constants/global.constants';
-import { ReserveService } from '@app/services/reserve/reserve.service';
 import { TimerService } from '@app/services/timer/timer.service';
 import { Subject } from 'rxjs';
-import { VirtualPlayerActionService } from './virtual-player-action.service';
+import { HttpClient } from '@angular/common/http';
 
 const MIN_PLAYTIME_SECONDS = 3;
 
@@ -19,11 +17,7 @@ export class VirtualPlayerService {
     playerData: PlayerData;
     private minTimer: Timer;
 
-    constructor(
-        private readonly virtualPlayerActionService: VirtualPlayerActionService,
-        private readonly reserveService: ReserveService,
-        private readonly timerService: TimerService,
-    ) {
+    constructor(private readonly timerService: TimerService, private readonly httpClient: HttpClient) {
         this.playerData = { score: 0, skippedTurns: 0, rack: [] };
         this.turnComplete = new Subject<PlayerType>();
         this.minTimer = new Timer();
@@ -33,15 +27,8 @@ export class VirtualPlayerService {
         this.timerService.start(playTime, PlayerType.Virtual);
         this.minTimer.start(TimeSpan.fromSeconds(MIN_PLAYTIME_SECONDS));
 
-        const action = this.virtualPlayerActionService.getNextAction(this.playerData);
-
-        const nextAction = action.execute();
-
         await this.minTimer.completed;
 
-        nextAction?.execute();
-
-        this.fillRack();
         this.endTurn();
     }
 
@@ -49,12 +36,6 @@ export class VirtualPlayerService {
         this.minTimer.stop();
         this.timerService.stop();
         this.turnComplete.next(PlayerType.Virtual);
-    }
-
-    fillRack(): void {
-        while (this.reserveService.length > 0 && this.playerData.rack.length < Constants.RACK_SIZE) {
-            this.playerData.rack.push(this.reserveService.drawLetter());
-        }
     }
 
     reset(): void {

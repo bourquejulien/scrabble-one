@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
-import { Direction } from '@app/classes/board/direction';
+import { Direction, Vec2 } from '@common';
 import { MessageType } from '@app/classes/message';
-import { Vec2 } from '@common';
 import { Constants } from '@app/constants/global.constants';
 import { SystemMessages } from '@app/constants/system-messages.constants';
 import { MessagingService } from '@app/services/messaging/messaging.service';
