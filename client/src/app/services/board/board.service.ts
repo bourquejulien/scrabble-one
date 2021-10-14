@@ -6,11 +6,11 @@ import { Square } from '@app/classes/board/square';
 import { BoardValidator } from '@app/classes/validation/board-validator';
 import { Validation } from '@app/classes/validation/validation';
 import { ValidationResponse } from '@app/classes/validation/validation-response';
-import { Vec2 } from '@common';
 import { Constants } from '@app/constants/global.constants';
 import { BoardError } from '@app/exceptions/board-error';
 import { BoardValidatorGeneratorService } from '@app/services/validation/board-validator-generator.service';
 import JsonBonuses from '@assets/bonus.json';
+import { Vec2 } from '@common';
 
 @Injectable({
     providedIn: 'root',
@@ -26,7 +26,7 @@ export class BoardService implements Validation {
     private board: Board;
 
     constructor(private readonly validatorGenerator: BoardValidatorGeneratorService) {
-        this.board = new Board(Constants.GRID.GRID_SIZE, this.retrieveBonuses());
+        this.board = new Board(Constants.GRID.GRID_SIZE, this.retrieveBonuses(this.mustShuffle));
     }
 
     get gameBoard(): ImmutableBoard {
@@ -34,7 +34,7 @@ export class BoardService implements Validation {
     }
 
     resetBoardService(): void {
-        this.board = new Board(Constants.GRID.GRID_SIZE, this.retrieveBonuses());
+        this.board = new Board(Constants.GRID.GRID_SIZE, this.retrieveBonuses(this.mustShuffle));
     }
 
     lookupLetters(letters: { letter: string; position: Vec2 }[]): ValidationResponse {
@@ -71,18 +71,18 @@ export class BoardService implements Validation {
         return newLetters;
     }
 
-    private retrieveBonuses(): BonusInfos[] {
+    private retrieveBonuses(mustShuffle: boolean): BonusInfos[] {
         let bonuses: BonusInfos[] = [];
         for (const jsonBonus of JsonBonuses) {
             const bonusInfo: BonusInfos = { bonus: jsonBonus.Bonus as Bonus, position: jsonBonus.Position };
             bonuses.push(bonusInfo);
         }
-        if (this.mustShuffle) {
+        if (mustShuffle) {
             bonuses = this.shuffleBonuses(bonuses);
         }
         return bonuses;
     }
-    private shuffleBonuses(bonusesArray: BonusInfos[]) {
+    private shuffleBonuses(bonusesArray: BonusInfos[]): BonusInfos[] {
         const bonusBank: Bonus[] = this.initializeBonusBank();
         for (const bonusInfo of bonusesArray) {
             if (bonusInfo.bonus !== Bonus.Star) {

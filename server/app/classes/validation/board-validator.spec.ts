@@ -1,13 +1,13 @@
 /* eslint-disable no-unused-expressions -- To be */
 /* eslint-disable @typescript-eslint/no-unused-expressions */
-import { expect } from 'chai';
 import { Board } from '@app/classes/board/board';
-import { BoardValidator } from './board-validator';
-import { Config } from '@app/config';
 import { Direction } from '@app/classes/board/direction';
-import { Vec2, letterDefinitions, Bonus, Placement } from '@common';
 import { Dictionary } from '@app/classes/dictionary/dictionary';
+import { Config } from '@app/config';
 import JsonBonuses from '@assets/bonus.json';
+import { Bonus, BonusInfos, letterDefinitions, Placement, Vec2 } from '@common';
+import { expect } from 'chai';
+import { BoardValidator } from './board-validator';
 
 const WORDS: string[] = ['pomme', 'orange', 'poire', 'raisin', 'peche', 'banane', 'bananes'];
 const mockedDictionary: Set<string> = new Set(WORDS);
@@ -62,11 +62,12 @@ const generateLetters = (): { [key: string]: number } => {
     return letterValues;
 };
 
-const retrieveBonuses = (): [Vec2, Bonus][] => {
-    const bonuses: [Vec2, Bonus][] = new Array<[Vec2, Bonus]>();
+const retrieveBonuses = (): BonusInfos[] => {
+    const bonuses: BonusInfos[] = [];
 
     for (const jsonBonus of JsonBonuses) {
-        bonuses.push([jsonBonus.Position, Bonus[jsonBonus.Bonus as keyof typeof Bonus]]);
+        const bonusInfo: BonusInfos = { bonus: jsonBonus.Bonus as Bonus, position: jsonBonus.Position };
+        bonuses.push(bonusInfo);
     }
 
     return bonuses;
