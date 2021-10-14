@@ -1,9 +1,10 @@
-import { Component, HostListener, OnInit } from '@angular/core';
+import { Component, HostListener, OnInit, Inject } from '@angular/core';
 import { FormControl, FormGroup, ValidatorFn, Validators } from '@angular/forms';
-import { MatDialogRef } from '@angular/material/dialog';
+import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 import { Error } from '@app/classes/errorName/error';
 import { GameConfig } from '@app/classes/game-config';
+import { GameType } from '@app/classes/game-type';
 import { TimeSpan } from '@app/classes/time/timespan';
 import { GameService } from '@app/services/game/game.service';
 
@@ -50,10 +51,10 @@ export class InitSoloModeComponent implements OnInit {
     readonly minutesList = TURN_LENGTH_MINUTES;
     readonly secondsList = TURN_LENGTH_SECONDS;
     nameForm: FormGroup;
+    gameType = GameType;
     errorsList: string[] = [];
     minutes: number = DEFAULT_PLAY_TIME.totalMinutes;
     seconds: number = DEFAULT_PLAY_TIME.seconds;
-
     gameConfig: GameConfig = {
         gameType: GAME_TYPES_LIST[0],
         playTime: DEFAULT_PLAY_TIME,
@@ -61,7 +62,12 @@ export class InitSoloModeComponent implements OnInit {
         secondPlayerName: '',
     };
 
-    constructor(public gameService: GameService, private router: Router, public dialogRef: MatDialogRef<InitSoloModeComponent>) {}
+    constructor(
+        public gameService: GameService,
+        private router: Router,
+        public dialogRef: MatDialogRef<InitSoloModeComponent>,
+        @Inject(MAT_DIALOG_DATA) public data: { gameModeType: GameType },
+    ) {}
 
     @HostListener('keydown', ['$event'])
     buttonDetect(event: KeyboardEvent) {
