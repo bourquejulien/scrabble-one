@@ -38,7 +38,6 @@ const modules = [
     // MatButtonToggleModule,
     MatCardModule,
     MatCheckboxModule,
-    MatCheckboxModule,
     MatChipsModule,
     // MatDatepickerModule,
     MatDialogModule,
