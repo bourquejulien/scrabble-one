@@ -39,7 +39,7 @@ export class PlayerService {
         this.timerService.start(playTime, PlayerType.Local);
     }
 
-    placeLetters(word: string, position: Vec2, direction: Direction): void {
+    async placeLetters(word: string, position: Vec2, direction: Direction): Promise<void> {
         let starLetter = '';
 
         for (let letter of word) {
@@ -49,7 +49,7 @@ export class PlayerService {
             }
         }
 
-        const positionToPlace = this.boardService.retrieveNewLetters(word, position, direction);
+        const positionToPlace = this.boardService.retrievePlacements(word, position, direction);
         let lettersToPlace = positionToPlace.map((element) => element.letter).join('');
 
         if (starLetter !== '') {
@@ -65,7 +65,7 @@ export class PlayerService {
             return;
         }
 
-        const validationData = this.boardService.lookupLetters(positionToPlace);
+        const validationData = await this.boardService.lookupLetters(positionToPlace);
         if (!validationData.isSuccess) {
             this.messagingService.send('', validationData.description, MessageType.Log);
             this.completeTurn();
@@ -76,7 +76,8 @@ export class PlayerService {
         this.updateRack(lettersToPlace);
         this.updateReserve(positionToPlace.length);
 
-        this.boardService.placeLetters(positionToPlace);
+        await this.boardService.placeLetters(positionToPlace);
+        await this.boardService.refreshBoard();
 
         this.playerData.skippedTurns = 0;
         this.completeTurn();

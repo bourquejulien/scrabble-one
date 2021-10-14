@@ -11,6 +11,10 @@ import { PlayerService } from '@app/services/player/player.service';
 import { ReserveService } from '@app/services/reserve/reserve.service';
 import { VirtualPlayerService } from '@app/services/virtual-player/virtual-player.service';
 import { BehaviorSubject, Subject } from 'rxjs';
+import { environment } from '@environment';
+import { HttpClient } from '@angular/common/http';
+
+const localUrl = (call: string, id?: string) => `${environment.serverUrl}/game${call}${id ? '/' + id : ''}`;
 
 @Injectable({
     providedIn: 'root',
@@ -41,6 +45,7 @@ export class GameService {
         private readonly virtualPlayerService: VirtualPlayerService,
         private readonly messaging: MessagingService,
         private readonly reserveService: ReserveService,
+        private readonly httpCLient: HttpClient,
     ) {
         this.onTurn = new BehaviorSubject<PlayerType>(PlayerType.Local);
         this.gameEnding = new Subject<void>();
@@ -53,22 +58,25 @@ export class GameService {
         return Math.random() < HALF ? PlayerType.Local : PlayerType.Virtual;
     }
 
-    startGame(gameConfig: GameConfig) {
+    async startGame(gameConfig: GameConfig) {
         this.gameConfig = gameConfig;
         this.currentTurn = GameService.randomizeTurn();
         this.gameRunning = true;
 
-        this.virtualPlayerService.fillRack();
+        await this.httpCLient.put(localUrl('start'), { playerInfo: [] });
+
         this.playerService.fillRack(Constants.RACK_SIZE);
         this.nextTurn();
     }
 
-    reset() {
+    async reset() {
         this.skipTurnNb = 0;
         this.gameRunning = false;
         this.virtualPlayerService.reset();
         this.playerService.reset();
         this.reserveService.reset();
+
+        await this.httpCLient.delete(localUrl('end'));
     }
 
     nextTurn() {

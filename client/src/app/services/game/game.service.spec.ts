@@ -36,7 +36,6 @@ describe('GameService', () => {
         });
 
         virtualPlayerServiceSpy.reset.and.returnValue();
-        virtualPlayerServiceSpy.fillRack.and.returnValue();
         virtualPlayerServiceSpy.startTurn.and.returnValue(Promise.resolve());
         virtualPlayerServiceSpy.turnComplete = new Subject<PlayerType>();
 
@@ -55,22 +54,22 @@ describe('GameService', () => {
         expect(service).toBeTruthy();
     });
 
-    it('start should define currentTurn and swap Virtual to Local', () => {
+    it('start should define currentTurn and swap Virtual to Local', async () => {
         const spy = spyOn(Math, 'random').and.returnValue(1);
-        service.startGame(service.gameConfig);
+        await service.startGame(service.gameConfig);
         expect(spy).toHaveBeenCalled();
         expect(service.currentTurn).toBe(PlayerType.Local);
     });
 
-    it('start should define currentTurn and swap from Local to Virtual', () => {
+    it('start should define currentTurn and swap from Local to Virtual', async () => {
         const spy = spyOn(Math, 'random').and.returnValue(0);
-        service.startGame(service.gameConfig);
+        await service.startGame(service.gameConfig);
         expect(spy).toHaveBeenCalled();
         expect(service.currentTurn).toBe(PlayerType.Virtual);
     });
 
-    it('should call EmptyRack, resetReserveNewGame, resetBoard from playerService and emptyrack from virtualPlayer when ResetGame', () => {
-        service.reset();
+    it('should call EmptyRack, resetReserveNewGame, resetBoard from playerService and emptyrack from virtualPlayer when ResetGame', async () => {
+        await service.reset();
         expect(playerService.reset).toHaveBeenCalled();
         expect(virtualPlayerServiceSpy.reset).toHaveBeenCalled();
     });
@@ -81,20 +80,20 @@ describe('GameService', () => {
         expect(rackPoint).toBe(expectRackPoint);
     });
 
-    it('should reset all player stats to 0 when resetGame is called', () => {
-        service.reset();
+    it('should reset all player stats to 0 when resetGame is called', async () => {
+        await service.reset();
         expect(playerService.playerData.score).toBe(0);
         expect(playerService.playerData.skippedTurns).toBe(0);
     });
 
-    it('should reset all virtualPlayer stats to 0 when resetGame is called', () => {
-        service.reset();
+    it('should reset all virtualPlayer stats to 0 when resetGame is called', async () => {
+        await service.reset();
         expect(virtualPlayerServiceSpy.playerData.skippedTurns).toBe(0);
         expect(virtualPlayerServiceSpy.playerData.score).toBe(0);
     });
 
-    it('should reset skipTurnNb to 0 when resetGame is called', () => {
-        service.reset();
+    it('should reset skipTurnNb to 0 when resetGame is called', async () => {
+        await service.reset();
         expect(service.skipTurnNb).toBe(0);
     });
 
@@ -119,13 +118,6 @@ describe('GameService', () => {
         playerService.fillRack(MAX_LENGTH_RACK);
         service.endGamePoint();
         expect(playerService.playerData.score).toEqual(0);
-    });
-
-    it('should set virtual player points to 0', () => {
-        service.secondPlayerStats.points = 1;
-        virtualPlayerServiceSpy.fillRack();
-        service.endGamePoint();
-        expect(virtualPlayerServiceSpy.playerData.score).toEqual(0);
     });
 
     it('should subtracts rack value to ', () => {

@@ -6,6 +6,8 @@ import { TimeSpan } from '@app/classes/time/timespan';
 import { TimerService } from '@app/services/timer/timer.service';
 import { Subject } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
+import { environment } from '@environment';
+import { SessionService } from '@app/services/session/session.service';
 
 const MIN_PLAYTIME_SECONDS = 3;
 
@@ -17,7 +19,11 @@ export class VirtualPlayerService {
     playerData: PlayerData;
     private minTimer: Timer;
 
-    constructor(private readonly timerService: TimerService, private readonly httpClient: HttpClient) {
+    constructor(
+        private readonly timerService: TimerService,
+        private readonly httpClient: HttpClient,
+        private readonly sessionService: SessionService,
+    ) {
         this.playerData = { score: 0, skippedTurns: 0, rack: [] };
         this.turnComplete = new Subject<PlayerType>();
         this.minTimer = new Timer();
@@ -27,6 +33,7 @@ export class VirtualPlayerService {
         this.timerService.start(playTime, PlayerType.Virtual);
         this.minTimer.start(TimeSpan.fromSeconds(MIN_PLAYTIME_SECONDS));
 
+        await this.httpClient.post(`${environment.serverUrl}/game/virtual`, { id: this.sessionService.id });
         await this.minTimer.completed;
 
         this.endTurn();

@@ -64,9 +64,9 @@ export class InitSoloModeComponent implements OnInit {
     constructor(public gameService: GameService, private router: Router, public dialogRef: MatDialogRef<InitSoloModeComponent>) {}
 
     @HostListener('keydown', ['$event'])
-    buttonDetect(event: KeyboardEvent) {
+    async buttonDetect(event: KeyboardEvent) {
         if (event.key === 'Enter') {
-            this.initialize();
+            await this.initialize();
         }
     }
 
@@ -74,13 +74,13 @@ export class InitSoloModeComponent implements OnInit {
         this.gameConfig.secondPlayerName = this.randomizeBotName(this.botNames);
     }
 
-    initialize(): void {
+    async initialize(): Promise<void> {
         const needsToReroute: boolean = this.confirmInitialization();
 
         if (needsToReroute) {
             this.dialogRef.close();
             this.router.navigate(['game']);
-            this.gameService.startGame(this.gameConfig);
+            await this.gameService.startGame(this.gameConfig);
         }
     }
 

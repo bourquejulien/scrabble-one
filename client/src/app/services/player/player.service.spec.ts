@@ -3,12 +3,10 @@
 /* eslint-disable max-lines  -- Max lines should not be applied to tests*/
 import { Injectable } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
-import { Direction } from '@app/classes/board/direction';
 import { MessageType } from '@app/classes/message';
 import { PlayerType } from '@app/classes/player-type';
 import { TimeSpan } from '@app/classes/time/timespan';
-import { ValidationResponse } from '@app/classes/validation/validation-response';
-import { Vec2 } from '@common';
+import { Placement, Direction, ValidationResponse } from '@common';
 import { SystemMessages } from '@app/constants/system-messages.constants';
 import { BoardService } from '@app/services/board/board.service';
 import { PlayerService } from '@app/services/player/player.service';
@@ -83,7 +81,7 @@ describe('PlayerService', () => {
     let lettersToExchange: string;
     let timerService: TimerService;
     let boardServiceSpy: jasmine.SpyObj<BoardService>;
-    let letterToPlace: { letter: string; position: Vec2 }[];
+    let letterToPlace: Placement[];
     let validationResponse: ValidationResponse;
 
     beforeEach(() => {
@@ -124,8 +122,8 @@ describe('PlayerService', () => {
 
     it('should send error message if lettersToPlace not in rack', () => {
         letterToPlace = [{ letter: 'z', position: { x: 11, y: 3 } }];
-        boardServiceSpy['retrieveNewLetters'].and.returnValue(letterToPlace);
-        boardServiceSpy['lookupLetters'].and.returnValue(validationResponse);
+        boardServiceSpy['retrievePlacements'].and.returnValue(letterToPlace);
+        boardServiceSpy['lookupLetters'].and.returnValue(Promise.resolve(validationResponse));
 
         const spy = spyOn(service['messagingService'], 'send');
         service.placeLetters('z', { x: 11, y: 3 }, Direction.Up);
@@ -135,8 +133,8 @@ describe('PlayerService', () => {
     it('should send error message if validation fail', () => {
         validationResponse = { isSuccess: false, points: 15, description: 'Error' };
         letterToPlace = [{ letter: 'k', position: { x: 11, y: 3 } }];
-        boardServiceSpy['retrieveNewLetters'].and.returnValue(letterToPlace);
-        boardServiceSpy['lookupLetters'].and.returnValue(validationResponse);
+        boardServiceSpy['retrievePlacements'].and.returnValue(letterToPlace);
+        boardServiceSpy['lookupLetters'].and.returnValue(Promise.resolve(validationResponse));
 
         const spy = spyOn(service['messagingService'], 'send');
         service.placeLetters('k', { x: 11, y: 3 }, Direction.Up);
@@ -146,9 +144,9 @@ describe('PlayerService', () => {
     it('should update rack if validation success and letters in rack', () => {
         validationResponse = { isSuccess: true, points: 15, description: 'Error' };
         letterToPlace = [{ letter: 'k', position: { x: 11, y: 3 } }];
-        boardServiceSpy['retrieveNewLetters'].and.returnValue(letterToPlace);
-        boardServiceSpy['lookupLetters'].and.returnValue(validationResponse);
-        boardServiceSpy['placeLetters'].and.returnValue(validationResponse);
+        boardServiceSpy['retrievePlacements'].and.returnValue(letterToPlace);
+        boardServiceSpy['lookupLetters'].and.returnValue(Promise.resolve(validationResponse));
+        boardServiceSpy['placeLetters'].and.returnValue(Promise.resolve(validationResponse));
 
         // eslint-disable-next-line  @typescript-eslint/no-explicit-any  -- Needed for spyOn service
         const spy = spyOn<any>(service, 'updateRack');

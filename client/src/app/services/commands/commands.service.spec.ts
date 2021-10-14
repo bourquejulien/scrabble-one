@@ -3,10 +3,9 @@
 /* eslint-disable max-classes-per-file -- Multiple mock needed for tests*/
 /* eslint-disable @typescript-eslint/naming-convention  -- Need SCREAMING_SNAKE_CASE for static property in mock class */
 import { TestBed } from '@angular/core/testing';
-import { Direction } from '@app/classes/board/direction';
 import { Message, MessageType } from '@app/classes/message';
 import { PlayerType } from '@app/classes/player-type';
-import { Vec2 } from '@common';
+import { Vec2, Direction } from '@common';
 import { CommandsService } from '@app/services/commands/commands.service';
 import { MessagingService } from '@app/services/messaging/messaging.service';
 import { Subject } from 'rxjs';

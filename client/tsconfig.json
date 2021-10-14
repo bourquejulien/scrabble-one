@@ -28,7 +28,8 @@
         "paths": {
             "@app/*": ["./src/app/*"],
             "@common": ["../common"],
-            "@assets/*": ["./src/assets/*"]
+            "@assets/*": ["./src/assets/*"],
+            "@environment": ["./src/environments/environment.ts"]
         }
     },
     "references": [

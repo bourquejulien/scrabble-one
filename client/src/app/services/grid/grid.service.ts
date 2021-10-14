@@ -59,7 +59,7 @@ export class GridService {
     }
 
     drawGrid(gridContext: CanvasRenderingContext2D): void {
-        const board = this.boardService.gameBoard;
+        const boardData = this.boardService.gameBoard;
         gridContext.clearRect(0, 0, this.width, this.height);
 
         for (let i = 1; i < this.playGridSize + 1; i++) {
@@ -69,7 +69,7 @@ export class GridService {
 
         for (let x = 0; x < this.playGridSize; x++) {
             for (let y = 0; y < this.playGridSize; y++) {
-                const square = board.getSquare({ x, y });
+                const square = boardData.board[x][y];
                 const squareColor = BONUS_COLORS.get(square.bonus) ?? 'white';
                 this.fillSquare(squareColor, { x: x + 1, y: y + 1 }, { x: 1, y: 1 }, gridContext);
             }
@@ -91,12 +91,12 @@ export class GridService {
     }
 
     drawSquares(squareContext: CanvasRenderingContext2D): void {
-        const board = this.boardService.gameBoard;
+        const boardData = this.boardService.gameBoard;
         squareContext.clearRect(0, 0, this.width, this.height);
 
         for (let x = 0; x < this.playGridSize; x++) {
             for (let y = 0; y < this.playGridSize; y++) {
-                const square = board.getSquare({ x, y });
+                const square = boardData.board[x][y];
                 if (square.letter !== '') {
                     this.drawSymbol(square.letter.toUpperCase(), { x: x + 1, y: y + 1 }, squareContext);
                 } else if (square.bonus !== Bonus.None) {
@@ -107,7 +107,7 @@ export class GridService {
 
         const centerSquare = Math.floor(this.playGridSize / 2);
 
-        if (board.getSquare({ x: centerSquare, y: centerSquare }).letter === '') {
+        if (boardData.board[centerSquare][centerSquare].letter === '') {
             this.drawImage(this.starImage, { x: centerSquare + 1, y: centerSquare + 1 }, squareContext);
         }
     }
@@ -165,7 +165,7 @@ export class GridService {
         return fontFace;
     }
 
-    private async drawImage(image: HTMLImageElement, gridPosition: Vec2, context: CanvasRenderingContext2D) {
+    private drawImage(image: HTMLImageElement, gridPosition: Vec2, context: CanvasRenderingContext2D) {
         const canvasPosition = this.computeCanvasCoord(gridPosition);
         const halfLineWidth = LINE_WIDTH / 2;
         const centeredPosition = {
