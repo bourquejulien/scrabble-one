@@ -1,4 +1,4 @@
-import { Vec2 } from '@app/classes/vec2';
+import { Vec2 } from '@common';
 
 export interface Play {
     score: number;

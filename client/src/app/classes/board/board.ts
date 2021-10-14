@@ -1,8 +1,8 @@
 import { Square } from './square';
-import { Vec2 } from '@app/classes/vec2';
 import { BoardOverflowError } from '@app/exceptions/board-overflow-error';
-import { Bonus } from './bonus';
+import { Vec2 } from '@common';
 import { BoardMergeError } from '@app/exceptions/board-merge-error';
+import { Bonus, BonusInfos } from './bonus';
 import { Direction } from './direction';
 
 export interface ImmutableBoard {
@@ -20,7 +20,7 @@ export class Board implements ImmutableBoard {
     private board: Square[][];
     private readonly filledPositions: Vec2[];
 
-    constructor(size: number, bonuses: [Vec2, Bonus][] = []) {
+    constructor(size: number, bonuses: BonusInfos[] = []) {
         this.size = size;
         this.board = new Array<Square[]>();
         this.filledPositions = [];
@@ -35,7 +35,9 @@ export class Board implements ImmutableBoard {
             this.board.push(column);
         }
 
-        for (const [position, bonus] of bonuses) {
+        for (const bonusInfo of bonuses) {
+            const bonus = bonusInfo.bonus;
+            const position = bonusInfo.position;
             this.board[position.x][position.y] = { letter: '', bonus, position };
         }
     }

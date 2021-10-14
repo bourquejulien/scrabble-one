@@ -1,14 +1,16 @@
 import { HttpException } from '@app/classes/http.exception';
 import { DateController } from '@app/controllers/date.controller';
 import { ExampleController } from '@app/controllers/example.controller';
-import * as cookieParser from 'cookie-parser';
-import * as cors from 'cors';
-import * as express from 'express';
+import cookieParser from 'cookie-parser';
+import cors from 'cors';
+import express from 'express';
 import { StatusCodes } from 'http-status-codes';
-import * as logger from 'morgan';
-import * as swaggerJSDoc from 'swagger-jsdoc';
-import * as swaggerUi from 'swagger-ui-express';
+import logger from 'morgan';
+import swaggerJSDoc from 'swagger-jsdoc';
+import swaggerUi from 'swagger-ui-express';
 import { Service } from 'typedi';
+import { GameController } from '@app/controllers/game.controller';
+import { BoardController } from '@app/controllers/board.controller';
 
 @Service()
 export class Application {
@@ -16,14 +18,19 @@ export class Application {
     private readonly internalError: number = StatusCodes.INTERNAL_SERVER_ERROR;
     private readonly swaggerOptions: swaggerJSDoc.Options;
 
-    constructor(private readonly exampleController: ExampleController, private readonly dateController: DateController) {
+    constructor(
+        private readonly exampleController: ExampleController,
+        private readonly dateController: DateController,
+        private readonly gameController: GameController,
+        private readonly boardController: BoardController,
+    ) {
         this.app = express();
 
         this.swaggerOptions = {
             swaggerDefinition: {
                 openapi: '3.0.0',
                 info: {
-                    title: 'Cadriciel Serveur',
+                    title: 'Scrabble server',
                     version: '1.0.0',
                 },
             },
@@ -39,6 +46,8 @@ export class Application {
         this.app.use('/api/docs', swaggerUi.serve, swaggerUi.setup(swaggerJSDoc(this.swaggerOptions)));
         this.app.use('/api/example', this.exampleController.router);
         this.app.use('/api/date', this.dateController.router);
+        this.app.use('/api/game', this.gameController.router);
+        this.app.use('/api/board', this.boardController.router);
         this.app.use('/', (req, res) => {
             res.redirect('/api/docs');
         });

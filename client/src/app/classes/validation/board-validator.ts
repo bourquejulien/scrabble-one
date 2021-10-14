@@ -2,7 +2,7 @@ import { BoardError } from '@app/exceptions/board-error';
 import { Board, ImmutableBoard } from '@app/classes/board/board';
 import { Square } from '@app/classes/board/square';
 import { ValidationResponse } from './validation-response';
-import { Vec2 } from '@app/classes/vec2';
+import { Vec2 } from '@common';
 import { Direction, reverseDirection } from '@app/classes/board/direction';
 import { Bonus, getBonusDetails } from '@app/classes/board/bonus';
 import { Dictionary } from '@app/classes/dictionary/dictionary';
@@ -50,6 +50,11 @@ export class BoardValidator {
         }
 
         return position;
+    }
+
+    private static getBingoBonus(placementLength: number): number {
+        const BINGO_BONUS = 50;
+        return placementLength > Constants.RACK_SIZE ? BINGO_BONUS : 0;
     }
 
     validate(letters: { letter: string; position: Vec2 }[]): ValidationResponse {
@@ -170,7 +175,7 @@ export class BoardValidator {
             totalPoint += response.points;
         }
 
-        totalPoint += this.getBingoBonus(sortedPositions.length);
+        totalPoint += BoardValidator.getBingoBonus(sortedPositions.length);
 
         return { isSuccess: true, description: '', points: totalPoint };
     }
@@ -213,10 +218,5 @@ export class BoardValidator {
         } else {
             return { isSuccess: false, description: `Word: (${word}) cannot be found in dictionary`, points: 0 };
         }
-    }
-
-    private getBingoBonus(placementLength: number): number {
-        const BINGO_BONUS = 50;
-        return placementLength > Constants.RACK_SIZE ? BINGO_BONUS : 0;
     }
 }

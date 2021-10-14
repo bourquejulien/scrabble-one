@@ -5,7 +5,7 @@ import { ImmutableBoard } from '@app/classes/board/board';
 import { Direction } from '@app/classes/board/direction';
 import { BoardValidator } from '@app/classes/validation/board-validator';
 import { ValidationResponse } from '@app/classes/validation/validation-response';
-import { Vec2 } from '@app/classes/vec2';
+import { Vec2 } from '@common';
 import { BoardService } from '@app/services/board/board.service';
 import { BoardValidatorGeneratorService } from '@app/services/validation/board-validator-generator.service';
 
@@ -26,6 +26,7 @@ class BoardValidatorStub {
         this.lastLetters = letters;
         return { isSuccess: this.isSuccess, points: 0, description: '' };
     }
+
     // eslint-disable-next-line no-unused-vars -- Parameter useless for stub
     getLetterPoints(letter: string): number {
         return 0;

@@ -1,12 +1,11 @@
 import { Board } from '@app/classes/board/board';
-import { BoardValidator } from './board-validator';
-import { Constants } from '@app/constants/global.constants';
+import { Bonus, BonusInfos } from '@app/classes/board/bonus';
 import { Direction } from '@app/classes/board/direction';
-import { Vec2 } from '@app/classes/vec2';
-import { letterDefinitions } from '@app/classes/letter';
+import { Vec2, letterDefinitions } from '@common';
 import { Dictionary } from '@app/classes/dictionary/dictionary';
+import { Constants } from '@app/constants/global.constants';
 import JsonBonuses from '@assets/bonus.json';
-import { Bonus } from '@app/classes/board/bonus';
+import { BoardValidator } from './board-validator';
 
 const WORDS: string[] = ['pomme', 'orange', 'poire', 'raisin', 'peche', 'banane', 'bananes'];
 const mockedDictionary: Set<string> = new Set(WORDS);
@@ -61,11 +60,12 @@ const generateLetters = (): { [key: string]: number } => {
     return letterValues;
 };
 
-const retrieveBonuses = (): [Vec2, Bonus][] => {
-    const bonuses: [Vec2, Bonus][] = new Array<[Vec2, Bonus]>();
+const retrieveBonuses = (): BonusInfos[] => {
+    const bonuses: BonusInfos[] = [];
 
     for (const jsonBonus of JsonBonuses) {
-        bonuses.push([jsonBonus.Position, Bonus[jsonBonus.Bonus as keyof typeof Bonus]]);
+        const bonusInfo: BonusInfos = { bonus: jsonBonus.Bonus as Bonus, position: jsonBonus.Position };
+        bonuses.push(bonusInfo);
     }
 
     return bonuses;

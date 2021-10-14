@@ -191,5 +191,5 @@ deploy:server:
                 forever stopall && sudo fuser -k '${SERVER_PORT}/tcp' && sudo killall node
 
                 # Launch the server in background and append output to /var/log/messages for CloudWatch
-                forever start -a -l /var/log/messages out/index.js
+                forever start -a -l /var/log/messages out/server/app/index.js
             "
