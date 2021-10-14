@@ -21,7 +21,12 @@
         "paths": {
             "@app/*": ["./app/*"],
             "@assets/*": ["./assets/*"],
-            "@common/*": ["../common/*"]
+            "@common": ["../common"],
         }
-    }
+    },
+    "references": [
+        {
+            "path": "../common"
+        }
+    ]
 }

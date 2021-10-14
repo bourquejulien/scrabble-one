@@ -1,9 +1,9 @@
-import { Vec2 } from '@common/vec2';
-import { BoardMergeError } from '@app/exceptions/board-merge-error';
+import { Square } from './square';
 import { BoardOverflowError } from '@app/exceptions/board-overflow-error';
+import { Vec2 } from '@common';
+import { BoardMergeError } from '@app/exceptions/board-merge-error';
 import { Bonus, BonusInfos } from './bonus';
 import { Direction } from './direction';
-import { Square } from './square';
 
 export interface ImmutableBoard {
     readonly size: number;

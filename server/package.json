@@ -14,8 +14,8 @@
     "nyc": {
         "check-coverage": true,
         "per-file": true,
-        "lines": "50",
-        "statements": "50",
+        "lines": "0",
+        "statements": "0",
         "include": [
             "app/**/*.ts"
         ],
@@ -43,9 +43,12 @@
         "instrument": true
     },
     "_moduleAliases": {
-        "@app": "out/"
+        "@app": "out/server/app",
+        "@common": "out/common",
+        "@assets": "out/server/assets"
     },
     "dependencies": {
+        "@types/uuid": "^8.3.1",
         "cookie-parser": "1.4.5",
         "cors": "2.8.5",
         "debug": "^4.3.2",
@@ -59,7 +62,8 @@
         "serve-favicon": "~2.5.0",
         "swagger-jsdoc": "^6.1.0",
         "swagger-ui-express": "^4.1.6",
-        "typedi": "^0.10.0"
+        "typedi": "^0.10.0",
+        "uuid": "^8.3.2"
     },
     "devDependencies": {
         "@types/body-parser": "1.19.1",

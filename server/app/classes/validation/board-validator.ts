@@ -1,21 +1,19 @@
 import { BoardError } from '@app/errors/board-error';
 import { Board, ImmutableBoard } from '@app/classes/board/board';
-import { Square } from '@app/classes/board/square';
+import { Square, Vec2, Bonus, getBonusDetails, Placement } from '@common';
 import { ValidationResponse } from './validation-response';
-import { Vec2 } from '@common/vec2';
 import { Direction, reverseDirection } from '@app/classes/board/direction';
-import { Bonus, getBonusDetails } from '@app/classes/board/bonus';
 import { Dictionary } from '@app/classes/dictionary/dictionary';
 import { Config } from '@app/config';
 
 export class BoardValidator {
-    constructor(private readonly board: ImmutableBoard, private readonly dictionary: Dictionary, private letterPoints: { [key: string]: number }) {}
+    constructor(readonly board: ImmutableBoard, readonly dictionary: Dictionary, private letterPoints: { [key: string]: number }) {}
 
     private static validateSquare(square: Square | null): boolean {
         return square != null && square.letter !== '';
     }
 
-    private static sortLetters(letters: { letter: string; position: Vec2 }[], direction: Direction): { letter: string; position: Vec2 }[] {
+    private static sortLetters(letters: Placement[], direction: Direction): { letter: string; position: Vec2 }[] {
         if (direction === Direction.Right) {
             return letters.sort((l1, l2) => l1.position.x - l2.position.x);
         } else {
@@ -52,7 +50,7 @@ export class BoardValidator {
         return position;
     }
 
-    validate(letters: { letter: string; position: Vec2 }[]): ValidationResponse {
+    validate(letters: Placement[]): ValidationResponse {
         if (letters.length === 0) {
             return { isSuccess: false, description: 'Empty placement', points: 0 };
         }
@@ -80,7 +78,12 @@ export class BoardValidator {
         const sortedPositions = sortedLetters.map((e) => e.position);
 
         if (this.board.positions.length === 0) {
-            if (!this.validateFirstPlacement(letters)) return { isSuccess: false, description: 'Invalid first word', points: 0 };
+            if (!this.validateFirstPlacement(letters))
+                return {
+                    isSuccess: false,
+                    description: 'Invalid first word',
+                    points: 0,
+                };
         } else if (!this.ensureAggregation(positions)) {
             return { isSuccess: false, description: 'No aggregation', points: 0 };
         }
@@ -96,7 +99,7 @@ export class BoardValidator {
         return this.letterPoints[letter] ?? 0;
     }
 
-    private validateFirstPlacement(letters: { letter: string; position: Vec2 }[]): boolean {
+    private validateFirstPlacement(letters: Placement[]): boolean {
         if (letters.length < 2) {
             return false;
         }

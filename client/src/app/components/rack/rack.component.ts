@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { letterDefinitions } from '@common/letter';
+import { letterDefinitions } from '@common';
 import { PlayerService } from '@app/services/player/player.service';
 
 @Component({

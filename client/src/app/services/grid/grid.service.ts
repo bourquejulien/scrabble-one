@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Bonus } from '@app/classes/board/bonus';
 import { FontFace } from '@app/classes/font-face';
-import { Vec2 } from '@common/vec2';
+import { Vec2 } from '@common';
 import { Constants } from '@app/constants/global.constants';
 import { BoardService } from '@app/services/board/board.service';
 
@@ -53,6 +53,10 @@ export class GridService {
             default:
                 return { kind: '', multiplier: '' };
         }
+    }
+
+    private static computeCanvasPosition(position: number, canvasSize: number, gridSize: number): number {
+        return (canvasSize / gridSize) * position + canvasSize / gridSize / 2;
     }
 
     drawGrid(gridContext: CanvasRenderingContext2D): void {
@@ -202,13 +206,9 @@ export class GridService {
 
     private computeCanvasCoord(gridPosition: Vec2): Vec2 {
         return {
-            x: this.computeCanvasPosition(gridPosition.x, this.canvasSize.x, this.boardGridSize),
-            y: this.computeCanvasPosition(gridPosition.y, this.canvasSize.y, this.boardGridSize),
+            x: GridService.computeCanvasPosition(gridPosition.x, this.canvasSize.x, this.boardGridSize),
+            y: GridService.computeCanvasPosition(gridPosition.y, this.canvasSize.y, this.boardGridSize),
         };
-    }
-
-    private computeCanvasPosition(position: number, canvasSize: number, gridSize: number): number {
-        return (canvasSize / gridSize) * position + canvasSize / gridSize / 2;
     }
 
     private get squareWidth(): number {
