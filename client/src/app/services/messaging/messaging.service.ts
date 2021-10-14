@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Message, MessageType } from '@common/message';
 import { PlayerType } from '@common/player-type';
-import { Observable, Subject } from 'rxjs';
+import { Subject } from 'rxjs';
 import { io, Socket } from 'socket.io-client';
 
 @Injectable({
@@ -10,7 +10,14 @@ import { io, Socket } from 'socket.io-client';
 export class MessagingService {
     debuggingMode: boolean;
     socketClient: Socket = io('http://localhost:3000/');
+    rooms: string[] = [];
     protected subject = new Subject<Message>();
+
+    constructor() {
+        this.socketClient.on('SendRooms', (rooms: string[]) => {
+            this.rooms = rooms;
+        });
+    }
 
     send(title: string, body: string, messageType: MessageType, user?: PlayerType): void {
         if (!user) user = PlayerType.Local;
@@ -28,7 +35,7 @@ export class MessagingService {
         }
     }
 
-    onMessage(): Observable<Message> {
-        return this.subject.asObservable();
+    joinRoom(roomID: string) {
+        this.socketClient.emit('JoinRoom', roomID);
     }
 }

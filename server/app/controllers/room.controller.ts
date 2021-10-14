@@ -6,6 +6,7 @@ import { Server } from 'socket.io';
 
 export class RoomController {
     private serverIO: Server;
+    private rooms: string[] = [];
 
     constructor(server: http.Server) {
         this.serverIO = new Server(server, { cors: { origin: '*', methods: ['GET', 'POST'] } });
@@ -31,6 +32,12 @@ export class RoomController {
                 // TODO: when room are functional socket.broadcast.to('testroom').emit('message', message);
                 this.serverIO.emit('message', message);
                 console.log('Message sent on behalf of', socket.id);
+            });
+
+            socket.on('JoinRoom', (roomId: string) => {
+                if (this.rooms.) {
+                    socket.join(roomId);
+                }
             });
         });
     }

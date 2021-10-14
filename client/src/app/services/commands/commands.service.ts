@@ -65,7 +65,7 @@ export class CommandsService {
         return word.normalize('NFD').replace(/\p{Diacritic}/gu, '');
     }
 
-    private showReserve(){
+    private showReserve() {
         // this.
     }
 

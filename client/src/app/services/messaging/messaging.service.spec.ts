@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-magic-numbers */
 import { TestBed } from '@angular/core/testing';
-import { MessageType } from '@common/message';
+// import { MessageType } from '@common/message';
 import { MessagingService } from './messaging.service';
 
 describe('MessagingService', () => {
@@ -14,7 +14,7 @@ describe('MessagingService', () => {
     it('should be created', () => {
         expect(service).toBeTruthy();
     });
-
+    /*
     it('#send should send all messages when debugging is on', () => {
         service.debuggingMode = true;
 
@@ -49,5 +49,5 @@ describe('MessagingService', () => {
         service.send('title4', 'body4', MessageType.System);
         service.send('title4', 'body4', MessageType.Game);
         expect(timerCallback).toHaveBeenCalledTimes(4);
-    });
+    });*/
 });
