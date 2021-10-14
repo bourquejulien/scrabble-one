@@ -3,10 +3,9 @@
 import { Config } from '@app/config';
 import { BoardMergeError } from '@app/errors/board-merge-error';
 import { BoardOverflowError } from '@app/errors/board-overflow-error';
-import { Bonus, BonusInfos } from '@common';
+import { Bonus, BonusInfos, Direction } from '@common';
 import { expect } from 'chai';
 import { Board } from './board';
-import { Direction } from './direction';
 
 const BONUS: BonusInfos[] = [
     { bonus: Bonus.L2, position: { x: 0, y: 0 } },

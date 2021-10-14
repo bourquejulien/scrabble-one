@@ -1,8 +1,7 @@
 import { BoardError } from '@app/errors/board-error';
 import { Board, ImmutableBoard } from '@app/classes/board/board';
-import { Square, Vec2, Bonus, getBonusDetails, Placement } from '@common';
+import { Square, Vec2, Bonus, getBonusDetails, Placement, Direction, reverseDirection } from '@common';
 import { ValidationResponse } from './validation-response';
-import { Direction, reverseDirection } from '@app/classes/board/direction';
 import { Dictionary } from '@app/classes/dictionary/dictionary';
 import { Config } from '@app/config';
 

@@ -1,10 +1,9 @@
 import { Board, ImmutableBoard } from '@app/classes/board/board';
-import { Direction } from '@app/classes/board/direction';
 import { BoardValidator } from '@app/classes/validation/board-validator';
 import { BoardValidatorFactory } from '@app/classes/validation/board-validator-factory';
 import { ValidationResponse } from '@app/classes/validation/validation-response';
 import { BoardError } from '@app/errors/board-error';
-import { Placement, Square, Vec2 } from '@common';
+import { Direction, Placement, Square, Vec2 } from '@common';
 
 export class BoardHandler {
     private readonly boardValidator: BoardValidator;

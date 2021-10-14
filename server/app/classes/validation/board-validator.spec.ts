@@ -1,11 +1,10 @@
 /* eslint-disable no-unused-expressions -- To be */
 /* eslint-disable @typescript-eslint/no-unused-expressions */
 import { Board } from '@app/classes/board/board';
-import { Direction } from '@app/classes/board/direction';
 import { Dictionary } from '@app/classes/dictionary/dictionary';
 import { Config } from '@app/config';
 import JsonBonuses from '@assets/bonus.json';
-import { Bonus, BonusInfos, letterDefinitions, Placement, Vec2 } from '@common';
+import { Bonus, BonusInfos, Direction, letterDefinitions, Placement, Vec2 } from '@common';
 import { expect } from 'chai';
 import { BoardValidator } from './board-validator';
 

@@ -1,7 +1,6 @@
 import { BoardMergeError } from '@app/errors/board-merge-error';
 import { BoardOverflowError } from '@app/errors/board-overflow-error';
-import { BoardData, Bonus, BonusInfos, Placement, Square, Vec2 } from '@common';
-import { Direction } from './direction';
+import { BoardData, Bonus, BonusInfos, Direction, Placement, Square, Vec2 } from '@common';
 
 export interface ImmutableBoard {
     readonly size: number;
