@@ -1,5 +1,5 @@
 import { Board, ImmutableBoard } from '@app/classes/board/board';
-import { Placement, Square, Vec2, Direction, ValidationResponse } from '@common';
+import { Placement, ValidationResponse } from '@common';
 import { BoardError } from '@app/errors/board-error';
 import { BoardValidatorFactory } from '@app/classes/validation/board-validator-factory';
 import { BoardValidator } from '@app/classes/validation/board-validator';
@@ -25,18 +25,18 @@ export class BoardHandler {
         return response;
     }
 
-    retrieveNewLetters(word: string, initialPosition: Vec2, direction: Direction): Placement[] {
+    retrieveNewLetters(placements: Placement[]): Placement[] {
         const newLetters: Placement[] = [];
 
         try {
-            let lastSquare: Square | null = this.board.getSquare(initialPosition);
-            for (const letter of word) {
-                if (lastSquare === null) return [];
+            for (const { letter, position } of placements) {
+                const square = this.board.getSquare(position);
 
-                if (lastSquare.letter === '') {
-                    newLetters.push({ letter, position: lastSquare.position });
+                if (square.letter === '') {
+                    newLetters.push({ letter, position });
+                } else if (square.letter !== letter) {
+                    return [];
                 }
-                lastSquare = this.board.getRelative(lastSquare.position, direction);
             }
         } catch (error) {
             if (error instanceof BoardError) return [];

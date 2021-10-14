@@ -103,7 +103,7 @@ export class BoardController {
          *           $ref: '#/definitions/ValidationResponse'
          *
          */
-        this.router.post('/validate/:id:isFullWord', async (req: Request, res: Response) => {
+        this.router.post('/validate/:id', async (req: Request, res: Response) => {
             const boardHandler = this.boardHandlingService.getBoardHandler(req.params.id);
             const placement: Placement[] = JSON.parse(req.body);
 
@@ -112,7 +112,7 @@ export class BoardController {
                 return;
             }
 
-            const response = boardHandler.lookupLetters(placement);
+            const response = boardHandler.lookupLetters(boardHandler.retrieveNewLetters(placement));
             res.status(Constants.HTTP_STATUS.OK);
             res.json(response);
         });
@@ -156,7 +156,7 @@ export class BoardController {
                 return;
             }
 
-            const response = boardHandler.placeLetters(placement);
+            const response = boardHandler.placeLetters(boardHandler.retrieveNewLetters(placement));
             res.status(Constants.HTTP_STATUS.OK);
             res.json(response);
         });
