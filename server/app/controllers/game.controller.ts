@@ -25,6 +25,19 @@ export class GameController {
          * @swagger
          *
          * definitions:
+         *   Answer:
+         *     type: object
+         *     properties:
+         *       isSuccess:
+         *         type: boolean
+         *       body:
+         *         type: string
+         */
+
+        /**
+         * @swagger
+         *
+         * definitions:
          *   PlayerInfo:
          *     type: object
          *     properties:

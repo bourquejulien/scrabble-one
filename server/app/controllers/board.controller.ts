@@ -26,6 +26,21 @@ export class BoardController {
          * @swagger
          *
          * definitions:
+         *   ValidationResponse:
+         *     type: object
+         *     properties:
+         *       isSuccess:
+         *         type: boolean
+         *       points:
+         *         type: integer
+         *       description:
+         *         type: string
+         */
+
+        /**
+         * @swagger
+         *
+         * definitions:
          *   Vec2:
          *     type: object
          *     properties:
@@ -85,10 +100,10 @@ export class BoardController {
          *     responses:
          *       200:
          *         schema:
-         *           $ref: '#/definitions/Answer'
+         *           $ref: '#/definitions/ValidationResponse'
          *
          */
-        this.router.post('/validate/:id', async (req: Request, res: Response) => {
+        this.router.post('/validate/:id:isFullWord', async (req: Request, res: Response) => {
             const boardHandler = this.boardHandlingService.getBoardHandler(req.params.id);
             const placement: Placement[] = JSON.parse(req.body);
 
@@ -129,7 +144,7 @@ export class BoardController {
          *     responses:
          *       200:
          *         schema:
-         *           $ref: '#/definitions/Answer'
+         *           $ref: '#/definitions/ValidationResponse'
          *
          */
         this.router.post('/place/:id', async (req: Request, res: Response) => {
@@ -166,7 +181,7 @@ export class BoardController {
          *     responses:
          *       200:
          *         schema:
-         *           $ref: '#/definitions/Answer'
+         *           $ref: '#/definitions/BoardData' //TODO
          *
          */
         this.router.get('/retrieve/:id', async (req: Request, res: Response) => {

@@ -1,4 +1,3 @@
-import { Injectable } from '@angular/core';
 import { PlayerData } from '@app/classes/player-data';
 import { PlayerType } from '@app/classes/player-type';
 import { Timer } from '@app/classes/time/timer';
@@ -7,13 +6,12 @@ import { Constants } from '@app/constants/global.constants';
 import { ReserveService } from '@app/services/reserve/reserve.service';
 import { TimerService } from '@app/services/timer/timer.service';
 import { Subject } from 'rxjs';
+import { Service } from 'typedi';
 import { VirtualPlayerActionService } from './virtual-player-action.service';
 
 const MIN_PLAYTIME_SECONDS = 3;
 
-@Injectable({
-    providedIn: 'root',
-})
+@Service()
 export class VirtualPlayerService {
     turnComplete: Subject<PlayerType>;
     playerData: PlayerData;

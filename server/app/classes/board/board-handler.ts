@@ -25,7 +25,7 @@ export class BoardHandler {
         return response;
     }
 
-    retrieveNewLetters(word: string, initialPosition: Vec2, direction: Direction): { letter: string; position: Vec2 }[] {
+    retrieveNewLetters(word: string, initialPosition: Vec2, direction: Direction): Placement[] {
         const newLetters: Placement[] = [];
 
         try {

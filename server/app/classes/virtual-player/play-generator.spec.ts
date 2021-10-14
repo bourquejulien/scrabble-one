@@ -63,7 +63,7 @@ class BoardHandlerMock {
         return { isSuccess: this.isValid, points: 0, description: '' };
     }
 
-    retrieveNewLetters(word: string, initialPosition: Vec2, direction: Direction): { letter: string; position: Vec2 }[] {
+    retrieveNewLetters(word: string, initialPosition: Vec2, direction: Direction): Placement[] {
         this.foundWords.push({ word, initialPosition, direction });
         return [];
     }

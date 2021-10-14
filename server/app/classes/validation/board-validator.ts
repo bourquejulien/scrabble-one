@@ -11,7 +11,7 @@ export class BoardValidator {
         return square != null && square.letter !== '';
     }
 
-    private static sortLetters(letters: Placement[], direction: Direction): { letter: string; position: Vec2 }[] {
+    private static sortLetters(letters: Placement[], direction: Direction): Placement[] {
         if (direction === Direction.Right) {
             return letters.sort((l1, l2) => l1.position.x - l2.position.x);
         } else {

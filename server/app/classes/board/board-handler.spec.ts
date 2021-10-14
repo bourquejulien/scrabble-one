@@ -11,7 +11,7 @@ import { BoardValidatorFactory } from '@app/classes/validation/board-validator-f
 
 const BOARD_SIZE = 15;
 const WORD = 'pomme';
-const COMBINED_WORD: { letter: string; position: Vec2 }[] = [
+const COMBINED_WORD: Placement[] = [
     { letter: 'p', position: { x: 7, y: 7 } },
     { letter: 'o', position: { x: 8, y: 7 } },
     { letter: 'm', position: { x: 9, y: 7 } },

@@ -1,6 +1,6 @@
 /* eslint-disable max-classes-per-file */
 import { PlayerData } from '@app/classes/player-data';
-import { Vec2, ValidationResponse} from '@common';
+import { Vec2, ValidationResponse, Placement } from '@common';
 import { Play } from '@app/classes/virtual-player/play';
 import { BoardService } from '@app/services/board/board.service';
 import { PlaceAction } from './place-action';
@@ -14,9 +14,9 @@ const LETTERS_PAIR = [
 ];
 
 class BoardServiceStub {
-    placedLetters: { letter: string; position: Vec2 }[][] = [];
+    placedLetters: Placement[][] = [];
 
-    placeLetters(letters: { letter: string; position: Vec2 }[]): ValidationResponse {
+    placeLetters(letters: Placement[]): ValidationResponse {
         this.placedLetters.push(letters);
         return { isSuccess: true, points: 0, description: '' };
     }
