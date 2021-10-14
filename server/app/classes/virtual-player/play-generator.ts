@@ -1,7 +1,6 @@
-import { Direction, reverseDirection } from '@app/classes/board/direction';
+import { Direction, reverseDirection, Vec2, Square } from '@common';
 import { ImmutableBoard } from '@app/classes/board/board';
 import { Dictionary } from '@app/classes/dictionary/dictionary';
-import { Vec2, Square } from '@common';
 import { Play } from './play';
 import { BoardHandler } from '@app/classes/board/board-handler';
 

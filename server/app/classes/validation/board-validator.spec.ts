@@ -4,7 +4,7 @@ import { expect } from 'chai';
 import { Board } from '@app/classes/board/board';
 import { BoardValidator } from './board-validator';
 import { Config } from '@app/config';
-import { Direction } from '@app/classes/board/direction';
+import { Direction } from '../../../../common/direction';
 import { Vec2, letterDefinitions, Bonus, Placement } from '@common';
 import { Dictionary } from '@app/classes/dictionary/dictionary';
 import JsonBonuses from '@assets/bonus.json';
