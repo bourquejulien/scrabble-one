@@ -1,42 +1,68 @@
-/* eslint-disable no-console */
-import { Message, MessageType } from '@common/message';
-import { PlayerType } from '@common/player-type';
+/* eslint-disable no-console */ // easier logging for the server
+import { Message } from '@common/message';
 import * as http from 'http';
-import { Server } from 'socket.io';
+import { Server, Socket } from 'socket.io';
+import { v4 as uuidv4 } from 'uuid';
 
 export class RoomController {
-    private serverIO: Server;
-    private rooms: string[] = [];
+    private socketServer: Server;
+    private availableRooms: string[] = [];
 
     constructor(server: http.Server) {
-        this.serverIO = new Server(server, { cors: { origin: '*', methods: ['GET', 'POST'] } });
+        this.socketServer = new Server(server, { cors: { origin: '*', methods: ['GET', 'POST'] } });
+        // Dummy room numbers
+        this.availableRooms.push(uuidv4());
+        this.availableRooms.push(uuidv4());
+        this.availableRooms.push(uuidv4());
+        this.availableRooms.push(uuidv4());
+    }
+
+    async isRoomFull(socket: Socket, roomId: string): Promise<boolean> {
+        const maxPlayers = 2;
+        const roomSockets = await socket.in(roomId).fetchSockets();
+        if (roomSockets.length >= maxPlayers) {
+            return true;
+        }
+        return false;
     }
 
     socketHandler(): void {
-        this.serverIO.on('connection', (socket) => {
+        this.socketServer.on('connection', (socket) => {
             console.log(`Connexion par l'utilisateur avec id : ${socket.id}`);
-            const helloMsg: Message = {
-                title: 'System',
-                body: 'Hello, World',
-                messageType: MessageType.Message,
-                userId: PlayerType.Virtual,
-            };
-            socket.emit('message', helloMsg);
 
             socket.on('disconnect', (reason) => {
-                console.log(`Deconnexion par l'utilisateur avec id : ${socket.id}`);
-                console.log(`Raison de deconnexion : ${reason}`);
+                console.log(`Deconnexion par l'utilisateur avec id : ${socket.id} raison: ${reason}`);
             });
 
             socket.on('message', (message: Message) => {
                 // TODO: when room are functional socket.broadcast.to('testroom').emit('message', message);
-                this.serverIO.emit('message', message);
+                this.socketServer.emit('message', message);
                 console.log('Message sent on behalf of', socket.id);
             });
 
-            socket.on('JoinRoom', (roomId: string) => {
-                if (this.rooms.) {
-                    socket.join(roomId);
+            socket.on('getRooms', () => {
+                socket.emit('availableRooms', this.availableRooms);
+            });
+
+            socket.on('joinRoom', async (roomId: string) => {
+                const roomIndex = this.availableRooms.indexOf(roomId);
+
+                if (roomIndex !== -1) {
+                    console.log('Joined room: ', roomId);
+                    socket.join(roomId); // TODO: on devrait pas mettre ca après isroomfull?
+                    // this.availableRooms.re(roomId,)
+                    if (await this.isRoomFull(socket, roomId)) {
+                        console.log('Room is already full');
+                        this.availableRooms.splice(roomIndex, 1);
+                    }
+                } else if (roomId === '') {
+                    const newRoomID = uuidv4();
+                    this.availableRooms.push(newRoomID);
+                    socket.join(newRoomID);
+                    console.log(`New room created with ID ${newRoomID} for socketID ${socket.id}`);
+                    this.socketServer.emit('availableRooms', this.availableRooms);
+                } else {
+                    console.log('Invalid room ID provided: ', roomId);
                 }
             });
         });

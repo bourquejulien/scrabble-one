@@ -4,7 +4,7 @@ import { PlayerType } from '@common/player-type';
 import { Constants } from '@app/constants/global.constants';
 import { CommandsService } from '@app/services/commands/commands.service';
 import { GameService } from '@app/services/game/game.service';
-import { io, Socket } from 'socket.io-client';
+import { MessagingService } from '@app/services/messaging/messaging.service';
 @Component({
     selector: 'app-communication-box',
     templateUrl: './communication-box.component.html',
@@ -14,24 +14,25 @@ export class CommunicationBoxComponent implements AfterViewInit {
     @ViewChild('messageContainer') private messageContainer: ElementRef<HTMLDivElement>;
     messages: Message[] = [];
     inputValue: string;
-    socketClient: Socket = io('http://localhost:3000/');
 
-    constructor(private commandsService: CommandsService, private gameService: GameService) {}
+    constructor(private messagingService: MessagingService, private commandsService: CommandsService, private gameService: GameService) {}
 
     ngAfterViewInit(): void {
-        this.socketClient.on('message', (message: Message) => {
+        this.messagingService.socketClient.on('message', (message: Message) => {
             this.messages.push(message);
             this.scroll();
         });
 
-        this.socketClient.on('connect_error', (err) => {
+        this.messagingService.socketClient.on('connect_error', (err) => {
+            // TODO: this is for debug
             const socketErrorMsg: Message = {
-                title: 'Socket Error',
+                title: 'Socket Error: Closing Connection',
                 body: `${err.message}`,
                 messageType: MessageType.Log,
                 userId: PlayerType.Local,
             };
             this.messages.push(socketErrorMsg);
+            this.messagingService.socketClient.close();
         });
     }
 

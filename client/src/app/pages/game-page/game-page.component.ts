@@ -7,7 +7,6 @@ import { EndGameComponent } from '@app/components/end-game/end-game.component';
 import { GameService } from '@app/services/game/game.service';
 import { TimerService } from '@app/services/timer/timer.service';
 import { Subscription } from 'rxjs';
-import { io } from 'socket.io-client';
 
 export enum Icon {
     Logout = 'exit_to_app',
@@ -29,8 +28,6 @@ interface ButtonConfig {
 })
 export class GamePageComponent implements OnDestroy {
     @ViewChild('drawer', { static: true }) drawer: MatDrawer;
-
-    socket = io(`http://${window.location.hostname}:5020`);
 
     gameService: GameService;
     timerService: TimerService;
@@ -108,28 +105,6 @@ export class GamePageComponent implements OnDestroy {
         dialogRef.afterClosed().subscribe((result) => {
             if (result === true) {
                 this.gameService.reset();
-            }
-        });
-    }
-
-    roomCommunication() {
-        this.socket.on('connect', () => {
-            if (!document.getElementById('socketField')) {
-                return;
-            }
-            const doc = document.getElementById('messageField');
-            if (doc) {
-                doc.textContent = this.socket.id;
-            }
-        });
-
-        this.socket.on('hello', (message) => {
-            if (!document.getElementById('messageField')) {
-                return;
-            }
-            const doc = document.getElementById('messageField');
-            if (doc) {
-                doc.textContent = message;
             }
         });
     }
