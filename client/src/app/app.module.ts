@@ -29,6 +29,7 @@ import { WaitingRoomPageComponent } from './pages/waiting-room-page/waiting-room
     declarations: [
         AppComponent,
         GamePageComponent,
+        GameModePageComponent,
         MainPageComponent,
         PlayAreaComponent,
         GameModePageComponent,

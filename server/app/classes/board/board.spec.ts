@@ -2,9 +2,8 @@
 /* eslint-disable @typescript-eslint/no-unused-expressions */
 import { expect } from 'chai';
 import { Config } from '@app/config';
-import { Vec2 } from '@common/vec2';
+import { Vec2, Bonus } from '@common';
 import { Board } from './board';
-import { Bonus } from './bonus';
 import { BoardOverflowError } from '@app/errors/board-overflow-error';
 import { Direction } from './direction';
 import { BoardMergeError } from '@app/errors/board-merge-error';
@@ -82,6 +81,18 @@ describe('Board', () => {
                 expect(clonedBoard.getSquare({ x, y })).equal(board.getSquare({ x, y }));
             }
         }
-        expect(board.clone()).not.equal(board);
+        expect(clonedBoard).not.equal(board);
+    });
+
+    it('should return cloned board data', () => {
+        const boardData = board.boardData;
+        for (let x = 0; x < SIZE; x++) {
+            for (let y = 0; y < SIZE; y++) {
+                expect(boardData.board[x][y]).equal(board.getSquare({ x, y }));
+            }
+        }
+
+        // eslint-disable-next-line dot-notation -- Need to validate class data
+        expect(boardData).not.equal(board['board']);
     });
 });

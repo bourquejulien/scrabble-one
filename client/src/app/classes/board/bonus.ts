@@ -1,4 +1,4 @@
-import { Vec2 } from '@common/vec2';
+import { Vec2 } from '@common';
 
 export enum Bonus {
     None = 'None',

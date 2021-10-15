@@ -1,10 +1,9 @@
 import { Direction, reverseDirection } from '@app/classes/board/direction';
 import { ImmutableBoard } from '@app/classes/board/board';
 import { Dictionary } from '@app/classes/dictionary/dictionary';
-import { Validation } from '@app/classes/validation/validation';
-import { Vec2 } from '@common/vec2';
+import { Vec2, Square } from '@common';
 import { Play } from './play';
-import { Square } from '@app/classes/board/square';
+import { BoardHandler } from '@app/classes/board/board-handler';
 
 interface PositionedWord {
     word: string;
@@ -15,17 +14,17 @@ export class PlayGenerator {
     private readonly plays: Play[];
     private readonly board: ImmutableBoard;
     private readonly dictionary: Dictionary;
-    private readonly validation: Validation;
+    private readonly boardHandler: BoardHandler;
     private readonly availableLetters: string[];
     private readonly positionsToTry: Vec2[];
 
-    constructor(dictionary: Dictionary, validation: Validation, availableLetters: string[]) {
+    constructor(dictionary: Dictionary, boardHandler: BoardHandler, availableLetters: string[]) {
         this.plays = [];
 
-        this.board = validation.gameBoard;
+        this.board = boardHandler.immutableBoard;
         this.positionsToTry = this.board.positions.length === 0 ? [this.board.center] : this.board.positions;
         this.dictionary = dictionary;
-        this.validation = validation;
+        this.boardHandler = boardHandler;
         this.availableLetters = availableLetters;
     }
 
@@ -53,14 +52,14 @@ export class PlayGenerator {
         const foundWords = this.findWords(existingWord, direction === Direction.Right ? startPosition.x : startPosition.y);
 
         for (const positionedWord of foundWords) {
-            const letters = this.validation.retrieveNewLetters(
+            const letters = this.boardHandler.retrieveNewLetters(
                 positionedWord.word,
                 direction === Direction.Right
                     ? { x: positionedWord.startPosition, y: startPosition.y }
                     : { x: startPosition.x, y: positionedWord.startPosition },
                 direction,
             );
-            const response = this.validation.lookupLetters(letters);
+            const response = this.boardHandler.lookupLetters(letters);
             if (response.isSuccess) {
                 this.plays.push({ score: response.points, word: positionedWord.word, letters });
             }

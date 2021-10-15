@@ -27,10 +27,15 @@
         "lib": ["es2018", "dom"],
         "paths": {
             "@app/*": ["./src/app/*"],
-            "@common/*": ["../common/*"],
+            "@common": ["../common"],
             "@assets/*": ["./src/assets/*"]
         }
     },
+    "references": [
+        {
+            "path": "../common"
+        }
+    ],
     "angularCompilerOptions": {
         "enableI18nLegacyMessageIdFormat": false,
         "strictInjectionParameters": true,

@@ -48,9 +48,14 @@ export class GameService {
         virtualPlayerService.turnComplete.subscribe((e) => this.handleTurnCompletion(e));
     }
 
+    private static randomizeTurn(): PlayerType {
+        const HALF = 0.5;
+        return Math.random() < HALF ? PlayerType.Local : PlayerType.Virtual;
+    }
+
     startGame(gameConfig: GameConfig) {
         this.gameConfig = gameConfig;
-        this.currentTurn = this.randomizeTurn();
+        this.currentTurn = GameService.randomizeTurn();
         this.gameRunning = true;
 
         this.virtualPlayerService.fillRack();
@@ -183,10 +188,5 @@ export class GameService {
         this.currentTurn = PlayerType.Virtual;
         this.onTurn.next(this.currentTurn);
         this.virtualPlayerService.startTurn(this.gameConfig.playTime);
-    }
-
-    private randomizeTurn(): PlayerType {
-        const HALF = 0.5;
-        return Math.random() < HALF ? PlayerType.Local : PlayerType.Virtual;
     }
 }
