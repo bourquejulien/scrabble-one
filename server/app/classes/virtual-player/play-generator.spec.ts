@@ -63,9 +63,8 @@ class BoardHandlerMock {
         return { isSuccess: this.isValid, points: 0, description: '' };
     }
 
-    retrieveNewLetters(word: string, initialPosition: Vec2, direction: Direction): Placement[] {
-        this.foundWords.push({ word, initialPosition, direction });
-        return [];
+    retrieveNewLetters(letters: Placement[]): Placement[] {
+        return letters;
     }
 
     get immutableBoard(): ImmutableBoard {
@@ -93,7 +92,7 @@ describe('PlayGenerator', () => {
         const playGenerator = new PlayGenerator(stubDictionary, boardHandlerMock as unknown as BoardHandler, WORD.split(''));
         playGenerator.generateNext();
 
-        expect(boardHandlerMock.foundWords[0].word).to.equal(WORD);
+        expect(playGenerator.orderedPlays[0].word).to.equal(WORD);
     });
 
     it('should retrieve existing word', () => {
@@ -131,7 +130,7 @@ describe('PlayGenerator', () => {
         const playGenerator = new PlayGenerator(stubDictionary, boardHandlerMock as unknown as BoardHandler, RACK);
         playGenerator.generateNext();
 
-        expect(boardHandlerMock.foundWords[0].word).to.equal(GENERATED_WORD);
+        expect(playGenerator.orderedPlays[0].word).to.equal(GENERATED_WORD);
         expect(playGenerator.orderedPlays.length).to.equal(2);
     });
 

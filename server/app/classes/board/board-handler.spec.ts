@@ -4,13 +4,12 @@
 import { expect } from 'chai';
 import { Board } from '@app/classes/board/board';
 import { BoardValidator } from '@app/classes/validation/board-validator';
-import { Placement, Vec2, Direction, ValidationResponse } from '@common';
+import { Placement, Vec2, ValidationResponse } from '@common';
 import { BoardHandler } from './board-handler';
 import { createStubInstance } from 'sinon';
 import { BoardValidatorFactory } from '@app/classes/validation/board-validator-factory';
 
 const BOARD_SIZE = 15;
-const WORD = 'pomme';
 const COMBINED_WORD: Placement[] = [
     { letter: 'p', position: { x: 7, y: 7 } },
     { letter: 'o', position: { x: 8, y: 7 } },
@@ -75,36 +74,31 @@ describe('BoardHandler', () => {
 
     it('should retrieve only new letters', () => {
         boardValidatorStub.isSuccess = true;
-        const NEW_WORD = WORD + 's';
+        const placements = COMBINED_WORD.slice();
+        const newPlacement = { letter: 's', position: { x: 12, y: 7 } };
 
         handler.placeLetters(COMBINED_WORD);
-        let newLetters = handler.retrieveNewLetters(NEW_WORD, centerPosition, Direction.Right);
-        expect(newLetters).to.eql([
-            {
-                letter: 's',
-                position: { x: centerPosition.x + NEW_WORD.length - 1, y: centerPosition.y },
-            },
-        ]);
-
-        newLetters = handler.retrieveNewLetters(WORD, centerPosition, Direction.Right);
+        let newLetters = handler.retrieveNewLetters(placements);
         expect(newLetters).to.eql([]);
+
+        placements.push(newPlacement);
+        newLetters = handler.retrieveNewLetters(placements);
+
+        expect(newLetters).to.eql([newPlacement]);
     });
 
     it('should not retrieve new letters on out of board', () => {
         boardValidatorStub.isSuccess = true;
         handler.placeLetters(COMBINED_WORD);
-
-        let newLetters = handler.retrieveNewLetters(WORD + WORD, centerPosition, Direction.Right);
-        expect(newLetters).to.eql([]);
-
-        newLetters = handler.retrieveNewLetters(
-            WORD,
-            {
+        const placement = {
+            letter: 's',
+            position: {
                 x: centerPosition.x * 3,
                 y: centerPosition.x * 3,
             },
-            Direction.Right,
-        );
+        };
+
+        const newLetters = handler.retrieveNewLetters([placement]);
         expect(newLetters).to.eql([]);
     });
 });

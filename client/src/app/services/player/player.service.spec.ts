@@ -90,7 +90,7 @@ describe('PlayerService', () => {
         lettersToPlace = 'ios';
         lettersToExchange = 'kee';
         const mockRack = ['k', 'e', 's', 'e', 'i', 'o', 'v'];
-        boardServiceSpy = jasmine.createSpyObj('BoardService', ['retrieveNewLetters', 'lookupLetters', 'placeLetters']);
+        boardServiceSpy = jasmine.createSpyObj('BoardService', ['retrievePlacements', 'lookupLetters', 'placeLetters', 'refreshBoard']);
 
         TestBed.configureTestingModule({
             providers: [
@@ -130,18 +130,18 @@ describe('PlayerService', () => {
         expect(spy).toHaveBeenCalledWith(SystemMessages.ImpossibleAction, SystemMessages.LetterPossessionError + 'z', MessageType.Error);
     });
 
-    it('should send error message if validation fail', () => {
+    it('should send error message if validation fail', async () => {
         validationResponse = { isSuccess: false, points: 15, description: 'Error' };
         letterToPlace = [{ letter: 'k', position: { x: 11, y: 3 } }];
         boardServiceSpy['retrievePlacements'].and.returnValue(letterToPlace);
         boardServiceSpy['lookupLetters'].and.returnValue(Promise.resolve(validationResponse));
 
         const spy = spyOn(service['messagingService'], 'send');
-        service.placeLetters('k', { x: 11, y: 3 }, Direction.Up);
+        await service.placeLetters('k', { x: 11, y: 3 }, Direction.Up);
         expect(spy).toHaveBeenCalledWith('', validationResponse.description, MessageType.Log);
     });
 
-    it('should update rack if validation success and letters in rack', () => {
+    it('should update rack if validation success and letters in rack', async () => {
         validationResponse = { isSuccess: true, points: 15, description: 'Error' };
         letterToPlace = [{ letter: 'k', position: { x: 11, y: 3 } }];
         boardServiceSpy['retrievePlacements'].and.returnValue(letterToPlace);
@@ -150,7 +150,7 @@ describe('PlayerService', () => {
 
         // eslint-disable-next-line  @typescript-eslint/no-explicit-any  -- Needed for spyOn service
         const spy = spyOn<any>(service, 'updateRack');
-        service.placeLetters('k', { x: 11, y: 3 }, Direction.Up);
+        await service.placeLetters('k', { x: 11, y: 3 }, Direction.Up);
         expect(spy).toHaveBeenCalled();
     });
 

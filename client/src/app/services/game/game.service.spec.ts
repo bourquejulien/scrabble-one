@@ -1,5 +1,6 @@
 /* eslint-disable dot-notation -- Need to access private properties for testing*/
 /* eslint-disable max-classes-per-file -- Needs many stubbed classes in order to test*/
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { MessageType } from '@app/classes/message';
 import { PlayerType } from '@app/classes/player-type';
@@ -40,6 +41,7 @@ describe('GameService', () => {
         virtualPlayerServiceSpy.turnComplete = new Subject<PlayerType>();
 
         TestBed.configureTestingModule({
+            imports: [HttpClientTestingModule],
             providers: [
                 { provide: VirtualPlayerService, useValue: virtualPlayerServiceSpy },
                 { provide: PlayerService, useValue: playerService },

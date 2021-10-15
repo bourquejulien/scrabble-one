@@ -1,4 +1,4 @@
-import { Direction, reverseDirection, Vec2, Square } from '@common';
+import { Direction, reverseDirection, Vec2, Square, Placement } from '@common';
 import { ImmutableBoard } from '@app/classes/board/board';
 import { Dictionary } from '@app/classes/dictionary/dictionary';
 import { Play } from './play';
@@ -31,6 +31,28 @@ export class PlayGenerator {
         return Math.floor(Math.random() * excludedMax);
     }
 
+    private static generatePlacement(positionWord: PositionedWord, startPosition: Vec2, direction: Direction): Placement[] {
+        const placements: Placement[] = [];
+        let increment: Vec2;
+        let position: Vec2;
+
+        if (direction === Direction.Right) {
+            increment = { x: 1, y: 0 };
+            position = { x: startPosition.x + positionWord.startPosition, y: startPosition.y };
+        } else {
+            increment = { x: 0, y: 1 };
+            position = { x: startPosition.x + positionWord.startPosition, y: startPosition.y };
+        }
+
+        for (const letter of positionWord.word) {
+            placements.push({ letter, position });
+            position.x += increment.x;
+            position.y += increment.y;
+        }
+
+        return placements;
+    }
+
     generateNext(): boolean {
         const positionIndex = PlayGenerator.getRandomPosition(this.positionsToTry.length);
         const position = this.positionsToTry.splice(positionIndex, 1);
@@ -51,13 +73,7 @@ export class PlayGenerator {
         const foundWords = this.findWords(existingWord, direction === Direction.Right ? startPosition.x : startPosition.y);
 
         for (const positionedWord of foundWords) {
-            const letters = this.boardHandler.retrieveNewLetters(
-                positionedWord.word,
-                direction === Direction.Right
-                    ? { x: positionedWord.startPosition, y: startPosition.y }
-                    : { x: startPosition.x, y: positionedWord.startPosition },
-                direction,
-            );
+            const letters = this.boardHandler.retrieveNewLetters(PlayGenerator.generatePlacement(positionedWord, startPosition, direction));
             const response = this.boardHandler.lookupLetters(letters);
             if (response.isSuccess) {
                 this.plays.push({ score: response.points, word: positionedWord.word, letters });
