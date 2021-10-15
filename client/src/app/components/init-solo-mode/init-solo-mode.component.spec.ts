@@ -1,12 +1,12 @@
 /* eslint-disable no-unused-vars */
 /* eslint-disable max-classes-per-file -- Multiple stub implementation needed */
 import { CUSTOM_ELEMENTS_SCHEMA, Injectable, NO_ERRORS_SCHEMA } from '@angular/core';
-import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
+import { ComponentFixture, fakeAsync, TestBed } from '@angular/core/testing';
 import { FormsModule } from '@angular/forms';
-import { MatDialogRef } from '@angular/material/dialog';
-import { By } from '@angular/platform-browser';
+import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { Router } from '@angular/router';
+import { GameType } from '@app/classes/game-type';
 import { cleanStyles } from '@app/classes/helpers/cleanup.helper';
 import { PlayerType } from '@app/classes/player-type';
 import { AppMaterialModule } from '@app/modules/material.module';
@@ -53,6 +53,7 @@ describe('InitSoloModeComponent', () => {
                 { provide: Router, useValue: routerMock },
                 { provide: GameService, useClass: GameServiceStub },
                 { provide: MatDialogRef, useClass: MatDialogStub },
+                { provide: MAT_DIALOG_DATA, useValue: GameType.CreateOnline },
             ],
         }).compileComponents();
     });
@@ -126,47 +127,54 @@ describe('InitSoloModeComponent', () => {
     it('should call forceSecondsToZero ', fakeAsync(() => {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const spy = spyOn<any>(component, 'forceSecondsToZero');
-        const select = fixture.debugElement.query(By.css('#selectMinutes'));
-        select.triggerEventHandler('selectionChange', {});
-        tick();
+        component.manageTimeLimits();
+
         expect(spy).toHaveBeenCalled();
     }));
 
     it('should forceSecondsToZero ', fakeAsync(() => {
-        const select = fixture.debugElement.query(By.css('#selectMinutes'));
         component.minutes = FIVE_MINUTES;
         component.seconds = THIRTY_SECONDS;
-        select.triggerEventHandler('selectionChange', {});
-        tick();
+
+        component.manageTimeLimits();
+
         expect(component.seconds).toEqual(0);
     }));
 
     it('should not forceSecondsToZero ', fakeAsync(() => {
-        const select = fixture.debugElement.query(By.css('#selectMinutes'));
         component.minutes = FOUR_MINUTES;
         component.seconds = THIRTY_SECONDS;
-        select.triggerEventHandler('selectionChange', {});
-        tick();
+
+        component.manageTimeLimits();
+
         expect(component.seconds).not.toEqual(0);
     }));
 
     it('should force seconds to thirty', fakeAsync(() => {
-        const select = fixture.debugElement.query(By.css('#selectMinutes'));
         component.minutes = 0;
         component.seconds = 0;
-        select.triggerEventHandler('selectionChange', {});
-        tick();
+
+        component.manageTimeLimits();
+
         expect(component.seconds).toEqual(THIRTY_SECONDS);
     }));
 
     it('should not force seconds to thirty', fakeAsync(() => {
-        const select = fixture.debugElement.query(By.css('#selectMinutes'));
         component.minutes = FOUR_MINUTES;
         component.seconds = 0;
-        select.triggerEventHandler('selectionChange', {});
-        tick();
+
+        component.manageTimeLimits();
+
         expect(component.seconds).not.toEqual(THIRTY_SECONDS);
     }));
+
+    /* it('should create error if nameForm invalid', () => {
+        component.gameConfig.firstPlayerName = 'allo';
+        // const currentListLength = component.errorsList.length;
+        component['confirmInitialization'];
+
+        expect(component.errorsList[0]).toEqual('*Le nom doit débuter par une majuscule.\n');
+    });*/
 
     it('should Initialize when pressing enter ', fakeAsync(() => {
         const keyEvent = new KeyboardEvent('keypress', { key: 'Enter', cancelable: true });
