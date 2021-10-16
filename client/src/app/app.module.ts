@@ -18,6 +18,7 @@ import { RackComponent } from './components/rack/rack.component';
 import { SizeSelectorComponent } from './components/size-selector/size-selector/size-selector.component';
 import { GameModePageComponent } from './pages/game-mode-page/game-mode-page.component';
 import { WaitingRoomPageComponent } from './pages/waiting-room-page/waiting-room-page.component';
+import { RoomListComponent } from './pages/room-list/room-list.component';
 
 /**
  * Main module that is used in main.ts.
@@ -41,6 +42,7 @@ import { WaitingRoomPageComponent } from './pages/waiting-room-page/waiting-room
         ConfirmQuitDialogComponent,
         EndGameComponent,
         WaitingRoomPageComponent,
+        RoomListComponent,
     ],
     imports: [AppMaterialModule, AppRoutingModule, BrowserAnimationsModule, BrowserModule, FormsModule, HttpClientModule],
     providers: [],

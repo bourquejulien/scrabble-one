@@ -10,11 +10,6 @@ export class RoomController {
 
     constructor(server: http.Server) {
         this.socketServer = new Server(server, { cors: { origin: '*', methods: ['GET', 'POST'] } });
-        // Dummy room numbers
-        this.availableRooms.push(uuidv4());
-        this.availableRooms.push(uuidv4());
-        this.availableRooms.push(uuidv4());
-        this.availableRooms.push(uuidv4());
     }
 
     async isRoomFull(socket: Socket, roomId: string): Promise<boolean> {
@@ -39,6 +34,10 @@ export class RoomController {
                 this.socketServer.emit('message', message);
                 console.log('Message sent on behalf of', socket.id);
             });
+
+            socket.on('newOnlineGame', () => {
+                this.availableRooms.push(uuidv4());
+            })
 
             socket.on('getRooms', () => {
                 socket.emit('availableRooms', this.availableRooms);
