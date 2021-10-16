@@ -13,10 +13,10 @@ import { TimePipe } from './classes/time/time.pipe';
 import { CommunicationBoxComponent } from './components/communication-box/communication-box.component';
 import { ConfirmQuitDialogComponent } from './components/confirm-quit-dialog/confirm-quit-dialog.component';
 import { EndGameComponent } from './components/end-game/end-game.component';
-import { InitSoloModeComponent } from './components/init-solo-mode/init-solo-mode.component';
 import { RackComponent } from './components/rack/rack.component';
 import { SizeSelectorComponent } from './components/size-selector/size-selector/size-selector.component';
 import { GameModePageComponent } from './pages/game-mode-page/game-mode-page.component';
+import { InitGameComponent } from './components/init-game/init-game.component';
 
 /**
  * Main module that is used in main.ts.
@@ -34,11 +34,11 @@ import { GameModePageComponent } from './pages/game-mode-page/game-mode-page.com
         GameModePageComponent,
         CommunicationBoxComponent,
         RackComponent,
-        InitSoloModeComponent,
         SizeSelectorComponent,
         TimePipe,
         ConfirmQuitDialogComponent,
         EndGameComponent,
+        InitGameComponent,
     ],
     imports: [AppMaterialModule, AppRoutingModule, BrowserAnimationsModule, BrowserModule, FormsModule, HttpClientModule],
     providers: [],
