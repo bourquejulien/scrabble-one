@@ -1,5 +1,5 @@
 /* eslint-disable no-console */ // easier logging for the server
-import { Message } from '@common/message';
+import { Message } from '@common';
 import * as http from 'http';
 import { Server, Socket } from 'socket.io';
 import { v4 as uuidv4 } from 'uuid';

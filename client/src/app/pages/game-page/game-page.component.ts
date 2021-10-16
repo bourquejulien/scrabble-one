@@ -1,11 +1,11 @@
 import { Component, OnDestroy, ViewChild } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { MatDrawer } from '@angular/material/sidenav';
-import { PlayerType } from '@common/player-type';
 import { ConfirmQuitDialogComponent } from '@app/components/confirm-quit-dialog/confirm-quit-dialog.component';
 import { EndGameComponent } from '@app/components/end-game/end-game.component';
 import { GameService } from '@app/services/game/game.service';
 import { TimerService } from '@app/services/timer/timer.service';
+import { PlayerType } from '@common';
 import { Subscription } from 'rxjs';
 
 export enum Icon {

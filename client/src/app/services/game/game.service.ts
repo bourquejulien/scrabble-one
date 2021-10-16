@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
 import { GameConfig } from '@app/classes/game-config';
-import { letterDefinitions } from '@common/letter';
-import { MessageType } from '@common/message';
-import { PlayerType } from '@common/player-type';
+import { letterDefinitions } from '@common';
+import { MessageType } from '@common';
+import { PlayerType } from '@common';
 import { PlayerStats } from '@app/classes/player/player-stats';
 import { TimeSpan } from '@app/classes/time/timespan';
 import { Constants } from '@app/constants/global.constants';

@@ -1,8 +1,8 @@
 import { AfterViewInit, Component, ElementRef, Input, OnChanges, SimpleChanges, ViewChild } from '@angular/core';
-import { PlayerType } from '@common/player-type';
 import { Constants } from '@app/constants/global.constants';
 import { GridService } from '@app/services/grid/grid.service';
 import { MouseHandlingService } from '@app/services/mouse-handling/mouse-handling.service';
+import { PlayerType } from '@common';
 import FontFaceObserver from 'fontfaceobserver';
 
 @Component({

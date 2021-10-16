@@ -1,8 +1,8 @@
-import { Message } from '@common/message';
-import { SessionHandlingService } from '@app/services/session-handling.service';
-import { SessionInfo } from '@app/classes/session-info';
 import { Answer } from '@app/classes/answer';
+import { SessionInfo } from '@app/classes/session-info';
+import { SessionHandlingService } from '@app/services/session-handling.service';
 import { BoardHandlingService } from '@app/services/validation/board-handling.service';
+import { Message } from '@common';
 import { Service } from 'typedi';
 
 @Service()

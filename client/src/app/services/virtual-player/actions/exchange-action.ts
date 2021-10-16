@@ -1,5 +1,5 @@
 import { PlayerData } from '@app/classes/player-data';
-import { MessageType } from '@common/message';
+import { MessageType } from '@common';
 import { MessagingService } from '@app/services/messaging/messaging.service';
 import { ReserveService } from '@app/services/reserve/reserve.service';
 import { Action } from './action';
