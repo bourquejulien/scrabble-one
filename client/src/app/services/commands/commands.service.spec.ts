@@ -4,14 +4,12 @@
 /* eslint-disable @typescript-eslint/naming-convention  -- Need SCREAMING_SNAKE_CASE for static property in mock class */
 import { TestBed } from '@angular/core/testing';
 import { Direction } from '@app/classes/board/direction';
-import { Message, MessageType } from '@common/message';
-import { PlayerType } from '@common/player-type';
-import { Vec2 } from '@common/vec2';
 import { CommandsService } from '@app/services/commands/commands.service';
-import { MessagingService } from '@app/services/messaging/messaging.service';
-import { Subject } from 'rxjs';
-import { PlayerService } from '@app/services/player/player.service';
 import { GameService } from '@app/services/game/game.service';
+import { MessagingService } from '@app/services/messaging/messaging.service';
+import { PlayerService } from '@app/services/player/player.service';
+import { Message, MessageType, PlayerType, Vec2 } from '@common';
+import { Subject } from 'rxjs';
 
 describe('CommandsService', () => {
     let messagingServiceSpy: jasmine.SpyObj<MessagingService>;

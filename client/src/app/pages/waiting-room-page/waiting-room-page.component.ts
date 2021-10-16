@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { MessagingService } from '@app/services/messaging/messaging.service';
+import { SocketClientService } from '@app/services/socket-client/socket-client.service';
 
 @Component({
     selector: 'app-waiting-room-page',
@@ -9,17 +9,17 @@ import { MessagingService } from '@app/services/messaging/messaging.service';
 })
 export class WaitingRoomPageComponent implements OnInit {
     availableRooms: string[] = [];
-    constructor(private readonly messagingService: MessagingService, private router: Router) {}
+    constructor(private readonly socket: SocketClientService, private router: Router) {}
 
     ngOnInit(): void {
-        this.messagingService.socketClient.on('availableRooms', (availableRooms: string[]) => {
+        this.socket.socketClient.on('availableRooms', (availableRooms: string[]) => {
             this.availableRooms = availableRooms;
         });
-        this.messagingService.socketClient.emit('getRooms');
+        this.socket.socketClient.emit('getRooms');
     }
 
     join(roomId?: string) {
-        this.messagingService.socketClient.emit('joinRoom', roomId);
+        this.socket.socketClient.emit('joinRoom', roomId);
         this.router.navigate(['game']);
     }
 }

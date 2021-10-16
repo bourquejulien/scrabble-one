@@ -1,8 +1,7 @@
 /* eslint-disable dot-notation -- Need to access private properties for testing*/
 /* eslint-disable max-classes-per-file -- Needs many stubbed classes in order to test*/
 import { TestBed } from '@angular/core/testing';
-import { MessageType } from '@common/message';
-import { PlayerType } from '@common/player-type';
+import { MessageType, PlayerType } from '@common';
 import { Constants } from '@app/constants/global.constants';
 import { PlayerService } from '@app/services/player/player.service';
 import { ReserveService } from '@app/services/reserve/reserve.service';

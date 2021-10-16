@@ -1,8 +1,5 @@
 import { Injectable } from '@angular/core';
 import { GameConfig } from '@app/classes/game-config';
-import { letterDefinitions } from '@common';
-import { MessageType } from '@common';
-import { PlayerType } from '@common';
 import { PlayerStats } from '@app/classes/player/player-stats';
 import { TimeSpan } from '@app/classes/time/timespan';
 import { Constants } from '@app/constants/global.constants';
@@ -10,6 +7,7 @@ import { MessagingService } from '@app/services/messaging/messaging.service';
 import { PlayerService } from '@app/services/player/player.service';
 import { ReserveService } from '@app/services/reserve/reserve.service';
 import { VirtualPlayerService } from '@app/services/virtual-player/virtual-player.service';
+import { letterDefinitions, MessageType, PlayerType } from '@common';
 import { BehaviorSubject, Subject } from 'rxjs';
 
 @Injectable({

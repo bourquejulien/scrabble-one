@@ -7,14 +7,13 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormsModule } from '@angular/forms';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { cleanStyles } from '@app/classes/helpers/cleanup.helper';
-import { Message, MessageType } from '@common/message';
-import { PlayerType } from '@common/player-type';
 import { TimeSpan } from '@app/classes/time/timespan';
 import { Constants } from '@app/constants/global.constants';
 import { AppMaterialModule } from '@app/modules/material.module';
 import { CommandsService } from '@app/services/commands/commands.service';
 import { GameService } from '@app/services/game/game.service';
 import { MessagingService } from '@app/services/messaging/messaging.service';
+import { Message, MessageType, PlayerType } from '@common';
 import { Subject } from 'rxjs';
 import { CommunicationBoxComponent } from './communication-box.component';
 
@@ -34,10 +33,9 @@ describe('CommunicationBoxComponent', () => {
     };
 
     beforeEach(async () => {
-        messagingServiceSpy = jasmine.createSpyObj('MessagingService', ['subject', 'onMessage']);
-        messagingServiceSpy['subject'] = new Subject<Message>();
         // messagingServiceSpy.onMessage.and.returnValue(messagingServiceSpy['subject'].asObservable());
-
+        messagingServiceSpy = jasmine.createSpyObj('MessagingService', ['subject', 'onMessage']);
+        
         await TestBed.configureTestingModule({
             declarations: [CommunicationBoxComponent],
             providers: [
@@ -48,6 +46,8 @@ describe('CommunicationBoxComponent', () => {
             imports: [AppMaterialModule, BrowserAnimationsModule, FormsModule],
             schemas: [CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA],
         }).compileComponents();
+        
+        messagingServiceSpy['subject'].next( new Subject<Message>());
     });
 
     beforeEach(() => {
