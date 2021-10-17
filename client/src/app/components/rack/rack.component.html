@@ -1,7 +1,7 @@
 <mat-card class="rack">
-    <mat-card class="tile" *ngFor="let letter of playerService.playerData.rack">
+    <mat-card class="tile" [ngClass]="{'swap-selected': swapSelection === i}" (click)='onClick(i)' (wheel)='onMousewheel($event)' *ngFor="let letter of rackService.rack; let i = index" >
         <div *ngIf="letter !== '*'">
-            {{ letter.toUpperCase() }}
+            {{ letter | uppercase }}
             <sub class="letter-point">
                 {{ retrievePoints(letter) }}
             </sub>
