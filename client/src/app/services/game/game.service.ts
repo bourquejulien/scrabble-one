@@ -106,7 +106,7 @@ export class GameService {
             if (this.playerService.rack.length === 0) {
                 this.playerService.playerData.score += this.playerRackPoint(this.virtualPlayerService.playerData.rack);
             } else {
-                this.virtualPlayerService.playerData.score += this.playerRackPoint(this.playerService.playerData.rack);
+                this.virtualPlayerService.playerData.score += this.playerRackPoint(this.playerService.rack);
             }
 
             this.gameRunning = false;

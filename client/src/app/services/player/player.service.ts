@@ -22,6 +22,7 @@ export class PlayerService {
     playerData: PlayerData = {
         score: 0,
         skippedTurns: 0,
+        // TODO Not in use. remove with virtual player
         rack: [],
     };
 
@@ -124,7 +125,7 @@ export class PlayerService {
     }
 
     emptyRack(): void {
-        this.playerData.rack = [];
+        this.rackService.empty();
     }
 
     setRack(mockRack: string[]): void {
@@ -148,7 +149,7 @@ export class PlayerService {
     }
 
     get rackLength(): number {
-        return this.rackService.size;
+        return this.rackService.length;
     }
 
     get rack(): string[] {
@@ -165,7 +166,7 @@ export class PlayerService {
 
         if (reserveLength <= lettersToPlaceLength) {
             for (let i = 0; i < reserveLength; i++) {
-                this.playerData.rack.push(this.reserveService.drawLetter());
+                this.rackService.rack.push(this.reserveService.drawLetter());
             }
             this.messagingService.send(SystemMessages.ImpossibleAction, SystemMessages.EmptyReserveError, MessageType.Error);
             return;
@@ -176,7 +177,7 @@ export class PlayerService {
 
     private updateRack(lettersToPlace: string): void {
         for (const letter of lettersToPlace) {
-            const letterIndex = this.rackService.rack.indexOf(letter);
+            const letterIndex = this.rackService.indexOf(letter);
             if (letterIndex === -1) return;
             this.rackService.rack.splice(letterIndex, 1);
         }
@@ -184,7 +185,7 @@ export class PlayerService {
 
     private areLettersInRack(lettersToPlace: string): boolean {
         for (const letter of lettersToPlace) {
-            if (this.rackService.rack.indexOf(letter) !== -1) {
+            if (this.rackService.indexOf(letter) !== -1) {
                 this.messagingService.send(SystemMessages.ImpossibleAction, SystemMessages.LetterPossessionError + letter, MessageType.Error);
                 return false;
             }
