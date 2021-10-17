@@ -10,11 +10,14 @@ import { RackService } from '@app/services/rack/rack.service';
 export class RackComponent {
     swapSelection: number = -1;
     lastIndex = 0;
+    isFocus = false;
 
     constructor(readonly rackService: RackService) {}
 
-    @HostListener('window:keyup', ['$event'])
-    keyEvent(event: KeyboardEvent) {
+    @HostListener('body:keydown', ['$event'])
+    onKeyDown(event: KeyboardEvent) {
+        this.handleKeyPress(event.key);
+
         if (this.swapSelection < 0) return;
 
         switch (event.key) {
@@ -23,9 +26,6 @@ export class RackComponent {
                 break;
             case 'ArrowLeft':
                 this.swapSelection = this.rackService.swapLeft(this.swapSelection);
-                break;
-            default:
-                this.handleKeyPress(event.key);
                 break;
         }
     }
@@ -44,9 +44,10 @@ export class RackComponent {
         this.swapSelection = position;
     }
 
-    removeFocus() {
+    reset() {
         this.swapSelection = -1;
         this.lastIndex = 0;
+        this.isFocus = false;
     }
 
     retrievePoints(letter: string): number {
@@ -58,13 +59,16 @@ export class RackComponent {
     }
 
     private handleKeyPress(key: string) {
+        // TODO isFocus a verifier avec un charge
+        if (!this.isFocus || key.length !== 1 || !key.match('([a-z]|\\*)')) return;
+
         const index = this.rackService.indexOf(key, this.lastIndex);
 
         if (index !== -1) {
             this.swapSelection = index;
             this.lastIndex = index + 1;
         } else {
-            this.swapSelection = -1;
+            this.reset();
         }
     }
 }
