@@ -10,8 +10,8 @@ import { GameType } from '@app/classes/game-type';
 import { cleanStyles } from '@app/classes/helpers/cleanup.helper';
 import { AppMaterialModule } from '@app/modules/material.module';
 import { GameService } from '@app/services/game/game.service';
-import { InitGameComponent } from './init-game.component';
 import { PlayerType } from '@common';
+import { InitGameComponent } from './init-game.component';
 
 @Injectable({
     providedIn: 'root',
@@ -19,6 +19,10 @@ import { PlayerType } from '@common';
 class GameServiceStub {
     currentTurn: PlayerType = PlayerType.Local;
     startGame(): void {
+        // Does Nothing
+    }
+
+    reset(): void {
         // Does Nothing
     }
 }
