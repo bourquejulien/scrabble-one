@@ -82,8 +82,8 @@ describe('ReserveService', () => {
     });
 
     it('should return letter quantity if valid letter', () => {
-        const firstletterQuantity = 3;
-        const secondLetterQuantity = 2;
+        const firstletterQuantity = '3';
+        const secondLetterQuantity = '2';
         expect(service.getLetterQuantity('a')).toBe(firstletterQuantity);
         expect(service.getLetterQuantity('b')).toBe(secondLetterQuantity);
     });
