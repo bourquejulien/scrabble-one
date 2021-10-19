@@ -1,13 +1,13 @@
 import { Injectable } from '@angular/core';
 import { Direction } from '@app/classes/board/direction';
 import { MessageType } from '@app/classes/message';
-import { Vec2 } from '@common';
+import { PlayerType } from '@app/classes/player-type';
 import { Constants } from '@app/constants/global.constants';
 import { SystemMessages } from '@app/constants/system-messages.constants';
+import { GameService } from '@app/services/game/game.service';
 import { MessagingService } from '@app/services/messaging/messaging.service';
 import { PlayerService } from '@app/services/player/player.service';
-import { GameService } from '@app/services/game/game.service';
-import { PlayerType } from '@app/classes/player-type';
+import { Vec2 } from '@common';
 
 @Injectable({
     providedIn: 'root',
@@ -38,7 +38,7 @@ export class CommandsService {
                 case '!passer':
                     successfulCommand = this.skipTurn();
                     break;
-                case '!echanger':
+                case '!échanger':
                     successfulCommand = this.exchangeLetters(this.removeAccents(args[1]));
                     break;
                 default:
