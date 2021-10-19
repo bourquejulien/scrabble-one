@@ -156,11 +156,11 @@ export class GameService {
 
     sendRackInCommunication() {
         this.messaging.send(
-            'Fin de partie - lettres restantes',
+            'Fin de partie - lettres restantes\n',
             this.gameConfig.firstPlayerName +
                 ' : ' +
                 this.playerService.playerData.rack +
-                ' ' +
+                '\n ' +
                 this.gameConfig.secondPlayerName +
                 ' : ' +
                 this.virtualPlayerService.playerData.rack,
