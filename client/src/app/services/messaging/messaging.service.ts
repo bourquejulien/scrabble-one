@@ -1,14 +1,13 @@
 import { Injectable } from '@angular/core';
+import { SocketClientService } from '@app/services/socket-client/socket-client.service';
 import { MessageType, PlayerType } from '@common';
-import { SocketClientService } from '../socket-client/socket-client.service';
 
 @Injectable({
     providedIn: 'root',
 })
 export class MessagingService {
     debuggingMode: boolean;
-    constructor(private readonly socket: SocketClientService){}
-    //socketClient: Socket = io(environment.serverUrl, { transports: ['websocket'], upgrade: false });
+    constructor(private readonly socket: SocketClientService) {}
 
     send(title: string, body: string, messageType: MessageType, user?: PlayerType): void {
         if (!user) user = PlayerType.Local;

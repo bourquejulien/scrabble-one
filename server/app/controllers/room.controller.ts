@@ -53,8 +53,7 @@ export class RoomController {
                         this.availableRooms.splice(roomIndex, 1);
                     }
                     socket.join(roomId);
-                }
-                else if (roomId === '') {
+                } else if (roomId === '') {
                     const newRoomID = uuidv4();
                     this.availableRooms.push(newRoomID);
                     socket.join(newRoomID);

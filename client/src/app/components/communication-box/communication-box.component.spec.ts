@@ -35,7 +35,7 @@ describe('CommunicationBoxComponent', () => {
     beforeEach(async () => {
         // messagingServiceSpy.onMessage.and.returnValue(messagingServiceSpy['subject'].asObservable());
         messagingServiceSpy = jasmine.createSpyObj('MessagingService', ['subject', 'onMessage']);
-        
+
         await TestBed.configureTestingModule({
             declarations: [CommunicationBoxComponent],
             providers: [
@@ -46,8 +46,8 @@ describe('CommunicationBoxComponent', () => {
             imports: [AppMaterialModule, BrowserAnimationsModule, FormsModule],
             schemas: [CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA],
         }).compileComponents();
-        
-        messagingServiceSpy['subject'].next( new Subject<Message>());
+
+        messagingServiceSpy['subject'].next(new Subject<Message>());
     });
 
     beforeEach(() => {

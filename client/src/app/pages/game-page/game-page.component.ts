@@ -106,7 +106,7 @@ export class GamePageComponent implements OnDestroy {
                 this.gameService.reset();
                 return;
             }
-            this.route.navigate(['/game']);
+            this.route.navigate(['game']);
         });
     }
 

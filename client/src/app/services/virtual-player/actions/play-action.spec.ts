@@ -44,7 +44,7 @@ describe('PlayAction', () => {
         messagingServiceSpy = jasmine.createSpyObj('MessagingService', ['subject', 'onMessage', 'send']);
         messagingServiceSpy['subject'] = new Subject<Message>();
         messagingServiceSpy.onMessage.and.returnValue(messagingServiceSpy['subject'].asObservable());
-        
+
         timerServiceStub = new TimerServiceStub();
         playGeneratorStub = new PlayGeneratorStub();
         playerData = { score: 0, skippedTurns: 0, rack: [] };
