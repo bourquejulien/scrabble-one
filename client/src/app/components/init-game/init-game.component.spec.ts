@@ -10,8 +10,8 @@ import { GameType } from '@app/classes/game-type';
 import { cleanStyles } from '@app/classes/helpers/cleanup.helper';
 import { AppMaterialModule } from '@app/modules/material.module';
 import { GameService } from '@app/services/game/game.service';
+import { InitGameComponent } from './init-game.component';
 import { PlayerType } from '@common';
-import { InitSoloModeComponent } from './init-solo-mode.component';
 
 @Injectable({
     providedIn: 'root',
@@ -36,9 +36,9 @@ const THIRTY_SECONDS = 30;
 const FIVE_MINUTES = 5;
 const FOUR_MINUTES = 4;
 
-describe('InitSoloModeComponent', () => {
-    let component: InitSoloModeComponent;
-    let fixture: ComponentFixture<InitSoloModeComponent>;
+describe('InitGameComponent', () => {
+    let component: InitGameComponent;
+    let fixture: ComponentFixture<InitGameComponent>;
     const NAMES = ['Jean', 'RenÉéÎîÉéÇçÏï', 'moulon', 'Jo', 'Josiannnnnnnnnnne', 'Jean123', 'A1', 'Alphonse', ''];
     const routerMock = {
         navigate: jasmine.createSpy('navigate'),
@@ -46,7 +46,7 @@ describe('InitSoloModeComponent', () => {
 
     beforeEach(async () => {
         await TestBed.configureTestingModule({
-            declarations: [InitSoloModeComponent],
+            declarations: [InitGameComponent],
             imports: [AppMaterialModule, BrowserAnimationsModule, FormsModule],
             schemas: [CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA],
             providers: [
@@ -59,7 +59,7 @@ describe('InitSoloModeComponent', () => {
     });
 
     beforeEach(() => {
-        fixture = TestBed.createComponent(InitSoloModeComponent);
+        fixture = TestBed.createComponent(InitGameComponent);
         component = fixture.componentInstance;
         fixture.detectChanges();
     });
@@ -169,12 +169,12 @@ describe('InitSoloModeComponent', () => {
     }));
 
     /* it('should create error if nameForm invalid', () => {
-        component.gameConfig.firstPlayerName = 'allo';
-        // const currentListLength = component.errorsList.length;
-        component['confirmInitialization'];
+    component.gameConfig.firstPlayerName = 'allo';
+    // const currentListLength = component.errorsList.length;
+    component['confirmInitialization'];
 
-        expect(component.errorsList[0]).toEqual('*Le nom doit débuter par une majuscule.\n');
-    });*/
+    expect(component.errorsList[0]).toEqual('*Le nom doit débuter par une majuscule.\n');
+});*/
 
     it('should Initialize when pressing enter ', fakeAsync(() => {
         const keyEvent = new KeyboardEvent('keypress', { key: 'Enter', cancelable: true });
