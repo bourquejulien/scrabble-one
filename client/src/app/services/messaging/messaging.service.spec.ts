@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-magic-numbers */
 import { TestBed } from '@angular/core/testing';
-//import { MessageType } from '@common';
+// import { MessageType } from '@common';
 import { MessagingService } from './messaging.service';
 
 describe('MessagingService', () => {
@@ -15,7 +15,7 @@ describe('MessagingService', () => {
         expect(service).toBeTruthy();
     });
 
-    /*it('#send should send all messages when debugging is on', () => {
+    /* it('#send should send all messages when debugging is on', () => {
         service.debuggingMode = true;
 
         let subscription = service.onMessage().subscribe((message) => {

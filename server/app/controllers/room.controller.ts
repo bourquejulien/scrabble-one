@@ -37,7 +37,7 @@ export class RoomController {
 
             socket.on('newOnlineGame', () => {
                 this.availableRooms.push(uuidv4());
-            })
+            });
 
             socket.on('getRooms', () => {
                 socket.emit('availableRooms', this.availableRooms);
@@ -48,14 +48,12 @@ export class RoomController {
 
                 if (roomIndex !== -1) {
                     console.log('Joined room: ', roomId);
-                    // this.availableRooms.re(roomId,)
                     if (await this.isRoomFull(socket, roomId)) {
                         console.log('Room is already full');
                         this.availableRooms.splice(roomIndex, 1);
                     }
                     socket.join(roomId);
-                }
-                else if (roomId === '') {
+                } else if (roomId === '') {
                     const newRoomID = uuidv4();
                     this.availableRooms.push(newRoomID);
                     socket.join(newRoomID);
