@@ -9,7 +9,7 @@ describe('RoomListComponent', () => {
     beforeEach(async () => {
         await TestBed.configureTestingModule({
             declarations: [RoomListComponent],
-            imports: [RouterTestingModule.withRoutes([])]
+            imports: [RouterTestingModule.withRoutes([])],
         }).compileComponents();
     });
 

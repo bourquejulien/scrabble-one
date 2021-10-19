@@ -9,7 +9,7 @@ describe('WaitingRoomPageComponent', () => {
     beforeEach(async () => {
         await TestBed.configureTestingModule({
             declarations: [WaitingRoomPageComponent],
-            imports: [RouterTestingModule.withRoutes([])]
+            imports: [RouterTestingModule.withRoutes([])],
         }).compileComponents();
     });
 
