@@ -1,12 +1,14 @@
 import { Component, OnDestroy, ViewChild } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { MatDrawer } from '@angular/material/sidenav';
+import { NavigationStart, Router } from '@angular/router';
 import { PlayerType } from '@app/classes/player-type';
 import { ConfirmQuitDialogComponent } from '@app/components/confirm-quit-dialog/confirm-quit-dialog.component';
 import { EndGameComponent } from '@app/components/end-game/end-game.component';
 import { GameService } from '@app/services/game/game.service';
 import { TimerService } from '@app/services/timer/timer.service';
 import { Subscription } from 'rxjs';
+import { filter } from 'rxjs/operators';
 
 export enum Icon {
     Logout = 'exit_to_app',
@@ -35,11 +37,14 @@ export class GamePageComponent implements OnDestroy {
     buttonConfig: ButtonConfig[] = [];
     iconList: string[];
     isOpen: boolean = true;
+    route: Router;
+    private readonly pageChange: Subscription;
 
     private onTurnSubscription: Subscription;
     private gameEndingSubscription: Subscription;
 
-    constructor(gameService: GameService, timerService: TimerService, public dialog: MatDialog) {
+    constructor(gameService: GameService, timerService: TimerService, public dialog: MatDialog, router: Router) {
+        this.route = router;
         this.gameService = gameService;
         this.playerType = gameService.onTurn.getValue();
         this.timerService = timerService;
@@ -48,6 +53,7 @@ export class GamePageComponent implements OnDestroy {
                 color: 'warn',
                 icon: Icon.Logout,
                 hover: 'Quitter la partie',
+                routerLink: '/',
             },
             {
                 color: 'primary',
@@ -63,11 +69,16 @@ export class GamePageComponent implements OnDestroy {
 
         this.gameEndingSubscription = gameService.gameEnding.subscribe(() => this.endGame());
         this.onTurnSubscription = gameService.onTurn.subscribe((e) => (this.playerType = e));
+
+        this.pageChange = router.events.pipe(filter((event): event is NavigationStart => event instanceof NavigationStart)).subscribe(() => {
+            this.confirmQuit();
+        });
     }
 
     ngOnDestroy(): void {
         this.gameEndingSubscription.unsubscribe();
         this.onTurnSubscription.unsubscribe();
+        this.pageChange.unsubscribe();
     }
 
     toggleDrawer(): void {
@@ -77,9 +88,6 @@ export class GamePageComponent implements OnDestroy {
 
     callFunction(buttonIndex: number): void {
         switch (buttonIndex) {
-            case 0:
-                this.confirmQuit();
-                break;
             case 1:
                 this.toggleDrawer();
                 break;
@@ -94,8 +102,11 @@ export class GamePageComponent implements OnDestroy {
 
         dialogRef.afterClosed().subscribe((result) => {
             if (result === true) {
+                this.route.navigate(['home']);
                 this.gameService.reset();
+                return;
             }
+            this.route.navigate(['/game']);
         });
     }
 

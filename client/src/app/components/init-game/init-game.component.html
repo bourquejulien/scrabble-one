@@ -51,5 +51,6 @@
         <label class="inputPresentationText">Bonus aléatoire</label>
     </mat-checkbox>
     <div *ngFor="let error of errorsList" class="alert">{{ error }}</div>
+
     <button mat-raised-button (click)="this.initialize()" color="primary" id="confirm">Confirmer</button>
 </div>

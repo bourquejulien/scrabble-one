@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
-import { InitSoloModeComponent } from '@app/components/init-solo-mode/init-solo-mode.component';
 import { GameType } from '@app/classes/game-type';
+import { InitGameComponent } from '@app/components/init-game/init-game.component';
 
 @Component({
     selector: 'app-game-mode-page',
@@ -13,7 +13,7 @@ export class GameModePageComponent {
     constructor(public dialog: MatDialog) {}
 
     openDialog(type: GameType): void {
-        const dialogRef = this.dialog.open(InitSoloModeComponent, { panelClass: 'init-solo-mode-dialog', data: { gameModeType: type } });
+        const dialogRef = this.dialog.open(InitGameComponent, { panelClass: 'init-game-dialog', data: { gameModeType: type } });
         dialogRef.afterClosed().subscribe();
     }
 }
