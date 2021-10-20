@@ -31,7 +31,10 @@ export class RackComponent {
     }
 
     onMousewheel(event: WheelEvent): void {
-        if (this.swapSelection < 0) return;
+        if (this.swapSelection < 0) {
+            this.swapSelection = 0;
+            return;
+        }
 
         if (event.deltaY < 0) {
             this.swapSelection = this.rackService.mod(this.swapSelection + 1);
