@@ -6,12 +6,12 @@ import { TestBed } from '@angular/core/testing';
 import { Direction } from '@app/classes/board/direction';
 import { Message, MessageType } from '@app/classes/message';
 import { PlayerType } from '@app/classes/player-type';
-import { Vec2 } from '@common';
 import { CommandsService } from '@app/services/commands/commands.service';
-import { MessagingService } from '@app/services/messaging/messaging.service';
-import { Subject } from 'rxjs';
-import { PlayerService } from '@app/services/player/player.service';
 import { GameService } from '@app/services/game/game.service';
+import { MessagingService } from '@app/services/messaging/messaging.service';
+import { PlayerService } from '@app/services/player/player.service';
+import { Vec2 } from '@common';
+import { Subject } from 'rxjs';
 
 describe('CommandsService', () => {
     let messagingServiceSpy: jasmine.SpyObj<MessagingService>;
@@ -23,7 +23,7 @@ describe('CommandsService', () => {
         messagingServiceSpy['subject'] = new Subject<Message>();
         messagingServiceSpy.onMessage.and.returnValue(messagingServiceSpy['subject'].asObservable());
 
-        playerServiceSpy = jasmine.createSpyObj('PlayerService', ['completeTurn', 'exchangeLetters', 'placeLetters']);
+        playerServiceSpy = jasmine.createSpyObj('PlayerService', ['completeTurn', 'exchangeLetters', 'placeLetters', 'skipTurn']);
 
         TestBed.configureTestingModule({
             providers: [
@@ -58,11 +58,11 @@ describe('CommandsService', () => {
         service.messagingService.onMessage().subscribe((message) => {
             expect(message.messageType).toEqual(MessageType.Error);
         });
-        service.parseInput('!echanger 12345678');
+        service.parseInput('!échanger 12345678');
     });
 
     it('#parseInput should call skip turn', () => {
-        service.parseInput('!echanger abc');
+        service.parseInput('!échanger abc');
         expect(playerServiceSpy.exchangeLetters).toHaveBeenCalled();
     });
 
