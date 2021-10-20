@@ -32,8 +32,7 @@ describe('CommunicationBoxComponent', () => {
     };
 
     beforeEach(async () => {
-        // messagingServiceSpy.onMessage.and.returnValue(messagingServiceSpy['subject'].asObservable());
-        messagingServiceSpy = jasmine.createSpyObj('MessagingService', ['subject', 'onMessage']);
+        messagingServiceSpy = jasmine.createSpyObj('MessagingService', ['onMessage']);
 
         await TestBed.configureTestingModule({
             declarations: [CommunicationBoxComponent],
@@ -105,29 +104,5 @@ describe('CommunicationBoxComponent', () => {
         expect(component.getMessageColor(dummyMessage)).toBe(Constants.MY_COLOR);
     });
 
-    //     beforeEach((done) => {
-    //         const httpServer = createServer();
-    //         io = new Server(httpServer);
-    //         httpServer.listen(() => {
-    //             const port = httpServer.address().port;
-    //             clientSocket = new Client(`http://localhost:${port}`);
-    //             io.on('connection', (socket) => {
-    //                 serverSocket = socket;
-    //             });
-    //             clientSocket.on('connect', done);
-    //         });
-    //     });
-
-    //    it('should call scroll when receiving a new message', () => {
-    //         component.ngAfterViewInit();
-
-    //         const spy = spyOn<any>(component, 'scroll').and.callThrough();
-    //         expect(spy).toHaveBeenCalled();
-    //     });
-
-    //     afterEach(() => {
-    //         io.close();
-    //         clientSocket.close();
-    //     });
     afterAll(() => cleanStyles());
 });

@@ -28,7 +28,7 @@ export class CommunicationBoxComponent implements AfterViewInit {
             const socketErrorMsg: Message = {
                 title: 'Socket Error: Closing Connection',
                 body: `${err.message}`,
-                messageType: MessageType.Log,
+                messageType: MessageType.Error,
                 userId: PlayerType.Local,
             };
             this.messages.push(socketErrorMsg);
