@@ -185,7 +185,7 @@ export class PlayerService {
 
     private areLettersInRack(lettersToPlace: string): boolean {
         for (const letter of lettersToPlace) {
-            if (this.rackService.indexOf(letter) !== -1) {
+            if (this.rackService.indexOf(letter) === -1) {
                 this.messagingService.send(SystemMessages.ImpossibleAction, SystemMessages.LetterPossessionError + letter, MessageType.Error);
                 return false;
             }
