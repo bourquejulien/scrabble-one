@@ -1,14 +1,13 @@
 import { Injectable } from '@angular/core';
-import { Message, MessageType } from '@app/classes/message';
-import { PlayerType } from '@app/classes/player-type';
-import { Observable, Subject } from 'rxjs';
+import { SocketClientService } from '@app/services/socket-client/socket-client.service';
+import { MessageType, PlayerType } from '@common';
 
 @Injectable({
     providedIn: 'root',
 })
 export class MessagingService {
     debuggingMode: boolean;
-    protected subject = new Subject<Message>();
+    constructor(private readonly socket: SocketClientService) {}
 
     send(title: string, body: string, messageType: MessageType, user?: PlayerType): void {
         if (!user) user = PlayerType.Local;
@@ -20,13 +19,9 @@ export class MessagingService {
         };
 
         if (this.debuggingMode) {
-            this.subject.next(message);
+            this.socket.socketClient.emit('message', message);
         } else if (message.messageType !== MessageType.Log) {
-            this.subject.next(message);
+            this.socket.socketClient.emit('message', message);
         }
-    }
-
-    onMessage(): Observable<Message> {
-        return this.subject.asObservable();
     }
 }

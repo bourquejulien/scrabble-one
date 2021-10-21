@@ -80,7 +80,9 @@ export class InitGameComponent implements OnInit {
     }
 
     ngOnInit(): void {
+        this.gameService.reset();
         this.gameConfig.secondPlayerName = this.randomizeBotName(this.botNames);
+        this.gameService.startGame(this.gameConfig);
     }
 
     initialize(): void {
@@ -89,7 +91,6 @@ export class InitGameComponent implements OnInit {
         if (needsToReroute) {
             this.dialogRef.close();
             this.router.navigate([this.nextPage]);
-            this.gameService.startGame(this.gameConfig);
         }
     }
 

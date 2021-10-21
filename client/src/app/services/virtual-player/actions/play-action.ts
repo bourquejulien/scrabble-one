@@ -1,6 +1,5 @@
-import { MessageType } from '@app/classes/message';
+import { MessageType, PlayerType } from '@common';
 import { PlayerData } from '@app/classes/player-data';
-import { PlayerType } from '@app/classes/player-type';
 import { TimeSpan } from '@app/classes/time/timespan';
 import { PlayGenerator } from '@app/classes/virtual-player/play-generator';
 import { Constants } from '@app/constants/global.constants';

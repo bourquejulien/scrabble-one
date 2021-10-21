@@ -1,9 +1,13 @@
-<mat-card class='rack' (wheel)='onMousewheel($event)' (mouseenter)='isFocus=true'  (mouseleave)='isFocus=false' >
-    <mat-card class='tile' [ngClass]="{'swap-selected': swapSelection === i}" (click)='onClick(i)'
-              *ngFor='let letter of rackService.rack; let i = index'>
+<mat-card class="rack" (wheel)="onMousewheel($event)" (mouseenter)="isFocus = true" (mouseleave)="isFocus = false">
+    <mat-card
+        class="tile"
+        [ngClass]="{ 'swap-selected': swapSelection === i }"
+        (click)="onClick(i)"
+        *ngFor="let letter of rackService.rack; let i = index"
+    >
         <div *ngIf="letter !== '*'">
             {{ letter | uppercase }}
-            <sub class='letter-point'>
+            <sub class="letter-point">
                 {{ retrievePoints(letter) }}
             </sub>
         </div>

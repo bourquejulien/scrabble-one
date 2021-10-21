@@ -4,16 +4,14 @@
 import { Injectable } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { Direction } from '@app/classes/board/direction';
-import { MessageType } from '@app/classes/message';
-import { PlayerType } from '@app/classes/player-type';
 import { TimeSpan } from '@app/classes/time/timespan';
 import { ValidationResponse } from '@app/classes/validation/validation-response';
-import { Vec2 } from '@common';
 import { SystemMessages } from '@app/constants/system-messages.constants';
 import { BoardService } from '@app/services/board/board.service';
 import { PlayerService } from '@app/services/player/player.service';
 import { ReserveService } from '@app/services/reserve/reserve.service';
 import { TimerService } from '@app/services/timer/timer.service';
+import { MessageType, PlayerType, Vec2 } from '@common';
 import { Subject } from 'rxjs';
 
 const MAX_PLAYTIME_SECONDS = 1;

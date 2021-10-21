@@ -1,8 +1,7 @@
 /* eslint-disable dot-notation -- Need to access private properties for testing*/
 /* eslint-disable max-classes-per-file -- Needs many stubbed classes in order to test*/
 import { TestBed } from '@angular/core/testing';
-import { MessageType } from '@app/classes/message';
-import { PlayerType } from '@app/classes/player-type';
+import { MessageType, PlayerType } from '@common';
 import { Constants } from '@app/constants/global.constants';
 import { PlayerService } from '@app/services/player/player.service';
 import { ReserveService } from '@app/services/reserve/reserve.service';
@@ -178,13 +177,10 @@ describe('GameService', () => {
             'Fin de partie - lettres restantes',
             service.gameConfig.firstPlayerName +
                 ' : ' +
-                service.gameConfig.firstPlayerName +
                 service['playerService'].rack +
-                ' ' +
-                service.gameConfig.firstPlayerName +
+                '\n' +
                 service.gameConfig.secondPlayerName +
                 ' : ' +
-                service.gameConfig.firstPlayerName +
                 service['virtualPlayerService'].playerData.rack,
             MessageType.System,
         );
