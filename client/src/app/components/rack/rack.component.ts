@@ -98,7 +98,7 @@ export class RackComponent implements OnInit {
 
         const index = this.rackService.indexOf(key, this.selection.swap.lastIndex);
 
-        if (index !== -1 && !this.isFocus) {
+        if (index !== -1 && this.isFocus) {
             this.swapSelectionIndex = index;
             this.selection.swap.lastIndex = index + 1;
         } else {
