@@ -5,6 +5,7 @@ import { NavigationStart, Router } from '@angular/router';
 import { ConfirmQuitDialogComponent } from '@app/components/confirm-quit-dialog/confirm-quit-dialog.component';
 import { EndGameComponent } from '@app/components/end-game/end-game.component';
 import { GameService } from '@app/services/game/game.service';
+import { ReserveService } from '@app/services/reserve/reserve.service';
 import { TimerService } from '@app/services/timer/timer.service';
 import { PlayerType } from '@common';
 import { Subscription } from 'rxjs';
@@ -33,6 +34,7 @@ export class GamePageComponent implements OnDestroy {
 
     gameService: GameService;
     timerService: TimerService;
+    reserveService: ReserveService;
     playerType: PlayerType;
     buttonConfig: ButtonConfig[] = [];
     iconList: string[];
@@ -43,9 +45,10 @@ export class GamePageComponent implements OnDestroy {
     private onTurnSubscription: Subscription;
     private gameEndingSubscription: Subscription;
 
-    constructor(gameService: GameService, timerService: TimerService, public dialog: MatDialog, router: Router) {
+    constructor(gameService: GameService, timerService: TimerService, reserveService: ReserveService, public dialog: MatDialog, router: Router) {
         this.route = router;
         this.gameService = gameService;
+        this.reserveService = reserveService;
         this.playerType = gameService.onTurn.getValue();
         this.timerService = timerService;
         this.buttonConfig = [
