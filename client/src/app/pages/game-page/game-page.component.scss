@@ -16,6 +16,12 @@
 mat-drawer-container {
     height: 100%;
 }
+
+#reserve-length{
+    border-radius: 100%;
+    background-color: lightblue;
+}
+
 .scoreboard-player-one-open {
     display: flex;
     flex-direction: column;
