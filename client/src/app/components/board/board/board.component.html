@@ -1,0 +1,30 @@
+<div id="grid-container">
+    <div id="board-canvas" [style.width.px]="width" [style.height.px]="height">
+        <canvas
+            class="board-display"
+            id="grid-canvas"
+            #gridCanvas
+            [style.width.px]="width"
+            [style.height.px]="height"
+            [attr.width]="width"
+            [attr.height]="height"
+        ></canvas>
+        <canvas
+            class="board-display"
+            id="squareCanvas"
+            #squareCanvas
+            [style.width.px]="width"
+            [style.height.px]="height"
+            (click)="mouseHandlingService.mouseHitDetect($event)"
+            [attr.width]="width"
+            [attr.height]="height"
+        ></canvas>
+    </div>
+    <app-size-selector
+        id="size-selector"
+        [minSize]="gridService.minFontSize"
+        [maxSize]="gridService.maxFontSize"
+        [size]="gridService.letterFontFace.size"
+        (sizeUpdated)="updateFontSize($event)"
+    ></app-size-selector>
+</div>
