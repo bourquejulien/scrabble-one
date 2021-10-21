@@ -13,7 +13,7 @@ export class PlayAreaComponent {
     constructor() {
         this.reserveSelection = new Set<number>();
     }
-    
+
     cancelExchange() {
         this.reserveSelection.clear();
     }

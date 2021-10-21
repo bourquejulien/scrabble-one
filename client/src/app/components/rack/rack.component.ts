@@ -25,7 +25,15 @@ export class RackComponent implements OnInit {
     selection: Selection;
     isFocus = false;
 
-    constructor(readonly rackService: RackService) {}
+    constructor(readonly rackService: RackService) {
+        this.selection = {
+            swap: {
+                index: -1,
+                lastIndex: 0,
+            },
+            reserve: new Set<number>(),
+        };
+    }
 
     @HostListener('body:keydown', ['$event'])
     onKeyDown(event: KeyboardEvent) {
@@ -83,13 +91,9 @@ export class RackComponent implements OnInit {
     }
 
     reset() {
-        this.selection = {
-            swap: {
-                index: -1,
-                lastIndex: 0,
-            },
-            reserve: new Set<number>(),
-        };
+        this.selection.swap.index = -1;
+        this.selection.swap.lastIndex = 0;
+        this.selection.reserve.clear();
         this.isFocus = false;
     }
 
