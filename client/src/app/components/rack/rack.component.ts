@@ -1,15 +1,22 @@
-import { Component, HostListener } from '@angular/core';
+import { Component, HostListener, OnInit } from '@angular/core';
 import { letterDefinitions } from '@common';
 import { RackService } from '@app/services/rack/rack.service';
+
+interface Selection {
+    swap: {
+        index: number;
+        lastIndex: number;
+    };
+    reserve: Set<number>;
+}
 
 @Component({
     selector: 'app-rack',
     templateUrl: './rack.component.html',
     styleUrls: ['./rack.component.scss'],
 })
-export class RackComponent {
-    swapSelection: number = -1;
-    lastIndex = 0;
+export class RackComponent implements OnInit {
+    selection: Selection;
     isFocus = false;
 
     constructor(readonly rackService: RackService) {}
@@ -18,38 +25,64 @@ export class RackComponent {
     onKeyDown(event: KeyboardEvent) {
         this.handleKeyPress(event.key);
 
-        if (this.swapSelection < 0) return;
+        if (this.selection.swap.index < 0) return;
 
         switch (event.key) {
             case 'ArrowRight':
-                this.swapSelection = this.rackService.swapRight(this.swapSelection);
+                this.selection.swap.index = this.rackService.swapRight(this.selection.swap.index);
                 break;
             case 'ArrowLeft':
-                this.swapSelection = this.rackService.swapLeft(this.swapSelection);
+                this.selection.swap.index = this.rackService.swapLeft(this.selection.swap.index);
                 break;
         }
     }
 
+    @HostListener('document:click', ['$event'])
+    onClick() {
+        if (!this.isFocus) {
+            this.reset();
+        }
+    }
+
+    ngOnInit(): void {
+        this.reset();
+    }
+
+    onLeftClick(position: number): void {
+        this.selection.swap.index = position;
+    }
+
+    onRightClick(position: number): boolean {
+        if (this.selection.reserve.has(position)) {
+            this.selection.reserve.delete(position);
+        } else {
+            this.selection.reserve.add(position);
+        }
+
+        return false; // Ensures no context menu is showed.
+    }
+
     onMousewheel(event: WheelEvent): void {
-        if (this.swapSelection < 0) {
-            this.swapSelection = 0;
+        if (this.selection.swap.index < 0) {
+            this.selection.swap.index = 0;
             return;
         }
 
         if (event.deltaY < 0) {
-            this.swapSelection = this.rackService.mod(this.swapSelection + 1);
+            this.selection.swap.index = this.rackService.mod(this.selection.swap.index + 1);
         } else {
-            this.swapSelection = this.rackService.mod(this.swapSelection - 1);
+            this.selection.swap.index = this.rackService.mod(this.selection.swap.index - 1);
         }
     }
 
-    onClick(position: number): void {
-        this.swapSelection = position;
-    }
-
     reset() {
-        this.swapSelection = -1;
-        this.lastIndex = 0;
+        this.selection = {
+            swap: {
+                index: -1,
+                lastIndex: 0,
+            },
+            reserve: new Set<number>(),
+        };
         this.isFocus = false;
     }
 
@@ -63,13 +96,13 @@ export class RackComponent {
 
     private handleKeyPress(key: string) {
         // TODO isFocus a verifier avec un charge
-        if (!this.isFocus || key.length !== 1 || !key.match('([a-z]|\\*)')) return;
+        if (key.length !== 1 || !key.match('([a-z]|\\*)')) return;
 
-        const index = this.rackService.indexOf(key, this.lastIndex);
+        const index = this.rackService.indexOf(key, this.selection.swap.lastIndex);
 
-        if (index !== -1) {
-            this.swapSelection = index;
-            this.lastIndex = index + 1;
+        if (index !== -1 && !this.isFocus) {
+            this.selection.swap.index = index;
+            this.selection.swap.lastIndex = index + 1;
         } else {
             this.reset();
         }

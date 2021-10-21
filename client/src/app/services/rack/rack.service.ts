@@ -7,7 +7,7 @@ export class RackService {
     readonly rack: string[];
 
     constructor() {
-        this.rack = [];
+        this.rack = ['a', 'b', 'c', 'd', 'd', '*', '*'];
     }
 
     swapLeft(position: number): number {
