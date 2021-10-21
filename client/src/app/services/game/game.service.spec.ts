@@ -175,13 +175,10 @@ describe('GameService', () => {
             'Fin de partie - lettres restantes',
             service.gameConfig.firstPlayerName +
                 ' : ' +
-                service.gameConfig.firstPlayerName +
                 service['playerService'].playerData.rack +
-                ' ' +
-                service.gameConfig.firstPlayerName +
+                '\n' +
                 service.gameConfig.secondPlayerName +
                 ' : ' +
-                service.gameConfig.firstPlayerName +
                 service['virtualPlayerService'].playerData.rack,
             MessageType.System,
         );
