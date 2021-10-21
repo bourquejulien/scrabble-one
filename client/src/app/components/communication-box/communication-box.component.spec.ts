@@ -15,7 +15,11 @@ import { GameService } from '@app/services/game/game.service';
 import { MessagingService } from '@app/services/messaging/messaging.service';
 import { Message, MessageType, PlayerType } from '@common';
 import { CommunicationBoxComponent } from './communication-box.component';
-
+import SocketMock from 'socket.io-mock';
+import { SocketClientService } from '@app/services/socket-client/socket-client.service';
+class MockSocketClientService {
+    socket = new SocketMock();
+}
 describe('CommunicationBoxComponent', () => {
     let component: CommunicationBoxComponent;
     let fixture: ComponentFixture<CommunicationBoxComponent>;
@@ -39,6 +43,7 @@ describe('CommunicationBoxComponent', () => {
             providers: [
                 { provide: MessagingService, useValue: messagingServiceSpy },
                 { provide: GameService, useValue: gameService },
+                { provide: SocketClientService, useValue: MockSocketClientService },
                 { provide: CommandsService, useValue: jasmine.createSpyObj('CommandsService', { parseInput: true }) },
             ],
             imports: [AppMaterialModule, BrowserAnimationsModule, FormsModule],
@@ -102,6 +107,15 @@ describe('CommunicationBoxComponent', () => {
         expect(component.getMessageColor(dummyMessage)).toBe(Constants.OTHERS_COLOR);
         dummyMessage.userId = PlayerType.Local;
         expect(component.getMessageColor(dummyMessage)).toBe(Constants.MY_COLOR);
+    });
+
+    it('should push new messages and call scroll', () => {
+        component.ngAfterViewInit();
+        const scrollSpy = spyOn<any>(component, 'scroll').and.callThrough();
+        const pushSpy = spyOn(component.messages, 'push').and.callThrough();
+        component['socket'].socketClient.emit('message', dummyMessage);
+        expect(scrollSpy).toHaveBeenCalled();
+        expect(pushSpy).toHaveBeenCalled();
     });
 
     afterAll(() => cleanStyles());
