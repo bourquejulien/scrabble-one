@@ -1,4 +1,4 @@
-import { Component, HostListener, OnInit } from '@angular/core';
+import { Component, EventEmitter, HostListener, Input, OnInit, Output } from '@angular/core';
 import { letterDefinitions } from '@common';
 import { RackService } from '@app/services/rack/rack.service';
 
@@ -16,6 +16,12 @@ interface Selection {
     styleUrls: ['./rack.component.scss'],
 })
 export class RackComponent implements OnInit {
+    @Input()
+    set reserveSelection(reserveSelection: Set<number>) {
+        this.selection.reserve = reserveSelection;
+    }
+    @Output() reserveSelectionChange = new EventEmitter<Set<number>>();
+
     selection: Selection;
     isFocus = false;
 
@@ -30,9 +36,11 @@ export class RackComponent implements OnInit {
         switch (event.key) {
             case 'ArrowRight':
                 this.selection.swap.index = this.rackService.swapRight(this.selection.swap.index);
+                this.selection.reserve.clear();
                 break;
             case 'ArrowLeft':
                 this.selection.swap.index = this.rackService.swapLeft(this.selection.swap.index);
+                this.selection.reserve.clear();
                 break;
         }
     }
@@ -55,6 +63,7 @@ export class RackComponent implements OnInit {
     onRightClick(position: number): boolean {
         if (!this.selection.reserve.delete(position) && this.selection.swap.index !== position) {
             this.selection.reserve.add(position);
+            this.reserveSelectionChange.emit(this.selection.reserve);
         }
 
         return false; // Ensures no context menu is showed.
