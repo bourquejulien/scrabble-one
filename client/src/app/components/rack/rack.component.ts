@@ -49,13 +49,11 @@ export class RackComponent implements OnInit {
     }
 
     onLeftClick(position: number): void {
-        this.selection.swap.index = position;
+        this.swapSelectionIndex = position;
     }
 
     onRightClick(position: number): boolean {
-        if (this.selection.reserve.has(position)) {
-            this.selection.reserve.delete(position);
-        } else {
+        if (!this.selection.reserve.delete(position) && this.selection.swap.index !== position) {
             this.selection.reserve.add(position);
         }
 
@@ -69,9 +67,9 @@ export class RackComponent implements OnInit {
         }
 
         if (event.deltaY < 0) {
-            this.selection.swap.index = this.rackService.mod(this.selection.swap.index + 1);
+            this.swapSelectionIndex = this.rackService.mod(this.selection.swap.index + 1);
         } else {
-            this.selection.swap.index = this.rackService.mod(this.selection.swap.index - 1);
+            this.swapSelectionIndex = this.rackService.mod(this.selection.swap.index - 1);
         }
     }
 
@@ -101,10 +99,15 @@ export class RackComponent implements OnInit {
         const index = this.rackService.indexOf(key, this.selection.swap.lastIndex);
 
         if (index !== -1 && !this.isFocus) {
-            this.selection.swap.index = index;
+            this.swapSelectionIndex = index;
             this.selection.swap.lastIndex = index + 1;
         } else {
             this.reset();
         }
+    }
+
+    private set swapSelectionIndex(position: number) {
+        this.selection.reserve.delete(position);
+        this.selection.swap.index = position;
     }
 }
