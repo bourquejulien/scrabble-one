@@ -16,6 +16,8 @@ describe('CommandsService', () => {
     beforeEach(() => {
         playerServiceSpy = jasmine.createSpyObj('PlayerService', ['completeTurn', 'exchangeLetters', 'placeLetters']);
 
+        playerServiceSpy = jasmine.createSpyObj('PlayerService', ['completeTurn', 'exchangeLetters', 'placeLetters', 'skipTurn']);
+
         TestBed.configureTestingModule({
             providers: [
                 { provide: PlayerService, useValue: playerServiceSpy },
@@ -49,11 +51,11 @@ describe('CommandsService', () => {
         /* service.messagingService.onMessage().subscribe((message) => {
             expect(message.messageType).toEqual(MessageType.Error);
         }); */
-        service.parseInput('!echanger 12345678');
+        service.parseInput('!échanger 12345678');
     });
 
     it('#parseInput should call skip turn', () => {
-        service.parseInput('!echanger abc');
+        service.parseInput('!échanger abc');
         expect(playerServiceSpy.exchangeLetters).toHaveBeenCalled();
     });
 

@@ -26,8 +26,8 @@ describe('CommunicationBoxComponent', () => {
         gameConfig: {
             gameType: 'qwerty',
             playTime: TimeSpan.fromMinutesSeconds(1, 0),
-            firstPlayerName: 'qwerty',
-            secondPlayerName: 'uiop',
+            firstPlayerName: 'Alphonse',
+            secondPlayerName: 'Lucienne',
         },
     };
 

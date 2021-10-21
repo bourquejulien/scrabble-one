@@ -39,7 +39,7 @@ export class CommandsService {
                 case '!reserve':
                     this.showReserve();
                     break;
-                case '!echanger':
+                case '!échanger':
                     successfulCommand = this.exchangeLetters(this.removeAccents(args[1]));
                     break;
                 default:

@@ -10,6 +10,7 @@ import { ReserveService } from '@app/services/reserve/reserve.service';
 import { TimerService } from '@app/services/timer/timer.service';
 import { MessageType, PlayerType, Vec2 } from '@common';
 import { Subject } from 'rxjs';
+import { RackService } from '@app/services/rack/rack.service';
 
 @Injectable({
     providedIn: 'root',
@@ -19,6 +20,7 @@ export class PlayerService {
     playerData: PlayerData = {
         score: 0,
         skippedTurns: 0,
+        // TODO Not in use. remove with virtual player
         rack: [],
     };
 
@@ -27,6 +29,7 @@ export class PlayerService {
         private readonly boardService: BoardService,
         private readonly timerService: TimerService,
         private readonly messagingService: MessagingService,
+        private readonly rackService: RackService,
     ) {
         this.turnComplete = new Subject<PlayerType>();
         this.timerService.countdownStopped.subscribe((playerType) => {
@@ -92,7 +95,7 @@ export class PlayerService {
         }
 
         for (let i = 0; i < lettersToExchangeLength; i++) {
-            this.playerData.rack.push(this.reserveService.drawLetter());
+            this.rackService.rack.push(this.reserveService.drawLetter());
         }
 
         for (const letter of lettersToExchange) {
@@ -115,19 +118,19 @@ export class PlayerService {
 
     fillRack(lengthToFill: number): void {
         for (let i = 0; i < lengthToFill; i++) {
-            this.playerData.rack.push(this.reserveService.drawLetter());
+            this.rackService.rack.push(this.reserveService.drawLetter());
         }
     }
 
     emptyRack(): void {
-        this.playerData.rack = [];
+        this.rackService.empty();
     }
 
     setRack(mockRack: string[]): void {
         this.emptyRack();
 
         for (const letter of mockRack) {
-            this.playerData.rack.push(letter);
+            this.rackService.rack.push(letter);
         }
     }
 
@@ -140,11 +143,15 @@ export class PlayerService {
     }
 
     get rackContent(): string[] {
-        return this.playerData.rack;
+        return this.rackService.rack;
     }
 
     get rackLength(): number {
-        return this.playerData.rack.length;
+        return this.rackService.length;
+    }
+
+    get rack(): string[] {
+        return this.rackService.rack;
     }
 
     private updateReserve(lettersToPlaceLength: number): void {
@@ -157,7 +164,7 @@ export class PlayerService {
 
         if (reserveLength <= lettersToPlaceLength) {
             for (let i = 0; i < reserveLength; i++) {
-                this.playerData.rack.push(this.reserveService.drawLetter());
+                this.rackService.rack.push(this.reserveService.drawLetter());
             }
             this.messagingService.send(SystemMessages.ImpossibleAction, SystemMessages.EmptyReserveError, MessageType.Error);
             return;
@@ -168,15 +175,15 @@ export class PlayerService {
 
     private updateRack(lettersToPlace: string): void {
         for (const letter of lettersToPlace) {
-            const letterIndex = this.playerData.rack.indexOf(letter);
+            const letterIndex = this.rackService.indexOf(letter);
             if (letterIndex === -1) return;
-            this.playerData.rack.splice(letterIndex, 1);
+            this.rackService.rack.splice(letterIndex, 1);
         }
     }
 
     private areLettersInRack(lettersToPlace: string): boolean {
         for (const letter of lettersToPlace) {
-            if (this.playerData.rack.indexOf(letter) === -1) {
+            if (this.rackService.indexOf(letter) === -1) {
                 this.messagingService.send(SystemMessages.ImpossibleAction, SystemMessages.LetterPossessionError + letter, MessageType.Error);
                 return false;
             }
