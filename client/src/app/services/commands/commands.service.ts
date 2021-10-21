@@ -7,8 +7,8 @@ import { SystemMessages } from '@app/constants/system-messages.constants';
 import { GameService } from '@app/services/game/game.service';
 import { MessagingService } from '@app/services/messaging/messaging.service';
 import { PlayerService } from '@app/services/player/player.service';
+import { ReserveService } from '@app/services/reserve/reserve.service';
 import { letterDefinitions, Vec2 } from '@common';
-import { ReserveService } from '../reserve/reserve.service';
 
 @Injectable({
     providedIn: 'root',
@@ -19,7 +19,12 @@ export class CommandsService {
     rackRegex: RegExp = /^[a-z*]{1,7}$/;
     messageRegex: RegExp = /^[A-zÀ-ú0-9 !.?'"]{1,512}$/;
 
-    constructor(public messagingService: MessagingService, public playerService: PlayerService, public gameService: GameService, public reserveService: ReserveService) {}
+    constructor(
+        public messagingService: MessagingService,
+        public playerService: PlayerService,
+        public gameService: GameService,
+        public reserveService: ReserveService,
+    ) {}
 
     parseInput(input: string): boolean {
         // Arguments: [COMMAND, OPTIONS, WORD]
@@ -67,20 +72,16 @@ export class CommandsService {
     }
 
     private displayReserve(): boolean {
-        // (title: string, body: string, messageType: MessageType, user?: PlayerType
-        let body = '';
-        for (const [letter, letterData] of letterDefinitions) {
-            /*
-                TODO:
-                    1. A vérifier: Changer le return de getLetterQuantity a string (et les tests pertinents)
-                    2. Get lettre de la réserve et leur current quantity et rajouter dans un string []
-                    3. Join le array
-                    4. Tester lol
-                    5. Afficher taille réserve dans panneau
-            */
-            this.reserveService.getLetterQuantity(letter);
-            this.messagingService.send(SystemMessages.ReserveContentTitle, body, MessageType.Error);
+        const body: string[] = [];
+        let reserveContent = '';
+
+        for (const letter of letterDefinitions) {
+            const currentLetterAndQuantity = this.reserveService.getLetterAndQuantity(letter[0]);
+            body.push(`${currentLetterAndQuantity}\n`);
         }
+
+        reserveContent = body.join('');
+        this.messagingService.send(SystemMessages.ReserveContentTitle, reserveContent, MessageType.Log);
 
         return true;
     }

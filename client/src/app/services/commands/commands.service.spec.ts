@@ -6,16 +6,18 @@ import { TestBed } from '@angular/core/testing';
 import { Direction } from '@app/classes/board/direction';
 import { Message, MessageType } from '@app/classes/message';
 import { PlayerType } from '@app/classes/player-type';
-import { Vec2 } from '@common';
 import { CommandsService } from '@app/services/commands/commands.service';
-import { MessagingService } from '@app/services/messaging/messaging.service';
-import { Subject } from 'rxjs';
-import { PlayerService } from '@app/services/player/player.service';
 import { GameService } from '@app/services/game/game.service';
+import { MessagingService } from '@app/services/messaging/messaging.service';
+import { PlayerService } from '@app/services/player/player.service';
+import { ReserveService } from '@app/services/reserve/reserve.service';
+import { Vec2 } from '@common';
+import { Subject } from 'rxjs';
 
 describe('CommandsService', () => {
     let messagingServiceSpy: jasmine.SpyObj<MessagingService>;
     let playerServiceSpy: jasmine.SpyObj<PlayerService>;
+    let reserveServiceSpy: jasmine.SpyObj<ReserveService>;
     let service: CommandsService;
 
     beforeEach(() => {
@@ -24,11 +26,14 @@ describe('CommandsService', () => {
         messagingServiceSpy.onMessage.and.returnValue(messagingServiceSpy['subject'].asObservable());
 
         playerServiceSpy = jasmine.createSpyObj('PlayerService', ['completeTurn', 'exchangeLetters', 'placeLetters']);
+        reserveServiceSpy = jasmine.createSpyObj('ReserveService', ['getLetterAndQuantity', 'reserve']);
+        reserveServiceSpy['reserve'] = ['a'];
 
         TestBed.configureTestingModule({
             providers: [
                 { provide: PlayerService, useValue: playerServiceSpy },
                 { provide: GameService, useValue: jasmine.createSpyObj('GameService', [], [{ currentTurn: PlayerType.Local }]) },
+                { provide: ReserveService, useValue: reserveServiceSpy },
             ],
         });
         service = TestBed.inject(CommandsService);
@@ -121,6 +126,11 @@ describe('CommandsService', () => {
             expect(message.messageType).toEqual(MessageType.Error);
         });
         service.parseInput('!skip');
+    });
+
+    it('#parseInput should call displayReserve', () => {
+        service.parseInput('!réserve');
+        expect(reserveServiceSpy.getLetterAndQuantity).toHaveBeenCalled();
     });
 
     it("should fail when it is not the user's turn", () => {
