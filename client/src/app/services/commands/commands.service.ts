@@ -49,7 +49,7 @@ export class CommandsService {
                     this.messagingService.send('', SystemMessages.InvalidCommand, MessageType.Error);
                     return false;
             }
-            if (successfulCommand) this.messagingService.send('Commande réussie', input, MessageType.System, this.gameService.currentTurn);
+            if (successfulCommand) this.messagingService.send('Commande réussie', input, MessageType.Log, this.gameService.currentTurn);
         } else {
             if (this.messageRegex.test(input)) {
                 this.messagingService.send('', input, MessageType.Message);
