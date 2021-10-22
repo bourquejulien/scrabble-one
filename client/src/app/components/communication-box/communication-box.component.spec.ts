@@ -15,20 +15,39 @@ import { GameService } from '@app/services/game/game.service';
 import { MessagingService } from '@app/services/messaging/messaging.service';
 import { Message, MessageType, PlayerType } from '@common';
 import { CommunicationBoxComponent } from './communication-box.component';
-import SocketMock from 'socket.io-mock';
 import { SocketClientService } from '@app/services/socket-client/socket-client.service';
-class MockSocketClientService {
-    socket = new SocketMock();
+import { GameType } from '@app/classes/game-type';
+class SocketClientMock {
+    // eslint-disable-next-line @typescript-eslint/ban-types
+    callbacks: Map<string, (...args: any) => {}> = new Map();
+    on(event: string, callback: any): void {
+        this.callbacks.set(event, callback);
+    }
+
+    serverSideEmit(event: string, ...params: any[]) {
+        const callback = this.callbacks.get(event);
+        if (callback) {
+            callback(params);
+        }
+    }
+
+    // eslint-disable-next-line no-unused-vars -- Dummy call without any logic
+    emit(event: string, ...params: any[]) {
+        return;
+    }
 }
-describe('CommunicationBoxComponent', () => {
+
+fdescribe('CommunicationBoxComponent', () => {
     let component: CommunicationBoxComponent;
     let fixture: ComponentFixture<CommunicationBoxComponent>;
     let dummyMessage: Message;
     let messagingServiceSpy: jasmine.SpyObj<MessagingService>;
+    let socketServiceSpyObj: jasmine.SpyObj<SocketClientService>; // We create a mock object to remplace the socket client from Socket
+    const socketClient: SocketClientMock = new SocketClientMock(); // We instantiate an object for
 
     const gameService = {
         gameConfig: {
-            gameType: 'qwerty',
+            gameType: GameType.Solo,
             playTime: TimeSpan.fromMinutesSeconds(1, 0),
             firstPlayerName: 'Alphonse',
             secondPlayerName: 'Lucienne',
@@ -37,13 +56,13 @@ describe('CommunicationBoxComponent', () => {
 
     beforeEach(async () => {
         messagingServiceSpy = jasmine.createSpyObj('MessagingService', ['onMessage']);
-
+        socketServiceSpyObj = jasmine.createSpyObj('SocketClientService', [], { socketClient });
         await TestBed.configureTestingModule({
             declarations: [CommunicationBoxComponent],
             providers: [
                 { provide: MessagingService, useValue: messagingServiceSpy },
                 { provide: GameService, useValue: gameService },
-                { provide: SocketClientService, useValue: MockSocketClientService },
+                { provide: SocketClientService, useValue: socketServiceSpyObj },
                 { provide: CommandsService, useValue: jasmine.createSpyObj('CommandsService', { parseInput: true }) },
             ],
             imports: [AppMaterialModule, BrowserAnimationsModule, FormsModule],
@@ -110,11 +129,26 @@ describe('CommunicationBoxComponent', () => {
     });
 
     it('should push new messages and call scroll', () => {
+        // Configure asynchronous event handling
         component.ngAfterViewInit();
+
         const scrollSpy = spyOn<any>(component, 'scroll').and.callThrough();
         const pushSpy = spyOn(component.messages, 'push').and.callThrough();
-        component['socket'].socketClient.emit('message', dummyMessage);
+
+        socketClient.serverSideEmit('message', dummyMessage);
+
         expect(scrollSpy).toHaveBeenCalled();
+        expect(pushSpy).toHaveBeenCalled();
+    });
+
+    it('should push an error message when the socket server is not available', () => {
+        // Configure asynchronous event handling
+        component.ngAfterViewInit();
+
+        const pushSpy = spyOn(component.messages, 'push').and.callThrough();
+
+        socketClient.serverSideEmit('connect_error', 'error');
+
         expect(pushSpy).toHaveBeenCalled();
     });
 
