@@ -7,8 +7,8 @@ import { PlayerType } from '@common';
     styleUrls: ['./play-area.component.scss'],
 })
 export class PlayAreaComponent {
-    reserveSelection: Set<number>;
     @Input() playerType: PlayerType;
+    reserveSelection: Set<number>;
 
     constructor() {
         this.reserveSelection = new Set<number>();

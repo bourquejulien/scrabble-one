@@ -1,7 +1,7 @@
 <div id="play-area-container">
     <app-board class="board" [playerType]="playerType"></app-board>
     <div class="rack">
-        <app-rack [(reserveSelection)]='reserveSelection' ></app-rack>
+        <app-rack (reserveSelectionChange)='reserveSelection=$event' ></app-rack>
     </div>
     <div>
         <button mat-button [ngClass]="{ 'invisible': reserveSelection.size === 0}" class="exchange-command">Échanger</button>

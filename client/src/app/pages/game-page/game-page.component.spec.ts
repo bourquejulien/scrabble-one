@@ -14,6 +14,7 @@ import { PlayerType } from '@common';
 import { BehaviorSubject, Subject } from 'rxjs';
 import { GamePageComponent } from './game-page.component';
 import { RouterTestingModule } from '@angular/router/testing';
+import { MatDialogClose, MatDialogModule } from '@angular/material/dialog';
 
 const GAME_TYPES_LIST = ['Mode Solo Débutant'];
 
@@ -71,9 +72,9 @@ describe('GamePageComponent', () => {
 
     beforeEach(async () => {
         await TestBed.configureTestingModule({
-            declarations: [GamePageComponent, PlayAreaStubComponent, MatToolbar, TimePipe],
+            declarations: [GamePageComponent, PlayAreaStubComponent, MatToolbar, TimePipe, MatDialogClose],
             providers: [{ provide: GameService, useClass: GameServiceStub }],
-            imports: [AppMaterialModule, BrowserAnimationsModule, RouterTestingModule.withRoutes([])],
+            imports: [AppMaterialModule, MatDialogModule, BrowserAnimationsModule, RouterTestingModule.withRoutes([])],
             schemas: [CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA],
         }).compileComponents();
     });

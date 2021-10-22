@@ -35,5 +35,13 @@ describe('PlayAreaComponent', () => {
         expect(component).toBeTruthy();
     });
 
+    it('should clear selection on cancel exchange', () => {
+        component.reserveSelection = new Set([1, 2, 3]);
+
+        component.cancelExchange();
+
+        expect(component.reserveSelection.size).toEqual(0);
+    });
+
     afterAll(() => cleanStyles());
 });

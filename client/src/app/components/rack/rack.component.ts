@@ -1,4 +1,4 @@
-import { Component, EventEmitter, HostListener, Input, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, HostListener, OnInit, Output } from '@angular/core';
 import { letterDefinitions } from '@common';
 import { RackService } from '@app/services/rack/rack.service';
 
@@ -16,14 +16,10 @@ interface Selection {
     styleUrls: ['./rack.component.scss'],
 })
 export class RackComponent implements OnInit {
-    @Input()
-    set reserveSelection(reserveSelection: Set<number>) {
-        this.selection.reserve = reserveSelection;
-    }
     @Output() reserveSelectionChange = new EventEmitter<Set<number>>();
 
     selection: Selection;
-    isFocus = false;
+    isFocus: boolean;
 
     constructor(readonly rackService: RackService) {
         this.selection = {
@@ -33,6 +29,8 @@ export class RackComponent implements OnInit {
             },
             reserve: new Set<number>(),
         };
+
+        this.isFocus = false;
     }
 
     @HostListener('body:keydown', ['$event'])
@@ -54,14 +52,15 @@ export class RackComponent implements OnInit {
     }
 
     @HostListener('document:click', ['$event'])
-    onClick() {
-        if (!this.isFocus) {
-            this.reset();
-        }
+    onDocumentClick(): void {
+        if (this.isFocus) return;
+
+        this.reset();
     }
 
     ngOnInit(): void {
         this.reset();
+        this.reserveSelectionChange.emit(this.selection.reserve);
     }
 
     onLeftClick(position: number): void {
@@ -69,10 +68,9 @@ export class RackComponent implements OnInit {
     }
 
     onRightClick(position: number): boolean {
-        if (!this.selection.reserve.delete(position) && this.selection.swap.index !== position) {
-            this.selection.reserve.add(position);
-            this.reserveSelectionChange.emit(this.selection.reserve);
-        }
+        if (this.selection.reserve.delete(position) || this.selection.swap.index === position) return false; // Ensures no context menu is showed.
+
+        this.selection.reserve.add(position);
 
         return false; // Ensures no context menu is showed.
     }
@@ -94,15 +92,16 @@ export class RackComponent implements OnInit {
         this.selection.swap.index = -1;
         this.selection.swap.lastIndex = 0;
         this.selection.reserve.clear();
-        this.isFocus = false;
     }
 
     retrievePoints(letter: string): number {
         const currentLetterData = letterDefinitions.get(letter);
 
-        if (currentLetterData?.points === undefined) return -1;
+        if (currentLetterData) {
+            return currentLetterData.points;
+        }
 
-        return currentLetterData.points;
+        return -1;
     }
 
     private handleKeyPress(key: string) {

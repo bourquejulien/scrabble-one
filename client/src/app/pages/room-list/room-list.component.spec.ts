@@ -1,6 +1,9 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
 import { RoomListComponent } from './room-list.component';
+import { MatCard } from '@angular/material/card';
+import { MatIcon } from '@angular/material/icon';
+import { MatToolbar } from '@angular/material/toolbar';
 
 describe('RoomListComponent', () => {
     let component: RoomListComponent;
@@ -8,7 +11,7 @@ describe('RoomListComponent', () => {
 
     beforeEach(async () => {
         await TestBed.configureTestingModule({
-            declarations: [RoomListComponent],
+            declarations: [RoomListComponent, MatCard, MatIcon, MatToolbar],
             imports: [RouterTestingModule.withRoutes([])],
         }).compileComponents();
     });

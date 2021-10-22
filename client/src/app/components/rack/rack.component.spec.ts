@@ -150,5 +150,41 @@ describe('RackComponent', () => {
         expect(component.selection.swap.index).toEqual(-1);
     });
 
+    it('should reset on document click if not on focus', () => {
+        const POSITION = 5;
+        component.selection.reserve.add(POSITION);
+        const spy = spyOn(component, 'reset');
+
+        component.isFocus = true;
+        component.onDocumentClick();
+
+        expect(spy).not.toHaveBeenCalled();
+
+        component.isFocus = false;
+        component.onDocumentClick();
+
+        expect(spy).toHaveBeenCalled();
+        expect(component.selection.swap.index).toEqual(-1);
+    });
+
+    it('should toggle square for exchange', () => {
+        const POSITION = 5;
+
+        component.onRightClick(POSITION);
+        expect(component.selection.reserve).toContain(POSITION);
+
+        component.onRightClick(POSITION);
+        expect(component.selection.reserve).not.toContain(POSITION);
+    });
+
+    it('should not toggle square for exchange if selected for swap', () => {
+        const POSITION = 5;
+
+        component.selection.swap.index = POSITION;
+
+        component.onRightClick(POSITION);
+        expect(component.selection.reserve).not.toContain(POSITION);
+    });
+
     afterAll(() => cleanStyles());
 });
