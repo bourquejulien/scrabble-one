@@ -35,6 +35,10 @@ class SocketClientMock {
     emit(event: string, ...params: any[]) {
         return;
     }
+
+    close() {
+        return;
+    }
 }
 
 fdescribe('CommunicationBoxComponent', () => {
