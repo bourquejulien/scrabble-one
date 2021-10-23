@@ -1,8 +1,5 @@
 import { Injectable } from '@angular/core';
 import { GameConfig } from '@app/classes/game-config';
-import { letterDefinitions } from '@common';
-import { MessageType } from '@app/classes/message';
-import { PlayerType } from '@app/classes/player-type';
 import { PlayerStats } from '@app/classes/player/player-stats';
 import { TimeSpan } from '@app/classes/time/timespan';
 import { Constants } from '@app/constants/global.constants';
@@ -10,6 +7,7 @@ import { MessagingService } from '@app/services/messaging/messaging.service';
 import { PlayerService } from '@app/services/player/player.service';
 import { ReserveService } from '@app/services/reserve/reserve.service';
 import { VirtualPlayerService } from '@app/services/virtual-player/virtual-player.service';
+import { letterDefinitions, MessageType, PlayerType } from '@common';
 import { BehaviorSubject, Subject } from 'rxjs';
 import { environment } from '@environment';
 import { HttpClient } from '@angular/common/http';
@@ -84,7 +82,7 @@ export class GameService {
 
         this.firstPlayerStats.points = this.playerService.playerData.score;
         this.secondPlayerStats.points = this.virtualPlayerService.playerData.score;
-        this.firstPlayerStats.rackSize = this.playerService.playerData.rack.length;
+        this.firstPlayerStats.rackSize = this.playerService.rack.length;
         this.secondPlayerStats.rackSize = this.virtualPlayerService.playerData.rack.length;
 
         this.emptyRackAndReserve();
@@ -108,16 +106,13 @@ export class GameService {
     }
 
     emptyRackAndReserve() {
-        if (
-            this.reserveService.length === 0 &&
-            (this.playerService.playerData.rack.length === 0 || this.virtualPlayerService.playerData.rack.length === 0)
-        ) {
+        if (this.reserveService.length === 0 && (this.playerService.rack.length === 0 || this.virtualPlayerService.playerData.rack.length === 0)) {
             this.endGamePoint();
 
-            if (this.playerService.playerData.rack.length === 0) {
+            if (this.playerService.rack.length === 0) {
                 this.playerService.playerData.score += this.playerRackPoint(this.virtualPlayerService.playerData.rack);
             } else {
-                this.virtualPlayerService.playerData.score += this.playerRackPoint(this.playerService.playerData.rack);
+                this.virtualPlayerService.playerData.score += this.playerRackPoint(this.playerService.rack);
             }
 
             this.gameRunning = false;
@@ -126,7 +121,7 @@ export class GameService {
     }
 
     endGamePoint() {
-        const finalScorePlayer = this.firstPlayerStats.points - this.playerRackPoint(this.playerService.playerData.rack);
+        const finalScorePlayer = this.firstPlayerStats.points - this.playerRackPoint(this.playerService.rack);
         const finalScoreVirtualPlayer = this.secondPlayerStats.points - this.playerRackPoint(this.virtualPlayerService.playerData.rack);
 
         this.firstPlayerStats.points = finalScorePlayer;
@@ -169,8 +164,8 @@ export class GameService {
             'Fin de partie - lettres restantes',
             this.gameConfig.firstPlayerName +
                 ' : ' +
-                this.playerService.playerData.rack +
-                ' ' +
+                this.playerService.rack +
+                '\n' +
                 this.gameConfig.secondPlayerName +
                 ' : ' +
                 this.virtualPlayerService.playerData.rack,

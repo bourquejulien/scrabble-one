@@ -5,14 +5,15 @@ import { MatToolbar } from '@angular/material/toolbar';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { GameConfig } from '@app/classes/game-config';
 import { cleanStyles } from '@app/classes/helpers/cleanup.helper';
-import { PlayerType } from '@app/classes/player-type';
 import { PlayerStats } from '@app/classes/player/player-stats';
 import { TimePipe } from '@app/classes/time/time.pipe';
 import { TimeSpan } from '@app/classes/time/timespan';
 import { AppMaterialModule } from '@app/modules/material.module';
 import { GameService } from '@app/services/game/game.service';
+import { PlayerType } from '@common';
 import { BehaviorSubject, Subject } from 'rxjs';
 import { GamePageComponent } from './game-page.component';
+import { RouterTestingModule } from '@angular/router/testing';
 
 const GAME_TYPES_LIST = ['Mode Solo Débutant'];
 
@@ -72,7 +73,7 @@ describe('GamePageComponent', () => {
         await TestBed.configureTestingModule({
             declarations: [GamePageComponent, PlayAreaStubComponent, MatToolbar, TimePipe],
             providers: [{ provide: GameService, useClass: GameServiceStub }],
-            imports: [AppMaterialModule, BrowserAnimationsModule],
+            imports: [AppMaterialModule, BrowserAnimationsModule, RouterTestingModule.withRoutes([])],
             schemas: [CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA],
         }).compileComponents();
     });
@@ -86,14 +87,6 @@ describe('GamePageComponent', () => {
 
     it('should create', () => {
         expect(component).toBeTruthy();
-    });
-
-    it('should call confirmQuit function if first button index', () => {
-        const currentButtonIndex = 0;
-        const spy = spyOn(component, 'confirmQuit');
-
-        component.callFunction(currentButtonIndex);
-        expect(spy).toHaveBeenCalled();
     });
 
     it('should call toggleDrawer function if second button index', () => {

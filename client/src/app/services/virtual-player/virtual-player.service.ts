@@ -1,6 +1,5 @@
 import { Injectable } from '@angular/core';
-import { PlayerData } from '@app/classes/player-data';
-import { PlayerType } from '@app/classes/player-type';
+import { PlayerType } from '@common';
 import { Timer } from '@app/classes/time/timer';
 import { TimeSpan } from '@app/classes/time/timespan';
 import { TimerService } from '@app/services/timer/timer.service';
@@ -8,6 +7,7 @@ import { Subject } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '@environment';
 import { SessionService } from '@app/services/session/session.service';
+import { PlayerData } from '@app/classes/player-data';
 
 const MIN_PLAYTIME_SECONDS = 3;
 

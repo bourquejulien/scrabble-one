@@ -1,6 +1,5 @@
 /* eslint-disable dot-notation */
 /* eslint-disable max-classes-per-file */
-import { Message } from '@app/classes/message';
 import { PlayerData } from '@app/classes/player-data';
 import { TimeSpan } from '@app/classes/time/timespan';
 import { Play } from '@app/classes/virtual-player/play';
@@ -8,7 +7,6 @@ import { PlayGenerator } from '@app/classes/virtual-player/play-generator';
 import { BoardService } from '@app/services/board/board.service';
 import { MessagingService } from '@app/services/messaging/messaging.service';
 import { TimerService } from '@app/services/timer/timer.service';
-import { Subject } from 'rxjs';
 import { PlaceAction } from './place-action';
 import { PlayAction } from './play-action';
 
@@ -41,9 +39,8 @@ describe('PlayAction', () => {
 
     beforeEach(() => {
         boardService = jasmine.createSpyObj('BoardService', ['lookupLetters']);
-        messagingServiceSpy = jasmine.createSpyObj('MessagingService', ['subject', 'onMessage', 'send']);
-        messagingServiceSpy['subject'] = new Subject<Message>();
-        messagingServiceSpy.onMessage.and.returnValue(messagingServiceSpy['subject'].asObservable());
+        messagingServiceSpy = jasmine.createSpyObj('MessagingService', ['send']);
+
         timerServiceStub = new TimerServiceStub();
         playGeneratorStub = new PlayGeneratorStub();
         playerData = { score: 0, skippedTurns: 0, rack: [] };

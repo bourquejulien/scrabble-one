@@ -1,12 +1,10 @@
 import { Injectable } from '@angular/core';
-import { Direction, Vec2 } from '@common';
-import { MessageType } from '@app/classes/message';
+import { Direction, MessageType, PlayerType, Vec2 } from '@common';
 import { Constants } from '@app/constants/global.constants';
 import { SystemMessages } from '@app/constants/system-messages.constants';
+import { GameService } from '@app/services/game/game.service';
 import { MessagingService } from '@app/services/messaging/messaging.service';
 import { PlayerService } from '@app/services/player/player.service';
-import { GameService } from '@app/services/game/game.service';
-import { PlayerType } from '@app/classes/player-type';
 
 @Injectable({
     providedIn: 'root',
@@ -37,7 +35,10 @@ export class CommandsService {
                 case '!passer':
                     successfulCommand = this.skipTurn();
                     break;
-                case '!echanger':
+                case '!reserve':
+                    this.showReserve();
+                    break;
+                case '!échanger':
                     successfulCommand = this.exchangeLetters(this.removeAccents(args[1]));
                     break;
                 default:
@@ -59,6 +60,10 @@ export class CommandsService {
     // Source: https://stackoverflow.com/questions/990904/remove-accents-diacritics-in-a-string-in-javascript by Lewis Diamond on 05/29/16
     private removeAccents(word: string): string {
         return word.normalize('NFD').replace(/\p{Diacritic}/gu, '');
+    }
+
+    private showReserve() {
+        // this.
     }
 
     private showHelp() {

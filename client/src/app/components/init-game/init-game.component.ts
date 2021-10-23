@@ -1,4 +1,4 @@
-import { Component, HostListener, OnInit, Inject } from '@angular/core';
+import { Component, HostListener, Inject, OnInit } from '@angular/core';
 import { FormControl, FormGroup, ValidatorFn, Validators } from '@angular/forms';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { Router } from '@angular/router';
@@ -41,15 +41,16 @@ const STARTS_LOWER_LETTER_ERROR: Error = {
 const POSSIBLE_ERRORS: Error[] = [STARTS_LOWER_LETTER_ERROR, CONTAINS_NOT_LETTERS_ERROR, REQUIRED_ERROR, MAX_LENGTH_ERROR, MIN_LENGTH_ERROR];
 
 @Component({
-    selector: 'app-init-solo-mode',
-    templateUrl: './init-solo-mode.component.html',
-    styleUrls: ['./init-solo-mode.component.scss'],
+    selector: 'app-init-game',
+    templateUrl: './init-game.component.html',
+    styleUrls: ['./init-game.component.scss'],
 })
-export class InitSoloModeComponent implements OnInit {
+export class InitGameComponent implements OnInit {
     readonly gameTypesList = GAME_TYPES_LIST;
     readonly botNames = BOT_NAMES;
     readonly minutesList = TURN_LENGTH_MINUTES;
     readonly secondsList = TURN_LENGTH_SECONDS;
+    nextPage: string;
     nameForm: FormGroup;
     gameType = GameType;
     errorsList: string[] = [];
@@ -65,9 +66,11 @@ export class InitSoloModeComponent implements OnInit {
     constructor(
         public gameService: GameService,
         private router: Router,
-        public dialogRef: MatDialogRef<InitSoloModeComponent>,
+        public dialogRef: MatDialogRef<InitGameComponent>,
         @Inject(MAT_DIALOG_DATA) public data: { gameModeType: GameType },
-    ) {}
+    ) {
+        this.setNextpage();
+    }
 
     @HostListener('keydown', ['$event'])
     async buttonDetect(event: KeyboardEvent) {
@@ -77,7 +80,9 @@ export class InitSoloModeComponent implements OnInit {
     }
 
     ngOnInit(): void {
+        this.gameService.reset();
         this.gameConfig.secondPlayerName = this.randomizeBotName(this.botNames);
+        this.gameService.startGame(this.gameConfig);
     }
 
     async initialize(): Promise<void> {
@@ -85,8 +90,7 @@ export class InitSoloModeComponent implements OnInit {
 
         if (needsToReroute) {
             this.dialogRef.close();
-            this.router.navigate(['game']);
-            await this.gameService.startGame(this.gameConfig);
+            this.router.navigate([this.nextPage]);
         }
     }
 
@@ -160,5 +164,14 @@ export class InitSoloModeComponent implements OnInit {
             }
         }
         return null;
+    }
+
+    private setNextpage(): void {
+        if (this.data.gameModeType === GameType.Solo) {
+            this.nextPage = 'game';
+        }
+        if (this.data.gameModeType === GameType.CreateOnline) {
+            this.nextPage = 'waiting-room';
+        }
     }
 }

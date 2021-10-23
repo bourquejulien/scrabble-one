@@ -1,32 +1,38 @@
-import { AfterContentInit, AfterViewInit, ChangeDetectionStrategy, Component, ElementRef, OnDestroy, ViewChild } from '@angular/core';
-import { Message, MessageType } from '@app/classes/message';
-import { PlayerType } from '@app/classes/player-type';
+import { AfterViewInit, Component, ElementRef, ViewChild } from '@angular/core';
+import { Message, MessageType, PlayerType } from '@common';
 import { Constants } from '@app/constants/global.constants';
 import { CommandsService } from '@app/services/commands/commands.service';
 import { GameService } from '@app/services/game/game.service';
-import { MessagingService } from '@app/services/messaging/messaging.service';
-import { Subscription } from 'rxjs';
+import { SocketClientService } from '@app/services/socket-client/socket-client.service';
+
 @Component({
     selector: 'app-communication-box',
     templateUrl: './communication-box.component.html',
     styleUrls: ['./communication-box.component.scss'],
-    changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class CommunicationBoxComponent implements OnDestroy, AfterViewInit, AfterContentInit {
+export class CommunicationBoxComponent implements AfterViewInit {
     @ViewChild('messageContainer') private messageContainer: ElementRef<HTMLDivElement>;
     messages: Message[] = [];
-    subscription: Subscription;
     inputValue: string;
 
-    constructor(private commandsService: CommandsService, private messagingService: MessagingService, private gameService: GameService) {}
-
-    ngAfterContentInit(): void {
-        this.scroll();
-    }
+    constructor(private commandsService: CommandsService, private gameService: GameService, private readonly socket: SocketClientService) {}
 
     ngAfterViewInit(): void {
-        this.subscription = this.messagingService.onMessage().subscribe((message) => {
+        this.socket.socketClient.on('message', (message: Message) => {
             this.messages.push(message);
+            this.scroll();
+        });
+
+        this.socket.socketClient.on('connect_error', (err) => {
+            // TODO: this is for debug
+            const socketErrorMsg: Message = {
+                title: 'Socket Error: Closing Connection',
+                body: `${err.message}`,
+                messageType: MessageType.Error,
+                userId: PlayerType.Local,
+            };
+            this.messages.push(socketErrorMsg);
+            this.socket.socketClient.close();
         });
     }
 
@@ -67,10 +73,6 @@ export class CommunicationBoxComponent implements OnDestroy, AfterViewInit, Afte
 
     shouldDisplay(message: Message) {
         return message.userId === PlayerType.Local || (message.userId === PlayerType.Virtual && message.messageType === MessageType.Message);
-    }
-
-    ngOnDestroy() {
-        this.subscription.unsubscribe();
     }
 
     private scroll(): void {
