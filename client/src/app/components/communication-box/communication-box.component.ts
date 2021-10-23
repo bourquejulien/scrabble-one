@@ -76,11 +76,9 @@ export class CommunicationBoxComponent implements AfterViewInit {
     }
 
     private scroll(): void {
-        if (this.messageContainer) {
-            this.messageContainer.nativeElement.scroll({
-                top: this.messageContainer.nativeElement.scrollHeight + this.messageContainer.nativeElement.offsetHeight,
-                behavior: 'smooth',
-            });
-        }
+        this.messageContainer?.nativeElement.scroll({
+            top: this.messageContainer.nativeElement.scrollHeight + this.messageContainer.nativeElement.offsetHeight,
+            behavior: 'smooth',
+        });
     }
 }
