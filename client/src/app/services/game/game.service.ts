@@ -155,12 +155,12 @@ export class GameService {
         this.messaging.send(
             'Fin de partie - lettres restantes',
             this.gameConfig.firstPlayerName +
-            ' : ' +
-            this.playerService.rack +
-            '\n' +
-            this.gameConfig.secondPlayerName +
-            ' : ' +
-            this.virtualPlayerService.playerData.rack,
+                ' : ' +
+                this.playerService.rack +
+                '\n' +
+                this.gameConfig.secondPlayerName +
+                ' : ' +
+                this.virtualPlayerService.playerData.rack,
             MessageType.System,
         );
     }
