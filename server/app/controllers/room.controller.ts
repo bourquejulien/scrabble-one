@@ -15,6 +15,8 @@ export class RoomController {
     async isRoomFull(socket: Socket, roomId: string): Promise<boolean> {
         const maxPlayers = 2;
         const roomSockets = await socket.in(roomId).fetchSockets();
+        console.log('Inside isRoomFull');
+        console.log(roomSockets.length);
         if (roomSockets.length >= maxPlayers) {
             return true;
         }
@@ -36,7 +38,11 @@ export class RoomController {
             });
 
             socket.on('newOnlineGame', () => {
-                this.availableRooms.push(uuidv4());
+                const roomId = uuidv4();
+                this.availableRooms.push(roomId);
+
+                socket.join(roomId);
+                console.log('Created room: ', roomId);
             });
 
             socket.on('getRooms', () => {
@@ -48,16 +54,14 @@ export class RoomController {
 
                 if (roomIndex !== -1) {
                     console.log('Joined room: ', roomId);
-                    if (await this.isRoomFull(socket, roomId)) {
+                    socket.join(roomId);
+
+                    const isCurrentRoomFull = await this.isRoomFull(socket, roomId);
+
+                    if (isCurrentRoomFull) {
                         console.log('Room is already full');
                         this.availableRooms.splice(roomIndex, 1);
                     }
-                    socket.join(roomId);
-                } else if (roomId === '') {
-                    const newRoomID = uuidv4();
-                    this.availableRooms.push(newRoomID);
-                    socket.join(newRoomID);
-                    console.log(`New room created with ID ${newRoomID} for socketID ${socket.id}`);
                     this.socketServer.emit('availableRooms', this.availableRooms);
                 } else {
                     console.log('Invalid room ID provided: ', roomId);
