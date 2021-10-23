@@ -1,0 +1,47 @@
+#board-canvas {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+}
+
+#grid-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    margin-top: 0rem;
+    top: 0rem;
+    margin-right: 5rem;
+    right: 0rem;
+}
+
+#size-selector {
+    margin-left: auto;
+    margin-right: 0;
+}
+
+.board-display {
+    flex-wrap: wrap;
+    position: relative;
+}
+
+#grid-canvas {
+    z-index: 0;
+    position: absolute;
+}
+
+#square-canvas {
+    z-index: 1;
+    position: absolute;
+}
+
+canvas {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    left: 0;
+    top: 0;
+}

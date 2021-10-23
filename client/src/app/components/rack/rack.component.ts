@@ -1,77 +1,125 @@
-import { Component, HostListener } from '@angular/core';
+import { Component, EventEmitter, HostListener, OnInit, Output } from '@angular/core';
 import { letterDefinitions } from '@common';
 import { RackService } from '@app/services/rack/rack.service';
+
+interface Selection {
+    swap: {
+        index: number;
+        lastIndex: number;
+    };
+    reserve: Set<number>;
+}
 
 @Component({
     selector: 'app-rack',
     templateUrl: './rack.component.html',
     styleUrls: ['./rack.component.scss'],
 })
-export class RackComponent {
-    swapSelection: number = -1;
-    lastIndex = 0;
-    isFocus = false;
+export class RackComponent implements OnInit {
+    @Output() reserveSelectionChange = new EventEmitter<Set<number>>();
 
-    constructor(readonly rackService: RackService) {}
+    selection: Selection;
+    isFocus: boolean;
+
+    constructor(readonly rackService: RackService) {
+        this.selection = {
+            swap: {
+                index: -1,
+                lastIndex: 0,
+            },
+            reserve: new Set<number>(),
+        };
+
+        this.isFocus = false;
+    }
 
     @HostListener('body:keydown', ['$event'])
     onKeyDown(event: KeyboardEvent) {
         this.handleKeyPress(event.key);
 
-        if (this.swapSelection < 0) return;
+        if (this.selection.swap.index < 0) return;
 
         switch (event.key) {
             case 'ArrowRight':
-                this.swapSelection = this.rackService.swapRight(this.swapSelection);
+                this.selection.swap.index = this.rackService.swapRight(this.selection.swap.index);
+                this.selection.reserve.clear();
                 break;
             case 'ArrowLeft':
-                this.swapSelection = this.rackService.swapLeft(this.swapSelection);
+                this.selection.swap.index = this.rackService.swapLeft(this.selection.swap.index);
+                this.selection.reserve.clear();
                 break;
         }
     }
 
+    @HostListener('document:click', ['$event'])
+    onDocumentClick(): void {
+        if (this.isFocus) return;
+
+        this.reset();
+    }
+
+    ngOnInit(): void {
+        this.reset();
+        this.reserveSelectionChange.emit(this.selection.reserve);
+    }
+
+    onLeftClick(position: number): void {
+        this.swapSelectionIndex = position;
+    }
+
+    onRightClick(position: number): boolean {
+        if (this.selection.reserve.delete(position) || this.selection.swap.index === position) return false; // Ensures no context menu is showed.
+
+        this.selection.reserve.add(position);
+
+        return false; // Ensures no context menu is showed.
+    }
+
     onMousewheel(event: WheelEvent): void {
-        if (this.swapSelection < 0) {
-            this.swapSelection = 0;
+        if (this.selection.swap.index < 0) {
+            this.selection.swap.index = 0;
             return;
         }
 
         if (event.deltaY < 0) {
-            this.swapSelection = this.rackService.mod(this.swapSelection + 1);
+            this.swapSelectionIndex = this.rackService.mod(this.selection.swap.index + 1);
         } else {
-            this.swapSelection = this.rackService.mod(this.swapSelection - 1);
+            this.swapSelectionIndex = this.rackService.mod(this.selection.swap.index - 1);
         }
     }
 
-    onClick(position: number): void {
-        this.swapSelection = position;
-    }
-
     reset() {
-        this.swapSelection = -1;
-        this.lastIndex = 0;
-        this.isFocus = false;
+        this.selection.swap.index = -1;
+        this.selection.swap.lastIndex = 0;
+        this.selection.reserve.clear();
     }
 
     retrievePoints(letter: string): number {
         const currentLetterData = letterDefinitions.get(letter);
 
-        if (currentLetterData?.points === undefined) return -1;
+        if (currentLetterData) {
+            return currentLetterData.points;
+        }
 
-        return currentLetterData.points;
+        return -1;
     }
 
     private handleKeyPress(key: string) {
         // TODO isFocus a verifier avec un charge
-        if (!this.isFocus || key.length !== 1 || !key.match('([a-z]|\\*)')) return;
+        if (key.length !== 1 || !key.match('([a-z]|\\*)')) return;
 
-        const index = this.rackService.indexOf(key, this.lastIndex);
+        const index = this.rackService.indexOf(key, this.selection.swap.lastIndex);
 
-        if (index !== -1) {
-            this.swapSelection = index;
-            this.lastIndex = index + 1;
+        if (index !== -1 && this.isFocus) {
+            this.swapSelectionIndex = index;
+            this.selection.swap.lastIndex = index + 1;
         } else {
             this.reset();
         }
+    }
+
+    private set swapSelectionIndex(position: number) {
+        this.selection.reserve.delete(position);
+        this.selection.swap.index = position;
     }
 }

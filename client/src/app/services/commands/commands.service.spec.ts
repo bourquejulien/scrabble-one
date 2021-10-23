@@ -7,14 +7,18 @@ import { Direction } from '@app/classes/board/direction';
 import { CommandsService } from '@app/services/commands/commands.service';
 import { GameService } from '@app/services/game/game.service';
 import { PlayerService } from '@app/services/player/player.service';
+import { ReserveService } from '@app/services/reserve/reserve.service';
 import { PlayerType, Vec2 } from '@common';
 
 describe('CommandsService', () => {
     let playerServiceSpy: jasmine.SpyObj<PlayerService>;
+    let reserveServiceSpy: jasmine.SpyObj<ReserveService>;
     let service: CommandsService;
 
     beforeEach(() => {
         playerServiceSpy = jasmine.createSpyObj('PlayerService', ['completeTurn', 'exchangeLetters', 'placeLetters']);
+        reserveServiceSpy = jasmine.createSpyObj('ReserveService', ['getLetterAndQuantity', 'reserve']);
+        reserveServiceSpy['reserve'] = ['a'];
 
         playerServiceSpy = jasmine.createSpyObj('PlayerService', ['completeTurn', 'exchangeLetters', 'placeLetters', 'skipTurn']);
 
@@ -22,6 +26,7 @@ describe('CommandsService', () => {
             providers: [
                 { provide: PlayerService, useValue: playerServiceSpy },
                 { provide: GameService, useValue: jasmine.createSpyObj('GameService', [], [{ currentTurn: PlayerType.Local }]) },
+                { provide: ReserveService, useValue: reserveServiceSpy },
             ],
         });
         service = TestBed.inject(CommandsService);
@@ -114,6 +119,11 @@ describe('CommandsService', () => {
         //     expect(message.messageType).toEqual(MessageType.Error);
         // });
         service.parseInput('!skip');
+    });
+
+    it('#parseInput should call displayReserve', () => {
+        service.parseInput('!réserve');
+        expect(reserveServiceSpy.getLetterAndQuantity).toHaveBeenCalled();
     });
 
     it("should fail when it is not the user's turn", () => {
