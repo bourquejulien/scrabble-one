@@ -38,7 +38,7 @@ export class RoomController {
             });
 
             socket.on('newOnlineGame', () => {
-                const roomId = uuidv4();;
+                const roomId = uuidv4();
                 this.availableRooms.push(roomId);
 
                 socket.join(roomId);
@@ -62,13 +62,6 @@ export class RoomController {
                         console.log('Room is already full');
                         this.availableRooms.splice(roomIndex, 1);
                     }
-                    this.socketServer.emit('availableRooms', this.availableRooms);
-                }
-                else if (roomId === '') {
-                    const newRoomID = uuidv4();
-                    this.availableRooms.push(newRoomID);
-                    socket.join(newRoomID);
-                    console.log(`New room created with ID ${newRoomID} for socketID ${socket.id}`);
                     this.socketServer.emit('availableRooms', this.availableRooms);
                 } else {
                     console.log('Invalid room ID provided: ', roomId);
