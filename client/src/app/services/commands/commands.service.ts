@@ -132,7 +132,7 @@ export class CommandsService {
 
     private toggleDebug(): void {
         this.messagingService.debuggingMode = !this.messagingService.debuggingMode;
-        this.messagingService.send('', this.messagingService.debuggingMode ? SystemMessages.DebugOn : SystemMessages.DebugOff, MessageType.Log);
+        this.messagingService.send('', this.messagingService.debuggingMode ? SystemMessages.DebugOn : SystemMessages.DebugOff, MessageType.System);
     }
 
     private isUsersTurn(): boolean {
