@@ -8,9 +8,9 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { Router } from '@angular/router';
 import { GameType } from '@app/classes/game-type';
 import { cleanStyles } from '@app/classes/helpers/cleanup.helper';
-import { PlayerType } from '@app/classes/player-type';
 import { AppMaterialModule } from '@app/modules/material.module';
 import { GameService } from '@app/services/game/game.service';
+import { PlayerType } from '@common';
 import { InitGameComponent } from './init-game.component';
 
 @Injectable({
@@ -19,6 +19,10 @@ import { InitGameComponent } from './init-game.component';
 class GameServiceStub {
     currentTurn: PlayerType = PlayerType.Local;
     startGame(): void {
+        // Does Nothing
+    }
+
+    reset(): void {
         // Does Nothing
     }
 }

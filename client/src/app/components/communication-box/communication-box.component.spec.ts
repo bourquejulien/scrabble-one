@@ -7,15 +7,13 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormsModule } from '@angular/forms';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { cleanStyles } from '@app/classes/helpers/cleanup.helper';
-import { Message, MessageType } from '@app/classes/message';
-import { PlayerType } from '@app/classes/player-type';
 import { TimeSpan } from '@app/classes/time/timespan';
 import { Constants } from '@app/constants/global.constants';
 import { AppMaterialModule } from '@app/modules/material.module';
 import { CommandsService } from '@app/services/commands/commands.service';
 import { GameService } from '@app/services/game/game.service';
 import { MessagingService } from '@app/services/messaging/messaging.service';
-import { Subject } from 'rxjs';
+import { Message, MessageType, PlayerType } from '@common';
 import { CommunicationBoxComponent } from './communication-box.component';
 
 describe('CommunicationBoxComponent', () => {
@@ -23,19 +21,18 @@ describe('CommunicationBoxComponent', () => {
     let fixture: ComponentFixture<CommunicationBoxComponent>;
     let dummyMessage: Message;
     let messagingServiceSpy: jasmine.SpyObj<MessagingService>;
+
     const gameService = {
         gameConfig: {
             gameType: 'qwerty',
             playTime: TimeSpan.fromMinutesSeconds(1, 0),
-            firstPlayerName: 'qwerty',
-            secondPlayerName: 'uiop',
+            firstPlayerName: 'Alphonse',
+            secondPlayerName: 'Lucienne',
         },
     };
 
     beforeEach(async () => {
-        messagingServiceSpy = jasmine.createSpyObj('MessagingService', ['subject', 'onMessage']);
-        messagingServiceSpy['subject'] = new Subject<Message>();
-        messagingServiceSpy.onMessage.and.returnValue(messagingServiceSpy['subject'].asObservable());
+        messagingServiceSpy = jasmine.createSpyObj('MessagingService', ['onMessage']);
 
         await TestBed.configureTestingModule({
             declarations: [CommunicationBoxComponent],
@@ -52,7 +49,6 @@ describe('CommunicationBoxComponent', () => {
     beforeEach(() => {
         fixture = TestBed.createComponent(CommunicationBoxComponent);
         component = fixture.componentInstance;
-        component['messagingService'] = messagingServiceSpy;
         fixture.detectChanges();
 
         dummyMessage = {
@@ -73,24 +69,6 @@ describe('CommunicationBoxComponent', () => {
 
     it('should return true when the input is not empty', () => {
         expect(component.send('Message.')).toBeTruthy();
-    });
-
-    it('should have subscribed', () => {
-        expect(component['subscription']).toBeDefined();
-    });
-
-    it('should push a message into the array', () => {
-        component['messagingService'].onMessage().subscribe(() => {
-            expect(component['messages'].length).toBe(1);
-        });
-        component['messagingService']['subject'].next(dummyMessage);
-    });
-
-    it('should scroll when receiving new message', () => {
-        const spy = spyOn(component['messageContainer']['nativeElement'], 'scroll');
-        component.ngAfterContentInit();
-        expect(component['messagingService']).toBeDefined();
-        expect(spy).toHaveBeenCalled();
     });
 
     it('should return the title of the message', () => {

@@ -1,8 +1,7 @@
 /* eslint-disable dot-notation -- Need to access private properties for testing*/
 /* eslint-disable max-classes-per-file -- Needs many stubbed classes in order to test*/
 import { TestBed } from '@angular/core/testing';
-import { MessageType } from '@app/classes/message';
-import { PlayerType } from '@app/classes/player-type';
+import { MessageType, PlayerType } from '@common';
 import { Constants } from '@app/constants/global.constants';
 import { PlayerService } from '@app/services/player/player.service';
 import { ReserveService } from '@app/services/reserve/reserve.service';
@@ -18,12 +17,14 @@ describe('GameService', () => {
     let reserveService: ReserveService;
     let playerService: jasmine.SpyObj<PlayerService>;
     let virtualPlayerServiceSpy: jasmine.SpyObj<VirtualPlayerService>;
+    let mockRack: string[];
 
     beforeEach(() => {
-        const mockRack = ['K', 'E', 'S', 'E', 'I', 'O', 'V'];
+        mockRack = ['K', 'E', 'S', 'E', 'I', 'O', 'V'];
 
         playerService = jasmine.createSpyObj('playerService', ['startTurn', 'turnComplete', 'fillRack', 'reset', 'emptyRack'], {
-            playerData: { score: 0, skippedTurns: 0, rack: mockRack },
+            playerData: { score: 0, skippedTurns: 0, rack: [] },
+            rack: mockRack,
             turnComplete: new Subject(),
         });
 
@@ -101,7 +102,7 @@ describe('GameService', () => {
     it('should end game', () => {
         const spy = spyOn(service, 'endGamePoint');
         reserveService.setReserve([]);
-        playerService.playerData.rack = [];
+        mockRack.length = 0;
         service.emptyRackAndReserve();
         expect(spy).toHaveBeenCalled();
     });
@@ -109,7 +110,7 @@ describe('GameService', () => {
     it('should end game', () => {
         const spy = spyOn(service, 'endGamePoint');
         reserveService.setReserve([]);
-        playerService.playerData.rack = [];
+        mockRack.length = 0;
         service.emptyRackAndReserve();
         expect(spy).toHaveBeenCalled();
     });
@@ -131,7 +132,7 @@ describe('GameService', () => {
     it('should subtracts rack value to ', () => {
         service.firstPlayerStats.points = PLAYER_POINTS;
         playerService.fillRack(MAX_LENGTH_RACK);
-        const rackValue = service.playerRackPoint(playerService.playerData.rack);
+        const rackValue = service.playerRackPoint(playerService.rack);
         service.endGamePoint();
         const finalScore = PLAYER_POINTS - rackValue;
         expect(service.firstPlayerStats.points).toEqual(finalScore);
@@ -169,20 +170,17 @@ describe('GameService', () => {
         expect(playerService.playerData.skippedTurns).toEqual(Constants.MAX_SKIP_TURN);
     });
 
-    it('shoould send rack', () => {
+    it('should send rack', () => {
         const spy = spyOn(service['messaging'], 'send');
         service.sendRackInCommunication();
         expect(spy).toHaveBeenCalledWith(
             'Fin de partie - lettres restantes',
             service.gameConfig.firstPlayerName +
                 ' : ' +
-                service.gameConfig.firstPlayerName +
-                service['playerService'].playerData.rack +
-                ' ' +
-                service.gameConfig.firstPlayerName +
+                service['playerService'].rack +
+                '\n' +
                 service.gameConfig.secondPlayerName +
                 ' : ' +
-                service.gameConfig.firstPlayerName +
                 service['virtualPlayerService'].playerData.rack,
             MessageType.System,
         );

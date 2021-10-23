@@ -2,12 +2,12 @@
 import { Injectable } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { PlayerData } from '@app/classes/player-data';
-import { PlayerType } from '@app/classes/player-type';
 import { Timer } from '@app/classes/time/timer';
 import { TimeSpan } from '@app/classes/time/timespan';
 import { ReserveService } from '@app/services/reserve/reserve.service';
 import { TimerService } from '@app/services/timer/timer.service';
 import { VirtualPlayerService } from '@app/services/virtual-player/virtual-player.service';
+import { PlayerType } from '@common';
 import { Action } from './actions/action';
 import { VirtualPlayerActionService } from './virtual-player-action.service';
 

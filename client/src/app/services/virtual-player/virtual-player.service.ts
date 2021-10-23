@@ -1,6 +1,5 @@
 import { Injectable } from '@angular/core';
-import { PlayerData } from '@app/classes/player-data';
-import { PlayerType } from '@app/classes/player-type';
+import { PlayerType } from '@common';
 import { Timer } from '@app/classes/time/timer';
 import { TimeSpan } from '@app/classes/time/timespan';
 import { Constants } from '@app/constants/global.constants';
@@ -8,6 +7,7 @@ import { ReserveService } from '@app/services/reserve/reserve.service';
 import { TimerService } from '@app/services/timer/timer.service';
 import { Subject } from 'rxjs';
 import { VirtualPlayerActionService } from './virtual-player-action.service';
+import { PlayerData } from '@app/classes/player-data';
 
 const MIN_PLAYTIME_SECONDS = 3;
 
