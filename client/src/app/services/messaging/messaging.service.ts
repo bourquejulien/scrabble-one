@@ -17,11 +17,6 @@ export class MessagingService {
             messageType,
             userId: user,
         };
-
-        if (this.debuggingMode) {
-            this.socket.socketClient.emit('message', message);
-        } else if (message.messageType !== MessageType.Log) {
-            this.socket.socketClient.emit('message', message);
-        }
+        this.socket.socketClient.emit('message', message);
     }
 }

@@ -6,11 +6,11 @@ import { Constants } from '@app/constants/global.constants';
 import { SystemMessages } from '@app/constants/system-messages.constants';
 import { BoardService } from '@app/services/board/board.service';
 import { MessagingService } from '@app/services/messaging/messaging.service';
+import { RackService } from '@app/services/rack/rack.service';
 import { ReserveService } from '@app/services/reserve/reserve.service';
 import { TimerService } from '@app/services/timer/timer.service';
 import { MessageType, PlayerType, Vec2 } from '@common';
 import { Subject } from 'rxjs';
-import { RackService } from '@app/services/rack/rack.service';
 
 @Injectable({
     providedIn: 'root',
@@ -41,7 +41,7 @@ export class PlayerService {
         this.timerService.start(playTime, PlayerType.Local);
     }
 
-    placeLetters(word: string, position: Vec2, direction: Direction): void {
+    placeLetters(word: string, position: Vec2, direction: Direction): boolean {
         let starLetter = '';
 
         for (let letter of word) {
@@ -64,14 +64,14 @@ export class PlayerService {
 
         if (!this.areLettersInRack(lettersToPlace)) {
             this.completeTurn();
-            return;
+            return false;
         }
 
         const validationData = this.boardService.lookupLetters(positionToPlace);
         if (!validationData.isSuccess) {
             this.messagingService.send('', validationData.description, MessageType.Log);
             this.completeTurn();
-            return;
+            return false;
         }
         this.playerData.score += validationData.points;
 
@@ -82,16 +82,18 @@ export class PlayerService {
 
         this.playerData.skippedTurns = 0;
         this.completeTurn();
+
+        return true;
     }
 
-    exchangeLetters(lettersToExchange: string): void {
+    exchangeLetters(lettersToExchange: string): boolean {
         const lettersToExchangeLength = lettersToExchange.length;
 
-        if (!this.areLettersInRack(lettersToExchange)) return;
+        if (!this.areLettersInRack(lettersToExchange)) return false;
 
         if (this.reserveService.length < Constants.RACK_SIZE) {
             this.messagingService.send(SystemMessages.ImpossibleAction, SystemMessages.NotEnoughLetters, MessageType.Error);
-            return;
+            return false;
         }
 
         for (let i = 0; i < lettersToExchangeLength; i++) {
@@ -105,6 +107,8 @@ export class PlayerService {
         this.updateRack(lettersToExchange);
         this.playerData.skippedTurns = 0;
         this.completeTurn();
+
+        return true;
     }
 
     skipTurn(): void {
