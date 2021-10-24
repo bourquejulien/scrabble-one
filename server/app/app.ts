@@ -7,13 +7,20 @@ import express from 'express';
 import { StatusCodes } from 'http-status-codes';
 import logger from 'morgan';
 import { Service } from 'typedi';
+import { DictionaryService } from '@app/services/dictionary/dictionary.service';
 
 @Service()
 export class Application {
     app: express.Application;
     private readonly internalError: number = StatusCodes.INTERNAL_SERVER_ERROR;
 
-    constructor(private readonly gameController: GameController, private readonly boardController: BoardController) {
+    constructor(
+        private readonly gameController: GameController,
+        private readonly boardController: BoardController,
+        dictionaryService: DictionaryService,
+    ) {
+        dictionaryService.retrieveDictionary();
+
         this.app = express();
         this.config();
         this.bindRoutes();

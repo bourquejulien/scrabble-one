@@ -3,13 +3,16 @@ import { Service } from 'typedi';
 
 @Service()
 export class SessionHandlingService {
-    sessionHandlers: SessionHandler[];
+    private readonly sessionHandlers: SessionHandler[];
+    private readonly playerIds: Map<string, string>;
 
     constructor() {
         this.sessionHandlers = [];
+        this.playerIds = new Map<string, string>();
     }
 
     addHandler(sessionHandler: SessionHandler): void {
+        sessionHandler.players.forEach((p) => this.playerIds.set(p.id, sessionHandler.sessionInfo.id));
         this.sessionHandlers.push(sessionHandler);
     }
 
@@ -17,8 +20,10 @@ export class SessionHandlingService {
         const index = this.sessionHandlers.findIndex((e) => e.sessionInfo.id === id);
         if (index < 0) return null;
 
-        this.sessionHandlers[index].destroy();
+        const sessionHandler = this.sessionHandlers[index];
 
+        sessionHandler.players.forEach((p) => this.playerIds.delete(p.id));
+        sessionHandler.destroy();
         return this.sessionHandlers.slice(index, 1)[0];
     }
 

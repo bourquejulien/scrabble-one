@@ -23,7 +23,7 @@ export class GameService {
             gameType: gameConfig.gameType,
         };
 
-        const sessionHandler = new SessionHandler(sessionInfo, new BoardHandler(board, this.boardGeneratorService.generateBoardValidator(board)));
+        const sessionHandler = new SessionHandler(sessionInfo, new BoardHandler(board, this.boardGeneratorService.generateBoardValidator(board)), []);
 
         return this.startGame(sessionHandler);
     }
