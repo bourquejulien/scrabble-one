@@ -1,33 +1,10 @@
-<div id="grid-container">
-    <div id="board" [style.width.px]="width" [style.height.px]="height">
-        <canvas
-            class="board-display"
-            id="grid-canvas"
-            #gridCanvas
-            [style.width.px]="width"
-            [style.height.px]="height"
-            [attr.width]="width"
-            [attr.height]="height"
-        ></canvas>
-        <canvas
-            class="board-display"
-            id="squareCanvas"
-            #squareCanvas
-            [style.width.px]="width"
-            [style.height.px]="height"
-            (click)="mouseHandlingService.mouseHitDetect($event)"
-            [attr.width]="width"
-            [attr.height]="height"
-        ></canvas>
-    </div>
-    <app-size-selector
-        id="size-selector"
-        [minSize]="gridService.minFontSize"
-        [maxSize]="gridService.maxFontSize"
-        [size]="gridService.letterFontFace.size"
-        (sizeUpdated)="updateFontSize($event)"
-    ></app-size-selector>
+<div id="play-area-container">
+    <app-board class="board" [playerType]="playerType"></app-board>
     <div class="rack">
-        <app-rack></app-rack>
+        <app-rack (reserveSelectionChange)='reserveSelection=$event' ></app-rack>
+    </div>
+    <div>
+        <button mat-button [ngClass]="{ 'invisible': reserveSelection.size === 0}" class="exchange-command">Échanger</button>
+        <button mat-button (click)='cancelExchange()' [ngClass]="{ 'invisible': reserveSelection.size === 0}" class="exchange-command">Annuler</button>
     </div>
 </div>

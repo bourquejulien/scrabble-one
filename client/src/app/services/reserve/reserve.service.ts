@@ -26,10 +26,11 @@ export class ReserveService {
         return this.reserve.splice(randomLetterIndex, 1)[0];
     }
 
-    getLetterQuantity(letterToUpdate: string): number {
+    getLetterAndQuantity(letterToUpdate: string): string {
         const firstIndex = this.reserve.indexOf(letterToUpdate);
         const lastIndex = this.reserve.lastIndexOf(letterToUpdate);
-        return lastIndex - firstIndex + 1;
+        const currentQuantity = lastIndex - firstIndex + 1;
+        return `${letterToUpdate.toUpperCase()} : ${currentQuantity}`;
     }
 
     get length(): number {
