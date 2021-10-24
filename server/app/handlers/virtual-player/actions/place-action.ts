@@ -1,13 +1,13 @@
-import { PlayerData } from '@app/classes/player-data';
+import { BoardHandler } from '@app/classes/board/board-handler';
 import { Play } from '@app/classes/virtual-player/play';
-import { BoardService } from '@app/services/board/board.service';
+import { PlayerData } from '@common';
 import { Action } from './action';
 
 export class PlaceAction implements Action {
-    constructor(private readonly boardService: BoardService, private readonly play: Play, private readonly playerData: PlayerData) {}
+    constructor(private readonly boardHandler: BoardHandler, private readonly play: Play, private readonly playerData: PlayerData) {}
 
     execute(): Action | null {
-        this.boardService.placeLetters(this.play.letters);
+        this.boardHandler.placeLetters(this.play.letters);
 
         this.playerData.score += this.play.score;
         this.play.letters.forEach((letter) =>

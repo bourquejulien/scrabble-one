@@ -1,31 +1,33 @@
-import { MessageType, PlayerType } from '@common';
-import { PlayerData } from '@app/classes/player-data';
-import { TimeSpan } from '@app/classes/time/timespan';
+import { BoardHandler } from '@app/classes/board/board-handler';
+import { MessageType } from '@app/classes/messaging/message';
+import { Messaging } from '@app/classes/messaging/messaging';
 import { PlayGenerator } from '@app/classes/virtual-player/play-generator';
-import { Constants } from '@app/constants/global.constants';
-import { BoardService } from '@app/services/board/board.service';
-import { MessagingService } from '@app/services/messaging/messaging.service';
-import { TimerService } from '@app/services/timer/timer.service';
+import { Constants, PlayerData, PlayerType } from '@common';
 import { Action } from './action';
 import { PlaceAction } from './place-action';
 
-const MAX_PLAYTIME_SECONDS = 20;
+const MAX_PLAYTIME_MILISECONDS = 20000;
+const INTERVAL_TIME = 100;
 
 export class PlayAction implements Action {
     constructor(
-        private readonly boardService: BoardService,
-        private readonly timerService: TimerService,
+        private readonly boardHandler: BoardHandler,
         private readonly playGenerator: PlayGenerator,
         private readonly playerData: PlayerData,
-        private readonly messagingService: MessagingService,
+        private readonly messaging: Messaging,
     ) {}
 
     execute(): Action | null {
         const scoreRange = this.getScoreRange();
 
-        const startTime = this.timerService.time;
-
-        while (this.shouldRun(startTime) && this.playGenerator.generateNext());
+        let ranCounter = 0;
+        const timerInterval = setInterval(() => {
+            if (ranCounter * INTERVAL_TIME < MAX_PLAYTIME_MILISECONDS && this.playGenerator.generateNext()) {
+                ranCounter++;
+            } else {
+                clearInterval(timerInterval);
+            }
+        }, INTERVAL_TIME);
 
         const filteredPlays = this.playGenerator.orderedPlays.filter((e) => e.score >= scoreRange.min && e.score <= scoreRange.max);
 
@@ -40,8 +42,8 @@ export class PlayAction implements Action {
             const alternativeIndex = (chosenPlay + i) % filteredPlays.length;
             alternatives += filteredPlays[alternativeIndex].word + ' ';
         }
-        this.messagingService.send('', 'Mot alternatifs: ' + alternatives, MessageType.Log, PlayerType.Virtual);
-        return new PlaceAction(this.boardService, play, this.playerData);
+        this.messaging.send('', 'Mot alternatifs: ' + alternatives, MessageType.Log, PlayerType.Virtual);
+        return new PlaceAction(this.boardHandler, play, this.playerData);
     }
 
     private getScoreRange(): { min: number; max: number } {
@@ -56,9 +58,5 @@ export class PlayAction implements Action {
         }
 
         return { min: 0, max: 0 };
-    }
-
-    private shouldRun(startTime: TimeSpan) {
-        return this.timerService.time.seconds >= 0 && startTime.seconds - this.timerService.time.seconds < MAX_PLAYTIME_SECONDS;
     }
 }

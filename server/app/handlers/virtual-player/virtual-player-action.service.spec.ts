@@ -11,7 +11,7 @@ import { TimerService } from '@app/services/timer/timer.service';
 import { ExchangeAction } from './actions/exchange-action';
 import { PlayAction } from './actions/play-action';
 import { SkipAction } from './actions/skip-action';
-import { VirtualPlayerActionService } from './virtual-player-action.service';
+import { VirtualPlayerActionService } from './virtual-player-action';
 
 @Injectable({
     providedIn: 'root',
