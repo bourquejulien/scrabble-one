@@ -1,28 +1,24 @@
 import { Board } from '@app/classes/board/board';
-import { BoardHandler } from '@app/classes/board/board-handler';
-import { BoardValidatorFactory } from '@app/classes/validation/board-validator-factory';
 import { Config } from '@app/config';
 import { DictionaryService } from '@app/services/dictionary/dictionary.service';
-import { SessionHandlingService } from '@app/services/session-handling.service';
 import JsonBonuses from '@assets/bonus.json';
 import { Bonus, BonusInfos, letterDefinitions } from '@common';
 import { Service } from 'typedi';
+import { BoardValidator } from '@app/classes/validation/board-validator';
 
 @Service()
-export class BoardHandlingService {
+export class BoardGeneratorService {
     static bonusNumber = new Map<Bonus, number>([
         [Bonus.L2, 0],
         [Bonus.W2, 0],
         [Bonus.L3, 0],
         [Bonus.W3, 0],
     ]);
-    mustShuffle = true;
-    private readonly boardValidatorFactory: BoardValidatorFactory;
 
-    constructor(dictionary: DictionaryService, private readonly sessionHandlingService: SessionHandlingService) {
-        const letterValues = BoardHandlingService.retrieveLetterValues();
-        this.boardValidatorFactory = new BoardValidatorFactory(dictionary, letterValues);
-    }
+    mustShuffle = true;
+
+    constructor(private readonly dictionaryService: DictionaryService) {}
+
     private static retrieveLetterValues(): { [key: string]: number } {
         const letterValues: { [key: string]: number } = {};
 
@@ -45,6 +41,7 @@ export class BoardHandlingService {
         }
         return bonuses;
     }
+
     private static shuffleBonuses(bonusesArray: BonusInfos[]): BonusInfos[] {
         const bonusBank: Bonus[] = this.initializeBonusBank();
         for (const bonusInfo of bonusesArray) {
@@ -59,6 +56,7 @@ export class BoardHandlingService {
         }
         return bonusesArray;
     }
+
     private static initializeBonusBank() {
         const bonusBank: Bonus[] = [];
         for (const jsonBonus of JsonBonuses) {
@@ -75,14 +73,12 @@ export class BoardHandlingService {
         }
         return bonusBank;
     }
-    getBoardHandler(id: string): BoardHandler | null {
-        const board = this.sessionHandlingService.getHandler(id)?.board;
-        if (board === undefined) return null;
-
-        return new BoardHandler(board, this.boardValidatorFactory);
-    }
 
     generateBoard(): Board {
-        return new Board(Config.GRID.GRID_SIZE, BoardHandlingService.retrieveBonuses(false));
+        return new Board(Config.GRID.GRID_SIZE, BoardGeneratorService.retrieveBonuses(this.mustShuffle));
+    }
+
+    generateBoardValidator(board: Board): BoardValidator {
+        return new BoardValidator(board, this.dictionaryService, BoardGeneratorService.retrieveLetterValues());
     }
 }

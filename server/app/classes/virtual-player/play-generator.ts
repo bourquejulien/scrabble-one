@@ -2,7 +2,7 @@ import { Direction, reverseDirection, Vec2, Square, Placement } from '@common';
 import { ImmutableBoard } from '@app/classes/board/board';
 import { Dictionary } from '@app/classes/dictionary/dictionary';
 import { Play } from './play';
-import { BoardHandler } from '@app/classes/board/board-handler';
+import { BoardHandler } from '@app/handlers/board-handler/board-handler';
 
 interface PositionedWord {
     word: string;

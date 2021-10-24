@@ -1,8 +1,5 @@
+import { SessionHandler } from '@app/handlers/session-handler/session-handler';
 import { Service } from 'typedi';
-import { SessionHandler } from '@app/classes/session-handler';
-import { SessionInfo } from '@app/classes/session-info';
-import { Board } from '@app/classes/board/board';
-import { generateId } from '@app/classes/id';
 
 @Service()
 export class SessionHandlingService {
@@ -12,15 +9,15 @@ export class SessionHandlingService {
         this.sessionHandlers = [];
     }
 
-    addHandler(sessionInfo: SessionInfo, board: Board): string {
-        const id = generateId();
-        this.sessionHandlers.push(new SessionHandler(id, sessionInfo, board));
-        return id;
+    addHandler(sessionHandler: SessionHandler): void {
+        this.sessionHandlers.push(sessionHandler);
     }
 
     removeHandler(id: string): SessionHandler | null {
         const index = this.sessionHandlers.findIndex((e) => e.id === id);
         if (index < 0) return null;
+
+        this.sessionHandlers[index].destroy();
 
         return this.sessionHandlers.slice(index, 1)[0];
     }

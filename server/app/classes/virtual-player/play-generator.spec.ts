@@ -7,7 +7,7 @@ import { Dictionary } from '@app/classes/dictionary/dictionary';
 import { Placement, Vec2, Direction, ValidationResponse } from '@common';
 import { Config } from '@app/config';
 import { PlayGenerator } from './play-generator';
-import { BoardHandler } from '@app/classes/board/board-handler';
+import { BoardHandler } from '@app/handlers/board-handler/board-handler';
 
 class StubDictionary implements Dictionary {
     words: string[] = [];
