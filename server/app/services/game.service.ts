@@ -1,8 +1,7 @@
 import { Answer } from '@app/classes/answer';
-import { SessionInfo } from '@app/classes/session-info';
 import { SessionHandlingService } from '@app/services/session-handling.service';
 import { BoardGeneratorService } from '@app/services/board/board-generator.service';
-import { Message } from '@common';
+import { Message, ServerGameConfig, VirtualGameConfig } from '@common';
 import { Service } from 'typedi';
 import { SessionHandler } from '@app/handlers/session-handler/session-handler';
 import { generateId } from '@app/classes/id';
@@ -16,18 +15,17 @@ export class GameService {
         this.clientMessages = [];
     }
 
-    async startGame(sessionInfo: SessionInfo): Promise<Answer> {
+    async startVirtualGame(gameConfig: VirtualGameConfig): Promise<ServerGameConfig> {
         const board = this.boardGeneratorService.generateBoard();
-        const id = generateId();
-
-        const sessionHandler = new SessionHandler(id, sessionInfo, new BoardHandler(board, this.boardGeneratorService.generateBoardValidator(board)));
-
-        this.sessionHandlingService.addHandler(sessionHandler);
-
-        return {
-            isSuccess: true,
-            body: id,
+        const sessionInfo = {
+            id: generateId(),
+            playTimeMs: gameConfig.playTimeMs,
+            gameType: gameConfig.gameType,
         };
+
+        const sessionHandler = new SessionHandler(sessionInfo, new BoardHandler(board, this.boardGeneratorService.generateBoardValidator(board)));
+
+        return this.startGame(sessionHandler);
     }
 
     async stopGame(id: string): Promise<Answer> {
@@ -35,5 +33,11 @@ export class GameService {
             isSuccess: this.sessionHandlingService.removeHandler(id) != null,
             body: '',
         };
+    }
+
+    private async startGame(sessionHandler: SessionHandler): Promise<ServerGameConfig> {
+        this.sessionHandlingService.addHandler(sessionHandler);
+
+        return sessionHandler.serverConfig;
     }
 }

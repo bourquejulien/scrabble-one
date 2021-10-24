@@ -2,7 +2,7 @@
 import { Message } from '@common';
 import * as http from 'http';
 import { Server, Socket } from 'socket.io';
-import { v4 as uuidv4 } from 'uuid';
+import { generateId } from '@app/classes/id';
 
 export class RoomController {
     private socketServer: Server;
@@ -38,7 +38,7 @@ export class RoomController {
             });
 
             socket.on('newOnlineGame', () => {
-                const roomId = uuidv4();
+                const roomId = generateId();
                 this.availableRooms.push(roomId);
 
                 socket.join(roomId);

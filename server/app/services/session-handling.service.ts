@@ -14,7 +14,7 @@ export class SessionHandlingService {
     }
 
     removeHandler(id: string): SessionHandler | null {
-        const index = this.sessionHandlers.findIndex((e) => e.id === id);
+        const index = this.sessionHandlers.findIndex((e) => e.sessionInfo.id === id);
         if (index < 0) return null;
 
         this.sessionHandlers[index].destroy();
@@ -23,6 +23,6 @@ export class SessionHandlingService {
     }
 
     getHandler(id: string): SessionHandler | null {
-        return this.sessionHandlers.find((e) => e.id === id) ?? null;
+        return this.sessionHandlers.find((e) => e.sessionInfo.id === id) ?? null;
     }
 }

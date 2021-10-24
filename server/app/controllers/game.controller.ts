@@ -121,8 +121,7 @@ export class GameController {
          */
         this.router.put('/start', async (req: Request, res: Response) => {
             try {
-                const answer = await this.gameService.startGame(req.body);
-                res.status(answer.isSuccess ? Constants.HTTP_STATUS.CREATED : Constants.HTTP_STATUS.BAD_REQUEST);
+                const answer = await this.gameService.startVirtualGame(req.body);
                 res.json(answer);
             } catch (e: unknown) {
                 res.status(Constants.HTTP_STATUS.BAD_REQUEST);
