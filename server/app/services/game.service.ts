@@ -1,7 +1,7 @@
 import { Answer } from '@app/classes/answer';
 import { SessionHandlingService } from '@app/services/session-handling.service';
 import { BoardGeneratorService } from '@app/services/board/board-generator.service';
-import { Message, ServerGameConfig, VirtualGameConfig } from '@common';
+import { Message, ServerGameConfig, SinglePlayerGameConfig } from '@common';
 import { Service } from 'typedi';
 import { SessionHandler } from '@app/handlers/session-handler/session-handler';
 import { generateId } from '@app/classes/id';
@@ -15,7 +15,7 @@ export class GameService {
         this.clientMessages = [];
     }
 
-    async startVirtualGame(gameConfig: VirtualGameConfig): Promise<ServerGameConfig> {
+    async startVirtualGame(gameConfig: SinglePlayerGameConfig): Promise<ServerGameConfig> {
         const board = this.boardGeneratorService.generateBoard();
         const sessionInfo = {
             id: generateId(),

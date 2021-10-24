@@ -2,8 +2,8 @@ import { AfterViewInit, Component, ElementRef, ViewChild } from '@angular/core';
 import { Message, MessageType, PlayerType } from '@common';
 import { Constants } from '@app/constants/global.constants';
 import { CommandsService } from '@app/services/commands/commands.service';
-import { GameService } from '@app/services/game/game.service';
 import { SocketClientService } from '@app/services/socket-client/socket-client.service';
+import { SessionService } from '@app/services/session/session.service';
 
 @Component({
     selector: 'app-communication-box',
@@ -15,7 +15,7 @@ export class CommunicationBoxComponent implements AfterViewInit {
     messages: Message[] = [];
     inputValue: string;
 
-    constructor(private commandsService: CommandsService, private gameService: GameService, private readonly socket: SocketClientService) {}
+    constructor(private commandsService: CommandsService, private sessionService: SessionService, private readonly socket: SocketClientService) {}
 
     ngAfterViewInit(): void {
         this.socket.socketClient.on('message', (message: Message) => {
@@ -64,8 +64,8 @@ export class CommunicationBoxComponent implements AfterViewInit {
             case MessageType.Game:
             case MessageType.Message:
                 return message.userId === PlayerType.Local
-                    ? this.gameService.gameConfig.firstPlayerName
-                    : this.gameService.gameConfig.secondPlayerName;
+                    ? this.sessionService.gameConfig.firstPlayerName
+                    : this.sessionService.gameConfig.secondPlayerName;
             default:
                 return message.title;
         }

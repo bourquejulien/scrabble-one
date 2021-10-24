@@ -9,6 +9,7 @@ import { TimerService } from '@app/services/timer/timer.service';
 import { PlayerType } from '@common';
 import { Subscription } from 'rxjs';
 import { filter } from 'rxjs/operators';
+import { SessionService } from '@app/services/session/session.service';
 
 export enum Icon {
     Logout = 'exit_to_app',
@@ -31,21 +32,22 @@ interface ButtonConfig {
 export class GamePageComponent implements OnDestroy {
     @ViewChild('drawer', { static: true }) drawer: MatDrawer;
 
-    gameService: GameService;
-    timerService: TimerService;
     playerType: PlayerType;
     buttonConfig: ButtonConfig[] = [];
     iconList: string[];
     isOpen: boolean = true;
-    route: Router;
     private readonly pageChange: Subscription;
 
     private onTurnSubscription: Subscription;
     private gameEndingSubscription: Subscription;
 
-    constructor(gameService: GameService, timerService: TimerService, public dialog: MatDialog, router: Router) {
-        this.route = router;
-        this.gameService = gameService;
+    constructor(
+        readonly gameService: GameService,
+        readonly sessionService: SessionService,
+        readonly timerService: TimerService,
+        readonly dialog: MatDialog,
+        readonly router: Router,
+    ) {
         this.playerType = gameService.onTurn.getValue();
         this.timerService = timerService;
         this.buttonConfig = [
@@ -102,11 +104,11 @@ export class GamePageComponent implements OnDestroy {
 
         dialogRef.afterClosed().subscribe((result) => {
             if (result === true) {
-                this.route.navigate(['home']);
+                this.router.navigate(['home']);
                 this.gameService.reset();
                 return;
             }
-            this.route.navigate(['game']);
+            this.router.navigate(['game']);
         });
     }
 

@@ -1,8 +1,14 @@
-export interface VirtualGameConfig {
-    gameType: '',
-    playTimeMs: number,
-    firstPlayerName: '',
-    virtualPlayerName: '',
+export interface SinglePlayerGameConfig {
+    gameType: string;
+    playTimeMs: number;
+    playerName: string;
+    virtualPlayerName: string;
+}
+
+export interface MultiplayerGameConfig {
+    gameType: string;
+    playTimeMs: number;
+    playerName: string;
 }
 
 export interface ServerGameConfig {
