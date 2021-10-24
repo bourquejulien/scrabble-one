@@ -82,7 +82,7 @@ describe('CommunicationBoxComponent', () => {
         component['gameService']['gameConfig']['secondPlayerName'] = secondPlayerName;
         expect(component.getTitle(dummyMessage)).toBe(dummyMessage.title);
         dummyMessage.messageType = MessageType.Game;
-        dummyMessage.userId = PlayerType.Local;
+        dummyMessage.userId = PlayerType.Human;
         expect(component.getTitle(dummyMessage)).toEqual(firstPlayerName);
         dummyMessage.userId = PlayerType.Virtual;
         expect(component.getTitle(dummyMessage)).toEqual(secondPlayerName);
@@ -100,7 +100,7 @@ describe('CommunicationBoxComponent', () => {
         expect(component.getMessageColor(dummyMessage)).toBe(Constants.ERROR_COLOR);
         dummyMessage.messageType = MessageType.Message;
         expect(component.getMessageColor(dummyMessage)).toBe(Constants.OTHERS_COLOR);
-        dummyMessage.userId = PlayerType.Local;
+        dummyMessage.userId = PlayerType.Human;
         expect(component.getMessageColor(dummyMessage)).toBe(Constants.MY_COLOR);
     });
 

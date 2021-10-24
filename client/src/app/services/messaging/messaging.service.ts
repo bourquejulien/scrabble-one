@@ -10,7 +10,7 @@ export class MessagingService {
     constructor(private readonly socket: SocketClientService) {}
 
     send(title: string, body: string, messageType: MessageType, user?: PlayerType): void {
-        if (!user) user = PlayerType.Local;
+        if (!user) user = PlayerType.Human;
         const message = {
             title,
             body,

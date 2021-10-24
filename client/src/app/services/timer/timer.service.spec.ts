@@ -23,14 +23,14 @@ describe('TimerService', () => {
     });
 
     it('should have a 0 time value after stop', () => {
-        service.start(TimeSpan.fromSeconds(1), PlayerType.Local);
+        service.start(TimeSpan.fromSeconds(1), PlayerType.Human);
         service.stop();
 
         expect(service.time.totalMilliseconds).toEqual(0);
     });
 
     it('time should not be 0 after starting timer', () => {
-        service.start(TimeSpan.fromSeconds(1), PlayerType.Local);
+        service.start(TimeSpan.fromSeconds(1), PlayerType.Human);
 
         expect(service.time.totalMilliseconds).toEqual(TimeSpan.fromSeconds(1).totalMilliseconds);
     });

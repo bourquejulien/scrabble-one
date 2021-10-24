@@ -24,7 +24,7 @@ describe('CommandsService', () => {
         TestBed.configureTestingModule({
             providers: [
                 { provide: PlayerService, useValue: playerServiceSpy },
-                { provide: GameService, useValue: jasmine.createSpyObj('GameService', [], [{ currentTurn: PlayerType.Local }]) },
+                { provide: GameService, useValue: jasmine.createSpyObj('GameService', [], [{ currentTurn: PlayerType.Human }]) },
                 { provide: ReserveService, useValue: reserveServiceSpy },
             ],
         });

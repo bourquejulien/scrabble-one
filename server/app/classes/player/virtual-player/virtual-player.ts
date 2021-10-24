@@ -20,9 +20,9 @@ export class VirtualPlayer implements IPlayer {
 
     constructor(
         readonly playerInfo: PlayerInfo,
-        private readonly reserve: ReserveHandler,
         private readonly dictionaryService: DictionaryService,
         private readonly boardHandler: BoardHandler,
+        private readonly reserve: ReserveHandler,
         private readonly runAction: (action: Action) => Action | null,
     ) {
         this.playerData = { score: 0, skippedTurns: 0, rack: [] };

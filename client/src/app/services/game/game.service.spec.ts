@@ -61,7 +61,7 @@ describe('GameService', () => {
         const spy = spyOn(Math, 'random').and.returnValue(1);
         await service.startGame(service.gameConfig);
         expect(spy).toHaveBeenCalled();
-        expect(service.currentTurn).toBe(PlayerType.Local);
+        expect(service.currentTurn).toBe(PlayerType.Human);
     });
 
     it('start should define currentTurn and swap from Local to Virtual', async () => {
@@ -140,7 +140,7 @@ describe('GameService', () => {
 
     it('should next turn', () => {
         const spyNextTurn = spyOn(service, 'nextTurn');
-        service['handleTurnCompletion'](PlayerType.Local);
+        service['handleTurnCompletion'](PlayerType.Human);
         expect(spyNextTurn).toHaveBeenCalled();
     });
 

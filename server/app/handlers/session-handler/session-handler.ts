@@ -8,17 +8,20 @@ export class SessionHandler {
     constructor(
         readonly sessionInfo: SessionInfo,
         readonly boardHandler: BoardHandler,
-        reserveHandler: ReserveHandler,
+        readonly reserveHandler: ReserveHandler,
         readonly players: IPlayer[],
     ) {}
 
-    get serverConfig(): ServerGameConfig {
+    getServerConfig(id: string): ServerGameConfig {
+        const firstPlayer = this.players.find((p) => p.id === id) ?? this.players[0];
+        const secondPlayer = this.players.find((p) => p.id !== firstPlayer.id) ?? this.players[1];
+
         return {
             id: this.sessionInfo.id,
             gameType: this.sessionInfo.gameType,
             playTimeMs: this.sessionInfo.playTimeMs,
-            firstPlayerName: '',
-            secondPlayerName: '',
+            firstPlayerName: firstPlayer.playerInfo.name,
+            secondPlayerName: secondPlayer.playerInfo.name,
         };
     }
 

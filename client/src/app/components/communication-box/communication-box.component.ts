@@ -29,7 +29,7 @@ export class CommunicationBoxComponent implements AfterViewInit {
                 title: 'Socket Error: Closing Connection',
                 body: `${err.message}`,
                 messageType: MessageType.Error,
-                userId: PlayerType.Local,
+                userId: PlayerType.Human,
             };
             this.messages.push(socketErrorMsg);
             this.socket.socketClient.close();
@@ -55,7 +55,7 @@ export class CommunicationBoxComponent implements AfterViewInit {
             case MessageType.Log:
             case MessageType.Message:
             default:
-                return message.userId === PlayerType.Local ? Constants.MY_COLOR : Constants.OTHERS_COLOR;
+                return message.userId === PlayerType.Human ? Constants.MY_COLOR : Constants.OTHERS_COLOR;
         }
     }
 
@@ -63,7 +63,7 @@ export class CommunicationBoxComponent implements AfterViewInit {
         switch (message.messageType) {
             case MessageType.Game:
             case MessageType.Message:
-                return message.userId === PlayerType.Local
+                return message.userId === PlayerType.Human
                     ? this.sessionService.gameConfig.firstPlayerName
                     : this.sessionService.gameConfig.secondPlayerName;
             default:
@@ -72,7 +72,7 @@ export class CommunicationBoxComponent implements AfterViewInit {
     }
 
     shouldDisplay(message: Message) {
-        return message.userId === PlayerType.Local || (message.userId === PlayerType.Virtual && message.messageType === MessageType.Message);
+        return message.userId === PlayerType.Human || (message.userId === PlayerType.Virtual && message.messageType === MessageType.Message);
     }
 
     private scroll(): void {

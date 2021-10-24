@@ -24,7 +24,7 @@ class TimerServiceMock {
     gotStopped = false;
 
     start(span: TimeSpan, playerType: PlayerType) {
-        expect(playerType).toEqual(PlayerType.Local);
+        expect(playerType).toEqual(PlayerType.Human);
         expect(span.seconds).toEqual(MAX_PLAYTIME_SECONDS);
 
         this.gotStarted = true;
@@ -110,11 +110,11 @@ describe('PlayerService', () => {
 
     it('should notify player if startTurn', (done) => {
         service.turnComplete.subscribe((playerType) => {
-            expect(playerType).toEqual(PlayerType.Local);
+            expect(playerType).toEqual(PlayerType.Human);
             done();
         });
         service.startTurn(TimeSpan.fromSeconds(MAX_PLAYTIME_SECONDS));
-        timerService.countdownStopped.next(PlayerType.Local);
+        timerService.countdownStopped.next(PlayerType.Human);
         service.turnComplete.unsubscribe();
     });
 
@@ -213,23 +213,23 @@ describe('PlayerService', () => {
 
     it('should notify player change if completeTurn', (done) => {
         service.turnComplete.subscribe((playerType) => {
-            expect(playerType).toEqual(PlayerType.Local);
+            expect(playerType).toEqual(PlayerType.Human);
             done();
         });
         service.completeTurn();
 
-        timerService.countdownStopped.next(PlayerType.Local);
+        timerService.countdownStopped.next(PlayerType.Human);
     });
 
     it('should skip turn', (done) => {
         service.turnComplete.subscribe((playerType) => {
-            expect(playerType).toEqual(PlayerType.Local);
+            expect(playerType).toEqual(PlayerType.Human);
             done();
         });
         service.skipTurn();
 
         expect(service.playerData.skippedTurns).toEqual(1);
-        timerService.countdownStopped.next(PlayerType.Local);
+        timerService.countdownStopped.next(PlayerType.Human);
     });
 
     it('should add specified amount of letters to rack if valid number of letters to add is entered', () => {

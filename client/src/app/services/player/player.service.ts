@@ -32,12 +32,12 @@ export class PlayerService {
     ) {
         this.turnComplete = new Subject<PlayerType>();
         this.timerService.countdownStopped.subscribe((playerType) => {
-            if (PlayerType.Local === playerType) this.completeTurn();
+            if (PlayerType.Human === playerType) this.completeTurn();
         });
     }
 
     startTurn(playTime: TimeSpan): void {
-        this.timerService.start(playTime, PlayerType.Local);
+        this.timerService.start(playTime, PlayerType.Human);
     }
 
     async placeLetters(word: string, position: Vec2, direction: Direction): Promise<void> {
@@ -113,7 +113,7 @@ export class PlayerService {
     }
 
     completeTurn(): void {
-        this.turnComplete.next(PlayerType.Local);
+        this.turnComplete.next(PlayerType.Human);
     }
 
     fillRack(lengthToFill: number): void {

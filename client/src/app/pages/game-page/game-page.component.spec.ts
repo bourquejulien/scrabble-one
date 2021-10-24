@@ -32,9 +32,9 @@ class GameServiceStub {
         rackSize: 0,
     };
 
-    onTurn: BehaviorSubject<PlayerType> = new BehaviorSubject<PlayerType>(PlayerType.Local);
+    onTurn: BehaviorSubject<PlayerType> = new BehaviorSubject<PlayerType>(PlayerType.Human);
     gameEnding: Subject<void> = new Subject<void>();
-    currentTurn: PlayerType = PlayerType.Local;
+    currentTurn: PlayerType = PlayerType.Human;
     gameConfig: GameConfig = {
         gameType: GAME_TYPES_LIST[0],
         playTime: TimeSpan.fromSeconds(0),
@@ -43,10 +43,10 @@ class GameServiceStub {
     };
 
     nextTurn(): void {
-        if (this.currentTurn === PlayerType.Local) {
+        if (this.currentTurn === PlayerType.Human) {
             this.currentTurn = PlayerType.Virtual;
         } else {
-            this.currentTurn = PlayerType.Local;
+            this.currentTurn = PlayerType.Human;
         }
     }
 

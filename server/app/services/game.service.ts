@@ -1,17 +1,27 @@
 import { Answer } from '@app/classes/answer';
 import { SessionHandlingService } from '@app/services/session-handling.service';
 import { BoardGeneratorService } from '@app/services/board/board-generator.service';
-import { Message, ServerGameConfig, SinglePlayerGameConfig } from '@common';
+import { Message, PlayerType, ServerGameConfig, SinglePlayerGameConfig } from '@common';
 import { Service } from 'typedi';
 import { SessionHandler } from '@app/handlers/session-handler/session-handler';
 import { generateId } from '@app/classes/id';
 import { BoardHandler } from '@app/handlers/board-handler/board-handler';
+import { ReserveHandler } from '@app/handlers/reserve-handler/reserve-handler';
+import { VirtualPlayer } from '@app/classes/player/virtual-player/virtual-player';
+import { HumanPlayer } from '@app/classes/player/human-player/human-player';
+import { Action } from '@app/classes/player/virtual-player/actions/action';
+import { PlayerInfo } from '@app/classes/player-info';
+import { DictionaryService } from '@app/services/dictionary/dictionary.service';
 
 @Service()
 export class GameService {
     clientMessages: Message[];
 
-    constructor(private readonly boardGeneratorService: BoardGeneratorService, private readonly sessionHandlingService: SessionHandlingService) {
+    constructor(
+        private readonly boardGeneratorService: BoardGeneratorService,
+        private readonly sessionHandlingService: SessionHandlingService,
+        private readonly dictionnaryService: DictionaryService,
+    ) {
         this.clientMessages = [];
     }
 
@@ -23,9 +33,16 @@ export class GameService {
             gameType: gameConfig.gameType,
         };
 
-        const sessionHandler = new SessionHandler(sessionInfo, new BoardHandler(board, this.boardGeneratorService.generateBoardValidator(board)), []);
+        const boardHandler = new BoardHandler(board, this.boardGeneratorService.generateBoardValidator(board));
+        const reserveHandler = new ReserveHandler();
+        const humanPlayer = this.generateHumanPlayer(gameConfig, reserveHandler);
+        const virtualPlayer = this.generateVirtualPlayer(gameConfig, boardHandler, reserveHandler);
 
-        return this.startGame(sessionHandler);
+        const sessionHandler = new SessionHandler(sessionInfo, boardHandler, reserveHandler, [humanPlayer, virtualPlayer]);
+
+        this.sessionHandlingService.addHandler(sessionHandler);
+
+        return sessionHandler.getServerConfig(humanPlayer.id);
     }
 
     async stopGame(id: string): Promise<Answer> {
@@ -35,9 +52,24 @@ export class GameService {
         };
     }
 
-    private async startGame(sessionHandler: SessionHandler): Promise<ServerGameConfig> {
-        this.sessionHandlingService.addHandler(sessionHandler);
+    private generateHumanPlayer(gameConfig: SinglePlayerGameConfig, reserveHandler: ReserveHandler): HumanPlayer {
+        const playerInfo: PlayerInfo = {
+            id: generateId(),
+            name: gameConfig.virtualPlayerName,
+            playerType: PlayerType.Virtual,
+        };
 
-        return sessionHandler.serverConfig;
+        return new HumanPlayer(playerInfo, reserveHandler);
+    }
+
+    private generateVirtualPlayer(gameConfig: SinglePlayerGameConfig, boardHandler: BoardHandler, reserveHandler: ReserveHandler): VirtualPlayer {
+        const actionCallback = (action: Action) => action.execute();
+        const playerInfo: PlayerInfo = {
+            id: generateId(),
+            name: gameConfig.virtualPlayerName,
+            playerType: PlayerType.Virtual,
+        };
+
+        return new VirtualPlayer(playerInfo, this.dictionnaryService, boardHandler, reserveHandler, actionCallback);
     }
 }

@@ -6,11 +6,10 @@ import { Config } from '@app/config';
 import { ReserveHandler } from '@app/handlers/reserve-handler/reserve-handler';
 
 export class HumanPlayer implements IPlayer {
-    playerInfo: PlayerInfo;
     playerData: PlayerData;
     readonly turnEnded: BehaviorSubject<string>;
 
-    constructor(private readonly reserve: ReserveHandler) {
+    constructor(readonly playerInfo: PlayerInfo, readonly reserve: ReserveHandler) {
         this.playerData = { score: 0, skippedTurns: 0, rack: [] };
         this.turnEnded = new BehaviorSubject<string>(this.playerInfo.id);
     }

@@ -26,7 +26,7 @@ export class GameService {
     };
     gameRunning: boolean = false;
     skipTurnNb: number = 0;
-    currentTurn: PlayerType = PlayerType.Local;
+    currentTurn: PlayerType = PlayerType.Human;
     onTurn: BehaviorSubject<PlayerType>;
     gameEnding: Subject<void>;
 
@@ -37,7 +37,7 @@ export class GameService {
         private readonly httpCLient: HttpClient,
         private readonly sessionService: SessionService,
     ) {
-        this.onTurn = new BehaviorSubject<PlayerType>(PlayerType.Local);
+        this.onTurn = new BehaviorSubject<PlayerType>(PlayerType.Human);
         this.gameEnding = new Subject<void>();
         playerService.turnComplete.subscribe((e) => this.handleTurnCompletion(e));
         virtualPlayerService.turnComplete.subscribe((e) => this.handleTurnCompletion(e));
@@ -45,7 +45,7 @@ export class GameService {
 
     private static randomizeTurn(): PlayerType {
         const HALF = 0.5;
-        return Math.random() < HALF ? PlayerType.Local : PlayerType.Virtual;
+        return Math.random() < HALF ? PlayerType.Human : PlayerType.Virtual;
     }
 
     async startSinglePlayer(config: SinglePlayerGameConfig) {
@@ -83,7 +83,7 @@ export class GameService {
         this.emptyRackAndReserve();
         this.skipTurnLimit();
 
-        if (this.currentTurn === PlayerType.Local) {
+        if (this.currentTurn === PlayerType.Human) {
             this.onVirtualPlayerTurn();
         } else {
             this.onPlayerTurn();
@@ -177,7 +177,7 @@ export class GameService {
     }
 
     private onPlayerTurn() {
-        this.currentTurn = PlayerType.Local;
+        this.currentTurn = PlayerType.Human;
         this.onTurn.next(this.currentTurn);
         this.playerService.startTurn(this.sessionService.gameConfig.playTime);
     }
