@@ -1,8 +1,5 @@
 /* eslint-disable dot-notation */
-import { Message } from '@app/classes/message';
 import { PlayerData } from '@app/classes/player-data';
-import { MessagingService } from '@app/services/messaging/messaging.service';
-import { ReserveService } from '@app/services/reserve/reserve.service';
 import { Subject } from 'rxjs';
 import { ExchangeAction } from './exchange-action';
 
@@ -30,7 +27,6 @@ describe('ExchangeAction', () => {
     let reserveServiceStub: ReserveServiceStub;
     let exchangeAction: ExchangeAction;
     let playerData: PlayerData;
-    let messagingServiceSpy: jasmine.SpyObj<MessagingService>;
 
     beforeEach(() => {
         messagingServiceSpy = jasmine.createSpyObj('MessagingService', ['subject', 'onMessage', 'send']);

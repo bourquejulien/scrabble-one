@@ -1,6 +1,6 @@
-import { BoardHandler } from '@app/classes/board/board-handler';
+import { PlayerData } from '@app/classes/player-data';
 import { Play } from '@app/classes/virtual-player/play';
-import { PlayerData } from '@common';
+import { BoardHandler } from '@app/handlers/board-handler/board-handler';
 import { Action } from './action';
 
 export class PlaceAction implements Action {
