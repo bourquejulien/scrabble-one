@@ -1,8 +1,9 @@
 import { Injectable } from '@angular/core';
-import { BoardData, Direction, Placement, ValidationResponse, Vec2 } from '@common';
+import { BoardData, Bonus, Direction, Placement, Square, ValidationResponse, Vec2 } from '@common';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '@environment';
 import { SessionService } from '@app/services/session/session.service';
+import { Constants } from '@app/constants/global.constants';
 
 const localUrl = (call: string, id: string) => `${environment.serverUrl}api/board/${call}/${id}`;
 
@@ -11,11 +12,11 @@ const localUrl = (call: string, id: string) => `${environment.serverUrl}api/boar
 })
 export class BoardService {
     private boardData: BoardData;
+
     constructor(private readonly httpClient: HttpClient, private readonly sessionService: SessionService) {
-        this.boardData = { board: [], filledPositions: [] };
+        this.reset();
     }
 
-    // TODO Add a cache
     get gameBoard(): BoardData {
         return this.boardData;
     }
@@ -71,5 +72,21 @@ export class BoardService {
         }
 
         return placements;
+    }
+
+    reset(): void {
+        const boardData: BoardData = { board: [], filledPositions: [] };
+
+        for (let x = 0; x < Constants.GRID.GRID_SIZE; x++) {
+            const column: Square[] = [];
+
+            for (let y = 0; y < Constants.GRID.GRID_SIZE; y++) {
+                column.push({ letter: '', bonus: Bonus.None, position: { x, y } });
+            }
+
+            boardData.board.push(column);
+        }
+
+        this.boardData = boardData;
     }
 }

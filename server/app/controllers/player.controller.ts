@@ -59,6 +59,7 @@ export class PlayerController {
             res.json(humanPlayer.playerData);
         });
 
+        // TODO To remove once server is master over client
         this.router.post('/virtual', async (req: Request, res: Response) => {
             const virtualPlayer = this.getVirtualPlayer(req.body.id);
 

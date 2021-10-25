@@ -47,6 +47,10 @@ export class RackService {
     update(rack: string[]): void {
         rack = rack.slice();
 
+        for (let i = 0; i < rack.length - this.rack.length; i++) {
+            this.rack.push('');
+        }
+
         for (let i = 0; i < rack.length; i++) {
             const position = rack.indexOf(this.rack[i]);
             if (position !== -1) {
@@ -57,7 +61,6 @@ export class RackService {
         }
 
         for (const letter of rack) {
-            this.rack.indexOf('');
             this.rack[this.rack.indexOf('')] = letter;
         }
     }

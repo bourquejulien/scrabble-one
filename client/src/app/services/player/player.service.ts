@@ -21,6 +21,7 @@ export class PlayerService {
     turnComplete: Subject<PlayerType>;
 
     // TODO Should be replaced by stats once server-side events are used
+    // TODO Rack could be update by ReserveService
     playerData: PlayerData = {
         score: 0,
         skippedTurns: 0,
@@ -63,7 +64,9 @@ export class PlayerService {
     }
 
     async exchangeLetters(lettersToExchange: string): Promise<void> {
-        const playerData = await this.httpClient.post<PlayerData>(localUrl('exchange', this.sessionService.id), lettersToExchange).toPromise();
+        const letterArray = lettersToExchange.split('');
+        console.log(letterArray);
+        const playerData = await this.httpClient.post<PlayerData>(localUrl('exchange', this.sessionService.id), letterArray).toPromise();
 
         this.updateRack(playerData);
         await this.reserveService.refresh();
