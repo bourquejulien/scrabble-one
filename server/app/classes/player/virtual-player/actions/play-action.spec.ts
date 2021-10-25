@@ -1,5 +1,6 @@
 /* eslint-disable dot-notation */
 /* eslint-disable max-classes-per-file */
+/*
 import { Message } from '@app/classes/message';
 import { PlayerData } from '@app/classes/player-data';
 import { TimeSpan } from '@app/classes/time/timespan';
@@ -87,3 +88,4 @@ describe('PlayAction', () => {
         expect((nextAction as PlaceAction)['play']).toEqual(playGeneratorStub.orderedPlays[0]);
     });
 });
+*/

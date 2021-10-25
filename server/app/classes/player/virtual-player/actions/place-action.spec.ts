@@ -1,4 +1,5 @@
 /* eslint-disable max-classes-per-file */
+/*
 import { PlayerData } from '@app/classes/player-data';
 import { Vec2, ValidationResponse, Placement } from '@common';
 import { Play } from '@app/classes/virtual-player/play';
@@ -61,3 +62,4 @@ describe('PlaceAction', () => {
         expect(playerData.rack.length).toEqual(0);
     });
 });
+*/

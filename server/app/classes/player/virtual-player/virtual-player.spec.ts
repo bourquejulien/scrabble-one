@@ -1,4 +1,5 @@
 /* eslint-disable max-classes-per-file -- Multiple stubs are used */
+/*
 import { Action } from '@app/classes/virtual-player/actions/action';
 import { VirtualPlayer } from '@app/classes/virtual-player/virtual-player';
 import { PlayerData } from '@common';
@@ -36,3 +37,4 @@ describe('VirtualPlayerService', () => {
     });
 
 }
+*/

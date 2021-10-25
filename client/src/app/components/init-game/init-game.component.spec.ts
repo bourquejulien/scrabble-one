@@ -18,7 +18,7 @@ import { InitGameComponent } from './init-game.component';
 })
 class GameServiceStub {
     currentTurn: PlayerType = PlayerType.Human;
-    startGame(): void {
+    startSinglePlayer(): void {
         // Does Nothing
     }
 

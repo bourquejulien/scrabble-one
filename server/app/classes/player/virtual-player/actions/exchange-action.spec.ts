@@ -1,4 +1,5 @@
 /* eslint-disable dot-notation */
+/*
 import { PlayerData } from '@app/classes/player-data';
 import { Subject } from 'rxjs';
 import { ExchangeAction } from './exchange-action';
@@ -62,3 +63,4 @@ describe('ExchangeAction', () => {
         expect(reserveServiceStub.lastLetter).toEqual('');
     });
 });
+*/

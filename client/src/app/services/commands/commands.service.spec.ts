@@ -19,7 +19,7 @@ describe('CommandsService', () => {
         reserveServiceSpy = jasmine.createSpyObj('ReserveService', ['getLetterAndQuantity', 'reserve']);
         reserveServiceSpy['reserve'] = ['a'];
 
-        playerServiceSpy = jasmine.createSpyObj('PlayerService', ['completeTurn', 'exchangeLetters', 'placeLetters', 'skipTurn']);
+        playerServiceSpy = jasmine.createSpyObj('PlayerService', ['exchangeLetters', 'placeLetters', 'skipTurn']);
 
         TestBed.configureTestingModule({
             providers: [
@@ -109,7 +109,7 @@ describe('CommandsService', () => {
 
     it('#parseInput should call skip turn', () => {
         service.parseInput('!passer');
-        expect(playerServiceSpy.completeTurn).toHaveBeenCalled();
+        expect(playerServiceSpy.skipTurn).toHaveBeenCalled();
     });
 
     it("#parseInput should fail when it is not the user's turn", () => {

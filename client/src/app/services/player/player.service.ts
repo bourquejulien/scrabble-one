@@ -94,14 +94,8 @@ export class PlayerService {
         this.completeTurn();
     }
 
-    completeTurn(): void {
-        this.turnComplete.next(PlayerType.Human);
-    }
-
     async refresh(): Promise<void> {
         const response = await this.httpClient.get(localUrl('retrieve', this.sessionService.id)).toPromise();
-
-        console.log(response);
 
         this.updateRack(response as PlayerData);
         await this.reserveService.refresh();
@@ -122,6 +116,10 @@ export class PlayerService {
 
     get rack(): string[] {
         return this.rackService.rack;
+    }
+
+    private completeTurn(): void {
+        this.turnComplete.next(PlayerType.Human);
     }
 
     private updateRack(playerData: PlayerData): void {
