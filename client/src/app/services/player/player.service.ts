@@ -19,6 +19,8 @@ const localUrl = (call: string, id: string) => `${environment.serverUrl}api/play
 })
 export class PlayerService {
     turnComplete: Subject<PlayerType>;
+
+    // TODO Should be replaced by stats once server-side events are used
     playerData: PlayerData = {
         score: 0,
         skippedTurns: 0,

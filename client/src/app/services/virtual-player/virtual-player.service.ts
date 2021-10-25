@@ -11,6 +11,8 @@ import { PlayerData } from '@app/classes/player-data';
 
 const MIN_PLAYTIME_SECONDS = 3;
 
+// TODO To remove once the server is master over the client
+// DO NOT TEST!!
 @Injectable({
     providedIn: 'root',
 })
@@ -29,11 +31,15 @@ export class VirtualPlayerService {
         this.minTimer = new Timer();
     }
 
+    // TODO To remove once the server is master over the client
+    // DO NOT TEST!!
     async startTurn(playTime: TimeSpan) {
         this.timerService.start(playTime, PlayerType.Virtual);
         this.minTimer.start(TimeSpan.fromSeconds(MIN_PLAYTIME_SECONDS));
 
-        await this.httpClient.post(`${environment.serverUrl}api/game/virtual`, { id: this.sessionService.id });
+        this.playerData = await this.httpClient
+            .post<PlayerData>(`${environment.serverUrl}api/player/virtual`, { id: this.sessionService.id })
+            .toPromise();
         await this.minTimer.completed;
 
         this.endTurn();
