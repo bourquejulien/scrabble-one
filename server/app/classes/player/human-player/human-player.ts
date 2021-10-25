@@ -4,9 +4,10 @@ import { PlayerData } from '@app/classes/player-data';
 import { BehaviorSubject } from 'rxjs';
 import { Config } from '@app/config';
 import { ReserveHandler } from '@app/handlers/reserve-handler/reserve-handler';
-import { Placement } from '@common';
+import { Placement, Answer } from '@common';
 import { BoardHandler } from '@app/handlers/board-handler/board-handler';
 
+// TODO Fix messaging service: over sockets, or in Answer?
 export class HumanPlayer implements IPlayer {
     playerData: PlayerData;
     readonly turnEnded: BehaviorSubject<string>;
@@ -30,16 +31,16 @@ export class HumanPlayer implements IPlayer {
         }
     }
 
-    async placeLetters(placements: Placement[]): Promise<void> {
+    async placeLetters(placements: Placement[]): Promise<Answer> {
         const lettersToPlace: string[] = [];
 
         placements = this.boardHandler.retrieveNewLetters(placements);
 
-        for (let i = 0; i < placements.length; i++) {
-            let letter = placements[i].letter;
+        for (const item of placements) {
+            let letter = item.letter;
 
             if (letter[0].match(/^[A-Z]$/)) {
-                placements[i].letter = letter.toLowerCase();
+                item.letter = letter.toLowerCase();
                 letter = '*';
             }
 
@@ -48,14 +49,14 @@ export class HumanPlayer implements IPlayer {
 
         if (!this.areLettersInRack(lettersToPlace)) {
             this.endTurn();
-            return;
+            return { isSuccess: false, body: 'Letters not in rack' };
         }
 
         const validationData = await this.boardHandler.lookupLetters(placements);
         if (!validationData.isSuccess) {
             /* this.messagingService.send('', validationData.description, MessageType.Log); */
             this.endTurn();
-            return;
+            return { isSuccess: false, body: 'Validation failed' };
         }
 
         this.playerData.score += validationData.points;
@@ -67,14 +68,16 @@ export class HumanPlayer implements IPlayer {
 
         this.playerData.skippedTurns = 0;
         this.endTurn();
+
+        return { isSuccess: true, body: '' };
     }
 
-    exchangeLetters(lettersToExchange: string[]): void {
-        if (!this.areLettersInRack(lettersToExchange)) return;
+    exchangeLetters(lettersToExchange: string[]): Answer {
+        if (!this.areLettersInRack(lettersToExchange)) return { isSuccess: false, body: 'Letters not in rack' };
 
         if (this.reserveHandler.length < Config.RACK_SIZE) {
             /* this.messagingService.send(SystemMessages.ImpossibleAction, SystemMessages.NotEnoughLetters, MessageType.Error); */
-            return;
+            return { isSuccess: false, body: 'Letters not in rack' };
         }
 
         lettersToExchange.forEach(() => {
@@ -88,11 +91,15 @@ export class HumanPlayer implements IPlayer {
         this.updateRack(lettersToExchange);
         this.playerData.skippedTurns = 0;
         this.endTurn();
+
+        return { isSuccess: true, body: '' };
     }
 
-    skipTurn(): void {
+    skipTurn(): Answer {
         this.playerData.skippedTurns++;
         this.endTurn();
+
+        return { isSuccess: true, body: '' };
     }
 
     get id(): string {

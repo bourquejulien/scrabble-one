@@ -32,7 +32,10 @@ export class VirtualPlayer implements IPlayer {
     async startTurn(): Promise<void> {
         await this.delay(MIN_PLAYTIME_MILLISECONDS);
 
-        this.runAction(this.nextAction());
+        let action = this.runAction(this.nextAction());
+        while (action) {
+            action = this.runAction(action);
+        }
 
         this.fillRack();
         this.endTurn();

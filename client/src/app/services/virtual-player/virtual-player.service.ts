@@ -8,6 +8,8 @@ import { HttpClient } from '@angular/common/http';
 import { environment } from '@environment';
 import { SessionService } from '@app/services/session/session.service';
 import { PlayerData } from '@app/classes/player-data';
+import { ReserveService } from '@app/services/reserve/reserve.service';
+import { BoardService } from '@app/services/board/board.service';
 
 const MIN_PLAYTIME_SECONDS = 3;
 
@@ -25,6 +27,8 @@ export class VirtualPlayerService {
         private readonly timerService: TimerService,
         private readonly httpClient: HttpClient,
         private readonly sessionService: SessionService,
+        private readonly reserveService: ReserveService,
+        private readonly boardService: BoardService,
     ) {
         this.playerData = { score: 0, skippedTurns: 0, rack: [] };
         this.turnComplete = new Subject<PlayerType>();
@@ -40,6 +44,8 @@ export class VirtualPlayerService {
         this.playerData = await this.httpClient
             .post<PlayerData>(`${environment.serverUrl}api/player/virtual`, { id: this.sessionService.id })
             .toPromise();
+        await this.reserveService.refresh();
+        await this.boardService.refresh();
         await this.minTimer.completed;
 
         this.endTurn();

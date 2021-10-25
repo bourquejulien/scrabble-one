@@ -38,14 +38,14 @@ export class PlayGenerator {
 
         if (direction === Direction.Right) {
             increment = { x: 1, y: 0 };
-            position = { x: startPosition.x + positionWord.startPosition, y: startPosition.y };
+            position = { x: positionWord.startPosition, y: startPosition.y };
         } else {
             increment = { x: 0, y: 1 };
-            position = { x: startPosition.x + positionWord.startPosition, y: startPosition.y };
+            position = { x: startPosition.x, y: positionWord.startPosition };
         }
 
         for (const letter of positionWord.word) {
-            placements.push({ letter, position });
+            placements.push({ letter, position: { x: position.x, y: position.y } });
             position.x += increment.x;
             position.y += increment.y;
         }

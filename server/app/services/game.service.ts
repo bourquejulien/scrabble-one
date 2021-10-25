@@ -1,7 +1,6 @@
-import { Answer } from '@app/classes/answer';
+import { Answer, Message, PlayerType, ServerGameConfig, SinglePlayerGameConfig } from '@common';
 import { SessionHandlingService } from '@app/services/session-handling.service';
 import { BoardGeneratorService } from '@app/services/board/board-generator.service';
-import { Message, PlayerType, ServerGameConfig, SinglePlayerGameConfig } from '@common';
 import { Service } from 'typedi';
 import { SessionHandler } from '@app/handlers/session-handler/session-handler';
 import { generateId } from '@app/classes/id';
@@ -63,7 +62,7 @@ export class GameService {
     }
 
     private generateVirtualPlayer(gameConfig: SinglePlayerGameConfig, boardHandler: BoardHandler, reserveHandler: ReserveHandler): VirtualPlayer {
-        const actionCallback = (action: Action) => action.execute();
+        const actionCallback = (action: Action): Action | null => action.execute();
         const playerInfo: PlayerInfo = {
             id: generateId(),
             name: gameConfig.virtualPlayerName,

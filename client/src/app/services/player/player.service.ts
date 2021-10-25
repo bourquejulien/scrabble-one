@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { PlayerData } from '@app/classes/player-data';
 import { TimeSpan } from '@app/classes/time/timespan';
-import { MessageType, PlayerType, Vec2, Direction } from '@common';
+import { MessageType, PlayerType, Vec2, Direction, Answer } from '@common';
 import { BoardService } from '@app/services/board/board.service';
 import { MessagingService } from '@app/services/messaging/messaging.service';
 import { ReserveService } from '@app/services/reserve/reserve.service';
@@ -57,27 +57,40 @@ export class PlayerService {
             return;
         }
 
-        await this.boardService.placeLetters(positionToPlace);
-        await this.refresh();
+        const answer = await this.boardService.placeLetters(positionToPlace);
 
+        if (!answer.isSuccess) {
+            this.messagingService.send('', answer.body, MessageType.Error);
+            return;
+        }
+
+        await this.refresh();
         this.completeTurn();
     }
 
     async exchangeLetters(lettersToExchange: string): Promise<void> {
         const letterArray = lettersToExchange.split('');
-        console.log(letterArray);
-        const playerData = await this.httpClient.post<PlayerData>(localUrl('exchange', this.sessionService.id), letterArray).toPromise();
+        const answer = await this.httpClient.post<Answer>(localUrl('exchange', this.sessionService.id), letterArray).toPromise();
 
-        this.updateRack(playerData);
-        await this.reserveService.refresh();
+        if (!answer.isSuccess) {
+            this.messagingService.send('', answer.body, MessageType.Error);
+            return;
+        }
+
+        await this.refresh();
 
         this.completeTurn();
     }
 
     async skipTurn(): Promise<void> {
-        const playerData = await this.httpClient.post<PlayerData>(localUrl('skip', this.sessionService.id), this.sessionService.id).toPromise();
-        this.updateRack(playerData);
+        const answer = await this.httpClient.post<Answer>(localUrl('skip', this.sessionService.id), this.sessionService.id).toPromise();
 
+        if (!answer.isSuccess) {
+            this.messagingService.send('', answer.body, MessageType.Error);
+            return;
+        }
+
+        await this.refresh();
         this.completeTurn();
     }
 
@@ -88,6 +101,8 @@ export class PlayerService {
     async refresh(): Promise<void> {
         const response = await this.httpClient.get(localUrl('retrieve', this.sessionService.id)).toPromise();
 
+        console.log(response);
+
         this.updateRack(response as PlayerData);
         await this.reserveService.refresh();
         await this.boardService.refresh();
@@ -97,6 +112,8 @@ export class PlayerService {
         this.playerData.skippedTurns = 0;
         this.playerData.score = 0;
         this.timerService.stop();
+        this.boardService.reset();
+        this.reserveService.reset();
     }
 
     get rackLength(): number {

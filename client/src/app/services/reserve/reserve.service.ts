@@ -12,7 +12,7 @@ export class ReserveService {
     private reserve: string[];
 
     constructor(private readonly httpClient: HttpClient, private readonly sessionService: SessionService) {
-        this.reserve = [];
+        this.reset();
     }
 
     async refresh(): Promise<boolean> {
@@ -25,6 +25,10 @@ export class ReserveService {
         }
 
         return true;
+    }
+
+    reset(): void {
+        this.reserve = [];
     }
 
     getLetterAndQuantity(letterToUpdate: string): string {

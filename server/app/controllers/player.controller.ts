@@ -26,8 +26,7 @@ export class PlayerController {
                 return;
             }
 
-            humanPlayer.exchangeLetters(exchange);
-            const response = humanPlayer.playerData;
+            const response = humanPlayer.exchangeLetters(exchange);
 
             res.status(Constants.HTTP_STATUS.OK);
             res.json(response);
@@ -41,8 +40,7 @@ export class PlayerController {
                 return;
             }
 
-            humanPlayer.skipTurn();
-            const response = humanPlayer.playerData;
+            const response = humanPlayer.skipTurn();
 
             res.status(Constants.HTTP_STATUS.OK);
             res.json(response);

@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { BoardData, Bonus, Direction, Placement, Square, ValidationResponse, Vec2 } from '@common';
+import { BoardData, Bonus, Direction, Placement, Square, ValidationResponse, Vec2, Answer } from '@common';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '@environment';
 import { SessionService } from '@app/services/session/session.service';
@@ -34,17 +34,17 @@ export class BoardService {
         return validationResponse;
     }
 
-    async placeLetters(letters: Placement[]): Promise<ValidationResponse> {
+    async placeLetters(letters: Placement[]): Promise<Answer> {
         const response = await this.httpClient.post(localUrl('place', this.sessionService.id), letters).toPromise();
-        let validationResponse: ValidationResponse;
+        let answer: Answer;
 
         try {
-            validationResponse = response as ValidationResponse;
+            answer = response as Answer;
         } catch (e) {
-            return { isSuccess: false, description: '', points: 0 };
+            return { isSuccess: false, body: '' };
         }
 
-        return validationResponse;
+        return answer;
     }
 
     async refresh(): Promise<BoardData | null> {
