@@ -9,6 +9,7 @@ import { BehaviorSubject, Subject } from 'rxjs';
 import { environment } from '@environment';
 import { HttpClient } from '@angular/common/http';
 import { SessionService } from '@app/services/session/session.service';
+import { ReserveService } from '@app/services/reserve/reserve.service';
 
 const localUrl = (call: string, id?: string) => `${environment.serverUrl}/game${call}${id ? '/' + id : ''}`;
 
@@ -33,6 +34,7 @@ export class GameService {
     constructor(
         private readonly playerService: PlayerService,
         private readonly virtualPlayerService: VirtualPlayerService,
+        private readonly reserveService: ReserveService,
         private readonly messaging: MessagingService,
         private readonly httpCLient: HttpClient,
         private readonly sessionService: SessionService,

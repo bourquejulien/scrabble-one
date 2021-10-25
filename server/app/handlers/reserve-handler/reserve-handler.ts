@@ -1,10 +1,14 @@
 import { letterDefinitions } from '@common';
 
 export class ReserveHandler {
-    private reserve: string[] = [];
+    readonly reserve: string[] = [];
 
     constructor() {
-        this.reset();
+        for (const [letter, letterData] of letterDefinitions) {
+            for (let i = 0; i < letterData.maxQuantity; i++) {
+                this.reserve.push(letter);
+            }
+        }
     }
 
     putBackLetter(letterToExchange: string): void {
@@ -20,22 +24,6 @@ export class ReserveHandler {
     drawLetter(): string {
         const randomLetterIndex = Math.floor(Math.random() * (this.reserve.length - 1));
         return this.reserve.splice(randomLetterIndex, 1)[0];
-    }
-
-    getLetterAndQuantity(letterToUpdate: string): string {
-        const firstIndex = this.reserve.indexOf(letterToUpdate);
-        const lastIndex = this.reserve.lastIndexOf(letterToUpdate);
-        const currentQuantity = lastIndex - firstIndex + 1;
-        return `${letterToUpdate.toUpperCase()} : ${currentQuantity}`;
-    }
-
-    reset(): void {
-        this.reserve = [];
-        for (const [letter, letterData] of letterDefinitions) {
-            for (let i = 0; i < letterData.maxQuantity; i++) {
-                this.reserve.push(letter);
-            }
-        }
     }
 
     get length(): number {
