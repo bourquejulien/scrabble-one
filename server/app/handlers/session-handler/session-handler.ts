@@ -10,7 +10,9 @@ export class SessionHandler {
         readonly boardHandler: BoardHandler,
         readonly reserveHandler: ReserveHandler,
         readonly players: IPlayer[],
-    ) {}
+    ) {
+        players.forEach((p) => p.fillRack());
+    }
 
     getServerConfig(id: string): ServerGameConfig {
         const firstPlayer = this.players.find((p) => p.id === id) ?? this.players[0];

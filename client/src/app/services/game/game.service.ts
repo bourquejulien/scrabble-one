@@ -61,7 +61,6 @@ export class GameService {
         this.currentTurn = GameService.randomizeTurn();
         this.gameRunning = true;
 
-        this.playerService.fillRack(Constants.RACK_SIZE);
         this.nextTurn();
     }
 

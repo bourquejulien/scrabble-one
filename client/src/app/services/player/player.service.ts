@@ -2,14 +2,17 @@ import { Injectable } from '@angular/core';
 import { PlayerData } from '@app/classes/player-data';
 import { TimeSpan } from '@app/classes/time/timespan';
 import { MessageType, PlayerType, Vec2, Direction } from '@common';
-import { Constants } from '@app/constants/global.constants';
-import { SystemMessages } from '@app/constants/system-messages.constants';
 import { BoardService } from '@app/services/board/board.service';
 import { MessagingService } from '@app/services/messaging/messaging.service';
 import { ReserveService } from '@app/services/reserve/reserve.service';
 import { TimerService } from '@app/services/timer/timer.service';
 import { Subject } from 'rxjs';
 import { RackService } from '@app/services/rack/rack.service';
+import { environment } from '@environment';
+import { SessionService } from '@app/services/session/session.service';
+import { HttpClient } from '@angular/common/http';
+
+const localUrl = (call: string, id: string) => `${environment.serverUrl}/player${call}/${id}`;
 
 @Injectable({
     providedIn: 'root',
@@ -19,7 +22,6 @@ export class PlayerService {
     playerData: PlayerData = {
         score: 0,
         skippedTurns: 0,
-        // TODO Not in use. remove with virtual player
         rack: [],
     };
 
@@ -29,6 +31,8 @@ export class PlayerService {
         private readonly timerService: TimerService,
         private readonly messagingService: MessagingService,
         private readonly rackService: RackService,
+        private readonly sessionService: SessionService,
+        private readonly httpClient: HttpClient,
     ) {
         this.turnComplete = new Subject<PlayerType>();
         this.timerService.countdownStopped.subscribe((playerType) => {
@@ -41,74 +45,33 @@ export class PlayerService {
     }
 
     async placeLetters(word: string, position: Vec2, direction: Direction): Promise<void> {
-        let starLetter = '';
-
-        for (let letter of word) {
-            if (letter.match(/^[A-Z]$/)) {
-                starLetter = letter.toLowerCase();
-                letter = letter.toLowerCase();
-            }
-        }
-
         const positionToPlace = this.boardService.retrievePlacements(word, position, direction);
-        let lettersToPlace = positionToPlace.map((element) => element.letter).join('');
-
-        if (starLetter !== '') {
-            const splitLetters = lettersToPlace.split('');
-            const indexOfStar = lettersToPlace.indexOf(starLetter);
-            splitLetters.splice(indexOfStar, 1);
-            splitLetters.splice(indexOfStar, 0, '*');
-            lettersToPlace = splitLetters.join('');
-        }
-
-        if (!this.areLettersInRack(lettersToPlace)) {
-            this.completeTurn();
-            return;
-        }
-
         const validationData = await this.boardService.lookupLetters(positionToPlace);
+
         if (!validationData.isSuccess) {
             this.messagingService.send('', validationData.description, MessageType.Log);
             this.completeTurn();
             return;
         }
-        this.playerData.score += validationData.points;
-
-        this.updateRack(lettersToPlace);
-        this.updateReserve(positionToPlace.length);
 
         await this.boardService.placeLetters(positionToPlace);
-        await this.boardService.refreshBoard();
+        await this.boardService.refresh();
+        await this.reserveService.refresh();
+        await this.refresh();
 
-        this.playerData.skippedTurns = 0;
         this.completeTurn();
     }
 
-    exchangeLetters(lettersToExchange: string): void {
-        const lettersToExchangeLength = lettersToExchange.length;
+    async exchangeLetters(lettersToExchange: string): Promise<void> {
+        this.playerData = await this.httpClient.post<PlayerData>(localUrl('exchange', this.sessionService.id), lettersToExchange).toPromise();
+        await this.reserveService.refresh();
 
-        if (!this.areLettersInRack(lettersToExchange)) return;
-
-        if (this.reserveService.length < Constants.RACK_SIZE) {
-            this.messagingService.send(SystemMessages.ImpossibleAction, SystemMessages.NotEnoughLetters, MessageType.Error);
-            return;
-        }
-
-        for (let i = 0; i < lettersToExchangeLength; i++) {
-            this.rackService.rack.push(this.reserveService.drawLetter());
-        }
-
-        for (const letter of lettersToExchange) {
-            this.reserveService.putBackLetter(letter);
-        }
-
-        this.updateRack(lettersToExchange);
-        this.playerData.skippedTurns = 0;
         this.completeTurn();
     }
 
-    skipTurn(): void {
-        this.playerData.skippedTurns++;
+    async skipTurn(): Promise<void> {
+        this.playerData = await this.httpClient.post<PlayerData>(localUrl('skip', this.sessionService.id), this.sessionService.id).toPromise();
+
         this.completeTurn();
     }
 
@@ -116,33 +79,16 @@ export class PlayerService {
         this.turnComplete.next(PlayerType.Human);
     }
 
-    fillRack(lengthToFill: number): void {
-        for (let i = 0; i < lengthToFill; i++) {
-            this.rackService.rack.push(this.reserveService.drawLetter());
-        }
-    }
+    async refresh(): Promise<void> {
+        const response = await this.httpClient.get(localUrl('retrieve', this.sessionService.id)).toPromise();
 
-    emptyRack(): void {
-        this.rackService.empty();
-    }
-
-    setRack(mockRack: string[]): void {
-        this.emptyRack();
-
-        for (const letter of mockRack) {
-            this.rackService.rack.push(letter);
-        }
+        this.playerData = response as PlayerData;
     }
 
     reset(): void {
         this.playerData.skippedTurns = 0;
         this.playerData.score = 0;
-        this.emptyRack();
         this.timerService.stop();
-    }
-
-    get rackContent(): string[] {
-        return this.rackService.rack;
     }
 
     get rackLength(): number {
@@ -151,42 +97,5 @@ export class PlayerService {
 
     get rack(): string[] {
         return this.rackService.rack;
-    }
-
-    private updateReserve(lettersToPlaceLength: number): void {
-        const reserveLength = this.reserveService.length;
-
-        if (this.reserveService.length === 0) {
-            this.messagingService.send(SystemMessages.ImpossibleAction, SystemMessages.EmptyReserveError, MessageType.Error);
-            return;
-        }
-
-        if (reserveLength <= lettersToPlaceLength) {
-            for (let i = 0; i < reserveLength; i++) {
-                this.rackService.rack.push(this.reserveService.drawLetter());
-            }
-            this.messagingService.send(SystemMessages.ImpossibleAction, SystemMessages.EmptyReserveError, MessageType.Error);
-            return;
-        }
-
-        this.fillRack(lettersToPlaceLength);
-    }
-
-    private updateRack(lettersToPlace: string): void {
-        for (const letter of lettersToPlace) {
-            const letterIndex = this.rackService.indexOf(letter);
-            if (letterIndex === -1) return;
-            this.rackService.rack.splice(letterIndex, 1);
-        }
-    }
-
-    private areLettersInRack(lettersToPlace: string): boolean {
-        for (const letter of lettersToPlace) {
-            if (this.rackService.indexOf(letter) === -1) {
-                this.messagingService.send(SystemMessages.ImpossibleAction, SystemMessages.LetterPossessionError + letter, MessageType.Error);
-                return false;
-            }
-        }
-        return true;
     }
 }

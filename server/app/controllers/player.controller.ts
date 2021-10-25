@@ -41,7 +41,10 @@ export class PlayerController {
             }
 
             humanPlayer.skipTurn();
+            const response = humanPlayer.playerData;
+
             res.status(Constants.HTTP_STATUS.OK);
+            res.json(response);
         });
 
         this.router.get('/playerData/:id', async (req: Request, res: Response) => {

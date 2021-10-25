@@ -263,7 +263,7 @@ describe('PlayerService', () => {
     });
 
     it('should get rack content', () => {
-        const content = service.rackContent;
+        const content = service.rack;
         expect(service.rack).toBe(content);
     });
 

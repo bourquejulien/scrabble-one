@@ -44,7 +44,7 @@ export class BoardService {
         return validationResponse;
     }
 
-    async refreshBoard(): Promise<BoardData | null> {
+    async refresh(): Promise<BoardData | null> {
         const response = await this.httpClient.get(localUrl('retrieve', this.sessionService.id)).toPromise();
 
         try {

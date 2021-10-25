@@ -15,7 +15,7 @@ export class ReserveService {
         this.reserve = [];
     }
 
-    async refreshBoard(): Promise<boolean> {
+    async refresh(): Promise<boolean> {
         const response = await this.httpClient.get(localUrl('retrieve', this.sessionService.id)).toPromise();
 
         try {
