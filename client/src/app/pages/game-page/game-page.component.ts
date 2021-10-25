@@ -6,10 +6,10 @@ import { ConfirmQuitDialogComponent } from '@app/components/confirm-quit-dialog/
 import { EndGameComponent } from '@app/components/end-game/end-game.component';
 import { GameService } from '@app/services/game/game.service';
 import { TimerService } from '@app/services/timer/timer.service';
-import { PlayerType } from '@common';
 import { Subscription } from 'rxjs';
 import { filter } from 'rxjs/operators';
 import { SessionService } from '@app/services/session/session.service';
+import { PlayerType } from '@app/classes/player/player-type';
 
 export enum Icon {
     Logout = 'exit_to_app',

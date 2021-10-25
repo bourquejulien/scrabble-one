@@ -1,4 +1,4 @@
-import { Answer, Message, PlayerType, ServerGameConfig, SinglePlayerGameConfig } from '@common';
+import { Answer, Message, ServerGameConfig, SinglePlayerGameConfig } from '@common';
 import { SessionHandlingService } from '@app/services/session-handling.service';
 import { BoardGeneratorService } from '@app/services/board/board-generator.service';
 import { Service } from 'typedi';
@@ -55,7 +55,7 @@ export class GameService {
         const playerInfo: PlayerInfo = {
             id: generateId(),
             name: gameConfig.playerName,
-            playerType: PlayerType.Human,
+            isHuman: true,
         };
 
         return new HumanPlayer(playerInfo, boardHandler, reserveHandler);
@@ -66,7 +66,7 @@ export class GameService {
         const playerInfo: PlayerInfo = {
             id: generateId(),
             name: gameConfig.virtualPlayerName,
-            playerType: PlayerType.Virtual,
+            isHuman: false,
         };
 
         return new VirtualPlayer(playerInfo, this.dictionnaryService, boardHandler, reserveHandler, actionCallback);

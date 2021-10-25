@@ -1,9 +1,10 @@
 import { AfterViewInit, Component, ElementRef, ViewChild } from '@angular/core';
-import { Message, MessageType, PlayerType } from '@common';
+import { Message, MessageType } from '@common';
 import { Constants } from '@app/constants/global.constants';
 import { CommandsService } from '@app/services/commands/commands.service';
 import { SocketClientService } from '@app/services/socket-client/socket-client.service';
 import { SessionService } from '@app/services/session/session.service';
+import { PlayerType } from '@app/classes/player/player-type';
 
 @Component({
     selector: 'app-communication-box',
@@ -29,7 +30,7 @@ export class CommunicationBoxComponent implements AfterViewInit {
                 title: 'Socket Error: Closing Connection',
                 body: `${err.message}`,
                 messageType: MessageType.Error,
-                userId: PlayerType.Human,
+                userId: PlayerType.Local,
             };
             this.messages.push(socketErrorMsg);
             this.socket.socketClient.close();
@@ -55,7 +56,7 @@ export class CommunicationBoxComponent implements AfterViewInit {
             case MessageType.Log:
             case MessageType.Message:
             default:
-                return message.userId === PlayerType.Human ? Constants.MY_COLOR : Constants.OTHERS_COLOR;
+                return message.userId === PlayerType.Local ? Constants.MY_COLOR : Constants.OTHERS_COLOR;
         }
     }
 
@@ -63,7 +64,7 @@ export class CommunicationBoxComponent implements AfterViewInit {
         switch (message.messageType) {
             case MessageType.Game:
             case MessageType.Message:
-                return message.userId === PlayerType.Human
+                return message.userId === PlayerType.Local
                     ? this.sessionService.gameConfig.firstPlayerName
                     : this.sessionService.gameConfig.secondPlayerName;
             default:
@@ -72,7 +73,7 @@ export class CommunicationBoxComponent implements AfterViewInit {
     }
 
     shouldDisplay(message: Message) {
-        return message.userId === PlayerType.Human || (message.userId === PlayerType.Virtual && message.messageType === MessageType.Message);
+        return message.userId === PlayerType.Local || (message.userId === PlayerType.Virtual && message.messageType === MessageType.Message);
     }
 
     private scroll(): void {

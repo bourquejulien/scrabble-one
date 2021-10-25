@@ -1,9 +1,9 @@
 import { Injectable } from '@angular/core';
-import { environment } from '@environment';
 import { HttpClient } from '@angular/common/http';
 import { SessionService } from '@app/services/session/session.service';
+import { environmentExt } from '@environmentExt';
 
-const localUrl = (call: string, id: string) => `${environment.serverUrl}api/reserve/${call}/${id}`;
+const localUrl = (call: string, id: string) => `${environmentExt.apiUrl}/reserve/${call}/${id}`;
 
 @Injectable({
     providedIn: 'root',

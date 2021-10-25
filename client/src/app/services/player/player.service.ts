@@ -1,18 +1,19 @@
 import { Injectable } from '@angular/core';
 import { PlayerData } from '@app/classes/player-data';
 import { TimeSpan } from '@app/classes/time/timespan';
-import { MessageType, PlayerType, Vec2, Direction, Answer } from '@common';
+import { MessageType, Vec2, Direction, Answer } from '@common';
 import { BoardService } from '@app/services/board/board.service';
 import { MessagingService } from '@app/services/messaging/messaging.service';
 import { ReserveService } from '@app/services/reserve/reserve.service';
 import { TimerService } from '@app/services/timer/timer.service';
 import { Subject } from 'rxjs';
 import { RackService } from '@app/services/rack/rack.service';
-import { environment } from '@environment';
 import { SessionService } from '@app/services/session/session.service';
 import { HttpClient } from '@angular/common/http';
+import { PlayerType } from '@app/classes/player/player-type';
+import { environmentExt } from '@environmentExt';
 
-const localUrl = (call: string, id: string) => `${environment.serverUrl}api/player/${call}/${id}`;
+const localUrl = (call: string, id: string) => `${environmentExt.apiUrl}/player/${call}/${id}`;
 
 @Injectable({
     providedIn: 'root',
@@ -39,12 +40,12 @@ export class PlayerService {
     ) {
         this.turnComplete = new Subject<PlayerType>();
         this.timerService.countdownStopped.subscribe((playerType) => {
-            if (PlayerType.Human === playerType) this.completeTurn();
+            if (PlayerType.Local === playerType) this.completeTurn();
         });
     }
 
     startTurn(playTime: TimeSpan): void {
-        this.timerService.start(playTime, PlayerType.Human);
+        this.timerService.start(playTime, PlayerType.Local);
     }
 
     async placeLetters(word: string, position: Vec2, direction: Direction): Promise<void> {
@@ -119,7 +120,7 @@ export class PlayerService {
     }
 
     private completeTurn(): void {
-        this.turnComplete.next(PlayerType.Human);
+        this.turnComplete.next(PlayerType.Local);
     }
 
     private updateRack(playerData: PlayerData): void {

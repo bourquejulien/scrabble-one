@@ -10,11 +10,11 @@ import { TimePipe } from '@app/classes/time/time.pipe';
 import { TimeSpan } from '@app/classes/time/timespan';
 import { AppMaterialModule } from '@app/modules/material.module';
 import { GameService } from '@app/services/game/game.service';
-import { PlayerType } from '@common';
 import { BehaviorSubject, Subject } from 'rxjs';
 import { GamePageComponent } from './game-page.component';
 import { RouterTestingModule } from '@angular/router/testing';
 import { MatDialogClose, MatDialogModule } from '@angular/material/dialog';
+import { PlayerType } from '@app/classes/player/player-type';
 
 const GAME_TYPES_LIST = ['Mode Solo Débutant'];
 
@@ -32,9 +32,9 @@ class GameServiceStub {
         rackSize: 0,
     };
 
-    onTurn: BehaviorSubject<PlayerType> = new BehaviorSubject<PlayerType>(PlayerType.Human);
+    onTurn: BehaviorSubject<PlayerType> = new BehaviorSubject<PlayerType>(PlayerType.Local);
     gameEnding: Subject<void> = new Subject<void>();
-    currentTurn: PlayerType = PlayerType.Human;
+    currentTurn: PlayerType = PlayerType.Local;
     gameConfig: GameConfig = {
         gameType: GAME_TYPES_LIST[0],
         playTime: TimeSpan.fromSeconds(0),
@@ -43,10 +43,10 @@ class GameServiceStub {
     };
 
     nextTurn(): void {
-        if (this.currentTurn === PlayerType.Human) {
+        if (this.currentTurn === PlayerType.Local) {
             this.currentTurn = PlayerType.Virtual;
         } else {
-            this.currentTurn = PlayerType.Human;
+            this.currentTurn = PlayerType.Local;
         }
     }
 

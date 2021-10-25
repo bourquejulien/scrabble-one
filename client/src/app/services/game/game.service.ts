@@ -4,14 +4,15 @@ import { Constants } from '@app/constants/global.constants';
 import { MessagingService } from '@app/services/messaging/messaging.service';
 import { PlayerService } from '@app/services/player/player.service';
 import { VirtualPlayerService } from '@app/services/virtual-player/virtual-player.service';
-import { letterDefinitions, MessageType, PlayerType, ServerGameConfig, SinglePlayerGameConfig } from '@common';
+import { letterDefinitions, MessageType, ServerGameConfig, SinglePlayerGameConfig } from '@common';
 import { BehaviorSubject, Subject } from 'rxjs';
-import { environment } from '@environment';
 import { HttpClient } from '@angular/common/http';
 import { SessionService } from '@app/services/session/session.service';
 import { ReserveService } from '@app/services/reserve/reserve.service';
+import { PlayerType } from '@app/classes/player/player-type';
+import { environmentExt } from '@environmentExt';
 
-const localUrl = (call: string, id?: string) => `${environment.serverUrl}api/game/${call}${id ? '/' + id : ''}`;
+const localUrl = (call: string, id?: string) => `${environmentExt.apiUrl}game/${call}${id ? '/' + id : ''}`;
 
 @Injectable({
     providedIn: 'root',
@@ -27,7 +28,7 @@ export class GameService {
     };
     gameRunning: boolean = false;
     skipTurnNb: number = 0;
-    currentTurn: PlayerType = PlayerType.Human;
+    currentTurn: PlayerType = PlayerType.Local;
     onTurn: BehaviorSubject<PlayerType>;
     gameEnding: Subject<void>;
 
@@ -39,7 +40,7 @@ export class GameService {
         private readonly httpCLient: HttpClient,
         private readonly sessionService: SessionService,
     ) {
-        this.onTurn = new BehaviorSubject<PlayerType>(PlayerType.Human);
+        this.onTurn = new BehaviorSubject<PlayerType>(PlayerType.Local);
         this.gameEnding = new Subject<void>();
         playerService.turnComplete.subscribe((e) => this.handleTurnCompletion(e));
         virtualPlayerService.turnComplete.subscribe((e) => this.handleTurnCompletion(e));
@@ -47,7 +48,7 @@ export class GameService {
 
     private static randomizeTurn(): PlayerType {
         const HALF = 0.5;
-        return Math.random() < HALF ? PlayerType.Human : PlayerType.Virtual;
+        return Math.random() < HALF ? PlayerType.Local : PlayerType.Virtual;
     }
 
     async startSinglePlayer(config: SinglePlayerGameConfig) {
@@ -86,7 +87,7 @@ export class GameService {
         this.emptyRackAndReserve();
         this.skipTurnLimit();
 
-        if (this.currentTurn === PlayerType.Human) {
+        if (this.currentTurn === PlayerType.Local) {
             this.onVirtualPlayerTurn();
         } else {
             this.onPlayerTurn();
@@ -180,7 +181,7 @@ export class GameService {
     }
 
     private onPlayerTurn() {
-        this.currentTurn = PlayerType.Human;
+        this.currentTurn = PlayerType.Local;
         this.onTurn.next(this.currentTurn);
         this.playerService.startTurn(this.sessionService.gameConfig.playTime);
     }

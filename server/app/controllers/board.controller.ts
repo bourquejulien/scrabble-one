@@ -1,7 +1,7 @@
 import { Request, Response, Router } from 'express';
 import { Service } from 'typedi';
 import { Constants } from '@app/constants';
-import { Placement, PlayerType } from '@common';
+import { Placement } from '@common';
 import { SessionHandlingService } from '@app/services/session-handling.service';
 import { BoardHandler } from '@app/handlers/board-handler/board-handler';
 import { HumanPlayer } from '@app/classes/player/human-player/human-player';
@@ -65,7 +65,7 @@ export class BoardController {
     private getHumanPlayer(id: string): HumanPlayer | null {
         const player = this.sessionHandlingService.getHandler(id)?.players.find((p) => p.id === id) ?? null;
 
-        if (player == null || player.playerInfo.playerType !== PlayerType.Human) {
+        if (player == null || !player.playerInfo.isHuman) {
             return null;
         }
 

@@ -26,7 +26,7 @@
             <div class="button-bar" *ngFor="let button of buttonConfig; let indexOfButton = index">
                 <button
                     mat-fab
-                    *ngIf="playerType === 'human' || button.icon !== 'block'"
+                    *ngIf="playerType === 'local' || button.icon !== 'block'"
                     class="fab-button"
                     [color]="button.color"
                     [routerLink]="button.routerLink"

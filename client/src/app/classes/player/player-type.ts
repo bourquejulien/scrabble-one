@@ -1,4 +1,5 @@
 export enum PlayerType {
-    Human = 'human',
+    Local = 'local',
     Virtual = 'virtual',
+    Remote = 'remote',
 }

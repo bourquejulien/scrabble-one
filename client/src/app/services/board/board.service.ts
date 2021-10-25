@@ -1,11 +1,11 @@
 import { Injectable } from '@angular/core';
 import { BoardData, Bonus, Direction, Placement, Square, ValidationResponse, Vec2, Answer } from '@common';
 import { HttpClient } from '@angular/common/http';
-import { environment } from '@environment';
 import { SessionService } from '@app/services/session/session.service';
 import { Constants } from '@app/constants/global.constants';
+import { environmentExt } from '@environmentExt';
 
-const localUrl = (call: string, id: string) => `${environment.serverUrl}api/board/${call}/${id}`;
+const localUrl = (call: string, id: string) => `${environmentExt.apiUrl}board/${call}/${id}`;
 
 @Injectable({
     providedIn: 'root',

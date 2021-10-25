@@ -5,7 +5,8 @@ import { GameService } from '@app/services/game/game.service';
 import { MessagingService } from '@app/services/messaging/messaging.service';
 import { PlayerService } from '@app/services/player/player.service';
 import { ReserveService } from '@app/services/reserve/reserve.service';
-import { letterDefinitions, MessageType, PlayerType, Vec2, Direction } from '@common';
+import { letterDefinitions, MessageType, Vec2, Direction } from '@common';
+import { PlayerType } from '@app/classes/player/player-type';
 
 @Injectable({
     providedIn: 'root',

@@ -7,7 +7,8 @@ import { CommandsService } from '@app/services/commands/commands.service';
 import { GameService } from '@app/services/game/game.service';
 import { PlayerService } from '@app/services/player/player.service';
 import { ReserveService } from '@app/services/reserve/reserve.service';
-import { PlayerType, Vec2, Direction } from '@common';
+import { Vec2, Direction } from '@common';
+import { PlayerType } from '@app/classes/player/player-type';
 
 describe('CommandsService', () => {
     let playerServiceSpy: jasmine.SpyObj<PlayerService>;
@@ -24,7 +25,7 @@ describe('CommandsService', () => {
         TestBed.configureTestingModule({
             providers: [
                 { provide: PlayerService, useValue: playerServiceSpy },
-                { provide: GameService, useValue: jasmine.createSpyObj('GameService', [], [{ currentTurn: PlayerType.Human }]) },
+                { provide: GameService, useValue: jasmine.createSpyObj('GameService', [], [{ currentTurn: PlayerType.Local }]) },
                 { provide: ReserveService, useValue: reserveServiceSpy },
             ],
         });

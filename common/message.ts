@@ -1,4 +1,4 @@
-import { PlayerType } from './player-type';
+import { PlayerType } from '../client/src/app/classes/player/player-type';
 
 export enum MessageType {
     Message,

@@ -29,7 +29,8 @@
             "@app/*": ["./src/app/*"],
             "@common": ["../common"],
             "@assets/*": ["./src/assets/*"],
-            "@environment": ["./src/environments/environment.ts"]
+            "@environment": ["./src/environments/environment.ts"],
+            "@environmentExt": ["./src/environments/environment-ext.ts"]
         }
     },
     "references": [

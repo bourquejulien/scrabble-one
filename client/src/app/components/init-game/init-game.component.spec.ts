@@ -10,14 +10,14 @@ import { GameType } from '@app/classes/game-type';
 import { cleanStyles } from '@app/classes/helpers/cleanup.helper';
 import { AppMaterialModule } from '@app/modules/material.module';
 import { GameService } from '@app/services/game/game.service';
-import { PlayerType } from '@common';
 import { InitGameComponent } from './init-game.component';
+import { PlayerType } from '@app/classes/player/player-type';
 
 @Injectable({
     providedIn: 'root',
 })
 class GameServiceStub {
-    currentTurn: PlayerType = PlayerType.Human;
+    currentTurn: PlayerType = PlayerType.Local;
     startSinglePlayer(): void {
         // Does Nothing
     }

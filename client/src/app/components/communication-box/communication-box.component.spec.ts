@@ -12,9 +12,10 @@ import { Constants } from '@app/constants/global.constants';
 import { AppMaterialModule } from '@app/modules/material.module';
 import { CommandsService } from '@app/services/commands/commands.service';
 import { MessagingService } from '@app/services/messaging/messaging.service';
-import { Message, MessageType, PlayerType } from '@common';
+import { Message, MessageType } from '@common';
 import { CommunicationBoxComponent } from './communication-box.component';
 import { SessionService } from '@app/services/session/session.service';
+import { PlayerType } from '@app/classes/player/player-type';
 
 describe('CommunicationBoxComponent', () => {
     let component: CommunicationBoxComponent;
@@ -82,7 +83,7 @@ describe('CommunicationBoxComponent', () => {
         component['sessionService']['gameConfig']['secondPlayerName'] = secondPlayerName;
         expect(component.getTitle(dummyMessage)).toBe(dummyMessage.title);
         dummyMessage.messageType = MessageType.Game;
-        dummyMessage.userId = PlayerType.Human;
+        dummyMessage.userId = PlayerType.Local;
         expect(component.getTitle(dummyMessage)).toEqual(firstPlayerName);
         dummyMessage.userId = PlayerType.Virtual;
         expect(component.getTitle(dummyMessage)).toEqual(secondPlayerName);
@@ -100,7 +101,7 @@ describe('CommunicationBoxComponent', () => {
         expect(component.getMessageColor(dummyMessage)).toBe(Constants.ERROR_COLOR);
         dummyMessage.messageType = MessageType.Message;
         expect(component.getMessageColor(dummyMessage)).toBe(Constants.OTHERS_COLOR);
-        dummyMessage.userId = PlayerType.Human;
+        dummyMessage.userId = PlayerType.Local;
         expect(component.getMessageColor(dummyMessage)).toBe(Constants.MY_COLOR);
     });
 
