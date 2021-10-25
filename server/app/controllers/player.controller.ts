@@ -1,13 +1,12 @@
 import { Request, Response, Router } from 'express';
 import { Service } from 'typedi';
 import { Constants } from '@app/constants';
-import { Placement, PlayerType } from '@common';
+import { PlayerType } from '@common';
 import { SessionHandlingService } from '@app/services/session-handling.service';
-import { BoardHandler } from '@app/handlers/board-handler/board-handler';
 import { HumanPlayer } from '@app/classes/player/human-player/human-player';
 
 @Service()
-export class BoardController {
+export class PlayerController {
     router: Router;
 
     constructor(private readonly sessionHandlingService: SessionHandlingService) {
@@ -17,49 +16,44 @@ export class BoardController {
     private configureRouter(): void {
         this.router = Router();
 
-        this.router.post('/validate/:id', async (req: Request, res: Response) => {
-            const boardHandler = this.getBoardHandler(req.params.id);
-            const placement: Placement[] = JSON.parse(req.body);
-
-            if (boardHandler === null || placement === undefined) {
-                res.sendStatus(Constants.HTTP_STATUS.BAD_REQUEST);
-                return;
-            }
-
-            const response = boardHandler.lookupLetters(boardHandler.retrieveNewLetters(placement));
-            res.status(Constants.HTTP_STATUS.OK);
-            res.json(response);
-        });
-
-        this.router.post('/place/:id', async (req: Request, res: Response) => {
+        this.router.post('/exchange/:id', async (req: Request, res: Response) => {
             const humanPlayer = this.getHumanPlayer(req.params.id);
-            const placements: Placement[] = JSON.parse(req.body);
+            const exchange: string[] = JSON.parse(req.body);
 
-            if (humanPlayer === null || placements === undefined) {
+            if (humanPlayer === null || exchange === undefined) {
                 res.sendStatus(Constants.HTTP_STATUS.BAD_REQUEST);
                 return;
             }
 
-            const response = humanPlayer.placeLetters(placements);
+            humanPlayer.exchangeLetters(exchange);
+            const response = humanPlayer.playerData;
+
             res.status(Constants.HTTP_STATUS.OK);
             res.json(response);
         });
 
-        this.router.get('/retrieve/:id', async (req: Request, res: Response) => {
-            const boardHandler = this.getBoardHandler(req.params.id);
-            if (boardHandler === null) {
+        this.router.post('/skip/:id', async (req: Request, res: Response) => {
+            const humanPlayer = this.getHumanPlayer(req.params.id);
+
+            if (humanPlayer === null) {
                 res.sendStatus(Constants.HTTP_STATUS.BAD_REQUEST);
                 return;
             }
 
-            const boardData = boardHandler.immutableBoard.boardData;
+            humanPlayer.skipTurn();
             res.status(Constants.HTTP_STATUS.OK);
-            res.json(boardData);
         });
-    }
 
-    private getBoardHandler(id: string): BoardHandler | null {
-        return this.sessionHandlingService.getHandler(id)?.boardHandler ?? null;
+        this.router.get('/playerData/:id', async (req: Request, res: Response) => {
+            const humanPlayer = this.getHumanPlayer(req.params.id);
+            if (humanPlayer === null) {
+                res.sendStatus(Constants.HTTP_STATUS.BAD_REQUEST);
+                return;
+            }
+
+            res.status(Constants.HTTP_STATUS.OK);
+            res.json(humanPlayer.playerData);
+        });
     }
 
     private getHumanPlayer(id: string): HumanPlayer | null {

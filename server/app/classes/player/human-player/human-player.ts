@@ -33,6 +33,8 @@ export class HumanPlayer implements IPlayer {
     async placeLetters(placements: Placement[]): Promise<void> {
         const lettersToPlace: string[] = [];
 
+        placements = this.boardHandler.retrieveNewLetters(placements);
+
         for (let i = 0; i < lettersToPlace.length; i++) {
             let letter = placements[i].letter;
 
