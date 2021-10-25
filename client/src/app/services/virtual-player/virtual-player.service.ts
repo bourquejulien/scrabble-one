@@ -33,7 +33,7 @@ export class VirtualPlayerService {
         this.timerService.start(playTime, PlayerType.Virtual);
         this.minTimer.start(TimeSpan.fromSeconds(MIN_PLAYTIME_SECONDS));
 
-        await this.httpClient.post(`${environment.serverUrl}/game/virtual`, { id: this.sessionService.id });
+        await this.httpClient.post(`${environment.serverUrl}api/game/virtual`, { id: this.sessionService.id });
         await this.minTimer.completed;
 
         this.endTurn();

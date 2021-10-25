@@ -28,6 +28,7 @@ export class SessionHandlingService {
     }
 
     getHandler(id: string): SessionHandler | null {
-        return this.sessionHandlers.find((e) => e.sessionInfo.id === id) ?? null;
+        const sessionId = this.playerIds.get(id);
+        return this.sessionHandlers.find((e) => e.sessionInfo.id === sessionId) ?? null;
     }
 }

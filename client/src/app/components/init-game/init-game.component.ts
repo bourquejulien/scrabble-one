@@ -108,17 +108,6 @@ export class InitGameComponent implements OnInit {
     async ngOnInit(): Promise<void> {
         await this.gameService.reset();
         this.gameConfig.secondPlayerName = InitGameComponent.randomizeBotName(this.botNames);
-
-        // TODO Should be able to redirect to waiting room or GameService with proper configs
-
-        const singlePlayerConfig: SinglePlayerGameConfig = {
-            gameType: this.gameConfig.gameType,
-            playTimeMs: this.gameConfig.playTime.totalMilliseconds,
-            playerName: this.gameConfig.firstPlayerName,
-            virtualPlayerName: this.gameConfig.secondPlayerName,
-        };
-
-        await this.gameService.startSinglePlayer(singlePlayerConfig);
     }
 
     async initialize(): Promise<void> {
@@ -126,7 +115,17 @@ export class InitGameComponent implements OnInit {
 
         if (needsToReroute) {
             this.dialogRef.close();
-            this.router.navigate([this.nextPage]);
+
+            // TODO Should be able to redirect to waiting room or GameService with proper configs
+            const singlePlayerConfig: SinglePlayerGameConfig = {
+                gameType: this.gameConfig.gameType,
+                playTimeMs: this.gameConfig.playTime.totalMilliseconds,
+                playerName: this.gameConfig.firstPlayerName,
+                virtualPlayerName: this.gameConfig.secondPlayerName,
+            };
+
+            await this.gameService.startSinglePlayer(singlePlayerConfig);
+            await this.router.navigate([this.nextPage]);
         }
     }
 

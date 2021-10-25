@@ -12,7 +12,7 @@ import { environment } from '@environment';
 import { SessionService } from '@app/services/session/session.service';
 import { HttpClient } from '@angular/common/http';
 
-const localUrl = (call: string, id: string) => `${environment.serverUrl}/player${call}/${id}`;
+const localUrl = (call: string, id: string) => `${environment.serverUrl}api/player/${call}/${id}`;
 
 @Injectable({
     providedIn: 'root',
@@ -55,22 +55,23 @@ export class PlayerService {
         }
 
         await this.boardService.placeLetters(positionToPlace);
-        await this.boardService.refresh();
-        await this.reserveService.refresh();
         await this.refresh();
 
         this.completeTurn();
     }
 
     async exchangeLetters(lettersToExchange: string): Promise<void> {
-        this.playerData = await this.httpClient.post<PlayerData>(localUrl('exchange', this.sessionService.id), lettersToExchange).toPromise();
+        const playerData = await this.httpClient.post<PlayerData>(localUrl('exchange', this.sessionService.id), lettersToExchange).toPromise();
+
+        this.updateRack(playerData);
         await this.reserveService.refresh();
 
         this.completeTurn();
     }
 
     async skipTurn(): Promise<void> {
-        this.playerData = await this.httpClient.post<PlayerData>(localUrl('skip', this.sessionService.id), this.sessionService.id).toPromise();
+        const playerData = await this.httpClient.post<PlayerData>(localUrl('skip', this.sessionService.id), this.sessionService.id).toPromise();
+        this.updateRack(playerData);
 
         this.completeTurn();
     }
@@ -82,7 +83,9 @@ export class PlayerService {
     async refresh(): Promise<void> {
         const response = await this.httpClient.get(localUrl('retrieve', this.sessionService.id)).toPromise();
 
-        this.playerData = response as PlayerData;
+        this.updateRack(response as PlayerData);
+        await this.reserveService.refresh();
+        await this.boardService.refresh();
     }
 
     reset(): void {
@@ -97,5 +100,10 @@ export class PlayerService {
 
     get rack(): string[] {
         return this.rackService.rack;
+    }
+
+    private updateRack(playerData: PlayerData): void {
+        this.playerData = playerData;
+        this.rackService.update(this.playerData.rack);
     }
 }

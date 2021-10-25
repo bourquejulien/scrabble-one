@@ -4,14 +4,16 @@ import { HttpClient } from '@angular/common/http';
 import { environment } from '@environment';
 import { SessionService } from '@app/services/session/session.service';
 
-const localUrl = (call: string, id: string) => `${environment.serverUrl}/board${call}/${id}`;
+const localUrl = (call: string, id: string) => `${environment.serverUrl}api/board/${call}/${id}`;
 
 @Injectable({
     providedIn: 'root',
 })
 export class BoardService {
     private boardData: BoardData;
-    constructor(private readonly httpClient: HttpClient, private readonly sessionService: SessionService) {}
+    constructor(private readonly httpClient: HttpClient, private readonly sessionService: SessionService) {
+        this.boardData = { board: [], filledPositions: [] };
+    }
 
     // TODO Add a cache
     get gameBoard(): BoardData {
@@ -63,7 +65,7 @@ export class BoardService {
         const position = initialPosition;
 
         for (const letter of word) {
-            placements.push({ letter, position });
+            placements.push({ letter, position: { ...position } });
             position.x += increment.x;
             position.y += increment.y;
         }

@@ -55,8 +55,8 @@ export class GameService {
     private generateHumanPlayer(gameConfig: SinglePlayerGameConfig, boardHandler: BoardHandler, reserveHandler: ReserveHandler): HumanPlayer {
         const playerInfo: PlayerInfo = {
             id: generateId(),
-            name: gameConfig.virtualPlayerName,
-            playerType: PlayerType.Virtual,
+            name: gameConfig.playerName,
+            playerType: PlayerType.Human,
         };
 
         return new HumanPlayer(playerInfo, boardHandler, reserveHandler);

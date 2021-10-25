@@ -11,7 +11,7 @@ import { HttpClient } from '@angular/common/http';
 import { SessionService } from '@app/services/session/session.service';
 import { ReserveService } from '@app/services/reserve/reserve.service';
 
-const localUrl = (call: string, id?: string) => `${environment.serverUrl}/game${call}${id ? '/' + id : ''}`;
+const localUrl = (call: string, id?: string) => `${environment.serverUrl}api/game/${call}${id ? '/' + id : ''}`;
 
 @Injectable({
     providedIn: 'root',
@@ -57,6 +57,8 @@ export class GameService {
 
     async startGame(gameConfig: ServerGameConfig) {
         this.sessionService.serverConfig = gameConfig;
+
+        await this.playerService.refresh();
 
         this.currentTurn = GameService.randomizeTurn();
         this.gameRunning = true;

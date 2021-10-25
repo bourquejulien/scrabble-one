@@ -19,7 +19,7 @@ export class BoardController {
 
         this.router.post('/validate/:id', async (req: Request, res: Response) => {
             const boardHandler = this.getBoardHandler(req.params.id);
-            const placement: Placement[] = JSON.parse(req.body);
+            const placement: Placement[] = req.body;
 
             if (boardHandler === null || placement === undefined) {
                 res.sendStatus(Constants.HTTP_STATUS.BAD_REQUEST);
@@ -33,14 +33,14 @@ export class BoardController {
 
         this.router.post('/place/:id', async (req: Request, res: Response) => {
             const humanPlayer = this.getHumanPlayer(req.params.id);
-            const placements: Placement[] = JSON.parse(req.body);
+            const placements: Placement[] = req.body;
 
             if (humanPlayer === null || placements === undefined) {
                 res.sendStatus(Constants.HTTP_STATUS.BAD_REQUEST);
                 return;
             }
 
-            const response = humanPlayer.placeLetters(placements);
+            const response = await humanPlayer.placeLetters(placements);
             res.status(Constants.HTTP_STATUS.OK);
             res.json(response);
         });

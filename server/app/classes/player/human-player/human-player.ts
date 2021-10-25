@@ -35,7 +35,7 @@ export class HumanPlayer implements IPlayer {
 
         placements = this.boardHandler.retrieveNewLetters(placements);
 
-        for (let i = 0; i < lettersToPlace.length; i++) {
+        for (let i = 0; i < placements.length; i++) {
             let letter = placements[i].letter;
 
             if (letter[0].match(/^[A-Z]$/)) {

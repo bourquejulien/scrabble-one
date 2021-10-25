@@ -18,7 +18,7 @@ export class PlayerController {
 
         this.router.post('/exchange/:id', async (req: Request, res: Response) => {
             const humanPlayer = this.getHumanPlayer(req.params.id);
-            const exchange: string[] = JSON.parse(req.body);
+            const exchange: string[] = req.body;
 
             if (humanPlayer === null || exchange === undefined) {
                 res.sendStatus(Constants.HTTP_STATUS.BAD_REQUEST);
@@ -47,7 +47,7 @@ export class PlayerController {
             res.json(response);
         });
 
-        this.router.get('/playerData/:id', async (req: Request, res: Response) => {
+        this.router.get('/retrieve/:id', async (req: Request, res: Response) => {
             const humanPlayer = this.getHumanPlayer(req.params.id);
             if (humanPlayer === null) {
                 res.sendStatus(Constants.HTTP_STATUS.BAD_REQUEST);

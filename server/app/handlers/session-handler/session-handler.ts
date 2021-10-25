@@ -19,7 +19,7 @@ export class SessionHandler {
         const secondPlayer = this.players.find((p) => p.id !== firstPlayer.id) ?? this.players[1];
 
         return {
-            id: this.sessionInfo.id,
+            id: firstPlayer.id,
             gameType: this.sessionInfo.gameType,
             playTimeMs: this.sessionInfo.playTimeMs,
             firstPlayerName: firstPlayer.playerInfo.name,
