@@ -125,7 +125,7 @@ export class CommandsService {
     private skipTurn(): boolean {
         if (!this.isUsersTurn()) return false;
 
-        this.playerService.completeTurn();
+        this.playerService.skipTurn();
         return true;
     }
 

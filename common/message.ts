@@ -7,6 +7,7 @@ export enum MessageType {
     System,
     Game,
 }
+
 export interface Message {
     title: string;
     body: string;

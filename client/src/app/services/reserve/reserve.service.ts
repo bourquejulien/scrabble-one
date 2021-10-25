@@ -1,29 +1,30 @@
 import { Injectable } from '@angular/core';
-import { letterDefinitions } from '@common';
+import { environment } from '@environment';
+import { HttpClient } from '@angular/common/http';
+import { SessionService } from '@app/services/session/session.service';
+
+const localUrl = (call: string, id: string) => `${environment.serverUrl}/reserve${call}/${id}`;
 
 @Injectable({
     providedIn: 'root',
 })
 export class ReserveService {
-    private reserve: string[] = [];
+    private reserve: string[];
 
-    constructor() {
-        this.reset();
+    constructor(private readonly httpClient: HttpClient, private readonly sessionService: SessionService) {
+        this.reserve = [];
     }
 
-    putBackLetter(letterToExchange: string): void {
-        const letterIndex = this.reserve.indexOf(letterToExchange);
-        if (letterIndex !== -1) {
-            this.reserve.splice(letterIndex, 0, letterToExchange);
-        } else if (letterToExchange.match(/^[a-z]$/) || letterToExchange === '*') {
-            this.reserve.push(letterToExchange);
-            this.reserve.sort();
+    async refreshBoard(): Promise<boolean> {
+        const response = await this.httpClient.get(localUrl('retrieve', this.sessionService.id)).toPromise();
+
+        try {
+            this.reserve = response as string[];
+        } catch (e) {
+            return false;
         }
-    }
 
-    drawLetter(): string {
-        const randomLetterIndex = Math.floor(Math.random() * (this.reserve.length - 1));
-        return this.reserve.splice(randomLetterIndex, 1)[0];
+        return true;
     }
 
     getLetterAndQuantity(letterToUpdate: string): string {
@@ -35,23 +36,5 @@ export class ReserveService {
 
     get length(): number {
         return this.reserve.length;
-    }
-
-    // For testing
-    setReserve(mockReserve: string[]): void {
-        this.reserve = [];
-
-        for (const letter of mockReserve) {
-            this.reserve.push(letter);
-        }
-    }
-
-    reset(): void {
-        this.reserve = [];
-        for (const [letter, letterData] of letterDefinitions) {
-            for (let i = 0; i < letterData.maxQuantity; i++) {
-                this.reserve.push(letter);
-            }
-        }
     }
 }

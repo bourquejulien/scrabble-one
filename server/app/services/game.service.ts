@@ -35,7 +35,7 @@ export class GameService {
 
         const boardHandler = new BoardHandler(board, this.boardGeneratorService.generateBoardValidator(board));
         const reserveHandler = new ReserveHandler();
-        const humanPlayer = this.generateHumanPlayer(gameConfig, reserveHandler);
+        const humanPlayer = this.generateHumanPlayer(gameConfig, boardHandler, reserveHandler);
         const virtualPlayer = this.generateVirtualPlayer(gameConfig, boardHandler, reserveHandler);
 
         const sessionHandler = new SessionHandler(sessionInfo, boardHandler, reserveHandler, [humanPlayer, virtualPlayer]);
@@ -52,14 +52,14 @@ export class GameService {
         };
     }
 
-    private generateHumanPlayer(gameConfig: SinglePlayerGameConfig, reserveHandler: ReserveHandler): HumanPlayer {
+    private generateHumanPlayer(gameConfig: SinglePlayerGameConfig, boardHandler: BoardHandler, reserveHandler: ReserveHandler): HumanPlayer {
         const playerInfo: PlayerInfo = {
             id: generateId(),
             name: gameConfig.virtualPlayerName,
             playerType: PlayerType.Virtual,
         };
 
-        return new HumanPlayer(playerInfo, reserveHandler);
+        return new HumanPlayer(playerInfo, boardHandler, reserveHandler);
     }
 
     private generateVirtualPlayer(gameConfig: SinglePlayerGameConfig, boardHandler: BoardHandler, reserveHandler: ReserveHandler): VirtualPlayer {
