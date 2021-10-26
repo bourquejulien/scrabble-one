@@ -4,7 +4,7 @@ import { PlayerData } from '@app/classes/player-data';
 import { BehaviorSubject } from 'rxjs';
 import { Config } from '@app/config';
 import { ReserveHandler } from '@app/handlers/reserve-handler/reserve-handler';
-import { Placement, Answer } from '@common';
+import { Answer, Placement } from '@common';
 import { BoardHandler } from '@app/handlers/board-handler/board-handler';
 
 // TODO Fix messaging service: over sockets, or in Answer?
@@ -76,7 +76,7 @@ export class HumanPlayer implements IPlayer {
         if (!this.areLettersInRack(lettersToExchange)) return { isSuccess: false, body: 'Letters not in rack' };
 
         if (this.reserveHandler.length < Config.RACK_SIZE) {
-            /* this.messagingService.send(SystemMessages.ImpossibleAction, SystemMessages.NotEnoughLetters, MessageType.Error); */
+            // this.socketService.send(SystemMessages.ImpossibleAction, SystemMessages.NotEnoughLetters, MessageType.Error);
             return { isSuccess: false, body: 'Letters not in rack' };
         }
 

@@ -2,7 +2,6 @@ import { Application } from '@app/app';
 import * as http from 'http';
 import { AddressInfo } from 'net';
 import { Service } from 'typedi';
-import { RoomController } from './controllers/room.controller';
 
 @Service()
 export class Server {
@@ -10,7 +9,6 @@ export class Server {
     // eslint-disable-next-line @typescript-eslint/no-magic-numbers
     private static readonly baseDix: number = 10;
     private server: http.Server;
-    private roomController: RoomController;
 
     constructor(private readonly application: Application) {}
 
@@ -24,13 +22,11 @@ export class Server {
             return false;
         }
     }
+
     init(): void {
         this.application.app.set('port', Server.appPort);
 
         this.server = http.createServer(this.application.app);
-
-        this.roomController = new RoomController(this.server);
-        this.roomController.socketHandler();
 
         this.server.listen(Server.appPort);
         this.server.on('error', (error: NodeJS.ErrnoException) => this.onError(error));

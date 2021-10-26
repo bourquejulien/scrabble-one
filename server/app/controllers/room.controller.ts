@@ -1,16 +1,15 @@
 /* eslint-disable no-console */ // easier logging for the server
 import { Message } from '@common';
-import * as http from 'http';
-import { Server, Socket } from 'socket.io';
+import { Socket } from 'socket.io';
 import { generateId } from '@app/classes/id';
+import { SocketService } from '@app/services/socket-service';
+import { Service } from 'typedi';
 
+@Service()
 export class RoomController {
-    private socketServer: Server;
     private availableRooms: string[] = [];
 
-    constructor(server: http.Server) {
-        this.socketServer = new Server(server, { cors: { origin: '*', methods: ['GET', 'POST'] } });
-    }
+    constructor(private readonly socketService: SocketService) {}
 
     async isRoomFull(socket: Socket, roomId: string): Promise<boolean> {
         const maxPlayers = 2;
@@ -22,7 +21,7 @@ export class RoomController {
     }
 
     socketHandler(): void {
-        this.socketServer.on('connection', (socket) => {
+        this.socketService.socketServer.on('connection', (socket) => {
             console.log(`Connexion par l'utilisateur avec id : ${socket.id}`);
 
             socket.on('disconnect', (reason) => {
@@ -31,7 +30,7 @@ export class RoomController {
 
             socket.on('message', (message: Message) => {
                 // TODO: when room are functional socket.broadcast.to('testroom').emit('message', message);
-                this.socketServer.emit('message', message);
+                this.socketService.socketServer.emit('message', message);
                 console.log('Message sent on behalf of', socket.id);
             });
 
@@ -60,7 +59,7 @@ export class RoomController {
                         console.log('Room is already full');
                         this.availableRooms.splice(roomIndex, 1);
                     }
-                    this.socketServer.emit('availableRooms', this.availableRooms);
+                    this.socketService.socketServer.emit('availableRooms', this.availableRooms);
                 } else {
                     console.log('Invalid room ID provided: ', roomId);
                 }
