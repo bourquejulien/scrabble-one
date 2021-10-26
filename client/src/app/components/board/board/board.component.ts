@@ -21,6 +21,7 @@ export class BoardComponent implements OnChanges, AfterViewInit {
     isLetter: boolean;
     isFocus: boolean;
     squareSelected: boolean = false;
+    isHorizontal: boolean = true;
     position: Vec2;
     private gridContext: CanvasRenderingContext2D;
     private squareContext: CanvasRenderingContext2D;
@@ -33,7 +34,11 @@ export class BoardComponent implements OnChanges, AfterViewInit {
         this.gridService.resetCanvas(this.tempContext);
         if (this.isFocus) {
             this.mouseHandlingService.mouseHitDetect(event);
-            this.position = this.mouseHandlingService.position; // position on the grid
+            if (this.position === undefined) {
+                this.position = this.mouseHandlingService.position;
+            } else {
+                this.samePosition(this.mouseHandlingService.position);
+            }
             if (this.position.x > 0 && this.position.y > 0) {
                 this.gridService.drawSelectionSquare(this.tempContext, this.position);
                 this.squareSelected = true;
@@ -45,7 +50,11 @@ export class BoardComponent implements OnChanges, AfterViewInit {
         this.handleKeyPress(event.key);
         if (this.squareSelected === true && this.isLetter) {
             this.gridService.drawSymbol(event.key, this.position, this.tempContext);
-            this.position.x += 1;
+            if (this.isHorizontal) {
+                this.position.x += 1;
+            } else {
+                this.position.y += 1;
+            }
             this.gridService.drawSelectionSquare(this.tempContext, this.position);
         }
     }
@@ -95,11 +104,23 @@ export class BoardComponent implements OnChanges, AfterViewInit {
         this.gridService.drawSquares(this.squareContext);
     }
 
-    handleKeyPress(key: string): void {
+    private handleKeyPress(key: string): void {
         if (key.length !== 1 || !key.match('([a-z]|\\*)')) {
             this.isLetter = false;
+            if (key === 'delete') {
+                // do something
+            }
         } else {
             this.isLetter = true;
+        }
+    }
+
+    private samePosition(position: Vec2) {
+        if (this.position.x === position.x && this.position.y === position.y) {
+            this.isHorizontal = false;
+        } else {
+            this.position = position;
+            this.isHorizontal = true;
         }
     }
 }
