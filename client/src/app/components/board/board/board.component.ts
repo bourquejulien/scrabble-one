@@ -3,8 +3,12 @@ import { PlayerType } from '@app/classes/player/player-type';
 import { Constants } from '@app/constants/global.constants';
 import { GridService } from '@app/services/grid/grid.service';
 import { MouseHandlingService } from '@app/services/mouse-handling/mouse-handling.service';
+import { RackService } from '@app/services/rack/rack.service';
 import { Vec2 } from '@common';
 import FontFaceObserver from 'fontfaceobserver';
+
+const MAX_SIZE = 15;
+const MIN_SIZE = 1;
 
 @Component({
     selector: 'app-board',
@@ -23,39 +27,57 @@ export class BoardComponent implements OnChanges, AfterViewInit {
     squareSelected: boolean = false;
     isHorizontal: boolean = true;
     position: Vec2;
+    positionInit: Vec2;
     private gridContext: CanvasRenderingContext2D;
     private squareContext: CanvasRenderingContext2D;
     private tempContext: CanvasRenderingContext2D;
 
-    constructor(readonly gridService: GridService, readonly mouseHandlingService: MouseHandlingService) {}
+    constructor(readonly gridService: GridService, readonly mouseHandlingService: MouseHandlingService, readonly rackService: RackService) {}
 
     @HostListener('body:mousedown', ['$event'])
     onMouseDown(event: MouseEvent): void {
+        console.log(this.rackService.rack);
         this.gridService.resetCanvas(this.tempContext);
         if (this.isFocus) {
             this.mouseHandlingService.mouseHitDetect(event);
             if (this.position === undefined) {
                 this.position = this.mouseHandlingService.position;
+                this.positionInit = this.mouseHandlingService.position;
             } else {
                 this.samePosition(this.mouseHandlingService.position);
             }
             if (this.position.x > 0 && this.position.y > 0) {
                 this.gridService.drawSelectionSquare(this.tempContext, this.position);
+                this.gridService.drawDirectionArrow(this.tempContext, this.position, this.isHorizontal);
                 this.squareSelected = true;
             }
         }
     }
+
     @HostListener('body:keydown', ['$event'])
     onKeyDown(event: KeyboardEvent): void {
-        this.handleKeyPress(event.key);
-        if (this.squareSelected === true && this.isLetter) {
-            this.gridService.drawSymbol(event.key, this.position, this.tempContext);
-            if (this.isHorizontal) {
-                this.position.x += 1;
-            } else {
-                this.position.y += 1;
+        if (event.key === 'Backspace' && this.isPositionInit()) {
+            this.gridService.clearSquare(this.tempContext, this.position);
+            if (this.isHorizontal && this.position.x > MIN_SIZE) {
+                this.position.x -= 1;
+            } else if (!this.isHorizontal && this.position.y > MIN_SIZE) {
+                this.position.y -= 1;
             }
             this.gridService.drawSelectionSquare(this.tempContext, this.position);
+            this.gridService.drawDirectionArrow(this.tempContext, this.position, this.isHorizontal);
+        } else {
+            this.handleKeyPress(event.key);
+            if (this.squareSelected === true && this.isLetter) {
+                this.gridService.cleanSquare(this.tempContext, this.position);
+                this.gridService.drawSymbol(event.key, this.position, this.tempContext);
+                if (this.isHorizontal && this.position.x < MAX_SIZE) {
+                    this.position.x += 1;
+                } else if (!this.isHorizontal && this.position.y < MAX_SIZE) {
+                    this.position.y += 1;
+                }
+                this.gridService.drawSelectionSquare(this.tempContext, this.position);
+                this.gridService.drawDirectionArrow(this.tempContext, this.position, this.isHorizontal);
+            }
         }
     }
 
@@ -107,11 +129,12 @@ export class BoardComponent implements OnChanges, AfterViewInit {
     private handleKeyPress(key: string): void {
         if (key.length !== 1 || !key.match('([a-z]|\\*)')) {
             this.isLetter = false;
-            if (key === 'delete') {
-                // do something
-            }
         } else {
-            this.isLetter = true;
+            if (this.rackService.rack.includes(key)) {
+                this.isLetter = true;
+            } else {
+                this.isLetter = false;
+            }
         }
     }
 
@@ -120,7 +143,14 @@ export class BoardComponent implements OnChanges, AfterViewInit {
             this.isHorizontal = false;
         } else {
             this.position = position;
+            this.positionInit = position;
             this.isHorizontal = true;
         }
+    }
+
+    private isPositionInit(): boolean {
+        if (this.position.x === this.positionInit.x && this.position.y === this.positionInit.y) {
+            return true;
+        } else return false;
     }
 }

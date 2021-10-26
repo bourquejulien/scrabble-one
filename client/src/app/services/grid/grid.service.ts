@@ -120,9 +120,30 @@ export class GridService {
         tempContext.rect(gridCoord.x - this.squareWidth / 2, gridCoord.y - this.squareHeight / 2, this.squareWidth, this.squareHeight);
         tempContext.stroke();
     }
+    drawDirectionArrow(tempContext: CanvasRenderingContext2D, position: Vec2, direction: boolean): void {
+        const gridCoord = this.computeCanvasCoord(position);
+        if (direction) {
+            tempContext.beginPath();
+            tempContext.strokeStyle = STROKE_STYLE_SELECTION;
+            tempContext.lineWidth = LINE_WIDTH;
+            tempContext.moveTo(gridCoord.x, gridCoord.y);
+            tempContext.lineTo(gridCoord.x, gridCoord.y - 15);
+            tempContext.lineTo(gridCoord.x + 20, gridCoord.y);
+            tempContext.lineTo(gridCoord.x, gridCoord.y + 15);
+            tempContext.fill();
+        } else {
+            tempContext.beginPath();
+            tempContext.strokeStyle = STROKE_STYLE_SELECTION;
+            tempContext.lineWidth = LINE_WIDTH;
+            tempContext.moveTo(gridCoord.x, gridCoord.y);
+            tempContext.lineTo(gridCoord.x - 15, gridCoord.y);
+            tempContext.lineTo(gridCoord.x, gridCoord.y + 20);
+            tempContext.lineTo(gridCoord.x + 15, gridCoord.y);
+            tempContext.fill();
+        }
+    }
 
     drawSymbol(letter: string, gridPosition: Vec2, context: CanvasRenderingContext2D) {
-        console.log('keydown');
         if (letter.length === 0) return;
 
         const canvasPosition: Vec2 = this.computeCanvasCoord(gridPosition);
@@ -137,6 +158,25 @@ export class GridService {
 
     resetCanvas(context: CanvasRenderingContext2D): void {
         context.clearRect(0, 0, this.canvasSize.x, this.canvasSize.y);
+    }
+
+    clearSquare(tempContext: CanvasRenderingContext2D, position: Vec2): void {
+        const gridCoord = this.computeCanvasCoord(position);
+        tempContext.clearRect(
+            gridCoord.x - this.squareWidth / 2 - 3,
+            gridCoord.y - this.squareHeight / 2 - 3,
+            this.squareWidth + 6,
+            this.squareHeight + 6,
+        );
+    }
+    cleanSquare(tempContext: CanvasRenderingContext2D, position: Vec2): void {
+        const gridCoord = this.computeCanvasCoord(position);
+        tempContext.clearRect(
+            gridCoord.x - this.squareWidth / 2 + 3,
+            gridCoord.y - this.squareHeight / 2 + 3,
+            this.squareWidth - 5,
+            this.squareHeight - 5,
+        );
     }
 
     get width(): number {
