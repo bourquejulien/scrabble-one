@@ -1,5 +1,5 @@
 import { Component, Input } from '@angular/core';
-import { PlayerType } from '@common';
+import { PlayerType } from '@app/classes/player/player-type';
 
 @Component({
     selector: 'app-play-area',

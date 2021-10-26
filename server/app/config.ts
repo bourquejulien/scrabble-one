@@ -10,4 +10,14 @@ export const Config = {
     },
     RACK_SIZE: 7,
     DICTIONARY_PATH: 'assets/dictionary.json',
+    VIRTUAL_PLAYER: {
+        SKIP_PERCENTAGE: 0.1,
+        EXCHANGE_PERCENTAGE: 0.1,
+        PLAY_PERCENTAGE: 0.8,
+        SCORE_RANGE: [
+            { percentage: 0.4, range: { min: 0, max: 6 } },
+            { percentage: 0.3, range: { min: 7, max: 12 } },
+            { percentage: 0.3, range: { min: 13, max: 18 } },
+        ],
+    },
 };

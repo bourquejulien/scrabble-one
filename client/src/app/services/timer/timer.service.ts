@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { TimeSpan } from '@app/classes/time/timespan';
 import { Timer } from '@app/classes/time/timer';
 import { Subject, Subscription } from 'rxjs';
-import { PlayerType } from '@common';
+import { PlayerType } from '@app/classes/player/player-type';
 
 @Injectable({
     providedIn: 'root',

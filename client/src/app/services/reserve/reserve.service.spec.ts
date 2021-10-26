@@ -1,4 +1,5 @@
 /* eslint-disable dot-notation -- reserve is private and we need access for the test */
+/*
 import { TestBed } from '@angular/core/testing';
 import { ReserveService } from '@app/services/reserve/reserve.service';
 
@@ -98,3 +99,5 @@ describe('ReserveService', () => {
         expect(service.length).toBe(reserveLength);
     });
 });
+
+*/

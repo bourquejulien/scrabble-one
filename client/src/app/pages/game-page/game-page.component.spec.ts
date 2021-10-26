@@ -10,11 +10,11 @@ import { TimePipe } from '@app/classes/time/time.pipe';
 import { TimeSpan } from '@app/classes/time/timespan';
 import { AppMaterialModule } from '@app/modules/material.module';
 import { GameService } from '@app/services/game/game.service';
-import { PlayerType } from '@common';
 import { BehaviorSubject, Subject } from 'rxjs';
 import { GamePageComponent } from './game-page.component';
 import { RouterTestingModule } from '@angular/router/testing';
 import { MatDialogClose, MatDialogModule } from '@angular/material/dialog';
+import { PlayerType } from '@app/classes/player/player-type';
 
 const GAME_TYPES_LIST = ['Mode Solo Débutant'];
 

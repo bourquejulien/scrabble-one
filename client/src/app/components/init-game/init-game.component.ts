@@ -7,6 +7,7 @@ import { GameConfig } from '@app/classes/game-config';
 import { GameType } from '@app/classes/game-type';
 import { TimeSpan } from '@app/classes/time/timespan';
 import { GameService } from '@app/services/game/game.service';
+import { SinglePlayerGameConfig } from '@common';
 
 const GAME_TYPES_LIST = ['Mode Solo Débutant'];
 const BOT_NAMES = ['Maurice', 'Claudette', 'Alphonse'];
@@ -69,28 +70,62 @@ export class InitGameComponent implements OnInit {
         public dialogRef: MatDialogRef<InitGameComponent>,
         @Inject(MAT_DIALOG_DATA) public data: { gameModeType: GameType },
     ) {
-        this.setNextpage();
+        this.setNextPage();
+    }
+
+    private static nameValidatorFunction(control: FormControl): { [key: string]: boolean } | null {
+        // We make sure that player name is considered as a string
+        const playerName = control.value as string;
+        if (playerName !== undefined && playerName !== null && playerName !== '') {
+            for (let index = 0; index < playerName.length; index++) {
+                if (!/[a-zA-ZÉéÎîÉéÇçÏï]/.test(playerName.charAt(index))) return { ['containsOnlyLetters']: true };
+            }
+
+            const firstLetter = playerName[0];
+            if (firstLetter !== firstLetter.toUpperCase()) {
+                return { ['startsWithLowerLetter']: true };
+            }
+        }
+        return null;
+    }
+
+    private static randomizeBotName(nameArr: string[]): string {
+        const randomIndex = Math.floor(Math.random() * nameArr.length);
+        return nameArr[randomIndex];
+    }
+
+    private static isNameValidator(): ValidatorFn {
+        return InitGameComponent.nameValidatorFunction as ValidatorFn;
     }
 
     @HostListener('keydown', ['$event'])
-    buttonDetect(event: KeyboardEvent) {
+    async buttonDetect(event: KeyboardEvent) {
         if (event.key === 'Enter') {
-            this.initialize();
+            await this.initialize();
         }
     }
 
-    ngOnInit(): void {
-        this.gameService.reset();
-        this.gameConfig.secondPlayerName = this.randomizeBotName(this.botNames);
-        this.gameService.startGame(this.gameConfig);
+    async ngOnInit(): Promise<void> {
+        await this.gameService.reset();
+        this.gameConfig.secondPlayerName = InitGameComponent.randomizeBotName(this.botNames);
     }
 
-    initialize(): void {
+    async initialize(): Promise<void> {
         const needsToReroute: boolean = this.confirmInitialization();
 
         if (needsToReroute) {
             this.dialogRef.close();
-            this.router.navigate([this.nextPage]);
+
+            // TODO Should be able to redirect to waiting room or GameService with proper configs
+            const singlePlayerConfig: SinglePlayerGameConfig = {
+                gameType: this.gameConfig.gameType,
+                playTimeMs: this.gameConfig.playTime.totalMilliseconds,
+                playerName: this.gameConfig.firstPlayerName,
+                virtualPlayerName: this.gameConfig.secondPlayerName,
+            };
+
+            await this.gameService.startSinglePlayer(singlePlayerConfig);
+            await this.router.navigate([this.nextPage]);
         }
     }
 
@@ -101,7 +136,7 @@ export class InitGameComponent implements OnInit {
 
     botNameChange(firstPlayerName: string): void {
         while (firstPlayerName === this.gameConfig.secondPlayerName) {
-            this.gameConfig.secondPlayerName = this.randomizeBotName(BOT_NAMES);
+            this.gameConfig.secondPlayerName = InitGameComponent.randomizeBotName(BOT_NAMES);
         }
     }
 
@@ -113,22 +148,13 @@ export class InitGameComponent implements OnInit {
         if (this.minutes === TURN_LENGTH_MINUTES[0]) this.seconds = 30;
     }
 
-    private randomizeBotName(nameArr: string[]): string {
-        const randomIndex = Math.floor(Math.random() * nameArr.length);
-        return nameArr[randomIndex];
-    }
-
-    private isNameValidator(): ValidatorFn {
-        return this.nameValidatorFunction as ValidatorFn;
-    }
-
     private confirmInitialization(): boolean {
         const nameForm = new FormGroup({
             control: new FormControl(this.gameConfig.firstPlayerName, [
                 Validators.required,
                 Validators.minLength(MIN_SIZE_NAME),
                 Validators.maxLength(MAX_SIZE_NAME),
-                this.isNameValidator(),
+                InitGameComponent.isNameValidator(),
             ]),
         });
 
@@ -150,23 +176,7 @@ export class InitGameComponent implements OnInit {
         return false;
     }
 
-    private nameValidatorFunction(control: FormControl): { [key: string]: boolean } | null {
-        // We make sure that player name is considered as a string
-        const playerName = control.value as string;
-        if (playerName !== undefined && playerName !== null && playerName !== '') {
-            for (let index = 0; index < playerName.length; index++) {
-                if (!/[a-zA-ZÉéÎîÉéÇçÏï]/.test(playerName.charAt(index))) return { ['containsOnlyLetters']: true };
-            }
-
-            const firstLetter = playerName[0];
-            if (firstLetter !== firstLetter.toUpperCase()) {
-                return { ['startsWithLowerLetter']: true };
-            }
-        }
-        return null;
-    }
-
-    private setNextpage(): void {
+    private setNextPage(): void {
         if (this.data.gameModeType === GameType.Solo) {
             this.nextPage = 'game';
         }

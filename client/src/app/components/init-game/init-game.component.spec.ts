@@ -10,15 +10,15 @@ import { GameType } from '@app/classes/game-type';
 import { cleanStyles } from '@app/classes/helpers/cleanup.helper';
 import { AppMaterialModule } from '@app/modules/material.module';
 import { GameService } from '@app/services/game/game.service';
-import { PlayerType } from '@common';
 import { InitGameComponent } from './init-game.component';
+import { PlayerType } from '@app/classes/player/player-type';
 
 @Injectable({
     providedIn: 'root',
 })
 class GameServiceStub {
     currentTurn: PlayerType = PlayerType.Local;
-    startGame(): void {
+    startSinglePlayer(): void {
         // Does Nothing
     }
 
@@ -72,50 +72,50 @@ describe('InitGameComponent', () => {
         expect(component).toBeTruthy();
     });
 
-    it('should not contains any error', () => {
+    it('should not contains any error', async () => {
         component.gameConfig.firstPlayerName = NAMES[0];
-        component.initialize();
+        await component.initialize();
         expect(component.errorsList).toEqual([]);
     });
 
-    it('should not contains any error', () => {
+    it('should not contains any error', async () => {
         component.gameConfig.firstPlayerName = NAMES[1];
-        component.initialize();
+        await component.initialize();
         expect(component.errorsList).toEqual([]);
     });
 
-    it('should have error for lower letter', () => {
+    it('should have error for lower letter', async () => {
         component.gameConfig.firstPlayerName = NAMES[2];
-        component.initialize();
+        await component.initialize();
         expect(component.errorsList).toEqual(['*Le nom doit débuter par une majuscule.\n']);
     });
 
-    it('should have error for minimum length', () => {
+    it('should have error for minimum length', async () => {
         component.gameConfig.firstPlayerName = NAMES[3];
-        component.initialize();
+        await component.initialize();
         expect(component.errorsList).toEqual(['*Le nom doit contenir au moins 3 caractères.\n']);
     });
 
-    it('should have error for maximum length', () => {
+    it('should have error for maximum length', async () => {
         component.gameConfig.firstPlayerName = NAMES[4];
-        component.initialize();
+        await component.initialize();
         expect(component.errorsList).toEqual(['*Le nom doit au maximum contenir 16 lettres.\n']);
     });
 
-    it('should have error for not having name', () => {
-        component.initialize();
+    it('should have error for not having name', async () => {
+        await component.initialize();
         expect(component.errorsList).toEqual(['*Un nom doit être entré.\n']);
     });
 
-    it('should have error for not containing only letters', () => {
+    it('should have error for not containing only letters', async () => {
         component.gameConfig.firstPlayerName = NAMES[5];
-        component.initialize();
+        await component.initialize();
         expect(component.errorsList).toEqual(['*Le nom doit seulement être composé de lettres.\n']);
     });
 
-    it('should have error for not containing only letters and minimum length', () => {
+    it('should have error for not containing only letters and minimum length', async () => {
         component.gameConfig.firstPlayerName = NAMES[6];
-        component.initialize();
+        await component.initialize();
         expect(component.errorsList).toEqual(['*Le nom doit seulement être composé de lettres.\n', '*Le nom doit contenir au moins 3 caractères.\n']);
     });
 

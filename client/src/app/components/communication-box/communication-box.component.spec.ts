@@ -11,10 +11,11 @@ import { TimeSpan } from '@app/classes/time/timespan';
 import { Constants } from '@app/constants/global.constants';
 import { AppMaterialModule } from '@app/modules/material.module';
 import { CommandsService } from '@app/services/commands/commands.service';
-import { GameService } from '@app/services/game/game.service';
 import { MessagingService } from '@app/services/messaging/messaging.service';
-import { Message, MessageType, PlayerType } from '@common';
+import { Message, MessageType } from '@common';
 import { CommunicationBoxComponent } from './communication-box.component';
+import { SessionService } from '@app/services/session/session.service';
+import { PlayerType } from '@app/classes/player/player-type';
 
 describe('CommunicationBoxComponent', () => {
     let component: CommunicationBoxComponent;
@@ -22,7 +23,7 @@ describe('CommunicationBoxComponent', () => {
     let dummyMessage: Message;
     let messagingServiceSpy: jasmine.SpyObj<MessagingService>;
 
-    const gameService = {
+    const sessionService = {
         gameConfig: {
             gameType: 'qwerty',
             playTime: TimeSpan.fromMinutesSeconds(1, 0),
@@ -38,7 +39,7 @@ describe('CommunicationBoxComponent', () => {
             declarations: [CommunicationBoxComponent],
             providers: [
                 { provide: MessagingService, useValue: messagingServiceSpy },
-                { provide: GameService, useValue: gameService },
+                { provide: SessionService, useValue: sessionService },
                 { provide: CommandsService, useValue: jasmine.createSpyObj('CommandsService', { parseInput: true }) },
             ],
             imports: [AppMaterialModule, BrowserAnimationsModule, FormsModule],
@@ -78,8 +79,8 @@ describe('CommunicationBoxComponent', () => {
     it('should return the correct title', () => {
         const firstPlayerName = 'Alberto';
         const secondPlayerName = 'Monique';
-        component['gameService']['gameConfig']['firstPlayerName'] = firstPlayerName;
-        component['gameService']['gameConfig']['secondPlayerName'] = secondPlayerName;
+        component['sessionService']['gameConfig']['firstPlayerName'] = firstPlayerName;
+        component['sessionService']['gameConfig']['secondPlayerName'] = secondPlayerName;
         expect(component.getTitle(dummyMessage)).toBe(dummyMessage.title);
         dummyMessage.messageType = MessageType.Game;
         dummyMessage.userId = PlayerType.Local;

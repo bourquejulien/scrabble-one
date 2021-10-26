@@ -3,12 +3,12 @@
 /* eslint-disable max-classes-per-file -- Multiple mock needed for tests*/
 /* eslint-disable @typescript-eslint/naming-convention  -- Need SCREAMING_SNAKE_CASE for static property in mock class */
 import { TestBed } from '@angular/core/testing';
-import { Direction } from '@app/classes/board/direction';
 import { CommandsService } from '@app/services/commands/commands.service';
 import { GameService } from '@app/services/game/game.service';
 import { PlayerService } from '@app/services/player/player.service';
 import { ReserveService } from '@app/services/reserve/reserve.service';
-import { PlayerType, Vec2 } from '@common';
+import { Vec2, Direction } from '@common';
+import { PlayerType } from '@app/classes/player/player-type';
 
 describe('CommandsService', () => {
     let playerServiceSpy: jasmine.SpyObj<PlayerService>;
@@ -20,7 +20,7 @@ describe('CommandsService', () => {
         reserveServiceSpy = jasmine.createSpyObj('ReserveService', ['getLetterAndQuantity', 'reserve']);
         reserveServiceSpy['reserve'] = ['a'];
 
-        playerServiceSpy = jasmine.createSpyObj('PlayerService', ['completeTurn', 'exchangeLetters', 'placeLetters', 'skipTurn']);
+        playerServiceSpy = jasmine.createSpyObj('PlayerService', ['exchangeLetters', 'placeLetters', 'skipTurn']);
 
         TestBed.configureTestingModule({
             providers: [
@@ -110,7 +110,7 @@ describe('CommandsService', () => {
 
     it('#parseInput should call skip turn', () => {
         service.parseInput('!passer');
-        expect(playerServiceSpy.completeTurn).toHaveBeenCalled();
+        expect(playerServiceSpy.skipTurn).toHaveBeenCalled();
     });
 
     it("#parseInput should fail when it is not the user's turn", () => {
