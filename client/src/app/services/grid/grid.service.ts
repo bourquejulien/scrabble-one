@@ -1,12 +1,13 @@
 import { Injectable } from '@angular/core';
 import { FontFace } from '@app/classes/font-face';
-import { Vec2, Bonus } from '@common';
 import { Constants } from '@app/constants/global.constants';
 import { BoardService } from '@app/services/board/board.service';
+import { Bonus, Vec2 } from '@common';
 
 const STAR_IMAGE_PATH = 'assets/img/star.svg';
 const LINE_WIDTH = 3;
 const STROKE_STYLE = 'black';
+const STROKE_STYLE_SELECTION = 'red';
 const FONT_FACE: FontFace = { font: 'BenchNine', size: 30 };
 const MIN_FONT_SIZE = 25;
 const MAX_FONT_SIZE = 35;
@@ -110,6 +111,15 @@ export class GridService {
         if (boardData.board[centerSquare][centerSquare].letter === '') {
             this.drawImage(this.starImage, { x: centerSquare + 1, y: centerSquare + 1 }, squareContext);
         }
+    }
+    drawSelectionSquare(tempContext: CanvasRenderingContext2D, position: Vec2): void {
+        const gridCoord = this.computeCanvasCoord(position);
+        tempContext.beginPath();
+        tempContext.lineWidth = LINE_WIDTH;
+        tempContext.strokeStyle = STROKE_STYLE_SELECTION;
+        tempContext.rect(gridCoord.x - this.squareWidth / 2, gridCoord.y - this.squareHeight / 2, this.squareWidth, this.squareHeight);
+        tempContext.stroke();
+        console.log(gridCoord);
     }
 
     drawSymbol(letter: string, gridPosition: Vec2, context: CanvasRenderingContext2D) {

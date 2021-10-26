@@ -38,6 +38,11 @@
     position: absolute;
 }
 
+#tempcanvas {
+    z-index: 2;
+    position: absolute;
+}
+
 canvas {
     display: flex;
     justify-content: center;

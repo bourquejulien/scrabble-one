@@ -1,9 +1,10 @@
-import { AfterViewInit, Component, ElementRef, Input, OnChanges, SimpleChanges, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, HostListener, Input, OnChanges, SimpleChanges, ViewChild } from '@angular/core';
+import { PlayerType } from '@app/classes/player/player-type';
 import { Constants } from '@app/constants/global.constants';
 import { GridService } from '@app/services/grid/grid.service';
 import { MouseHandlingService } from '@app/services/mouse-handling/mouse-handling.service';
+import { Vec2 } from '@common';
 import FontFaceObserver from 'fontfaceobserver';
-import { PlayerType } from '@app/classes/player/player-type';
 
 @Component({
     selector: 'app-board',
@@ -15,15 +16,29 @@ export class BoardComponent implements OnChanges, AfterViewInit {
 
     @ViewChild('gridCanvas', { static: false }) private gridCanvas!: ElementRef<HTMLCanvasElement>;
     @ViewChild('squareCanvas', { static: false }) private squareCanvas!: ElementRef<HTMLCanvasElement>;
+    @ViewChild('tempCanvas', { static: false }) private tempCanvas!: ElementRef<HTMLCanvasElement>;
 
+    isFocus: boolean;
     private gridContext: CanvasRenderingContext2D;
     private squareContext: CanvasRenderingContext2D;
+    private tempContext: CanvasRenderingContext2D;
 
     constructor(readonly gridService: GridService, readonly mouseHandlingService: MouseHandlingService) {}
 
+    @HostListener('body:mousedown', ['$event'])
+    onMouseDown(event: MouseEvent): void {
+        if (this.isFocus) {
+            this.mouseHandlingService.mouseHitDetect(event);
+            const position: Vec2 = this.mouseHandlingService.position; // position on the grid
+            if (position.x > 0 && position.y > 0) {
+                this.gridService.drawSelectionSquare(this.tempContext, position);
+            }
+        }
+    }
     ngAfterViewInit(): void {
         this.gridContext = this.gridCanvas.nativeElement.getContext('2d') as CanvasRenderingContext2D;
         this.squareContext = this.squareCanvas.nativeElement.getContext('2d') as CanvasRenderingContext2D;
+        this.tempContext = this.tempCanvas.nativeElement.getContext('2d') as CanvasRenderingContext2D;
 
         this.scale();
 
