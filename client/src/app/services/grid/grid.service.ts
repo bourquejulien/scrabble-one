@@ -119,10 +119,10 @@ export class GridService {
         tempContext.strokeStyle = STROKE_STYLE_SELECTION;
         tempContext.rect(gridCoord.x - this.squareWidth / 2, gridCoord.y - this.squareHeight / 2, this.squareWidth, this.squareHeight);
         tempContext.stroke();
-        console.log(gridCoord);
     }
 
     drawSymbol(letter: string, gridPosition: Vec2, context: CanvasRenderingContext2D) {
+        console.log('keydown');
         if (letter.length === 0) return;
 
         const canvasPosition: Vec2 = this.computeCanvasCoord(gridPosition);
@@ -133,6 +133,10 @@ export class GridService {
         context.textBaseline = 'middle';
         context.textAlign = 'center';
         context.fillText(letter, canvasPosition.x, canvasPosition.y);
+    }
+
+    resetCanvas(context: CanvasRenderingContext2D): void {
+        context.clearRect(0, 0, this.canvasSize.x, this.canvasSize.y);
     }
 
     get width(): number {

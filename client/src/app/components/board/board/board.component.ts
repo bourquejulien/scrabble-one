@@ -18,7 +18,10 @@ export class BoardComponent implements OnChanges, AfterViewInit {
     @ViewChild('squareCanvas', { static: false }) private squareCanvas!: ElementRef<HTMLCanvasElement>;
     @ViewChild('tempCanvas', { static: false }) private tempCanvas!: ElementRef<HTMLCanvasElement>;
 
+    isLetter: boolean;
     isFocus: boolean;
+    squareSelected: boolean = false;
+    position: Vec2;
     private gridContext: CanvasRenderingContext2D;
     private squareContext: CanvasRenderingContext2D;
     private tempContext: CanvasRenderingContext2D;
@@ -27,14 +30,26 @@ export class BoardComponent implements OnChanges, AfterViewInit {
 
     @HostListener('body:mousedown', ['$event'])
     onMouseDown(event: MouseEvent): void {
+        this.gridService.resetCanvas(this.tempContext);
         if (this.isFocus) {
             this.mouseHandlingService.mouseHitDetect(event);
-            const position: Vec2 = this.mouseHandlingService.position; // position on the grid
-            if (position.x > 0 && position.y > 0) {
-                this.gridService.drawSelectionSquare(this.tempContext, position);
+            this.position = this.mouseHandlingService.position; // position on the grid
+            if (this.position.x > 0 && this.position.y > 0) {
+                this.gridService.drawSelectionSquare(this.tempContext, this.position);
+                this.squareSelected = true;
             }
         }
     }
+    @HostListener('body:keydown', ['$event'])
+    onKeyDown(event: KeyboardEvent): void {
+        this.handleKeyPress(event.key);
+        if (this.squareSelected === true && this.isLetter) {
+            this.gridService.drawSymbol(event.key, this.position, this.tempContext);
+            this.position.x += 1;
+            this.gridService.drawSelectionSquare(this.tempContext, this.position);
+        }
+    }
+
     ngAfterViewInit(): void {
         this.gridContext = this.gridCanvas.nativeElement.getContext('2d') as CanvasRenderingContext2D;
         this.squareContext = this.squareCanvas.nativeElement.getContext('2d') as CanvasRenderingContext2D;
@@ -78,5 +93,13 @@ export class BoardComponent implements OnChanges, AfterViewInit {
         this.gridService.letterFontFace.size = size;
         this.gridService.drawGrid(this.gridContext);
         this.gridService.drawSquares(this.squareContext);
+    }
+
+    handleKeyPress(key: string): void {
+        if (key.length !== 1 || !key.match('([a-z]|\\*)')) {
+            this.isLetter = false;
+        } else {
+            this.isLetter = true;
+        }
     }
 }
