@@ -13,7 +13,7 @@ import { HttpClient } from '@angular/common/http';
 import { PlayerType } from '@app/classes/player/player-type';
 import { environmentExt } from '@environmentExt';
 
-const localUrl = (call: string, id: string) => `${environmentExt.apiUrl}/player/${call}/${id}`;
+const localUrl = (call: string, id: string) => `${environmentExt.apiUrl}player/${call}/${id}`;
 
 @Injectable({
     providedIn: 'root',
