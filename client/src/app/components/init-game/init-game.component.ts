@@ -7,7 +7,7 @@ import { GameConfig } from '@app/classes/game-config';
 import { GameType } from '@app/classes/game-type';
 import { TimeSpan } from '@app/classes/time/timespan';
 import { GameService } from '@app/services/game/game.service';
-import { SinglePlayerGameConfig } from '@common';
+import { SinglePlayerConfig } from '@common';
 
 const GAME_TYPES_LIST = ['Mode Solo Débutant'];
 const BOT_NAMES = ['Maurice', 'Claudette', 'Alphonse'];
@@ -117,7 +117,7 @@ export class InitGameComponent implements OnInit {
             this.dialogRef.close();
 
             // TODO Should be able to redirect to waiting room or GameService with proper configs
-            const singlePlayerConfig: SinglePlayerGameConfig = {
+            const singlePlayerConfig: SinglePlayerConfig = {
                 gameType: this.gameConfig.gameType,
                 playTimeMs: this.gameConfig.playTime.totalMilliseconds,
                 playerName: this.gameConfig.firstPlayerName,

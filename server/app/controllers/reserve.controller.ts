@@ -29,6 +29,6 @@ export class ReserveController {
     }
 
     private getReserveHandler(id: string): ReserveHandler | null {
-        return this.sessionHandlingService.getHandler(id)?.reserveHandler ?? null;
+        return this.sessionHandlingService.getHandlerByPlayerId(id)?.reserveHandler ?? null;
     }
 }

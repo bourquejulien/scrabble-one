@@ -27,9 +27,13 @@ export class SessionHandlingService {
         return this.sessionHandlers.slice(index, 1)[0];
     }
 
-    getHandler(id: string): SessionHandler | null {
+    getHandlerByPlayerId(id: string): SessionHandler | null {
         const sessionId = this.getSessionId(id);
-        return this.sessionHandlers.find((e) => e.sessionInfo.id === sessionId) ?? null;
+        return this.getHandlerBySessionId(sessionId);
+    }
+
+    getHandlerBySessionId(id: string): SessionHandler | null {
+        return this.sessionHandlers.find((e) => e.sessionInfo.id === id) ?? null;
     }
 
     getSessionId(playerId: string): string {

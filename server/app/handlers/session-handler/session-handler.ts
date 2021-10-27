@@ -1,6 +1,6 @@
 import { SessionInfo } from '@app/classes/session-info';
 import { BoardHandler } from '@app/handlers/board-handler/board-handler';
-import { ServerGameConfig } from '@common';
+import { ServerConfig } from '@common';
 import { IPlayer } from '@app/classes/player/player';
 import { ReserveHandler } from '@app/handlers/reserve-handler/reserve-handler';
 import { SessionData } from '@app/classes/session-data';
@@ -9,6 +9,7 @@ import { Config } from '@app/config';
 
 export class SessionHandler {
     readonly sessionData: SessionData;
+    readonly players: IPlayer[];
     private timer: NodeJS.Timer;
 
     constructor(
@@ -16,13 +17,11 @@ export class SessionHandler {
         readonly boardHandler: BoardHandler,
         readonly reserveHandler: ReserveHandler,
         readonly socketService: SocketService,
-        readonly players: IPlayer[],
     ) {
-        players.forEach((p) => p.fillRack());
         this.sessionData = { isActive: false, isStarted: false, timeMs: 0 };
     }
 
-    getServerConfig(id: string): ServerGameConfig {
+    getServerConfig(id: string): ServerConfig {
         const firstPlayer = this.players.find((p) => p.id === id) ?? this.players[0];
         const secondPlayer = this.players.find((p) => p.id !== firstPlayer.id) ?? this.players[1];
 
@@ -44,6 +43,8 @@ export class SessionHandler {
     start() {
         this.sessionData.isActive = true;
         this.sessionData.isActive = false;
+
+        this.players.forEach((p) => p.fillRack());
         this.timer = setInterval(() => this.timerTick(), Config.SESSION.REFRESH_INTERVAL_MS);
     }
 

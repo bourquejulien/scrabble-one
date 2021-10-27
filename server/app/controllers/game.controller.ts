@@ -20,9 +20,32 @@ export class GameController {
             res.json(answer);
         });
 
-        this.router.put('/start', async (req: Request, res: Response) => {
+        this.router.put('/start/single', async (req: Request, res: Response) => {
             try {
-                const answer = await this.gameService.startVirtualGame(req.body);
+                const answer = await this.gameService.startSinglePlayer(req.body);
+                res.json(answer);
+            } catch (e: unknown) {
+                res.status(Constants.HTTP_STATUS.BAD_REQUEST);
+            }
+        });
+
+        this.router.put('/start/multi', async (req: Request, res: Response) => {
+            try {
+                const answer = await this.gameService.startMultiplayer(req.body);
+                res.json(answer);
+            } catch (e: unknown) {
+                res.status(Constants.HTTP_STATUS.BAD_REQUEST);
+            }
+        });
+
+        this.router.put('/join', async (req: Request, res: Response) => {
+            try {
+                const answer = await this.gameService.joinMultiplayer(req.body);
+
+                if (answer == null) {
+                    res.status(Constants.HTTP_STATUS.NOT_FOUND);
+                }
+
                 res.json(answer);
             } catch (e: unknown) {
                 res.status(Constants.HTTP_STATUS.BAD_REQUEST);
