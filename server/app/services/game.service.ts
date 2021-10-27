@@ -41,6 +41,8 @@ export class GameService {
 
         const sessionHandler = new SessionHandler(sessionInfo, boardHandler, reserveHandler, this.socketService, [humanPlayer, virtualPlayer]);
 
+        sessionHandler.start();
+
         this.sessionHandlingService.addHandler(sessionHandler);
 
         return sessionHandler.getServerConfig(humanPlayer.id);

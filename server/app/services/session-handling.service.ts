@@ -35,4 +35,8 @@ export class SessionHandlingService {
     getSessionId(playerId: string): string {
         return this.playerIds.get(playerId) ?? '';
     }
+
+    get availableSessions(): SessionHandler[] {
+        return this.sessionHandlers.filter((e) => e.sessionData.isStarted);
+    }
 }
