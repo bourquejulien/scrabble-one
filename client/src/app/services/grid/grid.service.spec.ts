@@ -1,27 +1,41 @@
 /* eslint-disable max-classes-per-file -- Class is implemented for testing purposes only relevant ro this service*/
-
 import { Injectable } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
-import { Board, ImmutableBoard } from '@app/classes/board/board';
-import { Bonus } from '@app/classes/board/bonus';
+import { BoardData, Bonus } from '@common';
 import { CanvasTestHelper } from '@app/classes/canvas-test-helper';
 import { Constants } from '@app/constants/global.constants';
 import { BoardService } from '@app/services/board/board.service';
 import { GridService } from '@app/services/grid/grid.service';
 
-const BOARD: Board = new Board(Constants.GRID.GRID_SIZE, [
+const BONUSES = [
     { bonus: Bonus.L2, position: { x: 0, y: 0 } },
     { bonus: Bonus.L3, position: { x: 0, y: 1 } },
     { bonus: Bonus.W2, position: { x: 0, y: 2 } },
     { bonus: Bonus.W3, position: { x: 0, y: 3 } },
-]);
+    { bonus: Bonus.Star, position: { x: 7, y: 7 } },
+];
+
+const generateData = (size: number): BoardData => {
+    const data: BoardData = { board: [], filledPositions: [] };
+
+    for (let x = 0; x < size; x++) {
+        data.board[x] = [];
+        for (let y = 0; y < size; y++) {
+            const bonus = BONUSES.find((e) => e.position.x === x && e.position.y === y)?.bonus ?? Bonus.None;
+            data.board[x][y] = { position: { x, y }, letter: bonus === Bonus.None ? 'a' : '', bonus };
+        }
+    }
+
+    return data;
+};
 
 @Injectable({
     providedIn: 'root',
 })
 class BoardServiceStub {
-    get gameBoard(): ImmutableBoard {
-        return BOARD;
+    constructor(private readonly boardData: BoardData) {}
+    get gameBoard(): BoardData {
+        return this.boardData;
     }
 }
 
@@ -32,11 +46,9 @@ describe('GridService', () => {
     const CANVAS_WIDTH = 500;
     const CANVAS_HEIGHT = 500;
 
-    BOARD.merge([{ letter: 's', position: { x: 4, y: 4 } }]);
-
     beforeEach(() => {
         TestBed.configureTestingModule({
-            providers: [{ provide: BoardService, useClass: BoardServiceStub }],
+            providers: [{ provide: BoardService, useValue: new BoardServiceStub(generateData(Constants.GRID.GRID_SIZE)) }],
         });
         service = TestBed.inject(GridService);
         ctxStub = CanvasTestHelper.createCanvas(CANVAS_WIDTH, CANVAS_HEIGHT).getContext('2d') as CanvasRenderingContext2D;
@@ -93,21 +105,23 @@ describe('GridService', () => {
         expect(afterSize).toBeGreaterThan(beforeSize);
     });
 
-    it(' drawSquares should call drawImage and drawSymbol once', () => {
+    it(' drawSquares should call drawImage and drawSymbol', () => {
+        const TIMES_SYMBOL_CALLED = 220;
         // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Needed for spyOn service
         const spyImage = spyOn<any>(service, 'drawImage');
         // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Needed for spyOn service
         const spySymbol = spyOn<any>(service, 'drawSymbol');
+
         service.drawSquares(ctxStub);
         expect(spyImage).toHaveBeenCalledTimes(1);
-        expect(spySymbol).toHaveBeenCalledTimes(1);
+        expect(spySymbol).toHaveBeenCalledTimes(TIMES_SYMBOL_CALLED);
     });
 
-    it(' drawSquares should be called 4 times', () => {
+    it(' drawBonus should be called 4 times', () => {
+        const TIMES_CALLED = 5;
         // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Needed for spyOn service
         const spy = spyOn<any>(service, 'drawBonus');
-        const timesCalled = 4;
         service.drawSquares(ctxStub);
-        expect(spy).toHaveBeenCalledTimes(timesCalled);
+        expect(spy).toHaveBeenCalledTimes(TIMES_CALLED);
     });
 });

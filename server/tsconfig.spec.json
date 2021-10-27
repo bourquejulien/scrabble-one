@@ -1,4 +1,5 @@
 {
     "extends": "./tsconfig.json",
-    "include": ["app/**/*.ts", "test/*"]
+    "include": ["app/**/*.ts", "test/*"],
+    "exclude": ["app/services/virtual-player/**"]
 }

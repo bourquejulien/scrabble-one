@@ -44,6 +44,27 @@ export class RackService {
         this.rack.length = 0;
     }
 
+    update(rack: string[]): void {
+        rack = rack.slice();
+
+        for (let i = 0; i < rack.length - this.rack.length; ) {
+            this.rack.push('');
+        }
+
+        for (let i = 0; i < this.rack.length; i++) {
+            const position = rack.indexOf(this.rack[i]);
+            if (position !== -1) {
+                rack.splice(position, 1);
+            } else {
+                this.rack[i] = '';
+            }
+        }
+
+        for (const letter of rack) {
+            this.rack[this.rack.indexOf('')] = letter;
+        }
+    }
+
     mod(value: number): number {
         return ((value % this.length) + this.length) % this.length;
     }

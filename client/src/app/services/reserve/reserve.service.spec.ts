@@ -1,4 +1,5 @@
 /* eslint-disable dot-notation -- reserve is private and we need access for the test */
+/*
 import { TestBed } from '@angular/core/testing';
 import { ReserveService } from '@app/services/reserve/reserve.service';
 
@@ -82,10 +83,10 @@ describe('ReserveService', () => {
     });
 
     it('should return letter quantity if valid letter', () => {
-        const firstletterQuantity = 3;
-        const secondLetterQuantity = 2;
-        expect(service.getLetterQuantity('a')).toBe(firstletterQuantity);
-        expect(service.getLetterQuantity('b')).toBe(secondLetterQuantity);
+        const firstletterAndQuantity = 'A : 3';
+        const secondLetterAndQuantity = 'B : 2';
+        expect(service.getLetterAndQuantity('a')).toBe(firstletterAndQuantity);
+        expect(service.getLetterAndQuantity('b')).toBe(secondLetterAndQuantity);
     });
 
     it('should return reserve length', () => {
@@ -98,3 +99,5 @@ describe('ReserveService', () => {
         expect(service.length).toBe(reserveLength);
     });
 });
+
+*/

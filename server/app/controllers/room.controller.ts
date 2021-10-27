@@ -2,7 +2,7 @@
 import { Message } from '@common';
 import * as http from 'http';
 import { Server, Socket } from 'socket.io';
-import { v4 as uuidv4 } from 'uuid';
+import { generateId } from '@app/classes/id';
 
 export class RoomController {
     private socketServer: Server;
@@ -15,10 +15,10 @@ export class RoomController {
     async isRoomFull(socket: Socket, roomId: string): Promise<boolean> {
         const maxPlayers = 2;
         const roomSockets = await socket.in(roomId).fetchSockets();
-        if (roomSockets.length >= maxPlayers) {
-            return true;
-        }
-        return false;
+        console.log('Inside isRoomFull');
+        console.log(roomSockets.length);
+
+        return roomSockets.length >= maxPlayers;
     }
 
     socketHandler(): void {
@@ -26,7 +26,7 @@ export class RoomController {
             console.log(`Connexion par l'utilisateur avec id : ${socket.id}`);
 
             socket.on('disconnect', (reason) => {
-                console.log(`Deconnexion par l'utilisateur avec id : ${socket.id} raison: ${reason}`);
+                console.log(`Déconnexion par l'utilisateur avec id : ${socket.id} raison: ${reason}`);
             });
 
             socket.on('message', (message: Message) => {
@@ -36,7 +36,11 @@ export class RoomController {
             });
 
             socket.on('newOnlineGame', () => {
-                this.availableRooms.push(uuidv4());
+                const roomId = generateId();
+                this.availableRooms.push(roomId);
+
+                socket.join(roomId);
+                console.log('Created room: ', roomId);
             });
 
             socket.on('getRooms', () => {
@@ -48,16 +52,14 @@ export class RoomController {
 
                 if (roomIndex !== -1) {
                     console.log('Joined room: ', roomId);
-                    if (await this.isRoomFull(socket, roomId)) {
+                    socket.join(roomId);
+
+                    const isCurrentRoomFull = await this.isRoomFull(socket, roomId);
+
+                    if (isCurrentRoomFull) {
                         console.log('Room is already full');
                         this.availableRooms.splice(roomIndex, 1);
                     }
-                    socket.join(roomId);
-                } else if (roomId === '') {
-                    const newRoomID = uuidv4();
-                    this.availableRooms.push(newRoomID);
-                    socket.join(newRoomID);
-                    console.log(`New room created with ID ${newRoomID} for socketID ${socket.id}`);
                     this.socketServer.emit('availableRooms', this.availableRooms);
                 } else {
                     console.log('Invalid room ID provided: ', roomId);

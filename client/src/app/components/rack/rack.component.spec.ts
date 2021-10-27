@@ -60,17 +60,17 @@ describe('RackComponent', () => {
     });
 
     it('should reset swap selection', () => {
-        component.swapSelection = 1;
+        component.selection.swap.index = 1;
         component.reset();
 
-        expect(component.swapSelection).toEqual(-1);
+        expect(component.selection.swap.index).toEqual(-1);
     });
 
     it('should set swap selection on click', () => {
         const POSITION = 5;
-        component.onClick(POSITION);
+        component.onLeftClick(POSITION);
 
-        expect(component.swapSelection).toEqual(POSITION);
+        expect(component.selection.swap.index).toEqual(POSITION);
     });
 
     it('should not swap if no selection', () => {
@@ -84,7 +84,7 @@ describe('RackComponent', () => {
         const POSITION = 5;
         const spy = spyOn(rackService, 'swapRight');
 
-        component.swapSelection = POSITION;
+        component.selection.swap.index = POSITION;
         component.onKeyDown(new KeyboardEvent('keydown', { key: 'ArrowRight' }));
 
         expect(spy).toHaveBeenCalledWith(POSITION);
@@ -94,7 +94,7 @@ describe('RackComponent', () => {
         const POSITION = 5;
         const spy = spyOn(rackService, 'swapLeft');
 
-        component.swapSelection = POSITION;
+        component.selection.swap.index = POSITION;
         component.onKeyDown(new KeyboardEvent('keydown', { key: 'ArrowLeft' }));
 
         expect(spy).toHaveBeenCalledWith(POSITION);
@@ -103,24 +103,24 @@ describe('RackComponent', () => {
     it('should initialise swapSelection on mouse wheel', () => {
         component.onMousewheel(new WheelEvent('', { deltaY: 0 }));
 
-        expect(component.swapSelection).toEqual(0);
+        expect(component.selection.swap.index).toEqual(0);
     });
 
     it('should change swapSelection on mouse wheel', () => {
         const POSITION = 5;
         const spy = spyOn(rackService, 'mod').and.returnValue(0);
 
-        component.swapSelection = POSITION;
+        component.selection.swap.index = POSITION;
         component.onMousewheel(new WheelEvent('', { deltaY: 1 }));
         expect(spy).toHaveBeenCalledWith(POSITION - 1);
-        expect(component.swapSelection).toEqual(0);
+        expect(component.selection.swap.index).toEqual(0);
 
         spy.calls.reset();
 
-        component.swapSelection = POSITION;
+        component.selection.swap.index = POSITION;
         component.onMousewheel(new WheelEvent('', { deltaY: -1 }));
         expect(spy).toHaveBeenCalledWith(POSITION + 1);
-        expect(component.swapSelection).toEqual(0);
+        expect(component.selection.swap.index).toEqual(0);
     });
 
     it('should handle key press', () => {
@@ -133,7 +133,7 @@ describe('RackComponent', () => {
         component.onKeyDown(new KeyboardEvent('keydown', { key: LETTER }));
 
         expect(spy).toHaveBeenCalledWith(LETTER, 0);
-        expect(component.swapSelection).toEqual(POSITION);
+        expect(component.selection.swap.index).toEqual(POSITION);
     });
 
     it('should reset if pressed key is not in rack', () => {
@@ -142,12 +142,48 @@ describe('RackComponent', () => {
         const spy = spyOn(rackService, 'indexOf').and.returnValue(-1);
 
         component.isFocus = true;
-        component.swapSelection = POSITION;
+        component.selection.swap.index = POSITION;
 
         component.onKeyDown(new KeyboardEvent('keydown', { key: LETTER }));
 
         expect(spy).toHaveBeenCalledWith(LETTER, 0);
-        expect(component.swapSelection).toEqual(-1);
+        expect(component.selection.swap.index).toEqual(-1);
+    });
+
+    it('should reset on document click if not on focus', () => {
+        const POSITION = 5;
+        component.selection.reserve.add(POSITION);
+        const spy = spyOn(component, 'reset');
+
+        component.isFocus = true;
+        component.onDocumentClick();
+
+        expect(spy).not.toHaveBeenCalled();
+
+        component.isFocus = false;
+        component.onDocumentClick();
+
+        expect(spy).toHaveBeenCalled();
+        expect(component.selection.swap.index).toEqual(-1);
+    });
+
+    it('should toggle square for exchange', () => {
+        const POSITION = 5;
+
+        component.onRightClick(POSITION);
+        expect(component.selection.reserve).toContain(POSITION);
+
+        component.onRightClick(POSITION);
+        expect(component.selection.reserve).not.toContain(POSITION);
+    });
+
+    it('should not toggle square for exchange if selected for swap', () => {
+        const POSITION = 5;
+
+        component.selection.swap.index = POSITION;
+
+        component.onRightClick(POSITION);
+        expect(component.selection.reserve).not.toContain(POSITION);
     });
 
     afterAll(() => cleanStyles());

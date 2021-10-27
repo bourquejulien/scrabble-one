@@ -6,6 +6,7 @@ import { GameService } from '@app/services/game/game.service';
 import { cleanStyles } from '@app/classes/helpers/cleanup.helper';
 import { TimeSpan } from '@app/classes/time/timespan';
 import { MatDialogClose, MatDialogModule } from '@angular/material/dialog';
+import { SessionService } from '@app/services/session/session.service';
 
 describe('EndGameComponent', () => {
     let component: EndGameComponent;
@@ -13,6 +14,8 @@ describe('EndGameComponent', () => {
     const gameService = {
         firstPlayerStats: { points: 10, rackSize: 10 },
         secondPlayerStats: { points: 20, rackSize: 30 },
+    };
+    const sessionService = {
         gameConfig: {
             gameType: 'qwerty',
             playTime: TimeSpan.fromMinutesSeconds(1, 0),
@@ -31,7 +34,10 @@ describe('EndGameComponent', () => {
 
     beforeEach(() => {
         TestBed.configureTestingModule({
-            providers: [{ provide: GameService, useValue: gameService }],
+            providers: [
+                { provide: GameService, useValue: gameService },
+                { provide: SessionService, useValue: sessionService },
+            ],
         }).compileComponents();
 
         fixture = TestBed.createComponent(EndGameComponent);
@@ -46,33 +52,37 @@ describe('EndGameComponent', () => {
     it('should show the right string if firstPlayer have more point when winner is called', () => {
         gameService.firstPlayerStats.points = 10;
         gameService.secondPlayerStats.points = 0;
-        gameService.gameConfig.firstPlayerName = 'Michel';
-        gameService.gameConfig.secondPlayerName = 'Jean-Simon';
+        sessionService.gameConfig.firstPlayerName = 'Michel';
+        sessionService.gameConfig.secondPlayerName = 'Jean-Simon';
         const message = component.winner();
         expect(message).toBe(
-            'Félicitation au gagnant ' + gameService.gameConfig.firstPlayerName + ':' + gameService.firstPlayerStats.points + ' points',
+            'Félicitation au gagnant ' + sessionService.gameConfig.firstPlayerName + ':' + gameService.firstPlayerStats.points + ' points',
         );
     });
 
     it('should show the right string if secondPlayer have more point when winner is called', () => {
         gameService.firstPlayerStats.points = 0;
         gameService.secondPlayerStats.points = 10;
-        gameService.gameConfig.firstPlayerName = 'Michel';
-        gameService.gameConfig.secondPlayerName = 'Jean-Simon';
+        sessionService.gameConfig.firstPlayerName = 'Michel';
+        sessionService.gameConfig.secondPlayerName = 'Jean-Simon';
         const message = component.winner();
         expect(message).toBe(
-            'Félicitation au gagnant ' + gameService.gameConfig.secondPlayerName + ':' + gameService.secondPlayerStats.points + ' points',
+            'Félicitation au gagnant ' + sessionService.gameConfig.secondPlayerName + ':' + gameService.secondPlayerStats.points + ' points',
         );
     });
 
     it('should show the right string if equality occurs when winner is called', () => {
         gameService.firstPlayerStats.points = 10;
         gameService.secondPlayerStats.points = 10;
-        gameService.gameConfig.firstPlayerName = 'Michel';
-        gameService.gameConfig.secondPlayerName = 'Jean-Simon';
+        sessionService.gameConfig.firstPlayerName = 'Michel';
+        sessionService.gameConfig.secondPlayerName = 'Jean-Simon';
         const message = component.winner();
         expect(message).toBe(
-            'Félicitation aux gagnants ' + gameService.gameConfig.firstPlayerName + ' et ' + gameService.gameConfig.secondPlayerName + ' égalité',
+            'Félicitation aux gagnants ' +
+                sessionService.gameConfig.firstPlayerName +
+                ' et ' +
+                sessionService.gameConfig.secondPlayerName +
+                ' égalité',
         );
     });
 

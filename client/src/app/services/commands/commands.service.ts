@@ -1,11 +1,12 @@
 import { Injectable } from '@angular/core';
-import { Direction } from '@app/classes/board/direction';
 import { Constants } from '@app/constants/global.constants';
 import { SystemMessages } from '@app/constants/system-messages.constants';
 import { GameService } from '@app/services/game/game.service';
 import { MessagingService } from '@app/services/messaging/messaging.service';
 import { PlayerService } from '@app/services/player/player.service';
-import { MessageType, PlayerType, Vec2 } from '@common';
+import { ReserveService } from '@app/services/reserve/reserve.service';
+import { letterDefinitions, MessageType, Vec2, Direction } from '@common';
+import { PlayerType } from '@app/classes/player/player-type';
 
 @Injectable({
     providedIn: 'root',
@@ -16,7 +17,12 @@ export class CommandsService {
     rackRegex: RegExp = /^[a-z*]{1,7}$/;
     messageRegex: RegExp = /^[A-zÀ-ú0-9 !.?'"]{1,512}$/;
 
-    constructor(public messagingService: MessagingService, public playerService: PlayerService, public gameService: GameService) {}
+    constructor(
+        public messagingService: MessagingService,
+        public playerService: PlayerService,
+        public gameService: GameService,
+        public reserveService: ReserveService,
+    ) {}
 
     parseInput(input: string): boolean {
         // Arguments: [COMMAND, OPTIONS, WORD]
@@ -36,17 +42,17 @@ export class CommandsService {
                 case '!passer':
                     successfulCommand = this.skipTurn();
                     break;
-                case '!reserve':
-                    this.showReserve();
-                    break;
                 case '!échanger':
                     successfulCommand = this.exchangeLetters(this.removeAccents(args[1]));
+                    break;
+                case '!réserve':
+                    successfulCommand = this.displayReserve();
                     break;
                 default:
                     this.messagingService.send('', SystemMessages.InvalidCommand, MessageType.Error);
                     return false;
             }
-            if (successfulCommand) this.messagingService.send('Commande réussie', input, MessageType.System, this.gameService.currentTurn);
+            if (successfulCommand) this.messagingService.send('Commande réussie', input, MessageType.Log, this.gameService.currentTurn);
         } else {
             if (this.messageRegex.test(input)) {
                 this.messagingService.send('', input, MessageType.Message);
@@ -63,8 +69,19 @@ export class CommandsService {
         return word.normalize('NFD').replace(/\p{Diacritic}/gu, '');
     }
 
-    private showReserve() {
-        // this.
+    private displayReserve(): boolean {
+        const body: string[] = [];
+        let reserveContent = '';
+
+        for (const letter of letterDefinitions) {
+            const currentLetterAndQuantity = this.reserveService.getLetterAndQuantity(letter[0]);
+            body.push(`${currentLetterAndQuantity}\n`);
+        }
+
+        reserveContent = body.join('');
+        this.messagingService.send(SystemMessages.ReserveContentTitle, reserveContent, MessageType.Log);
+
+        return true;
     }
 
     private showHelp() {
@@ -109,7 +126,7 @@ export class CommandsService {
     private skipTurn(): boolean {
         if (!this.isUsersTurn()) return false;
 
-        this.playerService.completeTurn();
+        this.playerService.skipTurn();
         return true;
     }
 

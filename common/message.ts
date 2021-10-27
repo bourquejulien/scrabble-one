@@ -1,4 +1,4 @@
-import { PlayerType } from './player-type';
+import { PlayerType } from '../client/src/app/classes/player/player-type';
 
 export enum MessageType {
     Message,
@@ -7,6 +7,7 @@ export enum MessageType {
     System,
     Game,
 }
+
 export interface Message {
     title: string;
     body: string;
