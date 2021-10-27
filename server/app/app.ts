@@ -10,7 +10,6 @@ import { Service } from 'typedi';
 import { DictionaryService } from '@app/services/dictionary/dictionary.service';
 import { ReserveController } from '@app/controllers/reserve.controller';
 import { PlayerController } from './controllers/player.controller';
-import { RoomController } from '@app/controllers/room.controller';
 
 @Service()
 export class Application {
@@ -22,10 +21,8 @@ export class Application {
         private readonly boardController: BoardController,
         private readonly playerController: PlayerController,
         private readonly reserveController: ReserveController,
-        roomController: RoomController,
         dictionaryService: DictionaryService,
     ) {
-        roomController.socketHandler();
         dictionaryService.retrieveDictionary();
 
         this.app = express();

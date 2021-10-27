@@ -2,14 +2,15 @@
 import { Message } from '@common';
 import { Socket } from 'socket.io';
 import { generateId } from '@app/classes/id';
-import { SocketService } from '@app/services/socket-service';
 import { Service } from 'typedi';
+import { SocketService } from '@app/services/socket-service';
+import { SessionHandlingService } from '@app/services/session-handling.service';
 
 @Service()
 export class RoomController {
     private availableRooms: string[] = [];
 
-    constructor(private readonly socketService: SocketService) {}
+    constructor(private readonly socketService: SocketService, private readonly sessionHandlingService: SessionHandlingService) {}
 
     async isRoomFull(socket: Socket, roomId: string): Promise<boolean> {
         const maxPlayers = 2;
@@ -46,7 +47,8 @@ export class RoomController {
                 socket.emit('availableRooms', this.availableRooms);
             });
 
-            socket.on('joinRoom', async (roomId: string) => {
+            socket.on('joinRoom', async (playerId: string) => {
+                const sessionId = this.sessionHandlingService.getSessionId(playerId);
                 const roomIndex = this.availableRooms.indexOf(roomId);
 
                 if (roomIndex !== -1) {

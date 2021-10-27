@@ -11,6 +11,7 @@ import { HumanPlayer } from '@app/classes/player/human-player/human-player';
 import { Action } from '@app/classes/player/virtual-player/actions/action';
 import { PlayerInfo } from '@app/classes/player-info';
 import { DictionaryService } from '@app/services/dictionary/dictionary.service';
+import { SocketService } from '@app/services/socket-service';
 
 @Service()
 export class GameService {
@@ -20,6 +21,7 @@ export class GameService {
         private readonly boardGeneratorService: BoardGeneratorService,
         private readonly sessionHandlingService: SessionHandlingService,
         private readonly dictionnaryService: DictionaryService,
+        private readonly socketService: SocketService,
     ) {
         this.clientMessages = [];
     }
@@ -37,7 +39,7 @@ export class GameService {
         const humanPlayer = this.generateHumanPlayer(gameConfig, boardHandler, reserveHandler);
         const virtualPlayer = this.generateVirtualPlayer(gameConfig, boardHandler, reserveHandler);
 
-        const sessionHandler = new SessionHandler(sessionInfo, boardHandler, reserveHandler, [humanPlayer, virtualPlayer]);
+        const sessionHandler = new SessionHandler(sessionInfo, boardHandler, reserveHandler, this.socketService, [humanPlayer, virtualPlayer]);
 
         this.sessionHandlingService.addHandler(sessionHandler);
 

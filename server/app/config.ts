@@ -20,4 +20,7 @@ export const Config = {
             { percentage: 0.3, range: { min: 13, max: 18 } },
         ],
     },
+    SESSION: {
+        REFRESH_INTERVAL_MS: 1000,
+    },
 };

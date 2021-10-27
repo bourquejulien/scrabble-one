@@ -6,11 +6,12 @@ import { Message } from '@common/message';
 @Service()
 export class SocketService {
     socketServer: Server;
-    constructor(server: http.Server) {
+
+    init(server: http.Server): void {
         this.socketServer = new Server(server, { cors: { origin: '*', methods: ['GET', 'POST'] } });
     }
 
-    send(message: Message, roomId: string) {
-        this.socketServer.to(roomId).emit('message', message);
+    send(event: string, message: any, roomId: string) {
+        this.socketServer.to(roomId).emit(event, message);
     }
 }
