@@ -1,7 +1,6 @@
 import http from 'http';
 import { Server } from 'socket.io';
 import { Service } from 'typedi';
-import { Message } from '@common/message';
 
 @Service()
 export class SocketService {

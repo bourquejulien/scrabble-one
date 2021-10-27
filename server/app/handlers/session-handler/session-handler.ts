@@ -8,7 +8,7 @@ import { SocketService } from '@app/services/socket-service';
 import { Config } from '@app/config';
 
 export class SessionHandler {
-    private readonly sessionData: SessionData;
+    readonly sessionData: SessionData;
     private timer: NodeJS.Timer;
 
     constructor(
@@ -19,8 +19,7 @@ export class SessionHandler {
         readonly players: IPlayer[],
     ) {
         players.forEach((p) => p.fillRack());
-        this.sessionData = { isActive: false, timeMs: 0 };
-        this.start();
+        this.sessionData = { isActive: false, isStarted: false, timeMs: 0 };
     }
 
     getServerConfig(id: string): ServerGameConfig {
@@ -44,11 +43,11 @@ export class SessionHandler {
 
     start() {
         this.sessionData.isActive = true;
+        this.sessionData.isActive = false;
         this.timer = setInterval(() => this.timerTick(), Config.SESSION.REFRESH_INTERVAL_MS);
     }
 
     private timerTick(): void {
-        console.log("sadsad");
-        //this.socketService.socketServer.to().emit('timerTick');
+        this.socketService.send('timertick', this.sessionData.timeMs, this.sessionInfo.id);
     }
 }
