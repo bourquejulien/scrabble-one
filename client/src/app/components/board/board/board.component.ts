@@ -1,6 +1,7 @@
 import { AfterViewInit, Component, ElementRef, HostListener, Input, OnChanges, SimpleChanges, ViewChild } from '@angular/core';
 import { PlayerType } from '@app/classes/player/player-type';
 import { Constants } from '@app/constants/global.constants';
+import { BoardService } from '@app/services/board/board.service';
 import { GridService } from '@app/services/grid/grid.service';
 import { MouseHandlingService } from '@app/services/mouse-handling/mouse-handling.service';
 import { RackService } from '@app/services/rack/rack.service';
@@ -32,7 +33,12 @@ export class BoardComponent implements OnChanges, AfterViewInit {
     private squareContext: CanvasRenderingContext2D;
     private tempContext: CanvasRenderingContext2D;
 
-    constructor(readonly gridService: GridService, readonly mouseHandlingService: MouseHandlingService, readonly rackService: RackService) {}
+    constructor(
+        readonly gridService: GridService,
+        readonly mouseHandlingService: MouseHandlingService,
+        readonly rackService: RackService,
+        readonly boardService: BoardService,
+    ) {}
 
     @HostListener('body:mousedown', ['$event'])
     onMouseDown(event: MouseEvent): void {
@@ -45,21 +51,22 @@ export class BoardComponent implements OnChanges, AfterViewInit {
             } else {
                 this.samePosition(this.mouseHandlingService.position);
             }
-            if (this.gridPosition.x > 0 && this.gridPosition.y > 0) {
+            const squareValid: boolean = this.inGrid(this.gridPosition) && this.boardService.positionIsAvailable(this.gridPosition);
+            if (squareValid) {
                 this.gridService.drawSelectionSquare(this.tempContext, this.gridPosition);
                 this.gridService.drawDirectionArrow(this.tempContext, this.gridPosition, this.isHorizontal);
                 this.squareSelected = true;
             }
         } else {
-            this.gridPosition.x = 0;
-            this.gridPosition.y = 0;
+            this.gridPosition.x = -1;
+            this.gridPosition.y = -1;
         }
     }
 
     @HostListener('body:keydown', ['$event'])
     onKeyDown(event: KeyboardEvent): void {
-        console.log(this.isPositionInit());
-        if (event.key === 'Backspace' && !this.isPositionInit()) {
+        const backSpaceValid: boolean = this.backSpaceEnable(event.key) && !this.isPositionInit() && this.inGrid(this.gridPosition);
+        if (backSpaceValid) {
             this.gridService.clearSquare(this.tempContext, this.gridPosition);
             if (this.isHorizontal && this.gridPosition.x > MIN_SIZE) {
                 this.gridPosition.x -= 1;
@@ -70,14 +77,11 @@ export class BoardComponent implements OnChanges, AfterViewInit {
             this.gridService.drawDirectionArrow(this.tempContext, this.gridPosition, this.isHorizontal);
         } else {
             this.handleKeyPress(event.key);
-            if (this.squareSelected === true && this.isLetter) {
+            const validKey: boolean = this.squareSelected === true && this.isLetter && this.inGrid(this.gridPosition);
+            if (validKey) {
                 this.gridService.cleanSquare(this.tempContext, this.gridPosition);
                 this.gridService.drawSymbol(event.key, this.gridPosition, this.tempContext);
-                if (this.isHorizontal && this.gridPosition.x < MAX_SIZE) {
-                    this.gridPosition.x += 1;
-                } else if (!this.isHorizontal && this.gridPosition.y < MAX_SIZE) {
-                    this.gridPosition.y += 1;
-                }
+                this.nextAvailableSquare();
                 this.gridService.drawSelectionSquare(this.tempContext, this.gridPosition);
                 this.gridService.drawDirectionArrow(this.tempContext, this.gridPosition, this.isHorizontal);
             }
@@ -155,5 +159,36 @@ export class BoardComponent implements OnChanges, AfterViewInit {
         if (this.gridPosition.x === this.positionInit.x && this.gridPosition.y === this.positionInit.y) {
             return true;
         } else return false;
+    }
+
+    private inGrid(position: Vec2): boolean {
+        if (position.x >= MIN_SIZE && position.x <= MAX_SIZE) {
+            if (position.y >= MIN_SIZE && position.y <= MAX_SIZE) {
+                return true;
+            } else {
+                return false;
+            }
+        } else {
+            return false;
+        }
+    }
+
+    private backSpaceEnable(key: string): boolean {
+        if (key === 'Backspace' && this.squareSelected) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    private nextAvailableSquare(): void {
+        do {
+            if (this.isHorizontal && this.gridPosition.x < MAX_SIZE) {
+                this.gridPosition.x += 1;
+            } else if (!this.isHorizontal && this.gridPosition.y < MAX_SIZE) {
+                this.gridPosition.y += 1;
+            }
+            console.log(this.gridPosition);
+        } while (!this.boardService.positionIsAvailable(this.gridPosition));
     }
 }
