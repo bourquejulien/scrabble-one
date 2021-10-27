@@ -11,6 +11,7 @@ import { SessionService } from '@app/services/session/session.service';
 import { ReserveService } from '@app/services/reserve/reserve.service';
 import { PlayerType } from '@app/classes/player/player-type';
 import { environmentExt } from '@environmentExt';
+import { SocketClientService } from '@app/services/socket-client/socket-client.service';
 
 const localUrl = (call: string, id?: string) => `${environmentExt.apiUrl}game/${call}${id ? '/' + id : ''}`;
 
@@ -39,6 +40,7 @@ export class GameService {
         private readonly messaging: MessagingService,
         private readonly httpCLient: HttpClient,
         private readonly sessionService: SessionService,
+        private readonly socketService: SocketClientService,
     ) {
         this.onTurn = new BehaviorSubject<PlayerType>(PlayerType.Local);
         this.gameEnding = new Subject<void>();
@@ -53,6 +55,7 @@ export class GameService {
 
     async startSinglePlayer(config: SinglePlayerGameConfig) {
         const serverGameConfig = await this.httpCLient.put<ServerGameConfig>(localUrl('start'), config).toPromise();
+        this.socketService.socketClient.emit('singlePlayerJoin', serverGameConfig.id);
         await this.startGame(serverGameConfig);
     }
 

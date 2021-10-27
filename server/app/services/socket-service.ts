@@ -1,7 +1,7 @@
 import http from 'http';
 import { Server } from 'socket.io';
 import { Service } from 'typedi';
-import { Message } from '@common/message';
+import { Message } from '@common';
 
 @Service()
 export class SocketService {
@@ -11,7 +11,7 @@ export class SocketService {
         this.socketServer = new Server(server, { cors: { origin: '*', methods: ['GET', 'POST'] } });
     }
 
-    send(event: string, message: any, roomId: string) {
+    send(event: string, message: Message, roomId: string) {
         this.socketServer.to(roomId).emit(event, message);
     }
 }

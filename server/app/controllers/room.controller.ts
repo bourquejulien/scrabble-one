@@ -39,6 +39,11 @@ export class RoomController {
                 socket.emit('availableRooms', this.sessionHandlingService.availableSessions);
             });
 
+            socket.on('virtualPlayerJoin', (sessionID: string) => {
+                socket.join(sessionID);
+                console.log('Virtual player joined a room', sessionID);
+            });
+
             socket.on('joinRoom', async (playerId: string) => {
                 const sessionId = this.sessionHandlingService.getSessionId(playerId);
 
