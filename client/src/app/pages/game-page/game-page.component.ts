@@ -2,14 +2,15 @@ import { Component, OnDestroy, ViewChild } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { MatDrawer } from '@angular/material/sidenav';
 import { NavigationStart, Router } from '@angular/router';
+import { PlayerType } from '@app/classes/player/player-type';
 import { ConfirmQuitDialogComponent } from '@app/components/confirm-quit-dialog/confirm-quit-dialog.component';
 import { EndGameComponent } from '@app/components/end-game/end-game.component';
 import { GameService } from '@app/services/game/game.service';
+import { ReserveService } from '@app/services/reserve/reserve.service';
+import { SessionService } from '@app/services/session/session.service';
 import { TimerService } from '@app/services/timer/timer.service';
 import { Subscription } from 'rxjs';
 import { filter } from 'rxjs/operators';
-import { SessionService } from '@app/services/session/session.service';
-import { PlayerType } from '@app/classes/player/player-type';
 
 export enum Icon {
     Logout = 'exit_to_app',
@@ -47,6 +48,7 @@ export class GamePageComponent implements OnDestroy {
         readonly timerService: TimerService,
         readonly dialog: MatDialog,
         readonly router: Router,
+        readonly reserveService: ReserveService,
     ) {
         this.playerType = gameService.onTurn.getValue();
         this.timerService = timerService;
