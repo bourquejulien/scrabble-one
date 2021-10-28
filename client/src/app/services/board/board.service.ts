@@ -97,4 +97,8 @@ export class BoardService {
             return true;
         } else return false;
     }
+
+    getLetter(position: Vec2): string {
+        return this.boardData.board[position.x - 1][position.y - 1].letter;
+    }
 }

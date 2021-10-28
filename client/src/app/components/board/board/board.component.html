@@ -32,11 +32,17 @@
             (mouseleave)="isFocus = false"
         ></canvas>
     </div>
-    <app-size-selector
-        id="size-selector"
-        [minSize]="gridService.minFontSize"
-        [maxSize]="gridService.maxFontSize"
-        [size]="gridService.letterFontFace.size"
-        (sizeUpdated)="updateFontSize($event)"
-    ></app-size-selector>
+    <div class="parent">
+        <div id="play-button" class="inline-block-child">
+            <button mat-button mat-dialog-close *ngIf="tempRack.length > 0">jouer</button>
+        </div>
+        <app-size-selector
+            id="size-selector"
+            class="inline-block-child"
+            [minSize]="gridService.minFontSize"
+            [maxSize]="gridService.maxFontSize"
+            [size]="gridService.letterFontFace.size"
+            (sizeUpdated)="updateFontSize($event)"
+        ></app-size-selector>
+    </div>
 </div>

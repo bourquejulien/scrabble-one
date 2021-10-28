@@ -21,6 +21,7 @@
 #size-selector {
     margin-left: auto;
     margin-right: 0;
+    align-items: stretch;
 }
 
 .board-display {
@@ -49,4 +50,12 @@ canvas {
     align-items: center;
     left: 0;
     top: 0;
+}
+
+.inline-block-child {
+    display: inline-block;
+}
+
+#play-button{
+ margin-right: 460px;
 }

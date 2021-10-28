@@ -29,6 +29,7 @@ export class BoardComponent implements OnChanges, AfterViewInit {
     isHorizontal: boolean = true;
     gridPosition: Vec2;
     positionInit: Vec2;
+    tempRack: string[];
     private gridContext: CanvasRenderingContext2D;
     private squareContext: CanvasRenderingContext2D;
     private tempContext: CanvasRenderingContext2D;
@@ -38,7 +39,9 @@ export class BoardComponent implements OnChanges, AfterViewInit {
         readonly mouseHandlingService: MouseHandlingService,
         readonly rackService: RackService,
         readonly boardService: BoardService,
-    ) {}
+    ) {
+        this.tempRack = [];
+    }
 
     @HostListener('body:mousedown', ['$event'])
     onMouseDown(event: MouseEvent): void {
@@ -68,11 +71,9 @@ export class BoardComponent implements OnChanges, AfterViewInit {
         const backSpaceValid: boolean = this.backSpaceEnable(event.key) && !this.isPositionInit() && this.inGrid(this.gridPosition);
         if (backSpaceValid) {
             this.gridService.clearSquare(this.tempContext, this.gridPosition);
-            if (this.isHorizontal && this.gridPosition.x > MIN_SIZE) {
-                this.gridPosition.x -= 1;
-            } else if (!this.isHorizontal && this.gridPosition.y > MIN_SIZE) {
-                this.gridPosition.y -= 1;
-            }
+            this.nextAvailableSquare(false);
+            this.rackService.rack.push(this.tempRack[this.tempRack.length - 1]);
+            this.tempRack.pop();
             this.gridService.drawSelectionSquare(this.tempContext, this.gridPosition);
             this.gridService.drawDirectionArrow(this.tempContext, this.gridPosition, this.isHorizontal);
         } else {
@@ -81,7 +82,9 @@ export class BoardComponent implements OnChanges, AfterViewInit {
             if (validKey) {
                 this.gridService.cleanSquare(this.tempContext, this.gridPosition);
                 this.gridService.drawSymbol(event.key, this.gridPosition, this.tempContext);
-                this.nextAvailableSquare();
+                this.rackService.rack.splice(this.rackService.indexOf(event.key), 1);
+                this.tempRack.push(event.key);
+                this.nextAvailableSquare(true);
                 this.gridService.drawSelectionSquare(this.tempContext, this.gridPosition);
                 this.gridService.drawDirectionArrow(this.tempContext, this.gridPosition, this.isHorizontal);
             }
@@ -181,14 +184,29 @@ export class BoardComponent implements OnChanges, AfterViewInit {
         }
     }
 
-    private nextAvailableSquare(): void {
-        do {
-            if (this.isHorizontal && this.gridPosition.x < MAX_SIZE) {
-                this.gridPosition.x += 1;
-            } else if (!this.isHorizontal && this.gridPosition.y < MAX_SIZE) {
-                this.gridPosition.y += 1;
-            }
-            console.log(this.gridPosition);
-        } while (!this.boardService.positionIsAvailable(this.gridPosition));
+    private nextAvailableSquare(isForward: boolean): void {
+        if (isForward) {
+            do {
+                if (!this.boardService.positionIsAvailable(this.gridPosition)) {
+                    this.tempRack.push(this.boardService.getLetter(this.gridPosition));
+                }
+                if (this.isHorizontal && this.gridPosition.x < MAX_SIZE) {
+                    this.gridPosition.x += 1;
+                } else if (!this.isHorizontal && this.gridPosition.y < MAX_SIZE) {
+                    this.gridPosition.y += 1;
+                }
+            } while (!this.boardService.positionIsAvailable(this.gridPosition));
+        } else {
+            do {
+                if (!this.boardService.positionIsAvailable(this.gridPosition)) {
+                    this.tempRack.pop();
+                }
+                if (this.isHorizontal && this.gridPosition.x > MIN_SIZE) {
+                    this.gridPosition.x -= 1;
+                } else if (!this.isHorizontal && this.gridPosition.y > MIN_SIZE) {
+                    this.gridPosition.y -= 1;
+                }
+            } while (!this.boardService.positionIsAvailable(this.gridPosition));
+        }
     }
 }
