@@ -7,13 +7,24 @@ import express from 'express';
 import { StatusCodes } from 'http-status-codes';
 import logger from 'morgan';
 import { Service } from 'typedi';
+import { DictionaryService } from '@app/services/dictionary/dictionary.service';
+import { ReserveController } from '@app/controllers/reserve.controller';
+import { PlayerController } from './controllers/player.controller';
 
 @Service()
 export class Application {
     app: express.Application;
     private readonly internalError: number = StatusCodes.INTERNAL_SERVER_ERROR;
 
-    constructor(private readonly gameController: GameController, private readonly boardController: BoardController) {
+    constructor(
+        private readonly gameController: GameController,
+        private readonly boardController: BoardController,
+        private readonly playerController: PlayerController,
+        private readonly reserveController: ReserveController,
+        dictionaryService: DictionaryService,
+    ) {
+        dictionaryService.retrieveDictionary();
+
         this.app = express();
         this.config();
         this.bindRoutes();
@@ -22,6 +33,8 @@ export class Application {
     bindRoutes(): void {
         this.app.use('/api/game', this.gameController.router);
         this.app.use('/api/board', this.boardController.router);
+        this.app.use('/api/player', this.playerController.router);
+        this.app.use('/api/reserve', this.reserveController.router);
         this.errorHandling();
     }
 

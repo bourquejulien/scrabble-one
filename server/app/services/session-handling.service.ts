@@ -1,31 +1,34 @@
+import { SessionHandler } from '@app/handlers/session-handler/session-handler';
 import { Service } from 'typedi';
-import { SessionHandler } from '@app/classes/session-handler';
-import { SessionInfo } from '@app/classes/session-info';
-import { Board } from '@app/classes/board/board';
-import { generateId } from '@app/classes/id';
 
 @Service()
 export class SessionHandlingService {
-    sessionHandlers: SessionHandler[];
+    private readonly sessionHandlers: SessionHandler[];
+    private readonly playerIds: Map<string, string>;
 
     constructor() {
         this.sessionHandlers = [];
+        this.playerIds = new Map<string, string>();
     }
 
-    addHandler(sessionInfo: SessionInfo, board: Board): string {
-        const id = generateId();
-        this.sessionHandlers.push(new SessionHandler(id, sessionInfo, board));
-        return id;
+    addHandler(sessionHandler: SessionHandler): void {
+        sessionHandler.players.forEach((p) => this.playerIds.set(p.id, sessionHandler.sessionInfo.id));
+        this.sessionHandlers.push(sessionHandler);
     }
 
     removeHandler(id: string): SessionHandler | null {
-        const index = this.sessionHandlers.findIndex((e) => e.id === id);
+        const index = this.sessionHandlers.findIndex((e) => e.sessionInfo.id === id);
         if (index < 0) return null;
 
+        const sessionHandler = this.sessionHandlers[index];
+
+        sessionHandler.players.forEach((p) => this.playerIds.delete(p.id));
+        sessionHandler.destroy();
         return this.sessionHandlers.slice(index, 1)[0];
     }
 
     getHandler(id: string): SessionHandler | null {
-        return this.sessionHandlers.find((e) => e.id === id) ?? null;
+        const sessionId = this.playerIds.get(id);
+        return this.sessionHandlers.find((e) => e.sessionInfo.id === sessionId) ?? null;
     }
 }

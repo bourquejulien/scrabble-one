@@ -2,11 +2,13 @@ import { Component, OnDestroy, ViewChild } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { MatDrawer } from '@angular/material/sidenav';
 import { NavigationStart, Router } from '@angular/router';
+import { PlayerType } from '@app/classes/player/player-type';
 import { ConfirmQuitDialogComponent } from '@app/components/confirm-quit-dialog/confirm-quit-dialog.component';
 import { EndGameComponent } from '@app/components/end-game/end-game.component';
 import { GameService } from '@app/services/game/game.service';
+import { ReserveService } from '@app/services/reserve/reserve.service';
+import { SessionService } from '@app/services/session/session.service';
 import { TimerService } from '@app/services/timer/timer.service';
-import { PlayerType } from '@common';
 import { Subscription } from 'rxjs';
 import { filter } from 'rxjs/operators';
 
@@ -31,21 +33,23 @@ interface ButtonConfig {
 export class GamePageComponent implements OnDestroy {
     @ViewChild('drawer', { static: true }) drawer: MatDrawer;
 
-    gameService: GameService;
-    timerService: TimerService;
     playerType: PlayerType;
     buttonConfig: ButtonConfig[] = [];
     iconList: string[];
     isOpen: boolean = true;
-    route: Router;
     private readonly pageChange: Subscription;
 
     private onTurnSubscription: Subscription;
     private gameEndingSubscription: Subscription;
 
-    constructor(gameService: GameService, timerService: TimerService, public dialog: MatDialog, router: Router) {
-        this.route = router;
-        this.gameService = gameService;
+    constructor(
+        readonly gameService: GameService,
+        readonly sessionService: SessionService,
+        readonly timerService: TimerService,
+        readonly dialog: MatDialog,
+        readonly router: Router,
+        readonly reserveService: ReserveService,
+    ) {
         this.playerType = gameService.onTurn.getValue();
         this.timerService = timerService;
         this.buttonConfig = [
@@ -102,11 +106,11 @@ export class GamePageComponent implements OnDestroy {
 
         dialogRef.afterClosed().subscribe((result) => {
             if (result === true) {
-                this.route.navigate(['home']);
+                this.router.navigate(['home']);
                 this.gameService.reset();
                 return;
             }
-            this.route.navigate(['game']);
+            this.router.navigate(['game']);
         });
     }
 

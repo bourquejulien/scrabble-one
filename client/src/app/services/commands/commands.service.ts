@@ -1,12 +1,12 @@
 import { Injectable } from '@angular/core';
-import { Direction } from '@app/classes/board/direction';
 import { Constants } from '@app/constants/global.constants';
 import { SystemMessages } from '@app/constants/system-messages.constants';
 import { GameService } from '@app/services/game/game.service';
 import { MessagingService } from '@app/services/messaging/messaging.service';
 import { PlayerService } from '@app/services/player/player.service';
 import { ReserveService } from '@app/services/reserve/reserve.service';
-import { letterDefinitions, MessageType, PlayerType, Vec2 } from '@common';
+import { letterDefinitions, MessageType, Vec2, Direction } from '@common';
+import { PlayerType } from '@app/classes/player/player-type';
 
 @Injectable({
     providedIn: 'root',
@@ -25,10 +25,9 @@ export class CommandsService {
         public reserveService: ReserveService,
     ) {}
 
-    parseInput(input: string): boolean {
+    async parseInput(input: string): Promise<boolean> {
         // Arguments: [COMMAND, OPTIONS, WORD]
         if (input.startsWith('!')) {
-
             const args = input.split(' ');
             switch (args[0]) {
                 case '!aide':
@@ -38,13 +37,13 @@ export class CommandsService {
                     this.toggleDebug();
                     break;
                 case '!placer':
-                    this.successfulCommand = this.checkPlaceCommand(args[1], this.removeAccents(args[2]));
+                    this.successfulCommand = await this.checkPlaceCommand(args[1], this.removeAccents(args[2]));
                     break;
                 case '!passer':
                     this.successfulCommand = this.skipTurn();
                     break;
                 case '!échanger':
-                    this.successfulCommand = this.exchangeLetters(this.removeAccents(args[1]));
+                    this.successfulCommand = await this.exchangeLetters(this.removeAccents(args[1]));
                     break;
                 case '!réserve':
                     this.successfulCommand = this.displayReserve();
@@ -54,12 +53,9 @@ export class CommandsService {
                     return false;
             }
             if (this.successfulCommand) {
-                console.log('sucessfulCommand: ');
-                console.log(this.successfulCommand);
                 this.messagingService.send('Commande réussie', input, MessageType.System, this.gameService.currentTurn);
             }
-        }
-        else {
+        } else {
             if (this.messageRegex.test(input)) {
                 this.messagingService.send('', input, MessageType.Message);
             } else {
@@ -94,7 +90,7 @@ export class CommandsService {
         this.messagingService.send(SystemMessages.HelpTitle, SystemMessages.HelpMessage, MessageType.System);
     }
 
-    private checkPlaceCommand(options: string, word: string): boolean {
+    private async checkPlaceCommand(options: string, word: string): Promise<boolean> {
         if (!this.isUsersTurn()) return false;
 
         if (!this.placeWordCommandRegex.test(options)) {
@@ -112,10 +108,9 @@ export class CommandsService {
         }
         this.messagingService.send('', SystemMessages.InvalidWord, MessageType.Error);
         return false;
-
     }
 
-    private exchangeLetters(letters: string): boolean {
+    private async exchangeLetters(letters: string): Promise<boolean> {
         if (!this.isUsersTurn()) return false;
 
         if (this.rackRegex.test(letters)) {
@@ -128,12 +123,12 @@ export class CommandsService {
     private skipTurn(): boolean {
         if (!this.isUsersTurn()) return false;
 
-        this.playerService.completeTurn();
+        this.playerService.skipTurn();
         return true;
     }
 
     private toggleDebug(): void {
-        this.messagingService.debuggingMode = !this.messagingService.debuggingMode; 
+        this.messagingService.debuggingMode = !this.messagingService.debuggingMode;
         this.messagingService.send('', this.messagingService.debuggingMode ? SystemMessages.DebugOn : SystemMessages.DebugOff, MessageType.System);
     }
 

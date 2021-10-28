@@ -2,7 +2,7 @@
 import { Message } from '@common';
 import * as http from 'http';
 import { Server, Socket } from 'socket.io';
-import { v4 as uuidv4 } from 'uuid';
+import { generateId } from '@app/classes/id';
 
 export class RoomController {
     private socketServer: Server;
@@ -17,10 +17,8 @@ export class RoomController {
         const roomSockets = await socket.in(roomId).fetchSockets();
         console.log('Inside isRoomFull');
         console.log(roomSockets.length);
-        if (roomSockets.length >= maxPlayers) {
-            return true;
-        }
-        return false;
+
+        return roomSockets.length >= maxPlayers;
     }
 
     socketHandler(): void {
@@ -28,7 +26,7 @@ export class RoomController {
             console.log(`Connexion par l'utilisateur avec id : ${socket.id}`);
 
             socket.on('disconnect', (reason) => {
-                console.log(`Deconnexion par l'utilisateur avec id : ${socket.id} raison: ${reason}`);
+                console.log(`Déconnexion par l'utilisateur avec id : ${socket.id} raison: ${reason}`);
             });
 
             socket.on('message', (message: Message) => {
@@ -38,7 +36,7 @@ export class RoomController {
             });
 
             socket.on('newOnlineGame', () => {
-                const roomId = uuidv4();
+                const roomId = generateId();
                 this.availableRooms.push(roomId);
 
                 socket.join(roomId);
