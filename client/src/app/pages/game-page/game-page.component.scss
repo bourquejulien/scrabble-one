@@ -25,7 +25,7 @@ mat-drawer-container {
     background-color: #45cb85;
     margin-left: 70rem;
     left: 0rem;
-    top: 15rem;
+    top: 16.75rem;
     width: 7.5rem;
     height: 5rem;
     transition: 0.45s;
@@ -39,7 +39,25 @@ mat-drawer-container {
     background-color: #f44336;
     margin-left: 70rem;
     left: 0rem;
-    top: 31rem;
+    top: 32.75rem;
+    width: 7.5rem;
+    height: 5rem;
+    transition: 0.45s;
+}
+
+.reserve-length-open {
+    font-size: large;
+    color: #fff;
+    background-color: #3f51b5;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    position: absolute;
+    margin-left: 70rem;
+    left: 0rem;
+    top: 24.775rem;
     width: 7.5rem;
     height: 5rem;
     transition: 0.45s;
@@ -54,7 +72,7 @@ mat-drawer-container {
     background-color: #45cb85;
     margin-left: 92.5rem;
     left: 0rem;
-    top: 15rem;
+    top: 16.75rem;
     width: 7.5rem;
     height: 5rem;
     transition: 0.45s;
@@ -69,7 +87,25 @@ mat-drawer-container {
     background-color: #f44336;
     margin-left: 92.5rem;
     left: 0rem;
-    top: 31rem;
+    top: 32.75rem;
+    width: 7.5rem;
+    height: 5rem;
+    transition: 0.45s;
+}
+
+.reserve-length-closed {
+    font-size: large;
+    color: #fff;
+    background-color: #3f51b5;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    position: absolute;
+    margin-left: 92.5rem;
+    left: 0rem;
+    top: 24.775rem;
     width: 7.5rem;
     height: 5rem;
     transition: 0.45s;
