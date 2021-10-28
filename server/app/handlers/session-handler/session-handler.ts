@@ -1,15 +1,18 @@
 import { SessionInfo } from '@app/classes/session-info';
 import { BoardHandler } from '@app/handlers/board-handler/board-handler';
 import { ServerConfig } from '@common';
-import { IPlayer } from '@app/classes/player/player';
+import { Player } from '@app/classes/player/player';
 import { ReserveHandler } from '@app/handlers/reserve-handler/reserve-handler';
 import { SessionData } from '@app/classes/session-data';
 import { SocketService } from '@app/services/socket-service';
 import { Config } from '@app/config';
+import { Subscription } from 'rxjs';
 
 export class SessionHandler {
     readonly sessionData: SessionData;
-    readonly players: IPlayer[];
+    readonly players: Player[];
+
+    private readonly playerSubscriptions: Map<string, Subscription>;
     private timer: NodeJS.Timer;
 
     constructor(
@@ -18,7 +21,9 @@ export class SessionHandler {
         readonly reserveHandler: ReserveHandler,
         readonly socketService: SocketService,
     ) {
-        this.sessionData = { isActive: false, isStarted: false, timeMs: 0 };
+        this.sessionData = { isActive: false, isStarted: false, timeLimitEpoch: 0 };
+        this.players = [];
+        this.playerSubscriptions = new Map<string, Subscription>();
     }
 
     getServerConfig(id: string): ServerConfig {
@@ -34,21 +39,56 @@ export class SessionHandler {
         };
     }
 
-    destroy(): void {
-        this.sessionData.isActive = false;
-        this.sessionData.timeMs = 0;
-        clearInterval(this.timer);
-    }
-
     start() {
         this.sessionData.isActive = true;
         this.sessionData.isActive = false;
 
         this.players.forEach((p) => p.fillRack());
         this.timer = setInterval(() => this.timerTick(), Config.SESSION.REFRESH_INTERVAL_MS);
+
+        this.initialTurn();
+    }
+
+    destroy(): void {
+        this.sessionData.isActive = false;
+        this.sessionData.timeLimitEpoch = 0;
+        this.playerSubscriptions.forEach((s) => s.unsubscribe());
+        clearInterval(this.timer);
+    }
+
+    addPlayer(player: Player): void {
+        this.players.push(player);
+        this.playerSubscriptions[player.id] = player.onTurn().subscribe((lastId) => this.onTurn(lastId));
+    }
+
+    removePlayer(id: string): Player | null {
+        const playerIndex = this.players.findIndex((p) => p.id === id);
+
+        if (playerIndex < 0) return null;
+
+        const removedPlayer = this.players.splice(playerIndex, 1)[0];
+
+        this.playerSubscriptions.get(removedPlayer.id)?.unsubscribe();
+        this.playerSubscriptions.delete(removedPlayer.id);
+
+        return removedPlayer;
     }
 
     private timerTick(): void {
-        this.socketService.send('timertick', this.sessionData.timeMs, this.sessionInfo.id);
+        const timeLeftMs = Math.max(0, this.sessionData.timeLimitEpoch - new Date().getTime());
+        this.socketService.send('timertick', timeLeftMs, this.sessionInfo.id);
+    }
+
+    private initialTurn(): void {
+        const randomPlayerIndex = Math.floor(this.players.length * Math.random());
+
+        this.onTurn(this.players[randomPlayerIndex].id);
+    }
+
+    private onTurn(lastId: string): void {
+        const nextPlayer = this.players.find((p) => p.id !== lastId);
+        this.sessionData.timeLimitEpoch = new Date().getTime() + this.sessionInfo.playTimeMs;
+
+        nextPlayer?.startTurn();
     }
 }

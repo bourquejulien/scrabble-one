@@ -1,14 +1,14 @@
 import { PlayerInfo } from '@app/classes/player-info';
 import { PlayerData } from '@app/classes/player-data';
-import { BehaviorSubject } from 'rxjs';
+import { Observable } from 'rxjs';
 
-export interface IPlayer {
-    id: string;
-    playerInfo: PlayerInfo;
+export interface Player {
+    isTurn: boolean;
+    readonly id: string;
+    readonly playerInfo: PlayerInfo;
     readonly playerData: PlayerData;
-    readonly turnEnded: BehaviorSubject<string>;
 
     startTurn(): Promise<void>;
-    endTurn(): void;
     fillRack(): void;
+    onTurn(): Observable<string>;
 }

@@ -90,7 +90,7 @@ export class GameService {
     async joinMultiplayer(gameConfig: MultiplayerJoinConfig): Promise<ServerConfig | null> {
         const sessionHandler = this.sessionHandlingService.getHandlerBySessionId(gameConfig.sessionId);
 
-        if (sessionHandler == null) {
+        if (sessionHandler == null || sessionHandler.sessionData.isStarted) {
             return null;
         }
 
@@ -116,7 +116,7 @@ export class GameService {
 
     private addHumanPlayer(playerInfo: PlayerInfo, sessionHandler: SessionHandler): HumanPlayer {
         const humanPlayer = new HumanPlayer(playerInfo, sessionHandler.boardHandler, sessionHandler.reserveHandler);
-        sessionHandler.players.push(humanPlayer);
+        sessionHandler.addPlayer(humanPlayer);
 
         return humanPlayer;
     }
@@ -130,7 +130,8 @@ export class GameService {
             sessionHandler.reserveHandler,
             actionCallback,
         );
-        sessionHandler.players.push(virtualPlayer);
+
+        sessionHandler.addPlayer(virtualPlayer);
 
         return virtualPlayer;
     }
