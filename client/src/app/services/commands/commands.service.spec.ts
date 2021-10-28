@@ -3,12 +3,12 @@
 /* eslint-disable max-classes-per-file -- Multiple mock needed for tests*/
 /* eslint-disable @typescript-eslint/naming-convention  -- Need SCREAMING_SNAKE_CASE for static property in mock class */
 import { TestBed } from '@angular/core/testing';
+import { PlayerType } from '@app/classes/player/player-type';
 import { CommandsService } from '@app/services/commands/commands.service';
 import { GameService } from '@app/services/game/game.service';
 import { PlayerService } from '@app/services/player/player.service';
 import { ReserveService } from '@app/services/reserve/reserve.service';
-import { Vec2, Direction } from '@common';
-import { PlayerType } from '@app/classes/player/player-type';
+import { Direction, Vec2 } from '@common';
 
 describe('CommandsService', () => {
     let playerServiceSpy: jasmine.SpyObj<PlayerService>;
@@ -126,12 +126,12 @@ describe('CommandsService', () => {
         expect(reserveServiceSpy.getLetterAndQuantity).toHaveBeenCalled();
     });
 
-    /*it("should fail when it is not the user's turn", () => {
-        service.gameService.currentTurn = PlayerType.Virtual;
-        expect(service['skipTurn']()).toBeFalsy();
-        expect(service['exchangeLetters']('wtv')).toBeFalsy();
-        expect(service['checkPlaceCommand']('h8h', 'test')).toBeFalsy();
-    });*/
+    // it("should fail when it is not the user's turn", () => {
+    //     service.gameService.currentTurn = PlayerType.Virtual;
+    //     expect(service['skipTurn']()).toBeFalsy();
+    //     expect(service['exchangeLetters']('wtv')).toBeFalsy();
+    //     expect(service['checkPlaceCommand']('h8h', 'test')).toBeFalsy();
+    // });
 
     it('should remove accents', () => {
         const accentedMessage = 'Ôde à la crème brûlée';
