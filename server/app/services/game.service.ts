@@ -58,6 +58,8 @@ export class GameService {
 
         sessionHandler.start();
 
+        sessionHandler.start();
+
         this.sessionHandlingService.addHandler(sessionHandler);
 
         logger.info(`Single player game: ${sessionHandler.sessionInfo.id} initialised`);
