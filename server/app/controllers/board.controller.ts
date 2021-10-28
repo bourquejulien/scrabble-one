@@ -1,176 +1,52 @@
 import { Request, Response, Router } from 'express';
 import { Service } from 'typedi';
-import { BoardHandlingService } from '@app/services/validation/board-handling.service';
 import { Constants } from '@app/constants';
 import { Placement } from '@common';
+import { SessionHandlingService } from '@app/services/session-handling.service';
+import { BoardHandler } from '@app/handlers/board-handler/board-handler';
+import { HumanPlayer } from '@app/classes/player/human-player/human-player';
 
 @Service()
 export class BoardController {
     router: Router;
 
-    constructor(private readonly boardHandlingService: BoardHandlingService) {
+    constructor(private readonly sessionHandlingService: SessionHandlingService) {
         this.configureRouter();
     }
 
     private configureRouter(): void {
         this.router = Router();
 
-        /**
-         * @swagger
-         * tags:
-         *   - name: Board
-         *     description: Board functions
-         */
-
-        /**
-         * @swagger
-         *
-         * definitions:
-         *   Vec2:
-         *     type: object
-         *     properties:
-         *       x:
-         *         type: integer
-         *       y:
-         *         type: integer
-         */
-
-        /**
-         * @swagger
-         *
-         * definitions:
-         *   Placement:
-         *     type: object
-         *     properties:
-         *       letter:
-         *         type: string
-         *       position:
-         *         $ref: '#/definitions/Vec2'
-         */
-
-        /**
-         * @swagger
-         *
-         * definitions:
-         *   ArrayOfPlacement:
-         *     type: array
-         *     items:
-         *       $ref: '#/definitions/Placement'
-         */
-
-        /**
-         * @swagger
-         *
-         * /api/board/validate:
-         *   post:
-         *     description: Validate a placement
-         *     tags:
-         *       - Board
-         *     requestBody:
-         *         description: message object
-         *         required: true
-         *         content:
-         *           application/json:
-         *             schema:
-         *               $ref: '#/definitions/ArrayOfPlacement'
-         *     parameters:
-         *       - in: path
-         *         name: id
-         *         required: true
-         *         schema:
-         *           type: string
-         *         description: Game ID
-         *     produces:
-         *       - application/json
-         *     responses:
-         *       200:
-         *         schema:
-         *           $ref: '#/definitions/Answer'
-         *
-         */
         this.router.post('/validate/:id', async (req: Request, res: Response) => {
-            const boardHandler = this.boardHandlingService.getBoardHandler(req.params.id);
-            const placement: Placement[] = JSON.parse(req.body);
+            const boardHandler = this.getBoardHandler(req.params.id);
+            const placement: Placement[] = req.body;
 
             if (boardHandler === null || placement === undefined) {
                 res.sendStatus(Constants.HTTP_STATUS.BAD_REQUEST);
                 return;
             }
 
-            const response = boardHandler.lookupLetters(placement);
+            const response = boardHandler.lookupLetters(boardHandler.retrieveNewLetters(placement));
             res.status(Constants.HTTP_STATUS.OK);
             res.json(response);
         });
 
-        /**
-         * @swagger
-         *
-         * /api/board/place:
-         *   post:
-         *     description: Try merging a placement
-         *     tags:
-         *       - Board
-         *     requestBody:
-         *         description: message object
-         *         required: true
-         *         content:
-         *           application/json:
-         *             schema:
-         *               $ref: '#/definitions/ArrayOfPlacement'
-         *     parameters:
-         *       - in: path
-         *         name: id
-         *         required: true
-         *         schema:
-         *           type: string
-         *         description: Game ID
-         *     produces:
-         *       - application/json
-         *     responses:
-         *       200:
-         *         schema:
-         *           $ref: '#/definitions/Answer'
-         *
-         */
         this.router.post('/place/:id', async (req: Request, res: Response) => {
-            const boardHandler = this.boardHandlingService.getBoardHandler(req.params.id);
-            const placement: Placement[] = JSON.parse(req.body);
+            const humanPlayer = this.getHumanPlayer(req.params.id);
+            const placements: Placement[] = req.body;
 
-            if (boardHandler === null || placement === undefined) {
+            if (humanPlayer === null || placements === undefined) {
                 res.sendStatus(Constants.HTTP_STATUS.BAD_REQUEST);
                 return;
             }
 
-            const response = boardHandler.placeLetters(placement);
+            const response = await humanPlayer.placeLetters(placements);
             res.status(Constants.HTTP_STATUS.OK);
             res.json(response);
         });
 
-        /**
-         * @swagger
-         *
-         * /api/board/retrieve/{id}:
-         *   get:
-         *     description: Retrieve game board data
-         *     tags:
-         *       - Board
-         *     parameters:
-         *       - in: path
-         *         name: id
-         *         required: true
-         *         schema:
-         *           type: string
-         *         description: Game ID
-         *     produces:
-         *       - application/json
-         *     responses:
-         *       200:
-         *         schema:
-         *           $ref: '#/definitions/Answer'
-         *
-         */
         this.router.get('/retrieve/:id', async (req: Request, res: Response) => {
-            const boardHandler = this.boardHandlingService.getBoardHandler(req.params.id);
+            const boardHandler = this.getBoardHandler(req.params.id);
             if (boardHandler === null) {
                 res.sendStatus(Constants.HTTP_STATUS.BAD_REQUEST);
                 return;
@@ -180,5 +56,19 @@ export class BoardController {
             res.status(Constants.HTTP_STATUS.OK);
             res.json(boardData);
         });
+    }
+
+    private getBoardHandler(id: string): BoardHandler | null {
+        return this.sessionHandlingService.getHandler(id)?.boardHandler ?? null;
+    }
+
+    private getHumanPlayer(id: string): HumanPlayer | null {
+        const player = this.sessionHandlingService.getHandler(id)?.players.find((p) => p.id === id) ?? null;
+
+        if (player == null || !player.playerInfo.isHuman) {
+            return null;
+        }
+
+        return player as HumanPlayer;
     }
 }

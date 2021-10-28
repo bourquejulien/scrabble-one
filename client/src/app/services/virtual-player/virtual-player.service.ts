@@ -1,16 +1,20 @@
 import { Injectable } from '@angular/core';
-import { PlayerType } from '@common';
 import { Timer } from '@app/classes/time/timer';
 import { TimeSpan } from '@app/classes/time/timespan';
-import { Constants } from '@app/constants/global.constants';
-import { ReserveService } from '@app/services/reserve/reserve.service';
 import { TimerService } from '@app/services/timer/timer.service';
 import { Subject } from 'rxjs';
-import { VirtualPlayerActionService } from './virtual-player-action.service';
+import { HttpClient } from '@angular/common/http';
+import { environment } from '@environment';
+import { SessionService } from '@app/services/session/session.service';
 import { PlayerData } from '@app/classes/player-data';
+import { ReserveService } from '@app/services/reserve/reserve.service';
+import { BoardService } from '@app/services/board/board.service';
+import { PlayerType } from '@app/classes/player/player-type';
 
 const MIN_PLAYTIME_SECONDS = 3;
 
+// TODO To remove once the server is master over the client
+// DO NOT TEST!!
 @Injectable({
     providedIn: 'root',
 })
@@ -20,28 +24,30 @@ export class VirtualPlayerService {
     private minTimer: Timer;
 
     constructor(
-        private readonly virtualPlayerActionService: VirtualPlayerActionService,
-        private readonly reserveService: ReserveService,
         private readonly timerService: TimerService,
+        private readonly httpClient: HttpClient,
+        private readonly sessionService: SessionService,
+        private readonly reserveService: ReserveService,
+        private readonly boardService: BoardService,
     ) {
         this.playerData = { score: 0, skippedTurns: 0, rack: [] };
         this.turnComplete = new Subject<PlayerType>();
         this.minTimer = new Timer();
     }
 
+    // TODO To remove once the server is master over the client
+    // DO NOT TEST!!
     async startTurn(playTime: TimeSpan) {
         this.timerService.start(playTime, PlayerType.Virtual);
         this.minTimer.start(TimeSpan.fromSeconds(MIN_PLAYTIME_SECONDS));
 
-        const action = this.virtualPlayerActionService.getNextAction(this.playerData);
-
-        const nextAction = action.execute();
-
+        this.playerData = await this.httpClient
+            .post<PlayerData>(`${environment.serverUrl}api/player/virtual`, { id: this.sessionService.id })
+            .toPromise();
+        await this.reserveService.refresh();
+        await this.boardService.refresh();
         await this.minTimer.completed;
 
-        nextAction?.execute();
-
-        this.fillRack();
         this.endTurn();
     }
 
@@ -49,12 +55,6 @@ export class VirtualPlayerService {
         this.minTimer.stop();
         this.timerService.stop();
         this.turnComplete.next(PlayerType.Virtual);
-    }
-
-    fillRack(): void {
-        while (this.reserveService.length > 0 && this.playerData.rack.length < Constants.RACK_SIZE) {
-            this.playerData.rack.push(this.reserveService.drawLetter());
-        }
     }
 
     reset(): void {

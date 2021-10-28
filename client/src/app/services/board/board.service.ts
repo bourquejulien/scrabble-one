@@ -1,118 +1,92 @@
 import { Injectable } from '@angular/core';
-import { Board, ImmutableBoard } from '@app/classes/board/board';
-import { Bonus, BonusInfos } from '@app/classes/board/bonus';
-import { Direction } from '@app/classes/board/direction';
-import { Square } from '@app/classes/board/square';
-import { BoardValidator } from '@app/classes/validation/board-validator';
-import { Validation } from '@app/classes/validation/validation';
-import { ValidationResponse } from '@app/classes/validation/validation-response';
-import { Vec2 } from '@common';
+import { BoardData, Bonus, Direction, Placement, Square, ValidationResponse, Vec2, Answer } from '@common';
+import { HttpClient } from '@angular/common/http';
+import { SessionService } from '@app/services/session/session.service';
 import { Constants } from '@app/constants/global.constants';
-import { BoardError } from '@app/exceptions/board-error';
-import { BoardValidatorGeneratorService } from '@app/services/validation/board-validator-generator.service';
-import JsonBonuses from '@assets/bonus.json';
+import { environmentExt } from '@environmentExt';
+
+const localUrl = (call: string, id: string) => `${environmentExt.apiUrl}board/${call}/${id}`;
 
 @Injectable({
     providedIn: 'root',
 })
-export class BoardService implements Validation {
-    bonusNumber = new Map<Bonus, number>([
-        [Bonus.L2, 0],
-        [Bonus.W2, 0],
-        [Bonus.L3, 0],
-        [Bonus.W3, 0],
-    ]);
-    mustShuffle = true;
-    private board: Board;
+export class BoardService {
+    private boardData: BoardData;
 
-    constructor(private readonly validatorGenerator: BoardValidatorGeneratorService) {
-        this.board = new Board(Constants.GRID.GRID_SIZE, this.retrieveBonuses());
+    constructor(private readonly httpClient: HttpClient, private readonly sessionService: SessionService) {
+        this.reset();
     }
 
-    get gameBoard(): ImmutableBoard {
-        return this.board;
+    get gameBoard(): BoardData {
+        return this.boardData;
     }
 
-    resetBoardService(): void {
-        this.board = new Board(Constants.GRID.GRID_SIZE, this.retrieveBonuses());
-    }
-
-    lookupLetters(letters: { letter: string; position: Vec2 }[]): ValidationResponse {
-        return this.validator.validate(letters);
-    }
-
-    placeLetters(letters: { letter: string; position: Vec2 }[]): ValidationResponse {
-        const response = this.validator.validate(letters);
-
-        if (!response.isSuccess) return response;
-
-        this.board.merge(letters);
-
-        return response;
-    }
-    retrieveNewLetters(word: string, initialPosition: Vec2, direction: Direction): { letter: string; position: Vec2 }[] {
-        const newLetters: { letter: string; position: Vec2 }[] = [];
+    async lookupLetters(letters: Placement[]): Promise<ValidationResponse> {
+        const response = await this.httpClient.post(localUrl('validate', this.sessionService.id), letters).toPromise();
+        let validationResponse: ValidationResponse;
 
         try {
-            let lastSquare: Square | null = this.board.getSquare(initialPosition);
-            for (const letter of word) {
-                if (lastSquare === null) return [];
-
-                if (lastSquare.letter === '') {
-                    newLetters.push({ letter, position: lastSquare.position });
-                }
-                lastSquare = this.board.getRelative(lastSquare.position, direction);
-            }
-        } catch (error) {
-            if (error instanceof BoardError) return [];
-            throw error;
+            validationResponse = response as ValidationResponse;
+        } catch (e) {
+            return { isSuccess: false, description: '', points: 0 };
         }
 
-        return newLetters;
+        return validationResponse;
     }
 
-    private retrieveBonuses(): BonusInfos[] {
-        let bonuses: BonusInfos[] = [];
-        for (const jsonBonus of JsonBonuses) {
-            const bonusInfo: BonusInfos = { bonus: jsonBonus.Bonus as Bonus, position: jsonBonus.Position };
-            bonuses.push(bonusInfo);
+    async placeLetters(letters: Placement[]): Promise<Answer> {
+        const response = await this.httpClient.post(localUrl('place', this.sessionService.id), letters).toPromise();
+        let answer: Answer;
+
+        try {
+            answer = response as Answer;
+        } catch (e) {
+            return { isSuccess: false, body: '' };
         }
-        if (this.mustShuffle) {
-            bonuses = this.shuffleBonuses(bonuses);
-        }
-        return bonuses;
+
+        return answer;
     }
-    private shuffleBonuses(bonusesArray: BonusInfos[]) {
-        const bonusBank: Bonus[] = this.initializeBonusBank();
-        for (const bonusInfo of bonusesArray) {
-            if (bonusInfo.bonus !== Bonus.Star) {
-                const bonusToPlace = bonusBank[Math.floor(Math.random() * bonusBank.length)];
-                bonusInfo.bonus = bonusToPlace;
-                const index = bonusBank.indexOf(bonusToPlace, 0);
-                if (index > -1) {
-                    bonusBank.splice(index, 1);
-                }
-            }
+
+    async refresh(): Promise<BoardData | null> {
+        const response = await this.httpClient.get(localUrl('retrieve', this.sessionService.id)).toPromise();
+
+        try {
+            this.boardData = response as BoardData;
+        } catch (e) {
+            return null;
         }
-        return bonusesArray;
+
+        return this.boardData;
     }
-    private initializeBonusBank() {
-        const bonusBank: Bonus[] = [];
-        for (const jsonBonus of JsonBonuses) {
-            const jsonStringToEnum = Bonus[jsonBonus.Bonus as keyof typeof Bonus];
-            const valueOfKey = this.bonusNumber.get(jsonStringToEnum);
-            if (valueOfKey !== undefined) {
-                this.bonusNumber.set(jsonStringToEnum, valueOfKey + 1);
-            }
+
+    retrievePlacements(word: string, initialPosition: Vec2, direction: Direction): Placement[] {
+        const increment = direction === Direction.Right ? { x: 1, y: 0 } : { x: 0, y: 1 };
+        const placements: Placement[] = [];
+
+        const position = initialPosition;
+
+        for (const letter of word) {
+            placements.push({ letter, position: { ...position } });
+            position.x += increment.x;
+            position.y += increment.y;
         }
-        for (const [bonusType, maxQuantity] of this.bonusNumber) {
-            for (let i = 0; i < maxQuantity; i++) {
-                bonusBank.push(bonusType);
-            }
-        }
-        return bonusBank;
+
+        return placements;
     }
-    private get validator(): BoardValidator {
-        return this.validatorGenerator.generator(this.board);
+
+    reset(): void {
+        const boardData: BoardData = { board: [], filledPositions: [] };
+
+        for (let x = 0; x < Constants.GRID.GRID_SIZE; x++) {
+            const column: Square[] = [];
+
+            for (let y = 0; y < Constants.GRID.GRID_SIZE; y++) {
+                column.push({ letter: '', bonus: Bonus.None, position: { x, y } });
+            }
+
+            boardData.board.push(column);
+        }
+
+        this.boardData = boardData;
     }
 }

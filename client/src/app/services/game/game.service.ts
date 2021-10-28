@@ -1,14 +1,18 @@
 import { Injectable } from '@angular/core';
-import { GameConfig } from '@app/classes/game-config';
 import { PlayerStats } from '@app/classes/player/player-stats';
-import { TimeSpan } from '@app/classes/time/timespan';
 import { Constants } from '@app/constants/global.constants';
 import { MessagingService } from '@app/services/messaging/messaging.service';
 import { PlayerService } from '@app/services/player/player.service';
-import { ReserveService } from '@app/services/reserve/reserve.service';
 import { VirtualPlayerService } from '@app/services/virtual-player/virtual-player.service';
-import { letterDefinitions, MessageType, PlayerType } from '@common';
+import { letterDefinitions, MessageType, ServerGameConfig, SinglePlayerGameConfig } from '@common';
 import { BehaviorSubject, Subject } from 'rxjs';
+import { HttpClient } from '@angular/common/http';
+import { SessionService } from '@app/services/session/session.service';
+import { ReserveService } from '@app/services/reserve/reserve.service';
+import { PlayerType } from '@app/classes/player/player-type';
+import { environmentExt } from '@environmentExt';
+
+const localUrl = (call: string, id?: string) => `${environmentExt.apiUrl}game/${call}${id ? '/' + id : ''}`;
 
 @Injectable({
     providedIn: 'root',
@@ -27,18 +31,14 @@ export class GameService {
     currentTurn: PlayerType = PlayerType.Local;
     onTurn: BehaviorSubject<PlayerType>;
     gameEnding: Subject<void>;
-    gameConfig: GameConfig = {
-        gameType: '',
-        playTime: TimeSpan.fromMinutesSeconds(1, 0),
-        firstPlayerName: '',
-        secondPlayerName: '',
-    };
 
     constructor(
         private readonly playerService: PlayerService,
         private readonly virtualPlayerService: VirtualPlayerService,
-        private readonly messaging: MessagingService,
         private readonly reserveService: ReserveService,
+        private readonly messaging: MessagingService,
+        private readonly httpCLient: HttpClient,
+        private readonly sessionService: SessionService,
     ) {
         this.onTurn = new BehaviorSubject<PlayerType>(PlayerType.Local);
         this.gameEnding = new Subject<void>();
@@ -51,22 +51,29 @@ export class GameService {
         return Math.random() < HALF ? PlayerType.Local : PlayerType.Virtual;
     }
 
-    startGame(gameConfig: GameConfig) {
-        this.gameConfig = gameConfig;
+    async startSinglePlayer(config: SinglePlayerGameConfig) {
+        const serverGameConfig = await this.httpCLient.put<ServerGameConfig>(localUrl('start'), config).toPromise();
+        await this.startGame(serverGameConfig);
+    }
+
+    async startGame(gameConfig: ServerGameConfig) {
+        this.sessionService.serverConfig = gameConfig;
+
+        await this.playerService.refresh();
+
         this.currentTurn = GameService.randomizeTurn();
         this.gameRunning = true;
 
-        this.virtualPlayerService.fillRack();
-        this.playerService.fillRack(Constants.RACK_SIZE);
         this.nextTurn();
     }
 
-    reset() {
+    async reset() {
         this.skipTurnNb = 0;
         this.gameRunning = false;
         this.virtualPlayerService.reset();
         this.playerService.reset();
-        this.reserveService.reset();
+
+        await this.httpCLient.delete(localUrl('end'));
     }
 
     nextTurn() {
@@ -154,11 +161,11 @@ export class GameService {
     sendRackInCommunication() {
         this.messaging.send(
             'Fin de partie - lettres restantes',
-            this.gameConfig.firstPlayerName +
+            this.sessionService.gameConfig.firstPlayerName +
                 ' : ' +
                 this.playerService.rack +
                 '\n' +
-                this.gameConfig.secondPlayerName +
+                this.sessionService.gameConfig.secondPlayerName +
                 ' : ' +
                 this.virtualPlayerService.playerData.rack,
             MessageType.System,
@@ -176,12 +183,12 @@ export class GameService {
     private onPlayerTurn() {
         this.currentTurn = PlayerType.Local;
         this.onTurn.next(this.currentTurn);
-        this.playerService.startTurn(this.gameConfig.playTime);
+        this.playerService.startTurn(this.sessionService.gameConfig.playTime);
     }
 
     private onVirtualPlayerTurn() {
         this.currentTurn = PlayerType.Virtual;
         this.onTurn.next(this.currentTurn);
-        this.virtualPlayerService.startTurn(this.gameConfig.playTime);
+        this.virtualPlayerService.startTurn(this.sessionService.gameConfig.playTime);
     }
 }
