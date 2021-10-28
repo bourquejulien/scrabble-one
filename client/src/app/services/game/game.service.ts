@@ -11,6 +11,7 @@ import { SessionService } from '@app/services/session/session.service';
 import { ReserveService } from '@app/services/reserve/reserve.service';
 import { PlayerType } from '@app/classes/player/player-type';
 import { environmentExt } from '@environmentExt';
+import { SocketClientService } from '@app/services/socket-client/socket-client.service';
 
 const localUrl = (call: string, id?: string) => `${environmentExt.apiUrl}game/${call}${id ? '/' + id : ''}`;
 
@@ -39,6 +40,7 @@ export class GameService {
         private readonly messaging: MessagingService,
         private readonly httpCLient: HttpClient,
         private readonly sessionService: SessionService,
+        private readonly socketService: SocketClientService,
     ) {
         this.onTurn = new BehaviorSubject<PlayerType>(PlayerType.Local);
         this.gameEnding = new Subject<void>();
@@ -52,7 +54,8 @@ export class GameService {
     }
 
     async startSinglePlayer(config: SinglePlayerConfig) {
-        const serverGameConfig = await this.httpCLient.put<ServerConfig>(localUrl('start'), config).toPromise();
+        const serverGameConfig = await this.httpCLient.put<ServerConfig>(localUrl('start/single'), config).toPromise();
+        this.socketService.join(serverGameConfig.id);
         await this.startGame(serverGameConfig);
     }
 
@@ -73,7 +76,7 @@ export class GameService {
         this.virtualPlayerService.reset();
         this.playerService.reset();
 
-        await this.httpCLient.delete(localUrl('end'));
+        await this.httpCLient.delete(localUrl(`stop/${this.sessionService.id}`));
     }
 
     nextTurn() {

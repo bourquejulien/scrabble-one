@@ -22,8 +22,9 @@ export class SessionHandler {
         readonly reserveHandler: ReserveHandler,
         readonly socketHandler: SocketHandler,
     ) {
-        this.players.forEach((p) => p.fillRack());
         this.sessionData = { isActive: false, isStarted: false, timeLimitEpoch: 0 };
+        this.players = [];
+        this.playerSubscriptions = new Map<string, Subscription>();
     }
 
     getServerConfig(id: string): ServerConfig {

@@ -8,8 +8,6 @@ import * as logger from 'winston';
 
 @Service()
 export class RoomController {
-    private availableRooms: string[] = [];
-
     constructor(private readonly socketService: SocketService, private readonly sessionHandlingService: SessionHandlingService) {}
 
     async isRoomFull(socket: Socket, roomId: string): Promise<boolean> {

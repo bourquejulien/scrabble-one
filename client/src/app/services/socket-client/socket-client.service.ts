@@ -7,4 +7,8 @@ import { environment } from '@environment';
 })
 export class SocketClientService {
     socketClient: Socket = io(environment.serverUrl, { transports: ['websocket'], upgrade: false });
+
+    join(id: string) {
+        this.socketClient.emit('joinRoom', id);
+    }
 }
