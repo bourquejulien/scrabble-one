@@ -4,9 +4,9 @@ import { ServerConfig } from '@common';
 import { Player } from '@app/classes/player/player';
 import { ReserveHandler } from '@app/handlers/reserve-handler/reserve-handler';
 import { SessionData } from '@app/classes/session-data';
-import { SocketService } from '@app/services/socket-service';
 import { Config } from '@app/config';
 import { Subscription } from 'rxjs';
+import { SocketHandler } from '@app/handlers/socket-handler/socket-handler';
 
 export class SessionHandler {
     readonly sessionData: SessionData;
@@ -19,7 +19,7 @@ export class SessionHandler {
         readonly sessionInfo: SessionInfo,
         readonly boardHandler: BoardHandler,
         readonly reserveHandler: ReserveHandler,
-        readonly socketService: SocketService,
+        readonly socketHandler: SocketHandler,
     ) {
         this.sessionData = { isActive: false, isStarted: false, timeLimitEpoch: 0 };
         this.players = [];
@@ -57,8 +57,10 @@ export class SessionHandler {
     }
 
     addPlayer(player: Player): void {
-        this.players.push(player);
+        player.init(this.boardHandler, this.reserveHandler, this.socketHandler);
         this.playerSubscriptions[player.id] = player.onTurn().subscribe((lastId) => this.onTurn(lastId));
+
+        this.players.push(player);
     }
 
     removePlayer(id: string): Player | null {
@@ -76,7 +78,7 @@ export class SessionHandler {
 
     private timerTick(): void {
         const timeLeftMs = Math.max(0, this.sessionData.timeLimitEpoch - new Date().getTime());
-        this.socketService.send('timertick', timeLeftMs, this.sessionInfo.id);
+        this.socketHandler.sendData('timertick', timeLeftMs);
     }
 
     private initialTurn(): void {

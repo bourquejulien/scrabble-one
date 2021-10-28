@@ -12,6 +12,7 @@ import { Action } from '@app/classes/player/virtual-player/actions/action';
 import { PlayerInfo } from '@app/classes/player-info';
 import { DictionaryService } from '@app/services/dictionary/dictionary.service';
 import { SocketService } from '@app/services/socket-service';
+import { SocketHandler } from '@app/handlers/socket-handler/socket-handler';
 
 @Service()
 export class GameService {
@@ -37,7 +38,7 @@ export class GameService {
         const boardHandler = new BoardHandler(board, this.boardGeneratorService.generateBoardValidator(board));
         const reserveHandler = new ReserveHandler();
 
-        const sessionHandler = new SessionHandler(sessionInfo, boardHandler, reserveHandler, this.socketService);
+        const sessionHandler = new SessionHandler(sessionInfo, boardHandler, reserveHandler, new SocketHandler(this.socketService));
 
         const humanPlayerInfo: PlayerInfo = {
             id: generateId(),
@@ -72,7 +73,7 @@ export class GameService {
         const boardHandler = new BoardHandler(board, this.boardGeneratorService.generateBoardValidator(board));
         const reserveHandler = new ReserveHandler();
 
-        const sessionHandler = new SessionHandler(sessionInfo, boardHandler, reserveHandler, this.socketService);
+        const sessionHandler = new SessionHandler(sessionInfo, boardHandler, reserveHandler, new SocketHandler(this.socketService));
 
         const humanPlayerInfo: PlayerInfo = {
             id: generateId(),
@@ -115,7 +116,7 @@ export class GameService {
     }
 
     private addHumanPlayer(playerInfo: PlayerInfo, sessionHandler: SessionHandler): HumanPlayer {
-        const humanPlayer = new HumanPlayer(playerInfo, sessionHandler.boardHandler, sessionHandler.reserveHandler);
+        const humanPlayer = new HumanPlayer(playerInfo);
         sessionHandler.addPlayer(humanPlayer);
 
         return humanPlayer;
@@ -123,13 +124,7 @@ export class GameService {
 
     private addVirtualPlayer(playerInfo: PlayerInfo, sessionHandler: SessionHandler): VirtualPlayer {
         const actionCallback = (action: Action): Action | null => action.execute();
-        const virtualPlayer = new VirtualPlayer(
-            playerInfo,
-            this.dictionnaryService,
-            sessionHandler.boardHandler,
-            sessionHandler.reserveHandler,
-            actionCallback,
-        );
+        const virtualPlayer = new VirtualPlayer(playerInfo, this.dictionnaryService, actionCallback);
 
         sessionHandler.addPlayer(virtualPlayer);
 

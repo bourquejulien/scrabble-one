@@ -1,4 +1,3 @@
-
 export enum MessageType {
     Message,
     Log,

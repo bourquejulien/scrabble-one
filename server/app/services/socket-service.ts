@@ -10,7 +10,7 @@ export class SocketService {
         this.socketServer = new Server(server, { cors: { origin: '*', methods: ['GET', 'POST'] } });
     }
 
-    send(event: string, message: any, roomId: string) {
+    send<T>(event: string, message: T, roomId: string) {
         this.socketServer.to(roomId).emit(event, message);
     }
 }
