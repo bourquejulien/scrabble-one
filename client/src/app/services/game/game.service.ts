@@ -4,7 +4,7 @@ import { Constants } from '@app/constants/global.constants';
 import { MessagingService } from '@app/services/messaging/messaging.service';
 import { PlayerService } from '@app/services/player/player.service';
 import { VirtualPlayerService } from '@app/services/virtual-player/virtual-player.service';
-import { letterDefinitions, MessageType, ServerGameConfig, SinglePlayerGameConfig } from '@common';
+import { letterDefinitions, MessageType, ServerConfig, SinglePlayerConfig } from '@common';
 import { BehaviorSubject, Subject } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 import { SessionService } from '@app/services/session/session.service';
@@ -53,13 +53,12 @@ export class GameService {
         return Math.random() < HALF ? PlayerType.Local : PlayerType.Virtual;
     }
 
-    async startSinglePlayer(config: SinglePlayerGameConfig) {
-        const serverGameConfig = await this.httpCLient.put<ServerGameConfig>(localUrl('start'), config).toPromise();
-        this.socketService.socketClient.emit('singlePlayerJoin', serverGameConfig.id);
+    async startSinglePlayer(config: SinglePlayerConfig) {
+        const serverGameConfig = await this.httpCLient.put<ServerConfig>(localUrl('start'), config).toPromise();
         await this.startGame(serverGameConfig);
     }
 
-    async startGame(gameConfig: ServerGameConfig) {
+    async startGame(gameConfig: ServerConfig) {
         this.sessionService.serverConfig = gameConfig;
 
         await this.playerService.refresh();

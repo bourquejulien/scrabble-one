@@ -1,17 +1,22 @@
-export interface SinglePlayerGameConfig {
+export interface SinglePlayerConfig {
     gameType: string;
     playTimeMs: number;
     playerName: string;
     virtualPlayerName: string;
 }
 
-export interface MultiplayerGameConfig {
+export interface MultiplayerCreateConfig {
     gameType: string;
     playTimeMs: number;
     playerName: string;
 }
 
-export interface ServerGameConfig {
+export interface MultiplayerJoinConfig {
+    sessionId: string;
+    playerName: string;
+}
+
+export interface ServerConfig {
     id: string,
     gameType: string,
     playTimeMs: number,

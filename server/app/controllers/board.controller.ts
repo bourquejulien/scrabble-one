@@ -59,11 +59,11 @@ export class BoardController {
     }
 
     private getBoardHandler(id: string): BoardHandler | null {
-        return this.sessionHandlingService.getHandler(id)?.boardHandler ?? null;
+        return this.sessionHandlingService.getHandlerByPlayerId(id)?.boardHandler ?? null;
     }
 
     private getHumanPlayer(id: string): HumanPlayer | null {
-        const player = this.sessionHandlingService.getHandler(id)?.players.find((p) => p.id === id) ?? null;
+        const player = this.sessionHandlingService.getHandlerByPlayerId(id)?.players.find((p) => p.id === id) ?? null;
 
         if (player == null || !player.playerInfo.isHuman) {
             return null;

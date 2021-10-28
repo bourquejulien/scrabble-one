@@ -8,15 +8,16 @@ import { DictionaryService } from '@app/services/dictionary/dictionary.service';
 import { BoardHandler } from '@app/handlers/board-handler/board-handler';
 import { PlayAction } from './actions/play-action';
 import { Action } from './actions/action';
-import { BehaviorSubject } from 'rxjs';
-import { IPlayer } from '@app/classes/player/player';
+import { BehaviorSubject, Observable } from 'rxjs';
+import { Player } from '@app/classes/player/player';
 import { PlayerInfo } from '@app/classes/player-info';
 
 const MIN_PLAYTIME_MILLISECONDS = 3000;
 
-export class VirtualPlayer implements IPlayer {
+export class VirtualPlayer implements Player {
+    isTurn: boolean;
     readonly playerData: PlayerData;
-    readonly turnEnded: BehaviorSubject<string>;
+    private readonly turnEnded: BehaviorSubject<string>;
 
     constructor(
         readonly playerInfo: PlayerInfo,
@@ -30,6 +31,8 @@ export class VirtualPlayer implements IPlayer {
     }
 
     async startTurn(): Promise<void> {
+        this.isTurn = true;
+
         await this.delay(MIN_PLAYTIME_MILLISECONDS);
 
         let action = this.runAction(this.nextAction());
@@ -41,18 +44,23 @@ export class VirtualPlayer implements IPlayer {
         this.endTurn();
     }
 
-    endTurn(): void {
-        this.turnEnded.next(this.playerInfo.id);
-    }
-
     fillRack(): void {
         while (this.reserve.length > 0 && this.playerData.rack.length < Config.RACK_SIZE) {
             this.playerData.rack.push(this.reserve.drawLetter());
         }
     }
 
+    onTurn(): Observable<string> {
+        return this.turnEnded.asObservable();
+    }
+
     get id(): string {
         return this.playerInfo.id;
+    }
+
+    private endTurn(): void {
+        this.isTurn = false;
+        this.turnEnded.next(this.playerInfo.id);
     }
 
     private nextAction(): Action {

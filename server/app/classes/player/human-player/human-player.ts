@@ -1,16 +1,16 @@
-import { IPlayer } from '@app/classes/player/player';
+import { Player } from '@app/classes/player/player';
 import { PlayerInfo } from '@app/classes/player-info';
 import { PlayerData } from '@app/classes/player-data';
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, Observable } from 'rxjs';
 import { Config } from '@app/config';
 import { ReserveHandler } from '@app/handlers/reserve-handler/reserve-handler';
 import { Answer, Placement } from '@common';
 import { BoardHandler } from '@app/handlers/board-handler/board-handler';
 
-// TODO Fix messaging service: over sockets, or in Answer?
-export class HumanPlayer implements IPlayer {
-    playerData: PlayerData;
-    readonly turnEnded: BehaviorSubject<string>;
+export class HumanPlayer implements Player {
+    isTurn: boolean;
+    readonly playerData: PlayerData;
+    private readonly turnEnded: BehaviorSubject<string>;
 
     constructor(readonly playerInfo: PlayerInfo, private readonly boardHandler: BoardHandler, private readonly reserveHandler: ReserveHandler) {
         this.playerData = { score: 0, skippedTurns: 0, rack: [] };
@@ -18,11 +18,8 @@ export class HumanPlayer implements IPlayer {
     }
 
     async startTurn(): Promise<void> {
+        this.isTurn = true;
         return Promise.resolve();
-    }
-
-    endTurn(): void {
-        this.turnEnded.next(this.playerInfo.id);
     }
 
     fillRack(): void {
@@ -32,6 +29,10 @@ export class HumanPlayer implements IPlayer {
     }
 
     async placeLetters(placements: Placement[]): Promise<Answer> {
+        if (!this.isTurn) {
+            return { isSuccess: false, body: 'Not your turn' };
+        }
+
         const lettersToPlace: string[] = [];
 
         placements = this.boardHandler.retrieveNewLetters(placements);
@@ -73,6 +74,10 @@ export class HumanPlayer implements IPlayer {
     }
 
     exchangeLetters(lettersToExchange: string[]): Answer {
+        if (!this.isTurn) {
+            return { isSuccess: false, body: 'Not your turn' };
+        }
+
         if (!this.areLettersInRack(lettersToExchange)) return { isSuccess: false, body: 'Letters not in rack' };
 
         if (this.reserveHandler.length < Config.RACK_SIZE) {
@@ -96,14 +101,27 @@ export class HumanPlayer implements IPlayer {
     }
 
     skipTurn(): Answer {
+        if (!this.isTurn) {
+            return { isSuccess: false, body: 'Not your turn' };
+        }
+
         this.playerData.skippedTurns++;
         this.endTurn();
 
         return { isSuccess: true, body: '' };
     }
 
+    onTurn(): Observable<string> {
+        return this.turnEnded.asObservable();
+    }
+
     get id(): string {
         return this.playerInfo.id;
+    }
+
+    private endTurn(): void {
+        this.isTurn = false;
+        this.turnEnded.next(this.playerInfo.id);
     }
 
     private updateRack(lettersToPlace: string[]): void {
