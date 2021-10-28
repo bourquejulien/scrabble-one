@@ -30,6 +30,7 @@ export class BoardComponent implements OnChanges, AfterViewInit {
     gridPosition: Vec2;
     positionInit: Vec2;
     tempRack: string[];
+    myRack: string[];
     private gridContext: CanvasRenderingContext2D;
     private squareContext: CanvasRenderingContext2D;
     private tempContext: CanvasRenderingContext2D;
@@ -41,12 +42,13 @@ export class BoardComponent implements OnChanges, AfterViewInit {
         readonly boardService: BoardService,
     ) {
         this.tempRack = [];
+        this.myRack = [];
     }
 
     @HostListener('body:mousedown', ['$event'])
     onMouseDown(event: MouseEvent): void {
         this.gridService.resetCanvas(this.tempContext);
-        if (this.isFocus) {
+        if (this.isFocus && !this.squareSelected) {
             this.mouseHandlingService.mouseHitDetect(event);
             if (this.gridPosition === undefined) {
                 this.gridPosition = this.mouseHandlingService.position;
@@ -61,6 +63,7 @@ export class BoardComponent implements OnChanges, AfterViewInit {
                 this.squareSelected = true;
             }
         } else {
+            this.cancel();
             this.gridPosition.x = -1;
             this.gridPosition.y = -1;
         }
@@ -76,6 +79,9 @@ export class BoardComponent implements OnChanges, AfterViewInit {
             this.tempRack.pop();
             this.gridService.drawSelectionSquare(this.tempContext, this.gridPosition);
             this.gridService.drawDirectionArrow(this.tempContext, this.gridPosition, this.isHorizontal);
+        } else if (event.key === 'Escape') {
+            this.gridService.resetCanvas(this.tempContext);
+            this.cancel();
         } else {
             this.handleKeyPress(event.key);
             const validKey: boolean = this.squareSelected === true && this.isLetter && this.inGrid(this.gridPosition);
@@ -84,6 +90,7 @@ export class BoardComponent implements OnChanges, AfterViewInit {
                 this.gridService.drawSymbol(event.key, this.gridPosition, this.tempContext);
                 this.rackService.rack.splice(this.rackService.indexOf(event.key), 1);
                 this.tempRack.push(event.key);
+                this.myRack.push(event.key);
                 this.nextAvailableSquare(true);
                 this.gridService.drawSelectionSquare(this.tempContext, this.gridPosition);
                 this.gridService.drawDirectionArrow(this.tempContext, this.gridPosition, this.isHorizontal);
@@ -137,7 +144,7 @@ export class BoardComponent implements OnChanges, AfterViewInit {
     }
 
     private handleKeyPress(key: string): void {
-        if (key.length !== 1 || !key.match('([a-z]|\\*)')) {
+        if (key.length !== 1 || !key.match('([a-z])')) {
             this.isLetter = false;
         } else {
             if (this.rackService.rack.includes(key)) {
@@ -152,6 +159,7 @@ export class BoardComponent implements OnChanges, AfterViewInit {
         if (this.gridPosition.x === position.x && this.gridPosition.y === position.y) {
             this.isHorizontal = false;
         } else {
+            this.cancel();
             this.gridPosition = position;
             this.positionInit = { x: position.x, y: position.y };
             this.isHorizontal = true;
@@ -208,5 +216,13 @@ export class BoardComponent implements OnChanges, AfterViewInit {
                 }
             } while (!this.boardService.positionIsAvailable(this.gridPosition));
         }
+    }
+
+    private cancel(): void {
+        for (let i = this.myRack.length - 1; i >= 0; i--) {
+            this.rackService.rack.push(this.myRack[i]);
+            this.myRack.pop();
+        }
+        this.tempRack = [];
     }
 }
