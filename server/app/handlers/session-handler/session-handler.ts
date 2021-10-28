@@ -99,8 +99,6 @@ export class SessionHandler {
         const nextPlayer = this.players.find((p) => p.id !== lastId);
         this.sessionData.timeLimitEpoch = new Date().getTime() + this.sessionInfo.playTimeMs;
 
-        logger.debug(`NextTurn - Session: ${this.sessionInfo.id} - LastPLayer: ${lastId} - NextPlayer: ${nextPlayer?.id ?? ''}`);
-
         nextPlayer?.startTurn();
     }
 }

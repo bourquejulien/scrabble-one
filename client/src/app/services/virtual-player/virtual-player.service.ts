@@ -2,9 +2,6 @@ import { Injectable } from '@angular/core';
 import { Timer } from '@app/classes/time/timer';
 import { TimeSpan } from '@app/classes/time/timespan';
 import { Subject } from 'rxjs';
-import { HttpClient } from '@angular/common/http';
-import { environment } from '@environment';
-import { SessionService } from '@app/services/session/session.service';
 import { PlayerData } from '@app/classes/player-data';
 import { ReserveService } from '@app/services/reserve/reserve.service';
 import { BoardService } from '@app/services/board/board.service';
@@ -22,12 +19,7 @@ export class VirtualPlayerService {
     playerData: PlayerData;
     private minTimer: Timer;
 
-    constructor(
-        private readonly httpClient: HttpClient,
-        private readonly sessionService: SessionService,
-        private readonly reserveService: ReserveService,
-        private readonly boardService: BoardService,
-    ) {
+    constructor(private readonly reserveService: ReserveService, private readonly boardService: BoardService) {
         this.playerData = { score: 0, skippedTurns: 0, rack: [] };
         this.turnComplete = new Subject<PlayerType>();
         this.minTimer = new Timer();
@@ -35,12 +27,9 @@ export class VirtualPlayerService {
 
     // TODO To remove once the server is master over the client
     // DO NOT TEST!!
-    async startTurn(playTime: TimeSpan) {
+    async startTurn() {
         this.minTimer.start(TimeSpan.fromSeconds(MIN_PLAYTIME_SECONDS));
 
-        this.playerData = await this.httpClient
-            .post<PlayerData>(`${environment.serverUrl}api/player/virtual`, { id: this.sessionService.id })
-            .toPromise();
         await this.reserveService.refresh();
         await this.boardService.refresh();
         await this.minTimer.completed;

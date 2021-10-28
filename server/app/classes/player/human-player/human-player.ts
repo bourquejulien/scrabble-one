@@ -7,6 +7,7 @@ import { ReserveHandler } from '@app/handlers/reserve-handler/reserve-handler';
 import { Answer, Placement } from '@common';
 import { BoardHandler } from '@app/handlers/board-handler/board-handler';
 import { SocketHandler } from '@app/handlers/socket-handler/socket-handler';
+import * as logger from 'winston';
 
 export class HumanPlayer implements Player {
     isTurn: boolean;
@@ -29,6 +30,8 @@ export class HumanPlayer implements Player {
     }
 
     async startTurn(): Promise<void> {
+        logger.debug(`HumanPlayer - StartTurn - Id: ${this.playerInfo.id}`);
+
         this.isTurn = true;
         this.socketHandler.sendData('onTurn', this.id);
         return Promise.resolve();

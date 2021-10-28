@@ -191,6 +191,6 @@ export class GameService {
     private onVirtualPlayerTurn() {
         this.currentTurn = PlayerType.Virtual;
         this.onTurn.next(this.currentTurn);
-        this.virtualPlayerService.startTurn(this.sessionService.gameConfig.playTime);
+        this.virtualPlayerService.startTurn();
     }
 }

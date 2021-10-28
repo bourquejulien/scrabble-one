@@ -12,6 +12,7 @@ import { BehaviorSubject, Observable } from 'rxjs';
 import { Player } from '@app/classes/player/player';
 import { PlayerInfo } from '@app/classes/player-info';
 import { SocketHandler } from '@app/handlers/socket-handler/socket-handler';
+import * as logger from 'winston';
 
 const MIN_PLAYTIME_MILLISECONDS = 3000;
 
@@ -40,6 +41,8 @@ export class VirtualPlayer implements Player {
     }
 
     async startTurn(): Promise<void> {
+        logger.debug(`VirtualPlayer - StartTurn - Id: ${this.playerInfo.id}`);
+
         this.isTurn = true;
         this.socketHandler.sendData('onTurn', this.id);
 
