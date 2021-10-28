@@ -13,6 +13,7 @@ import { PlayerInfo } from '@app/classes/player-info';
 import { DictionaryService } from '@app/services/dictionary/dictionary.service';
 import { SocketService } from '@app/services/socket-service';
 import { SocketHandler } from '@app/handlers/socket-handler/socket-handler';
+import * as logger from 'winston';
 
 @Service()
 export class GameService {
@@ -59,6 +60,8 @@ export class GameService {
 
         this.sessionHandlingService.addHandler(sessionHandler);
 
+        logger.info(`Single player game: ${sessionHandler.sessionInfo.id} initialised`);
+
         return sessionHandler.getServerConfig(humanPlayer.id);
     }
 
@@ -85,6 +88,8 @@ export class GameService {
 
         this.sessionHandlingService.addHandler(sessionHandler);
 
+        logger.info(`Multiplayer game: ${sessionHandler.sessionInfo.id} initialised`);
+
         return sessionHandler.getServerConfig(humanPlayer.id);
     }
 
@@ -103,14 +108,27 @@ export class GameService {
 
         const humanPlayer = this.addHumanPlayer(humanPlayerInfo, sessionHandler);
 
+        logger.info(`Multiplayer game: ${sessionHandler.sessionInfo.id} joined by ${humanPlayerInfo.id}`);
+
         sessionHandler.start();
 
         return sessionHandler.getServerConfig(humanPlayer.id);
     }
 
     async stopGame(id: string): Promise<Answer> {
+        const handler = this.sessionHandlingService.removeHandler(id);
+
+        if (handler == null) {
+            logger.warn(`Failed to stop game: ${id}`);
+            return { isSuccess: false, body: '' };
+        }
+
+        handler.destroy();
+
+        logger.info(`Game stopped: ${id}`);
+
         return {
-            isSuccess: this.sessionHandlingService.removeHandler(id) != null,
+            isSuccess: true,
             body: '',
         };
     }

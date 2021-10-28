@@ -7,6 +7,7 @@ import { SessionData } from '@app/classes/session-data';
 import { Config } from '@app/config';
 import { Subscription } from 'rxjs';
 import { SocketHandler } from '@app/handlers/socket-handler/socket-handler';
+import * as logger from 'winston';
 
 export class SessionHandler {
     readonly sessionData: SessionData;
@@ -78,6 +79,11 @@ export class SessionHandler {
 
     private timerTick(): void {
         const timeLeftMs = Math.max(0, this.sessionData.timeLimitEpoch - new Date().getTime());
+
+        if (timeLeftMs === 0) {
+            this.players.forEach((p) => (p.isTurn = false));
+        }
+
         this.socketHandler.sendData('timertick', timeLeftMs);
     }
 
@@ -90,6 +96,8 @@ export class SessionHandler {
     private onTurn(lastId: string): void {
         const nextPlayer = this.players.find((p) => p.id !== lastId);
         this.sessionData.timeLimitEpoch = new Date().getTime() + this.sessionInfo.playTimeMs;
+
+        logger.debug(`NextTurn - Session: ${this.sessionInfo.id} - LastPLayer: ${lastId} - NextPlayer: ${nextPlayer?.id ?? ''}`);
 
         nextPlayer?.startTurn();
     }

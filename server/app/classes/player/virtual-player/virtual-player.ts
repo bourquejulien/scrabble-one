@@ -41,6 +41,7 @@ export class VirtualPlayer implements Player {
 
     async startTurn(): Promise<void> {
         this.isTurn = true;
+        this.socketHandler.sendData('onTurn', this.id);
 
         await this.delay(MIN_PLAYTIME_MILLISECONDS);
 

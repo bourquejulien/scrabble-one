@@ -30,6 +30,7 @@ export class HumanPlayer implements Player {
 
     async startTurn(): Promise<void> {
         this.isTurn = true;
+        this.socketHandler.sendData('onTurn', this.id);
         return Promise.resolve();
     }
 
