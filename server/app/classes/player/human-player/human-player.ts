@@ -6,19 +6,31 @@ import { Config } from '@app/config';
 import { ReserveHandler } from '@app/handlers/reserve-handler/reserve-handler';
 import { Answer, Placement } from '@common';
 import { BoardHandler } from '@app/handlers/board-handler/board-handler';
+import { SocketHandler } from '@app/handlers/socket-handler/socket-handler';
 
 export class HumanPlayer implements Player {
     isTurn: boolean;
     readonly playerData: PlayerData;
+    private boardHandler: BoardHandler;
+    private reserveHandler: ReserveHandler;
+    private socketHandler: SocketHandler;
+
     private readonly turnEnded: BehaviorSubject<string>;
 
-    constructor(readonly playerInfo: PlayerInfo, private readonly boardHandler: BoardHandler, private readonly reserveHandler: ReserveHandler) {
+    constructor(readonly playerInfo: PlayerInfo) {
         this.playerData = { score: 0, skippedTurns: 0, rack: [] };
         this.turnEnded = new BehaviorSubject<string>(this.playerInfo.id);
     }
 
+    init(boardHandler: BoardHandler, reserveHandler: ReserveHandler, socketHandler: SocketHandler): void {
+        this.boardHandler = boardHandler;
+        this.reserveHandler = reserveHandler;
+        this.socketHandler = socketHandler;
+    }
+
     async startTurn(): Promise<void> {
         this.isTurn = true;
+        this.socketHandler.sendData('onTurn', this.id);
         return Promise.resolve();
     }
 
@@ -101,10 +113,6 @@ export class HumanPlayer implements Player {
     }
 
     skipTurn(): Answer {
-        if (!this.isTurn) {
-            return { isSuccess: false, body: 'Not your turn' };
-        }
-
         this.playerData.skippedTurns++;
         this.endTurn();
 

@@ -11,27 +11,37 @@ import { Action } from './actions/action';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { Player } from '@app/classes/player/player';
 import { PlayerInfo } from '@app/classes/player-info';
+import { SocketHandler } from '@app/handlers/socket-handler/socket-handler';
 
 const MIN_PLAYTIME_MILLISECONDS = 3000;
 
 export class VirtualPlayer implements Player {
     isTurn: boolean;
+
     readonly playerData: PlayerData;
+    private boardHandler: BoardHandler;
+    private reserveHandler: ReserveHandler;
+    private socketHandler: SocketHandler;
     private readonly turnEnded: BehaviorSubject<string>;
 
     constructor(
         readonly playerInfo: PlayerInfo,
         private readonly dictionaryService: DictionaryService,
-        private readonly boardHandler: BoardHandler,
-        private readonly reserve: ReserveHandler,
         private readonly runAction: (action: Action) => Action | null,
     ) {
         this.playerData = { score: 0, skippedTurns: 0, rack: [] };
         this.turnEnded = new BehaviorSubject<string>(this.playerInfo.id);
     }
 
+    init(boardHandler: BoardHandler, reserveHandler: ReserveHandler, socketHandler: SocketHandler): void {
+        this.boardHandler = boardHandler;
+        this.reserveHandler = reserveHandler;
+        this.socketHandler = socketHandler;
+    }
+
     async startTurn(): Promise<void> {
         this.isTurn = true;
+        this.socketHandler.sendData('onTurn', this.id);
 
         await this.delay(MIN_PLAYTIME_MILLISECONDS);
 
@@ -45,8 +55,8 @@ export class VirtualPlayer implements Player {
     }
 
     fillRack(): void {
-        while (this.reserve.length > 0 && this.playerData.rack.length < Config.RACK_SIZE) {
-            this.playerData.rack.push(this.reserve.drawLetter());
+        while (this.reserveHandler.length > 0 && this.playerData.rack.length < Config.RACK_SIZE) {
+            this.playerData.rack.push(this.reserveHandler.drawLetter());
         }
     }
 
@@ -72,7 +82,7 @@ export class VirtualPlayer implements Player {
         random -= Config.VIRTUAL_PLAYER.SKIP_PERCENTAGE;
 
         if (random < Config.VIRTUAL_PLAYER.EXCHANGE_PERCENTAGE) {
-            return new ExchangeAction(this.reserve, /* this.messaging ,*/ this.playerData);
+            return new ExchangeAction(this.reserveHandler, /* this.messaging ,*/ this.playerData);
         }
 
         const playGenerator = new PlayGenerator(this.dictionaryService, this.boardHandler, this.playerData.rack);
