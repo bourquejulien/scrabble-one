@@ -15,10 +15,9 @@ import { AppMaterialModule } from '@app/modules/material.module';
 import { CommandsService } from '@app/services/commands/commands.service';
 import { MessagingService } from '@app/services/messaging/messaging.service';
 import { SessionService } from '@app/services/session/session.service';
-import { Message, MessageType } from '@common';
+import { GameType, Message, MessageType } from '@common';
 import { CommunicationBoxComponent } from './communication-box.component';
 import { SocketClientService } from '@app/services/socket-client/socket-client.service';
-import { GameType } from '@app/classes/game-type';
 import { SocketClientMock } from '@app/classes/serverside-socket-helper';
 
 describe('CommunicationBoxComponent', () => {
@@ -40,7 +39,7 @@ describe('CommunicationBoxComponent', () => {
 
     const sessionService = {
         gameConfig: {
-            gameType: GameType.Solo,
+            gameType: GameType.SinglePlayer,
             playTime: TimeSpan.fromMinutesSeconds(1, 0),
             firstPlayerName: 'Alphonse',
             secondPlayerName: 'Lucienne',

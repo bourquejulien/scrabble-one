@@ -4,7 +4,7 @@ import { Constants } from '@app/constants/global.constants';
 import { MessagingService } from '@app/services/messaging/messaging.service';
 import { PlayerService } from '@app/services/player/player.service';
 import { VirtualPlayerService } from '@app/services/virtual-player/virtual-player.service';
-import { letterDefinitions, MessageType, ServerConfig, SinglePlayerConfig } from '@common';
+import { GameType, letterDefinitions, MessageType, ServerConfig, SinglePlayerConfig } from '@common';
 import { BehaviorSubject, Subject } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 import { SessionService } from '@app/services/session/session.service';
@@ -44,8 +44,6 @@ export class GameService {
     ) {
         this.onTurn = new BehaviorSubject<PlayerType>(PlayerType.Local);
         this.gameEnding = new Subject<void>();
-        playerService.turnComplete.subscribe((e) => this.handleTurnCompletion(e));
-        virtualPlayerService.turnComplete.subscribe((e) => this.handleTurnCompletion(e));
     }
 
     private static randomizeTurn(): PlayerType {
@@ -58,6 +56,7 @@ export class GameService {
         this.sessionService.serverConfig = serverGameConfig;
 
         this.socketService.join();
+        this.handleTurnCompletion();
         await this.startGame();
     }
 
@@ -66,8 +65,6 @@ export class GameService {
 
         this.currentTurn = GameService.randomizeTurn();
         this.gameRunning = true;
-
-        this.nextTurn();
     }
 
     async reset() {
@@ -77,24 +74,6 @@ export class GameService {
         this.playerService.reset();
 
         await this.httpCLient.delete(localUrl(`stop/${this.sessionService.id}`));
-    }
-
-    nextTurn() {
-        if (!this.gameRunning) return;
-
-        this.firstPlayerStats.points = this.playerService.playerData.score;
-        this.secondPlayerStats.points = this.virtualPlayerService.playerData.score;
-        this.firstPlayerStats.rackSize = this.playerService.rack.length;
-        this.secondPlayerStats.rackSize = this.virtualPlayerService.playerData.rack.length;
-
-        this.emptyRackAndReserve();
-        this.skipTurnLimit();
-
-        if (this.currentTurn === PlayerType.Local) {
-            this.onVirtualPlayerTurn();
-        } else {
-            this.onPlayerTurn();
-        }
     }
 
     playerRackPoint(rack: string[]): number {
@@ -153,14 +132,6 @@ export class GameService {
         }
     }
 
-    skipTurn() {
-        if (this.playerService.playerData.skippedTurns < 3) {
-            this.playerService.playerData.skippedTurns++;
-        }
-
-        this.nextTurn();
-    }
-
     sendRackInCommunication() {
         this.messaging.send(
             'Fin de partie - lettres restantes',
@@ -175,22 +146,32 @@ export class GameService {
         );
     }
 
-    private handleTurnCompletion(playerType: PlayerType) {
-        if (playerType !== this.currentTurn) {
-            return;
-        }
+    private handleTurnCompletion() {
+        this.socketService.socketClient.on('onTurn', (id: string) => {
+            if (!this.gameRunning) return;
 
-        this.nextTurn();
+            this.firstPlayerStats.points = this.playerService.playerData.score;
+            this.secondPlayerStats.points = this.virtualPlayerService.playerData.score;
+            this.firstPlayerStats.rackSize = this.playerService.rack.length;
+            this.secondPlayerStats.rackSize = this.virtualPlayerService.playerData.rack.length;
+
+            this.emptyRackAndReserve();
+            this.skipTurnLimit();
+
+            let playerType: PlayerType;
+
+            if (id === this.sessionService.id) {
+                playerType = PlayerType.Local;
+            } else {
+                playerType = this.sessionService.gameConfig.gameType === GameType.SinglePlayer ? PlayerType.Virtual : PlayerType.Remote;
+            }
+
+            this.onNextTurn(playerType);
+        });
     }
 
-    private onPlayerTurn() {
-        this.currentTurn = PlayerType.Local;
+    private onNextTurn(playerType: PlayerType) {
+        this.currentTurn = playerType;
         this.onTurn.next(this.currentTurn);
-    }
-
-    private onVirtualPlayerTurn() {
-        this.currentTurn = PlayerType.Virtual;
-        this.onTurn.next(this.currentTurn);
-        this.virtualPlayerService.startTurn();
     }
 }

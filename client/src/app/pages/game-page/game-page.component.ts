@@ -11,6 +11,7 @@ import { SessionService } from '@app/services/session/session.service';
 import { TimerService } from '@app/services/timer/timer.service';
 import { Subscription } from 'rxjs';
 import { filter } from 'rxjs/operators';
+import { PlayerService } from '@app/services/player/player.service';
 
 export enum Icon {
     Logout = 'exit_to_app',
@@ -44,6 +45,7 @@ export class GamePageComponent implements OnDestroy {
 
     constructor(
         readonly gameService: GameService,
+        readonly playerService: PlayerService,
         readonly sessionService: SessionService,
         readonly timerService: TimerService,
         readonly dialog: MatDialog,
@@ -96,7 +98,7 @@ export class GamePageComponent implements OnDestroy {
                 this.toggleDrawer();
                 break;
             case 2:
-                this.gameService.skipTurn();
+                this.playerService.skipTurn();
                 break;
         }
     }

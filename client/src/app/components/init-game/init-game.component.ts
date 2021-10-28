@@ -1,15 +1,17 @@
 import { Component, HostListener, Inject, OnInit } from '@angular/core';
 import { FormControl, FormGroup, ValidatorFn, Validators } from '@angular/forms';
-import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 import { Error } from '@app/classes/errorName/error';
 import { GameConfig } from '@app/classes/game-config';
-import { GameType } from '@app/classes/game-type';
 import { TimeSpan } from '@app/classes/time/timespan';
 import { GameService } from '@app/services/game/game.service';
-import { SinglePlayerConfig } from '@common';
+import { GameType, SinglePlayerConfig } from '@common';
 
-const GAME_TYPES_LIST = ['Mode Solo Débutant'];
+const GAME_TYPES_LIST = [
+    ['Mode Solo Débutant', GameType.SinglePlayer],
+    ['Mode multijoueurs', GameType.Multiplayer],
+];
 const BOT_NAMES = ['Maurice', 'Claudette', 'Alphonse'];
 // eslint-disable-next-line @typescript-eslint/no-magic-numbers -- Lists all option, the list is a constant
 const TURN_LENGTH_MINUTES = [0, 1, 2, 3, 4, 5] as const;
@@ -58,7 +60,7 @@ export class InitGameComponent implements OnInit {
     minutes: number = DEFAULT_PLAY_TIME.totalMinutes;
     seconds: number = DEFAULT_PLAY_TIME.seconds;
     gameConfig: GameConfig = {
-        gameType: GAME_TYPES_LIST[0],
+        gameType: GameType.SinglePlayer,
         playTime: DEFAULT_PLAY_TIME,
         firstPlayerName: '',
         secondPlayerName: '',
@@ -177,10 +179,10 @@ export class InitGameComponent implements OnInit {
     }
 
     private setNextPage(): void {
-        if (this.data.gameModeType === GameType.Solo) {
+        if (this.data.gameModeType === GameType.SinglePlayer) {
             this.nextPage = 'game';
         }
-        if (this.data.gameModeType === GameType.CreateOnline) {
+        if (this.data.gameModeType === GameType.Multiplayer) {
             this.nextPage = 'waiting-room';
         }
     }

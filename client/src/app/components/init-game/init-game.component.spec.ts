@@ -6,12 +6,12 @@ import { FormsModule } from '@angular/forms';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { Router } from '@angular/router';
-import { GameType } from '@app/classes/game-type';
 import { cleanStyles } from '@app/classes/helpers/cleanup.helper';
 import { AppMaterialModule } from '@app/modules/material.module';
 import { GameService } from '@app/services/game/game.service';
 import { InitGameComponent } from './init-game.component';
 import { PlayerType } from '@app/classes/player/player-type';
+import { GameType } from '@common';
 
 @Injectable({
     providedIn: 'root',
@@ -57,7 +57,7 @@ describe('InitGameComponent', () => {
                 { provide: Router, useValue: routerMock },
                 { provide: GameService, useClass: GameServiceStub },
                 { provide: MatDialogRef, useClass: MatDialogStub },
-                { provide: MAT_DIALOG_DATA, useValue: GameType.CreateOnline },
+                { provide: MAT_DIALOG_DATA, useValue: GameType.Multiplayer },
             ],
         }).compileComponents();
     });

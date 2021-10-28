@@ -35,7 +35,7 @@ describe('GameService', () => {
         });
 
         virtualPlayerServiceSpy.reset.and.returnValue();
-        virtualPlayerServiceSpy.startTurn.and.returnValue(Promise.resolve());
+        virtualPlayerServiceSpy.refresh.and.returnValue(Promise.resolve());
         virtualPlayerServiceSpy.turnComplete = new Subject<PlayerType>();
 
         TestBed.configureTestingModule({
