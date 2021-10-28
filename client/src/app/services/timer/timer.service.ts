@@ -1,55 +1,26 @@
 import { Injectable } from '@angular/core';
 import { TimeSpan } from '@app/classes/time/timespan';
-import { Timer } from '@app/classes/time/timer';
-import { Subject, Subscription } from 'rxjs';
-import { PlayerType } from '@app/classes/player/player-type';
 import { SocketClientService } from '@app/services/socket-client/socket-client.service';
+import { PlayerService } from '@app/services/player/player.service';
 
 @Injectable({
     providedIn: 'root',
 })
 export class TimerService {
-    readonly countdownStopped: Subject<PlayerType> = new Subject();
+    private timeSpan: TimeSpan;
 
-    private timer: Timer;
-    private countdownSubscription: Subscription | null = null;
+    constructor(socketService: SocketClientService, playerService: PlayerService) {
+        this.timeSpan = TimeSpan.fromMilliseconds(0);
+        socketService.socketClient.on('timerTick', (timeMs: number) => {
+            this.timeSpan = TimeSpan.fromMilliseconds(timeMs);
 
-    constructor(private readonly socketService: SocketClientService) {
-        this.timer = new Timer();
-    }
-
-    start(delay: TimeSpan, playerType: PlayerType): void {
-        this.timer.start(delay);
-        this.socketService.socketClient.on('timerTick', () => {
-            if (this.timer.time.totalMilliseconds <= 0) {
-                this.stop();
-                this.countdownStopped.next(playerType);
-
+            if (timeMs <= 0) {
+                playerService.skipTurn();
             }
         });
-        this.timer.timerUpdated.subscribe(() => {
-            if (this.timer.time.totalMilliseconds <= 0) {
-                this.stop();
-                this.countdownStopped.next(playerType);
-
-            }
-        });
-
-    }
-
-    stop() {
-        this.socketService.socketClient.emit('clientTimerStop');
-        /* if (this.countdownSubscription !== null) {
-            this.countdownSubscription.unsubscribe();
-            this.countdownSubscription = null;
-        } */
     }
 
     get time(): TimeSpan {
-        if (this.countdownSubscription !== null) {
-            return this.timer.time;
-        } else {
-            return TimeSpan.fromMilliseconds(0);
-        }
+        return this.timeSpan;
     }
 }

@@ -1,11 +1,9 @@
 import { Injectable } from '@angular/core';
 import { PlayerData } from '@app/classes/player-data';
-import { TimeSpan } from '@app/classes/time/timespan';
 import { MessageType, Vec2, Direction, Answer } from '@common';
 import { BoardService } from '@app/services/board/board.service';
 import { MessagingService } from '@app/services/messaging/messaging.service';
 import { ReserveService } from '@app/services/reserve/reserve.service';
-import { TimerService } from '@app/services/timer/timer.service';
 import { Subject } from 'rxjs';
 import { RackService } from '@app/services/rack/rack.service';
 import { SessionService } from '@app/services/session/session.service';
@@ -32,20 +30,12 @@ export class PlayerService {
     constructor(
         private readonly reserveService: ReserveService,
         private readonly boardService: BoardService,
-        private readonly timerService: TimerService,
         private readonly messagingService: MessagingService,
         private readonly rackService: RackService,
         private readonly sessionService: SessionService,
         private readonly httpClient: HttpClient,
     ) {
         this.turnComplete = new Subject<PlayerType>();
-        this.timerService.countdownStopped.subscribe((playerType) => {
-            if (PlayerType.Local === playerType) this.completeTurn();
-        });
-    }
-
-    startTurn(playTime: TimeSpan): void {
-        this.timerService.start(playTime, PlayerType.Local);
     }
 
     async placeLetters(word: string, position: Vec2, direction: Direction): Promise<void> {
@@ -106,7 +96,6 @@ export class PlayerService {
     reset(): void {
         this.playerData.skippedTurns = 0;
         this.playerData.score = 0;
-        this.timerService.stop();
         this.boardService.reset();
         this.reserveService.reset();
     }

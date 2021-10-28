@@ -55,13 +55,13 @@ export class GameService {
 
     async startSinglePlayer(config: SinglePlayerConfig) {
         const serverGameConfig = await this.httpCLient.put<ServerConfig>(localUrl('start/single'), config).toPromise();
-        this.socketService.join(serverGameConfig.id);
-        await this.startGame(serverGameConfig);
+        this.sessionService.serverConfig = serverGameConfig;
+
+        this.socketService.join();
+        await this.startGame();
     }
 
-    async startGame(gameConfig: ServerConfig) {
-        this.sessionService.serverConfig = gameConfig;
-
+    async startGame() {
         await this.playerService.refresh();
 
         this.currentTurn = GameService.randomizeTurn();
@@ -186,7 +186,6 @@ export class GameService {
     private onPlayerTurn() {
         this.currentTurn = PlayerType.Local;
         this.onTurn.next(this.currentTurn);
-        this.playerService.startTurn(this.sessionService.gameConfig.playTime);
     }
 
     private onVirtualPlayerTurn() {

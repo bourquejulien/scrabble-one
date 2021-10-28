@@ -22,6 +22,7 @@ export class SessionHandler {
         readonly reserveHandler: ReserveHandler,
         readonly socketHandler: SocketHandler,
     ) {
+        socketHandler.sessionId = sessionInfo.id;
         this.sessionData = { isActive: false, isStarted: false, timeLimitEpoch: 0 };
         this.players = [];
         this.playerSubscriptions = new Map<string, Subscription>();
@@ -84,7 +85,8 @@ export class SessionHandler {
             this.players.forEach((p) => (p.isTurn = false));
         }
 
-        this.socketHandler.sendData('timertick', timeLeftMs);
+        logger.debug(timeLeftMs);
+        this.socketHandler.sendData('timerTick', timeLeftMs);
     }
 
     private initialTurn(): void {

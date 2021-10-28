@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Timer } from '@app/classes/time/timer';
 import { TimeSpan } from '@app/classes/time/timespan';
-import { TimerService } from '@app/services/timer/timer.service';
 import { Subject } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '@environment';
@@ -24,7 +23,6 @@ export class VirtualPlayerService {
     private minTimer: Timer;
 
     constructor(
-        private readonly timerService: TimerService,
         private readonly httpClient: HttpClient,
         private readonly sessionService: SessionService,
         private readonly reserveService: ReserveService,
@@ -38,7 +36,6 @@ export class VirtualPlayerService {
     // TODO To remove once the server is master over the client
     // DO NOT TEST!!
     async startTurn(playTime: TimeSpan) {
-        this.timerService.start(playTime, PlayerType.Virtual);
         this.minTimer.start(TimeSpan.fromSeconds(MIN_PLAYTIME_SECONDS));
 
         this.playerData = await this.httpClient
@@ -53,7 +50,6 @@ export class VirtualPlayerService {
 
     endTurn() {
         this.minTimer.stop();
-        this.timerService.stop();
         this.turnComplete.next(PlayerType.Virtual);
     }
 

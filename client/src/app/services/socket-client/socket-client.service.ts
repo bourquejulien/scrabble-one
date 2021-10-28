@@ -1,14 +1,19 @@
 import { Injectable } from '@angular/core';
 import { io, Socket } from 'socket.io-client';
 import { environment } from '@environment';
+import { SessionService } from '@app/services/session/session.service';
 
 @Injectable({
     providedIn: 'root',
 })
 export class SocketClientService {
-    socketClient: Socket = io(environment.serverUrl, { transports: ['websocket'], upgrade: false });
+    readonly socketClient: Socket;
 
-    join(id: string) {
-        this.socketClient.emit('joinRoom', id);
+    constructor(private readonly sessionService: SessionService) {
+        this.socketClient = io(environment.serverUrl, { transports: ['websocket'], upgrade: false });
+    }
+
+    join() {
+        this.socketClient.emit('joinRoom', this.sessionService.id);
     }
 }
