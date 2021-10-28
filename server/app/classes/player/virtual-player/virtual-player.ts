@@ -15,7 +15,7 @@ import { PlayerInfo } from '@app/classes/player-info';
 const MIN_PLAYTIME_MILLISECONDS = 3000;
 
 export class VirtualPlayer implements IPlayer {
-    readonly playerData: PlayerData;
+    playerData: PlayerData;
     readonly turnEnded: BehaviorSubject<string>;
 
     constructor(
@@ -55,15 +55,21 @@ export class VirtualPlayer implements IPlayer {
         return this.playerInfo.id;
     }
 
-    private nextAction(): Action {
-        let random = Math.random();
+    get random(): number {
+        return Math.random();
+    }
 
+    private nextAction(): Action {
+        let random = this.random;
+        console.log('In Next action', random);
         if (random < Config.VIRTUAL_PLAYER.SKIP_PERCENTAGE) {
+            console.log('Case 1');
             return new SkipAction(this.playerData);
         }
         random -= Config.VIRTUAL_PLAYER.SKIP_PERCENTAGE;
 
         if (random < Config.VIRTUAL_PLAYER.EXCHANGE_PERCENTAGE) {
+            console.log('Case 2');
             return new ExchangeAction(this.reserve, /* this.messaging ,*/ this.playerData);
         }
 
