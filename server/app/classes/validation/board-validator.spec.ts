@@ -1,18 +1,17 @@
 /* eslint-disable no-unused-expressions -- To be */
 /* eslint-disable @typescript-eslint/no-unused-expressions */
-import { expect } from 'chai';
 import { Board } from '@app/classes/board/board';
-import { BoardValidator } from './board-validator';
-import { Config } from '@app/config';
-import { Direction } from '@app/classes/board/direction';
-import { Vec2, letterDefinitions, Bonus, Placement } from '@common';
 import { Dictionary } from '@app/classes/dictionary/dictionary';
+import { Config } from '@app/config';
 import JsonBonuses from '@assets/bonus.json';
+import { Bonus, BonusInfos, Direction, letterDefinitions, Placement, Vec2 } from '@common';
+import { expect } from 'chai';
+import { BoardValidator } from './board-validator';
 
 const WORDS: string[] = ['pomme', 'orange', 'poire', 'raisin', 'peche', 'banane', 'bananes'];
 const mockedDictionary: Set<string> = new Set(WORDS);
 
-const generatePlacement = (word: string, initialPosition: Vec2, direction: Direction): { letter: string; position: Vec2 }[] => {
+const generatePlacement = (word: string, initialPosition: Vec2, direction: Direction): Placement[] => {
     const letters: Placement[] = [];
 
     let xIncr: number;
@@ -62,11 +61,12 @@ const generateLetters = (): { [key: string]: number } => {
     return letterValues;
 };
 
-const retrieveBonuses = (): [Vec2, Bonus][] => {
-    const bonuses: [Vec2, Bonus][] = new Array<[Vec2, Bonus]>();
+const retrieveBonuses = (): BonusInfos[] => {
+    const bonuses: BonusInfos[] = [];
 
     for (const jsonBonus of JsonBonuses) {
-        bonuses.push([jsonBonus.Position, Bonus[jsonBonus.Bonus as keyof typeof Bonus]]);
+        const bonusInfo: BonusInfos = { bonus: jsonBonus.Bonus as Bonus, position: jsonBonus.Position };
+        bonuses.push(bonusInfo);
     }
 
     return bonuses;
@@ -142,7 +142,7 @@ describe('BoardValidator', () => {
         // eslint-disable-next-line @typescript-eslint/no-magic-numbers -- Need to set expected score
         const expectedScores = [20, 13];
         const FIRST_PLACEMENT = generatePlacement('pomme', centerPosition, Direction.Right);
-        const COMBINED_WORD: { letter: string; position: Vec2 }[] = [
+        const COMBINED_WORD: Placement[] = [
             { letter: 'e', position: { x: 7, y: 8 } },
             { letter: 'c', position: { x: 7, y: 9 } },
             { letter: 'h', position: { x: 7, y: 10 } },
@@ -183,7 +183,7 @@ describe('BoardValidator', () => {
     });
 
     it('should fail if letters are placed on different lines', () => {
-        const COMBINED_WORD: { letter: string; position: Vec2 }[] = [
+        const COMBINED_WORD: Placement[] = [
             { letter: 'p', position: { x: 7, y: 7 } },
             { letter: 'o', position: { x: 7, y: 8 } },
             { letter: 'm', position: { x: 7, y: 9 } },

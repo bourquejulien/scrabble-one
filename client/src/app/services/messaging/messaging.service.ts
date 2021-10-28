@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { SocketClientService } from '@app/services/socket-client/socket-client.service';
-import { MessageType, PlayerType } from '@common';
+import { MessageType } from '@common';
+import { PlayerType } from '@app/classes/player/player-type';
 
 @Injectable({
     providedIn: 'root',

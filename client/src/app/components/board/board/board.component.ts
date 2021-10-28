@@ -2,8 +2,8 @@ import { AfterViewInit, Component, ElementRef, Input, OnChanges, SimpleChanges, 
 import { Constants } from '@app/constants/global.constants';
 import { GridService } from '@app/services/grid/grid.service';
 import { MouseHandlingService } from '@app/services/mouse-handling/mouse-handling.service';
-import { PlayerType } from '@common';
 import FontFaceObserver from 'fontfaceobserver';
+import { PlayerType } from '@app/classes/player/player-type';
 
 @Component({
     selector: 'app-board',

@@ -1,17 +1,16 @@
 /* eslint-disable dot-notation -- Need access to private functions and properties*/
 /* eslint-disable max-classes-per-file -- Multiple stubs/mocks are used */
 /* eslint-disable max-lines  -- Max lines should not be applied to tests*/
+/*
 import { Injectable } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
-import { Direction } from '@app/classes/board/direction';
 import { TimeSpan } from '@app/classes/time/timespan';
-import { ValidationResponse } from '@app/classes/validation/validation-response';
+import { MessageType, PlayerType, Placement, Direction, ValidationResponse } from '@common';
 import { SystemMessages } from '@app/constants/system-messages.constants';
 import { BoardService } from '@app/services/board/board.service';
 import { PlayerService } from '@app/services/player/player.service';
 import { ReserveService } from '@app/services/reserve/reserve.service';
 import { TimerService } from '@app/services/timer/timer.service';
-import { MessageType, PlayerType, Vec2 } from '@common';
 import { Subject } from 'rxjs';
 
 const MAX_PLAYTIME_SECONDS = 1;
@@ -26,7 +25,7 @@ class TimerServiceMock {
     gotStopped = false;
 
     start(span: TimeSpan, playerType: PlayerType) {
-        expect(playerType).toEqual(PlayerType.Local);
+        expect(playerType).toEqual(PlayerType.Human);
         expect(span.seconds).toEqual(MAX_PLAYTIME_SECONDS);
 
         this.gotStarted = true;
@@ -81,7 +80,7 @@ describe('PlayerService', () => {
     let lettersToExchange: string;
     let timerService: TimerService;
     let boardServiceSpy: jasmine.SpyObj<BoardService>;
-    let letterToPlace: { letter: string; position: Vec2 }[];
+    let letterToPlace: Placement[];
     let validationResponse: ValidationResponse;
 
     beforeEach(() => {
@@ -90,7 +89,7 @@ describe('PlayerService', () => {
         lettersToPlace = 'ios';
         lettersToExchange = 'kee';
         const mockRack = ['k', 'e', 's', 'e', 'i', 'o', 'v'];
-        boardServiceSpy = jasmine.createSpyObj('BoardService', ['retrieveNewLetters', 'lookupLetters', 'placeLetters']);
+        boardServiceSpy = jasmine.createSpyObj('BoardService', ['retrievePlacements', 'lookupLetters', 'placeLetters', 'refreshBoard']);
 
         TestBed.configureTestingModule({
             providers: [
@@ -112,45 +111,45 @@ describe('PlayerService', () => {
 
     it('should notify player if startTurn', (done) => {
         service.turnComplete.subscribe((playerType) => {
-            expect(playerType).toEqual(PlayerType.Local);
+            expect(playerType).toEqual(PlayerType.Human);
             done();
         });
         service.startTurn(TimeSpan.fromSeconds(MAX_PLAYTIME_SECONDS));
-        timerService.countdownStopped.next(PlayerType.Local);
+        timerService.countdownStopped.next(PlayerType.Human);
         service.turnComplete.unsubscribe();
     });
 
     it('should send error message if lettersToPlace not in rack', () => {
         letterToPlace = [{ letter: 'z', position: { x: 11, y: 3 } }];
-        boardServiceSpy['retrieveNewLetters'].and.returnValue(letterToPlace);
-        boardServiceSpy['lookupLetters'].and.returnValue(validationResponse);
+        boardServiceSpy['retrievePlacements'].and.returnValue(letterToPlace);
+        boardServiceSpy['lookupLetters'].and.returnValue(Promise.resolve(validationResponse));
 
         const spy = spyOn(service['messagingService'], 'send');
         service.placeLetters('z', { x: 11, y: 3 }, Direction.Up);
         expect(spy).toHaveBeenCalledWith(SystemMessages.ImpossibleAction, SystemMessages.LetterPossessionError + 'z', MessageType.Error);
     });
 
-    it('should send error message if validation fail', () => {
+    it('should send error message if validation fail', async () => {
         validationResponse = { isSuccess: false, points: 15, description: 'Error' };
         letterToPlace = [{ letter: 'k', position: { x: 11, y: 3 } }];
-        boardServiceSpy['retrieveNewLetters'].and.returnValue(letterToPlace);
-        boardServiceSpy['lookupLetters'].and.returnValue(validationResponse);
+        boardServiceSpy['retrievePlacements'].and.returnValue(letterToPlace);
+        boardServiceSpy['lookupLetters'].and.returnValue(Promise.resolve(validationResponse));
 
         const spy = spyOn(service['messagingService'], 'send');
-        service.placeLetters('k', { x: 11, y: 3 }, Direction.Up);
+        await service.placeLetters('k', { x: 11, y: 3 }, Direction.Up);
         expect(spy).toHaveBeenCalledWith('', validationResponse.description, MessageType.Log);
     });
 
-    it('should update rack if validation success and letters in rack', () => {
+    it('should update rack if validation success and letters in rack', async () => {
         validationResponse = { isSuccess: true, points: 15, description: 'Error' };
         letterToPlace = [{ letter: 'k', position: { x: 11, y: 3 } }];
-        boardServiceSpy['retrieveNewLetters'].and.returnValue(letterToPlace);
-        boardServiceSpy['lookupLetters'].and.returnValue(validationResponse);
-        boardServiceSpy['placeLetters'].and.returnValue(validationResponse);
+        boardServiceSpy['retrievePlacements'].and.returnValue(letterToPlace);
+        boardServiceSpy['lookupLetters'].and.returnValue(Promise.resolve(validationResponse));
+        boardServiceSpy['placeLetters'].and.returnValue(Promise.resolve(validationResponse));
 
         // eslint-disable-next-line  @typescript-eslint/no-explicit-any  -- Needed for spyOn service
         const spy = spyOn<any>(service, 'updateRack');
-        service.placeLetters('k', { x: 11, y: 3 }, Direction.Up);
+        await service.placeLetters('k', { x: 11, y: 3 }, Direction.Up);
         expect(spy).toHaveBeenCalled();
     });
 
@@ -215,23 +214,23 @@ describe('PlayerService', () => {
 
     it('should notify player change if completeTurn', (done) => {
         service.turnComplete.subscribe((playerType) => {
-            expect(playerType).toEqual(PlayerType.Local);
+            expect(playerType).toEqual(PlayerType.Human);
             done();
         });
         service.completeTurn();
 
-        timerService.countdownStopped.next(PlayerType.Local);
+        timerService.countdownStopped.next(PlayerType.Human);
     });
 
     it('should skip turn', (done) => {
         service.turnComplete.subscribe((playerType) => {
-            expect(playerType).toEqual(PlayerType.Local);
+            expect(playerType).toEqual(PlayerType.Human);
             done();
         });
         service.skipTurn();
 
         expect(service.playerData.skippedTurns).toEqual(1);
-        timerService.countdownStopped.next(PlayerType.Local);
+        timerService.countdownStopped.next(PlayerType.Human);
     });
 
     it('should add specified amount of letters to rack if valid number of letters to add is entered', () => {
@@ -265,7 +264,7 @@ describe('PlayerService', () => {
     });
 
     it('should get rack content', () => {
-        const content = service.rackContent;
+        const content = service.rack;
         expect(service.rack).toBe(content);
     });
 
@@ -435,3 +434,5 @@ describe('PlayerService', () => {
         expect(service.rackLength).toBe(mockRack.length);
     });
 });
+
+*/

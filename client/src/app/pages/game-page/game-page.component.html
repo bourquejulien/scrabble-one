@@ -1,21 +1,24 @@
 <mat-drawer-container autosize>
     <mat-toolbar [ngClass]="playerType" class="mat-app-background" color="primary" class="tool-bar">
         <span>Scrabble</span>
-        <span>{{ gameService.gameConfig.firstPlayerName }} contre {{ gameService.gameConfig.secondPlayerName }}</span>
+        <span>{{ sessionService.gameConfig.firstPlayerName }} contre {{ sessionService.gameConfig.secondPlayerName }}</span>
         <span>Minuteur: {{ timerService.time | time }}</span>
     </mat-toolbar>
     <mat-drawer #drawer autoFocus class="comm-box-sidenav" mode="side" opened>
         <app-communication-box></app-communication-box>
     </mat-drawer>
     <mat-card [ngClass]="isOpen ? 'scoreboard-player-one-open' : 'scoreboard-player-one-closed'">
-        <span class="vertical-flex-items">{{ gameService.gameConfig.firstPlayerName }}</span>
+        <span class="vertical-flex-items">{{ sessionService.gameConfig.firstPlayerName }}</span>
         <span class="vertical-flex-items">Score: {{ gameService.firstPlayerStats.points }} </span>
         <span class="vertical-flex-items" *ngIf="gameService.firstPlayerStats.rackSize < 7"
             >Lettres: {{ gameService.firstPlayerStats.rackSize }}
         </span>
     </mat-card>
+    <mat-card [ngClass]="isOpen ? 'reserve-length-open' : 'reserve-length-closed'" color="primary">
+        <span> Nombre de lettres dans la réserve : {{ reserveService.length }} </span>
+    </mat-card>
     <mat-card [ngClass]="isOpen ? 'scoreboard-player-two-open' : 'scoreboard-player-two-closed'">
-        <span class="vertical-flex-items">{{ gameService.gameConfig.secondPlayerName }}</span>
+        <span class="vertical-flex-items">{{ sessionService.gameConfig.secondPlayerName }}</span>
         <span class="vertical-flex-items">Score: {{ gameService.secondPlayerStats.points }} </span>
         <span class="vertical-flex-items" *ngIf="gameService.secondPlayerStats.rackSize < 7"
             >Lettres: {{ gameService.secondPlayerStats.rackSize }}

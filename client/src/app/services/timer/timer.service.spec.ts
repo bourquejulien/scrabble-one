@@ -1,8 +1,8 @@
 import { TestBed } from '@angular/core/testing';
-import { PlayerType } from '@common';
 import { TimeSpan } from '@app/classes/time/timespan';
 import { asyncScheduler } from 'rxjs';
 import { TimerService } from './timer.service';
+import { PlayerType } from '@app/classes/player/player-type';
 
 describe('TimerService', () => {
     let service: TimerService;

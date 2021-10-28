@@ -2,14 +2,12 @@
 /* eslint-disable no-unused-expressions -- To be */
 /* eslint-disable @typescript-eslint/no-unused-expressions */
 import { expect } from 'chai';
-import { Direction } from '@app/classes//board/direction';
 import { Board, ImmutableBoard } from '@app/classes/board/board';
 import { Dictionary } from '@app/classes/dictionary/dictionary';
-import { ValidationResponse } from '@app/classes/validation/validation-response';
-import { Placement, Vec2 } from '@common';
+import { Placement, Vec2, Direction, ValidationResponse } from '@common';
 import { Config } from '@app/config';
 import { PlayGenerator } from './play-generator';
-import { BoardHandler } from '@app/classes/board/board-handler';
+import { BoardHandler } from '@app/handlers/board-handler/board-handler';
 
 class StubDictionary implements Dictionary {
     words: string[] = [];
@@ -65,9 +63,8 @@ class BoardHandlerMock {
         return { isSuccess: this.isValid, points: 0, description: '' };
     }
 
-    retrieveNewLetters(word: string, initialPosition: Vec2, direction: Direction): { letter: string; position: Vec2 }[] {
-        this.foundWords.push({ word, initialPosition, direction });
-        return [];
+    retrieveNewLetters(letters: Placement[]): Placement[] {
+        return letters;
     }
 
     get immutableBoard(): ImmutableBoard {
@@ -95,7 +92,7 @@ describe('PlayGenerator', () => {
         const playGenerator = new PlayGenerator(stubDictionary, boardHandlerMock as unknown as BoardHandler, WORD.split(''));
         playGenerator.generateNext();
 
-        expect(boardHandlerMock.foundWords[0].word).to.equal(WORD);
+        expect(playGenerator.orderedPlays[0].word).to.equal(WORD);
     });
 
     it('should retrieve existing word', () => {
@@ -133,7 +130,7 @@ describe('PlayGenerator', () => {
         const playGenerator = new PlayGenerator(stubDictionary, boardHandlerMock as unknown as BoardHandler, RACK);
         playGenerator.generateNext();
 
-        expect(boardHandlerMock.foundWords[0].word).to.equal(GENERATED_WORD);
+        expect(playGenerator.orderedPlays[0].word).to.equal(GENERATED_WORD);
         expect(playGenerator.orderedPlays.length).to.equal(2);
     });
 

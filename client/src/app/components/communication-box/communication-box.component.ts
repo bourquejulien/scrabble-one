@@ -1,9 +1,10 @@
 import { AfterViewInit, Component, ElementRef, ViewChild } from '@angular/core';
-import { Message, MessageType, PlayerType } from '@common';
+import { PlayerType } from '@app/classes/player/player-type';
 import { Constants } from '@app/constants/global.constants';
 import { CommandsService } from '@app/services/commands/commands.service';
-import { GameService } from '@app/services/game/game.service';
+import { SessionService } from '@app/services/session/session.service';
 import { SocketClientService } from '@app/services/socket-client/socket-client.service';
+import { Message, MessageType } from '@common';
 
 @Component({
     selector: 'app-communication-box',
@@ -15,7 +16,7 @@ export class CommunicationBoxComponent implements AfterViewInit {
     messages: Message[] = [];
     inputValue: string;
 
-    constructor(private commandsService: CommandsService, private gameService: GameService, private readonly socket: SocketClientService) {}
+    constructor(private commandsService: CommandsService, private sessionService: SessionService, private readonly socket: SocketClientService) {}
 
     ngAfterViewInit(): void {
         this.socket.socketClient.on('message', (message: Message) => {
@@ -50,22 +51,31 @@ export class CommunicationBoxComponent implements AfterViewInit {
 
     getMessageColor(message: Message): string {
         switch (message.messageType) {
-            case MessageType.Error:
-                return Constants.ERROR_COLOR;
             case MessageType.Log:
+            case MessageType.System:
+            case MessageType.Error:
+                return Constants.SYSTEM_COLOR;
             case MessageType.Message:
+                if (message.userId === PlayerType.Local) return Constants.PLAYER_ONE_COLOR;
+                return Constants.PLAYER_TWO_COLOR;
             default:
-                return message.userId === PlayerType.Local ? Constants.MY_COLOR : Constants.OTHERS_COLOR;
+                return Constants.SYSTEM_COLOR;
         }
+    }
+
+    getFontColor(message: Message): string {
+        const isSystem = message.messageType === MessageType.System;
+        const isLog = message.messageType === MessageType.Log;
+        const isError = message.messageType === MessageType.Error;
+        return isSystem || isLog || isError ? Constants.WHITE_FONT : Constants.BLACK_FONT;
     }
 
     getTitle(message: Message): string {
         switch (message.messageType) {
-            case MessageType.Game:
             case MessageType.Message:
                 return message.userId === PlayerType.Local
-                    ? this.gameService.gameConfig.firstPlayerName
-                    : this.gameService.gameConfig.secondPlayerName;
+                    ? this.sessionService.gameConfig.firstPlayerName
+                    : this.sessionService.gameConfig.secondPlayerName;
             default:
                 return message.title;
         }
