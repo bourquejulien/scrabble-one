@@ -48,43 +48,39 @@ export class PlayerService {
         this.timerService.start(playTime, PlayerType.Local);
     }
 
-    async placeLetters(word: string, position: Vec2, direction: Direction): Promise<boolean> {
+    async placeLetters(word: string, position: Vec2, direction: Direction): Promise<void> {
         const positionToPlace = this.boardService.retrievePlacements(word, position, direction);
         const validationData = await this.boardService.lookupLetters(positionToPlace);
 
         if (!validationData.isSuccess) {
             this.messagingService.send('', validationData.description, MessageType.Log);
             this.completeTurn();
-            return false;
+            return;
         }
 
         const answer = await this.boardService.placeLetters(positionToPlace);
 
         if (!answer.isSuccess) {
             this.messagingService.send('', answer.body, MessageType.Error);
-            return false;
+            return;
         }
 
         await this.refresh();
         this.completeTurn();
-
-        return true;
     }
 
-    async exchangeLetters(lettersToExchange: string): Promise<boolean> {
+    async exchangeLetters(lettersToExchange: string): Promise<void> {
         const letterArray = lettersToExchange.split('');
         const answer = await this.httpClient.post<Answer>(localUrl('exchange', this.sessionService.id), letterArray).toPromise();
 
         if (!answer.isSuccess) {
             this.messagingService.send('', answer.body, MessageType.Error);
-            return false;
+            return;
         }
 
         await this.refresh();
 
         this.completeTurn();
-
-        return true;
     }
 
     async skipTurn(): Promise<void> {

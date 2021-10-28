@@ -1,5 +1,4 @@
 import { Injectable } from '@angular/core';
-import { Constants } from '@app/constants/global.constants';
 import { SystemMessages } from '@app/constants/system-messages.constants';
 import { GameService } from '@app/services/game/game.service';
 import { MessagingService } from '@app/services/messaging/messaging.service';
@@ -7,7 +6,7 @@ import { PlayerService } from '@app/services/player/player.service';
 import { ReserveService } from '@app/services/reserve/reserve.service';
 import { letterDefinitions, MessageType, Vec2, Direction } from '@common';
 import { PlayerType } from '@app/classes/player/player-type';
-
+import { Constants } from '@app/constants/global.constants';
 @Injectable({
     providedIn: 'root',
 })
@@ -25,7 +24,7 @@ export class CommandsService {
         public reserveService: ReserveService,
     ) {}
 
-    async parseInput(input: string): Promise<boolean> {
+    parseInput(input: string): boolean {
         // Arguments: [COMMAND, OPTIONS, WORD]
         if (input.startsWith('!')) {
             const args = input.split(' ');
@@ -37,13 +36,13 @@ export class CommandsService {
                     this.toggleDebug();
                     break;
                 case '!placer':
-                    this.successfulCommand = await this.checkPlaceCommand(args[1], this.removeAccents(args[2]));
+                    this.successfulCommand = this.checkPlaceCommand(args[1], this.removeAccents(args[2]));
                     break;
                 case '!passer':
                     this.successfulCommand = this.skipTurn();
                     break;
                 case '!échanger':
-                    this.successfulCommand = await this.exchangeLetters(this.removeAccents(args[1]));
+                    this.successfulCommand = this.exchangeLetters(this.removeAccents(args[1]));
                     break;
                 case '!réserve':
                     this.successfulCommand = this.displayReserve();
@@ -90,31 +89,33 @@ export class CommandsService {
         this.messagingService.send(SystemMessages.HelpTitle, SystemMessages.HelpMessage, MessageType.System);
     }
 
-    private async checkPlaceCommand(options: string, word: string): Promise<boolean> {
+    private checkPlaceCommand(options: string, word: string): boolean {
         if (!this.isUsersTurn()) return false;
 
         if (!this.placeWordCommandRegex.test(options)) {
             this.messagingService.send('', SystemMessages.InvalidOptions, MessageType.Error);
             return false;
         }
-        // Arguments: [COMMAND, OPTIONS, WORD]
-        // Options: [Y, X, DIRECTION]
+
         if (this.wordRegex.test(word)) {
             const yCoordinate = Number(options.charCodeAt(0) - Constants.CHAR_OFFSET);
             const xCoordinate = Number(options.charAt(1)) - 1;
             const direction: Direction = options.charAt(2) === 'v' ? Direction.Down : Direction.Right;
             const vecCoordinate: Vec2 = { x: xCoordinate, y: yCoordinate };
-            return this.playerService.placeLetters(word, vecCoordinate, direction);
+            this.playerService.placeLetters(word, vecCoordinate, direction);
+
+            return true;
         }
         this.messagingService.send('', SystemMessages.InvalidWord, MessageType.Error);
         return false;
     }
 
-    private async exchangeLetters(letters: string): Promise<boolean> {
+    private exchangeLetters(letters: string): boolean {
         if (!this.isUsersTurn()) return false;
 
         if (this.rackRegex.test(letters)) {
-            return this.playerService.exchangeLetters(letters);
+            this.playerService.exchangeLetters(letters);
+            return true;
         }
         this.messagingService.send('', SystemMessages.InvalidLetters, MessageType.Error);
         return false;
