@@ -1,21 +1,22 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable dot-notation */
 /* eslint-disable max-classes-per-file */
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { NO_ERRORS_SCHEMA } from '@angular/compiler';
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormsModule } from '@angular/forms';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { cleanStyles } from '@app/classes/helpers/cleanup.helper';
+import { PlayerType } from '@app/classes/player/player-type';
 import { TimeSpan } from '@app/classes/time/timespan';
 import { Constants } from '@app/constants/global.constants';
 import { AppMaterialModule } from '@app/modules/material.module';
 import { CommandsService } from '@app/services/commands/commands.service';
 import { MessagingService } from '@app/services/messaging/messaging.service';
+import { SessionService } from '@app/services/session/session.service';
 import { Message, MessageType } from '@common';
 import { CommunicationBoxComponent } from './communication-box.component';
-import { SessionService } from '@app/services/session/session.service';
-import { PlayerType } from '@app/classes/player/player-type';
 
 describe('CommunicationBoxComponent', () => {
     let component: CommunicationBoxComponent;
@@ -42,7 +43,7 @@ describe('CommunicationBoxComponent', () => {
                 { provide: SessionService, useValue: sessionService },
                 { provide: CommandsService, useValue: jasmine.createSpyObj('CommandsService', { parseInput: true }) },
             ],
-            imports: [AppMaterialModule, BrowserAnimationsModule, FormsModule],
+            imports: [AppMaterialModule, BrowserAnimationsModule, FormsModule, HttpClientTestingModule],
             schemas: [CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA],
         }).compileComponents();
     });
@@ -82,7 +83,7 @@ describe('CommunicationBoxComponent', () => {
         component['sessionService']['gameConfig']['firstPlayerName'] = firstPlayerName;
         component['sessionService']['gameConfig']['secondPlayerName'] = secondPlayerName;
         expect(component.getTitle(dummyMessage)).toBe(dummyMessage.title);
-        dummyMessage.messageType = MessageType.Game;
+        dummyMessage.messageType = MessageType.Message;
         dummyMessage.userId = PlayerType.Local;
         expect(component.getTitle(dummyMessage)).toEqual(firstPlayerName);
         dummyMessage.userId = PlayerType.Virtual;
@@ -98,11 +99,12 @@ describe('CommunicationBoxComponent', () => {
     });
 
     it('should return the correct CSS colors', () => {
-        expect(component.getMessageColor(dummyMessage)).toBe(Constants.ERROR_COLOR);
+        expect(component.getMessageColor(dummyMessage)).toBe(Constants.SYSTEM_COLOR);
         dummyMessage.messageType = MessageType.Message;
-        expect(component.getMessageColor(dummyMessage)).toBe(Constants.OTHERS_COLOR);
+        dummyMessage.userId = PlayerType.Virtual;
+        expect(component.getMessageColor(dummyMessage)).toBe(Constants.PLAYER_TWO_COLOR);
         dummyMessage.userId = PlayerType.Local;
-        expect(component.getMessageColor(dummyMessage)).toBe(Constants.MY_COLOR);
+        expect(component.getMessageColor(dummyMessage)).toBe(Constants.PLAYER_ONE_COLOR);
     });
 
     afterAll(() => cleanStyles());
