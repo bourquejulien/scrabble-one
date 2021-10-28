@@ -11,6 +11,10 @@ const STROKE_STYLE_SELECTION = 'red';
 const FONT_FACE: FontFace = { font: 'BenchNine', size: 30 };
 const MIN_FONT_SIZE = 25;
 const MAX_FONT_SIZE = 35;
+const DIST_DIRECTION_15 = 15;
+const DIST_DIRECTION_20 = 20;
+const COORD_CLEAR_SQUARE = 6;
+const COORD_CLEAR_INSIDE = 5;
 const FONT_FACE_SCALE_FACTOR = 0.75;
 const TEXT_STYLE = 'black';
 const BONUS_COLORS = new Map([
@@ -127,18 +131,18 @@ export class GridService {
             tempContext.strokeStyle = STROKE_STYLE_SELECTION;
             tempContext.lineWidth = LINE_WIDTH;
             tempContext.moveTo(gridCoord.x, gridCoord.y);
-            tempContext.lineTo(gridCoord.x, gridCoord.y - 15);
-            tempContext.lineTo(gridCoord.x + 20, gridCoord.y);
-            tempContext.lineTo(gridCoord.x, gridCoord.y + 15);
+            tempContext.lineTo(gridCoord.x, gridCoord.y - DIST_DIRECTION_15);
+            tempContext.lineTo(gridCoord.x + DIST_DIRECTION_20, gridCoord.y);
+            tempContext.lineTo(gridCoord.x, gridCoord.y + DIST_DIRECTION_15);
             tempContext.fill();
         } else {
             tempContext.beginPath();
             tempContext.strokeStyle = STROKE_STYLE_SELECTION;
             tempContext.lineWidth = LINE_WIDTH;
             tempContext.moveTo(gridCoord.x, gridCoord.y);
-            tempContext.lineTo(gridCoord.x - 15, gridCoord.y);
-            tempContext.lineTo(gridCoord.x, gridCoord.y + 20);
-            tempContext.lineTo(gridCoord.x + 15, gridCoord.y);
+            tempContext.lineTo(gridCoord.x - DIST_DIRECTION_15, gridCoord.y);
+            tempContext.lineTo(gridCoord.x, gridCoord.y + DIST_DIRECTION_20);
+            tempContext.lineTo(gridCoord.x + DIST_DIRECTION_15, gridCoord.y);
             tempContext.fill();
         }
     }
@@ -165,8 +169,8 @@ export class GridService {
         tempContext.clearRect(
             gridCoord.x - this.squareWidth / 2 - 3,
             gridCoord.y - this.squareHeight / 2 - 3,
-            this.squareWidth + 6,
-            this.squareHeight + 6,
+            this.squareWidth + COORD_CLEAR_SQUARE,
+            this.squareHeight + COORD_CLEAR_SQUARE,
         );
     }
     cleanSquare(tempContext: CanvasRenderingContext2D, position: Vec2): void {
@@ -174,8 +178,8 @@ export class GridService {
         tempContext.clearRect(
             gridCoord.x - this.squareWidth / 2 + 3,
             gridCoord.y - this.squareHeight / 2 + 3,
-            this.squareWidth - 5,
-            this.squareHeight - 5,
+            this.squareWidth - COORD_CLEAR_INSIDE,
+            this.squareHeight - COORD_CLEAR_INSIDE,
         );
     }
 

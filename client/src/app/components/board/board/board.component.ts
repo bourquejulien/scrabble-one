@@ -25,6 +25,7 @@ export class BoardComponent implements OnChanges, AfterViewInit {
 
     isLetter: boolean;
     isFocus: boolean;
+    letter: string;
     squareSelected: boolean = false;
     isHorizontal: boolean = true;
     gridPosition: Vec2;
@@ -48,7 +49,7 @@ export class BoardComponent implements OnChanges, AfterViewInit {
     @HostListener('body:mousedown', ['$event'])
     onMouseDown(event: MouseEvent): void {
         this.gridService.resetCanvas(this.tempContext);
-        if (this.isFocus && !this.squareSelected) {
+        if (this.isFocus) {
             this.mouseHandlingService.mouseHitDetect(event);
             if (this.gridPosition === undefined) {
                 this.gridPosition = this.mouseHandlingService.position;
@@ -64,8 +65,10 @@ export class BoardComponent implements OnChanges, AfterViewInit {
             }
         } else {
             this.cancel();
+            this.myRack = [];
             this.gridPosition.x = -1;
             this.gridPosition.y = -1;
+            this.squareSelected = false;
         }
     }
 
@@ -87,10 +90,10 @@ export class BoardComponent implements OnChanges, AfterViewInit {
             const validKey: boolean = this.squareSelected === true && this.isLetter && this.inGrid(this.gridPosition);
             if (validKey) {
                 this.gridService.cleanSquare(this.tempContext, this.gridPosition);
-                this.gridService.drawSymbol(event.key, this.gridPosition, this.tempContext);
-                this.rackService.rack.splice(this.rackService.indexOf(event.key), 1);
-                this.tempRack.push(event.key);
-                this.myRack.push(event.key);
+                this.gridService.drawSymbol(this.letter, this.gridPosition, this.tempContext);
+                this.rackService.rack.splice(this.rackService.indexOf(this.letter), 1);
+                this.tempRack.push(this.letter);
+                this.myRack.push(this.letter);
                 this.nextAvailableSquare(true);
                 this.gridService.drawSelectionSquare(this.tempContext, this.gridPosition);
                 this.gridService.drawDirectionArrow(this.tempContext, this.gridPosition, this.isHorizontal);
@@ -144,14 +147,36 @@ export class BoardComponent implements OnChanges, AfterViewInit {
     }
 
     private handleKeyPress(key: string): void {
-        if (key.length !== 1 || !key.match('([a-z])')) {
+        const input = this.sanitizeKey(key);
+        if (key.length !== 1 || !input.match('([a-z])')) {
             this.isLetter = false;
         } else {
-            if (this.rackService.rack.includes(key)) {
+            if (this.rackService.rack.includes(input)) {
+                this.letter = input;
                 this.isLetter = true;
             } else {
                 this.isLetter = false;
             }
+        }
+    }
+
+    // disable because we have to handle every accent from every letter so the limitation of the complexity is capped
+    // eslint-disable-next-line complexity
+    private sanitizeKey(key: string): string {
+        switch (key) {
+            case 'à' || 'â' || 'ä' || 'á':
+                return 'a';
+            case 'ç':
+                return 'c';
+            case 'é' || 'è' || 'ê' || 'ë':
+                return 'e';
+            case 'î' || 'ï':
+                return 'i';
+            case 'ô':
+                return 'o';
+            case 'û' || 'ü' || 'ù':
+            default:
+                return key;
         }
     }
 
