@@ -6,7 +6,7 @@ import { SocketClientService } from '@app/services/socket-client/socket-client.s
 import { MessagingService } from './messaging.service';
 import { SocketClientMock } from '@app/classes/serverside-socket-helper';
 
-fdescribe('MessagingService', () => {
+describe('MessagingService', () => {
     let service: MessagingService;
     let socketServiceSpyObj: jasmine.SpyObj<SocketClientService>;
     const socketClient: SocketClientMock = new SocketClientMock();
