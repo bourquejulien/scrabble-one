@@ -21,8 +21,8 @@ export class SessionHandler {
         readonly reserveHandler: ReserveHandler,
         readonly socketService: SocketService,
     ) {
-        players.forEach((p) => p.fillRack());
-        this.sessionData = { isActive: false, isStarted: false, timeMs: 0 };
+        this.players.forEach((p) => p.fillRack());
+        this.sessionData = { isActive: false, isStarted: false, timeLimitEpoch: 0 };
     }
 
     getServerConfig(id: string): ServerConfig {

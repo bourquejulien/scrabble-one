@@ -1,46 +1,25 @@
+/* eslint-disable no-unused-expressions */
+/* eslint-disable @typescript-eslint/no-unused-expressions */
+/* eslint-disable dot-notation */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable max-classes-per-file */
 import { expect } from 'chai';
 import { RoomController } from './room.controller';
-class StubSocketService {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    socketServer: any;
-    init() {
-        return;
-    }
+import { createStubInstance, SinonStubbedInstance } from 'sinon';
+import { SessionHandlingService } from '@app/services/session-handling.service';
+import { SocketService } from '@app/services/socket-service';
 
-    send() {
-        return;
-    }
-}
-class StubSessionHandlingService {
-    playerIds: string[] = [];
-    removeHandler() {
-        return;
-    }
-
-    getHandler() {
-        return;
-    }
-
-    addHandler() {
-        return;
-    }
-
-    getSessionId(sessionId: string) {
-        return this.playerIds.at(this.playerIds.indexOf(sessionId));
-    }
-}
 describe('RoomController', () => {
     let roomController: RoomController;
-    let stubSocketService: StubSocketService;
-    let stubSessionHandlingService: StubSessionHandlingService;
+
     beforeEach(() => {
-        stubSessionHandlingService = new StubSessionHandlingService();
-        stubSocketService = new StubSocketService();
+        const stubSocketService: SinonStubbedInstance<SocketService> = createStubInstance(SocketService);
+        // eslint-disable-next-line max-len
+        const stubSessionHandlingService = createStubInstance(SessionHandlingService) as unknown as SessionHandlingService;
         roomController = new RoomController(stubSocketService, stubSessionHandlingService);
     });
 
     it('should be created', () => {
         expect(roomController).to.be.ok;
     });
-})
+});
