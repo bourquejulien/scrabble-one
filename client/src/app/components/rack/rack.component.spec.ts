@@ -153,7 +153,7 @@ describe('RackComponent', () => {
     it('should reset on document click if not on focus', () => {
         const POSITION = 5;
         component.selection.reserve.add(POSITION);
-        const spy = spyOn(component, 'reset');
+        const spy = spyOn<any>(component, 'reset');
 
         component.isFocus = true;
         component.onDocumentClick();

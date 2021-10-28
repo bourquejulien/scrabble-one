@@ -73,10 +73,10 @@ export class GameService {
         this.virtualPlayerService.reset();
         this.playerService.reset();
 
-        await this.httpCLient.delete(localUrl('end'));
+        this.httpCLient.delete(localUrl('end'));
     }
 
-    nextTurn() {
+    private nextTurn() {
         if (!this.gameRunning) return;
 
         this.firstPlayerStats.points = this.playerService.playerData.score;
@@ -94,7 +94,7 @@ export class GameService {
         }
     }
 
-    playerRackPoint(rack: string[]): number {
+    private playerRackPoint(rack: string[]): number {
         let playerPoint = 0;
         for (const letter of rack) {
             const currentLetterData = letterDefinitions.get(letter.toLowerCase());
@@ -119,7 +119,7 @@ export class GameService {
         }
     }
 
-    endGamePoint() {
+    private endGamePoint() {
         const finalScorePlayer = this.firstPlayerStats.points - this.playerRackPoint(this.playerService.rack);
         const finalScoreVirtualPlayer = this.secondPlayerStats.points - this.playerRackPoint(this.virtualPlayerService.playerData.rack);
 
@@ -137,7 +137,7 @@ export class GameService {
         }
     }
 
-    skipTurnLimit() {
+    private skipTurnLimit() {
         if (
             this.playerService.playerData.skippedTurns > Constants.MAX_SKIP_TURN &&
             this.virtualPlayerService.playerData.skippedTurns > Constants.MAX_SKIP_TURN

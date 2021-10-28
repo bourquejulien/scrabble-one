@@ -1,9 +1,9 @@
 import { AfterViewInit, Component, ElementRef, Input, OnChanges, SimpleChanges, ViewChild } from '@angular/core';
+import { PlayerType } from '@app/classes/player/player-type';
 import { Constants } from '@app/constants/global.constants';
 import { GridService } from '@app/services/grid/grid.service';
 import { MouseHandlingService } from '@app/services/mouse-handling/mouse-handling.service';
 import FontFaceObserver from 'fontfaceobserver';
-import { PlayerType } from '@app/classes/player/player-type';
 
 @Component({
     selector: 'app-board',
@@ -48,7 +48,7 @@ export class BoardComponent implements OnChanges, AfterViewInit {
         return Constants.GRID.CANVAS_SIZE.y;
     }
 
-    scale(): void {
+    private scale(): void {
         const gridCanvas = this.gridCanvas.nativeElement;
         const squareCanvas = this.squareCanvas.nativeElement;
         const scaleFactor = window.devicePixelRatio;

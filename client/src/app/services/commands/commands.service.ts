@@ -12,7 +12,7 @@ import { PlayerType } from '@app/classes/player/player-type';
     providedIn: 'root',
 })
 export class CommandsService {
-    placeWordCommandRegex: RegExp = /^([a-o]){1}([1-9]|1[0-5]){1}([hv]){1}$/;
+    private placeWordCommandRegex: RegExp = /^([a-o]){1}([1-9]|1[0-5]){1}([hv]){1}$/;
     wordRegex: RegExp = /^[A-zÀ-ú]{1,15}$/;
     rackRegex: RegExp = /^[a-z*]{1,7}$/;
     messageRegex: RegExp = /^[A-zÀ-ú0-9 !.?'"]{1,512}$/;

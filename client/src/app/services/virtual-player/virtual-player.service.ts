@@ -51,7 +51,7 @@ export class VirtualPlayerService {
         this.endTurn();
     }
 
-    endTurn() {
+    private endTurn() {
         this.minTimer.stop();
         this.timerService.stop();
         this.turnComplete.next(PlayerType.Virtual);

@@ -1,6 +1,6 @@
 import { Component, EventEmitter, HostListener, OnInit, Output } from '@angular/core';
-import { letterDefinitions } from '@common';
 import { RackService } from '@app/services/rack/rack.service';
+import { letterDefinitions } from '@common';
 
 interface Selection {
     swap: {

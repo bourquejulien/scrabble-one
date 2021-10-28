@@ -95,13 +95,13 @@ describe('GamePageComponent', () => {
         const currentButtonIndex = 1;
         const spy = spyOn(component, 'toggleDrawer');
 
-        component.callFunction(currentButtonIndex);
+        component.buttonAction(currentButtonIndex);
         expect(spy).toHaveBeenCalled();
     });
 
     it('should call nextTurn function if third button index', () => {
         const currentButtonIndex = 2;
-        component.callFunction(currentButtonIndex);
+        component.buttonAction(currentButtonIndex);
 
         expect(component.gameService.currentTurn).toEqual(PlayerType.Virtual);
     });

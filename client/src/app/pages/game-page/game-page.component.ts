@@ -90,7 +90,7 @@ export class GamePageComponent implements OnDestroy {
         this.isOpen = !this.isOpen;
     }
 
-    callFunction(buttonIndex: number): void {
+    buttonAction(buttonIndex: number): void {
         switch (buttonIndex) {
             case 1:
                 this.toggleDrawer();
@@ -101,7 +101,7 @@ export class GamePageComponent implements OnDestroy {
         }
     }
 
-    confirmQuit(): void {
+    private confirmQuit(): void {
         const dialogRef = this.dialog.open(ConfirmQuitDialogComponent);
 
         dialogRef.afterClosed().subscribe((result) => {

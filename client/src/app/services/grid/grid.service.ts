@@ -112,7 +112,7 @@ export class GridService {
         }
     }
 
-    drawSymbol(letter: string, gridPosition: Vec2, context: CanvasRenderingContext2D) {
+    private drawSymbol(letter: string, gridPosition: Vec2, context: CanvasRenderingContext2D) {
         if (letter.length === 0) return;
 
         const canvasPosition: Vec2 = this.computeCanvasCoord(gridPosition);

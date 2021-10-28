@@ -130,13 +130,13 @@ describe('GameService', () => {
         });
 
         it('should not next turn', () => {
-            const spyNextTurn = spyOn(service, 'nextTurn');
+            const spyNextTurn = spyOn<any>(service, 'nextTurn');
             service['handleTurnCompletion'](PlayerType.Virtual);
             expect(spyNextTurn).not.toHaveBeenCalled();
         });
 
         it('should next turn', () => {
-            const spyNextTurn = spyOn(service, 'nextTurn');
+            const spyNextTurn = spyOn<any>(service, 'nextTurn');
             service['handleTurnCompletion'](PlayerType.Human);
             expect(spyNextTurn).toHaveBeenCalled();
         });

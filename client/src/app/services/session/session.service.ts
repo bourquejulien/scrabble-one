@@ -14,7 +14,7 @@ export class SessionService {
         this.reset();
     }
 
-    reset() {
+    private reset() {
         this._id = '';
         this._gameConfig = {
             gameType: '',

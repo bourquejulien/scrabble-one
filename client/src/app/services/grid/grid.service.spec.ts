@@ -68,20 +68,20 @@ describe('GridService', () => {
 
     it(' drawLetter should call fillText on the canvas', () => {
         const fillTextSpy = spyOn(ctxStub, 'fillText').and.callThrough();
-        service.drawSymbol('t', { x: 0, y: 0 }, ctxStub);
+        service['drawSymbol']('t', { x: 0, y: 0 }, ctxStub);
         expect(fillTextSpy).toHaveBeenCalled();
     });
 
     it(' drawLetter should not call fillText if word is empty', () => {
         const fillTextSpy = spyOn(ctxStub, 'fillText').and.callThrough();
-        service.drawSymbol('', { x: 0, y: 0 }, ctxStub);
+        service['drawSymbol']('', { x: 0, y: 0 }, ctxStub);
         expect(fillTextSpy).toHaveBeenCalledTimes(0);
     });
 
     it(' drawLetter should color pixels on the canvas', () => {
         let imageData = ctxStub.getImageData(0, 0, service.width, service.height).data;
         const beforeSize = imageData.filter((x) => x !== 0).length;
-        service.drawSymbol('t', { x: 0, y: 0 }, ctxStub);
+        service['drawSymbol']('t', { x: 0, y: 0 }, ctxStub);
         imageData = ctxStub.getImageData(0, 0, service.width, service.height).data;
         const afterSize = imageData.filter((x) => x !== 0).length;
         expect(afterSize).toBeGreaterThan(beforeSize);
