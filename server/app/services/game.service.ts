@@ -28,7 +28,7 @@ export class GameService {
         this.clientMessages = [];
     }
 
-    async startSinglePlayer(gameConfig: SinglePlayerConfig): Promise<ServerConfig> {
+    async initSinglePlayer(gameConfig: SinglePlayerConfig): Promise<ServerConfig> {
         const board = this.boardGeneratorService.generateBoard();
         const sessionInfo = {
             id: generateId(),
@@ -56,8 +56,6 @@ export class GameService {
         const humanPlayer = this.addHumanPlayer(humanPlayerInfo, sessionHandler);
         this.addVirtualPlayer(virtualPlayerInfo, sessionHandler);
 
-        sessionHandler.start();
-
         this.sessionHandlingService.addHandler(sessionHandler);
 
         logger.info(`Single player game: ${sessionHandler.sessionInfo.id} initialised`);
@@ -65,7 +63,7 @@ export class GameService {
         return sessionHandler.getServerConfig(humanPlayer.id);
     }
 
-    async startMultiplayer(gameConfig: MultiplayerCreateConfig): Promise<ServerConfig> {
+    async initMultiplayer(gameConfig: MultiplayerCreateConfig): Promise<ServerConfig> {
         const board = this.boardGeneratorService.generateBoard();
         const sessionInfo = {
             id: generateId(),
@@ -110,12 +108,24 @@ export class GameService {
 
         logger.info(`Multiplayer game: ${sessionHandler.sessionInfo.id} joined by ${humanPlayerInfo.id}`);
 
-        sessionHandler.start();
-
         return sessionHandler.getServerConfig(humanPlayer.id);
     }
 
-    async stopGame(id: string): Promise<Answer> {
+    async start(id: string): Promise<string | null> {
+        const sessionHandler = this.sessionHandlingService.getHandlerByPlayerId(id);
+
+        if (sessionHandler == null || sessionHandler.sessionData.isStarted) {
+            return null;
+        }
+
+        const firstPlayer = sessionHandler.start();
+
+        logger.info(`Game started: ${id}`);
+
+        return firstPlayer;
+    }
+
+    async stop(id: string): Promise<Answer> {
         const handler = this.sessionHandlingService.removeHandler(id);
 
         if (handler == null) {

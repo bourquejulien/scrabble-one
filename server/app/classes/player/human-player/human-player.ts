@@ -1,7 +1,7 @@
 import { Player } from '@app/classes/player/player';
 import { PlayerInfo } from '@app/classes/player-info';
 import { PlayerData } from '@app/classes/player-data';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { Observable, Subject } from 'rxjs';
 import { Config } from '@app/config';
 import { ReserveHandler } from '@app/handlers/reserve-handler/reserve-handler';
 import { Answer, Placement } from '@common';
@@ -16,11 +16,11 @@ export class HumanPlayer implements Player {
     private reserveHandler: ReserveHandler;
     private socketHandler: SocketHandler;
 
-    private readonly turnEnded: BehaviorSubject<string>;
+    private readonly turnEnded: Subject<string>;
 
     constructor(readonly playerInfo: PlayerInfo) {
         this.playerData = { score: 0, skippedTurns: 0, rack: [] };
-        this.turnEnded = new BehaviorSubject<string>(this.playerInfo.id);
+        this.turnEnded = new Subject<string>();
     }
 
     init(boardHandler: BoardHandler, reserveHandler: ReserveHandler, socketHandler: SocketHandler): void {

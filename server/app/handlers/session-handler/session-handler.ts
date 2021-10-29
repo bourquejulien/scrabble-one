@@ -7,7 +7,6 @@ import { SessionData } from '@app/classes/session-data';
 import { Config } from '@app/config';
 import { Subscription } from 'rxjs';
 import { SocketHandler } from '@app/handlers/socket-handler/socket-handler';
-import * as logger from 'winston';
 
 export class SessionHandler {
     readonly sessionData: SessionData;
@@ -41,7 +40,7 @@ export class SessionHandler {
         };
     }
 
-    start() {
+    start(): string {
         this.sessionData.isActive = true;
         this.sessionData.isActive = false;
 
@@ -49,6 +48,8 @@ export class SessionHandler {
         this.timer = setInterval(() => this.timerTick(), Config.SESSION.REFRESH_INTERVAL_MS);
 
         this.initialTurn();
+
+        return this.players.filter((p) => p.isTurn).map((p) => p.id)[0] ?? '';
     }
 
     destroy(): void {
@@ -85,14 +86,14 @@ export class SessionHandler {
             this.players.forEach((p) => (p.isTurn = false));
         }
 
-        logger.debug(timeLeftMs);
         this.socketHandler.sendData('timerTick', timeLeftMs);
     }
 
     private initialTurn(): void {
         const randomPlayerIndex = Math.floor(this.players.length * Math.random());
+        const id = this.players[randomPlayerIndex].id;
 
-        this.onTurn(this.players[randomPlayerIndex].id);
+        this.onTurn(id);
     }
 
     private onTurn(lastId: string): void {

@@ -52,12 +52,15 @@ export class GameService {
     }
 
     async startSinglePlayer(config: SinglePlayerConfig) {
-        const serverGameConfig = await this.httpCLient.put<ServerConfig>(localUrl('start/single'), config).toPromise();
-        this.sessionService.serverConfig = serverGameConfig;
-
+        this.sessionService.serverConfig = await this.httpCLient.put<ServerConfig>(localUrl('init/single'), config).toPromise();
         this.socketService.join();
+
+        const startId = await this.httpCLient.get<string>(localUrl(`start/${this.sessionService.id}`)).toPromise();
+
         this.handleTurnCompletion();
+
         await this.startGame();
+        this.onNextTurn(startId);
     }
 
     async startGame() {
@@ -148,29 +151,35 @@ export class GameService {
 
     private handleTurnCompletion() {
         this.socketService.socketClient.on('onTurn', (id: string) => {
-            if (!this.gameRunning) return;
-
-            this.firstPlayerStats.points = this.playerService.playerData.score;
-            this.secondPlayerStats.points = this.virtualPlayerService.playerData.score;
-            this.firstPlayerStats.rackSize = this.playerService.rack.length;
-            this.secondPlayerStats.rackSize = this.virtualPlayerService.playerData.rack.length;
-
-            this.emptyRackAndReserve();
-            this.skipTurnLimit();
-
-            let playerType: PlayerType;
-
-            if (id === this.sessionService.id) {
-                playerType = PlayerType.Local;
-            } else {
-                playerType = this.sessionService.gameConfig.gameType === GameType.SinglePlayer ? PlayerType.Virtual : PlayerType.Remote;
-            }
-
-            this.onNextTurn(playerType);
+            this.onNextTurn(id);
         });
     }
 
-    private onNextTurn(playerType: PlayerType) {
+    private async onNextTurn(id: string): Promise<void> {
+        if (!this.gameRunning) return;
+
+        this.firstPlayerStats.points = this.playerService.playerData.score;
+        this.secondPlayerStats.points = this.virtualPlayerService.playerData.score;
+        this.firstPlayerStats.rackSize = this.playerService.rack.length;
+        this.secondPlayerStats.rackSize = this.virtualPlayerService.playerData.rack.length;
+
+        this.emptyRackAndReserve();
+        this.skipTurnLimit();
+
+        let playerType: PlayerType;
+
+        if (id === this.sessionService.id) {
+            playerType = PlayerType.Local;
+        } else {
+            playerType = this.sessionService.gameConfig.gameType === GameType.SinglePlayer ? PlayerType.Virtual : PlayerType.Remote;
+        }
+
+        if (this.currentTurn === playerType) {
+            return;
+        }
+
+        await this.playerService.refresh();
+
         this.currentTurn = playerType;
         this.onTurn.next(this.currentTurn);
     }
