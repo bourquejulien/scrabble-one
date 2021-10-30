@@ -1,10 +1,10 @@
 <div id="play-area-container">
     <app-board class="board" [playerType]="playerType"></app-board>
     <div class="rack">
-        <app-rack (reserveSelectionChange)='reserveSelection=$event' ></app-rack>
+        <app-rack (reserveSelectionChange)="reserveSelection = $event"></app-rack>
     </div>
     <div>
-        <button mat-button [ngClass]="{ 'invisible': reserveSelection.size === 0}" class="exchange-command">Échanger</button>
-        <button mat-button (click)='cancelExchange()' [ngClass]="{ 'invisible': reserveSelection.size === 0}" class="exchange-command">Annuler</button>
+        <button mat-button [ngClass]="{ invisible: reserveSelection.size === 0 }" class="exchange-command">Échanger</button>
+        <button mat-button (click)="cancelExchange()" [ngClass]="{ invisible: reserveSelection.size === 0 }" class="exchange-command">Annuler</button>
     </div>
 </div>
