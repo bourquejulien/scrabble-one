@@ -1,12 +1,12 @@
 import { Injectable } from '@angular/core';
+import { PlayerType } from '@app/classes/player/player-type';
+import { Constants } from '@app/constants/global.constants';
 import { SystemMessages } from '@app/constants/system-messages.constants';
 import { GameService } from '@app/services/game/game.service';
 import { MessagingService } from '@app/services/messaging/messaging.service';
 import { PlayerService } from '@app/services/player/player.service';
 import { ReserveService } from '@app/services/reserve/reserve.service';
-import { letterDefinitions, MessageType, Vec2, Direction } from '@common';
-import { PlayerType } from '@app/classes/player/player-type';
-import { Constants } from '@app/constants/global.constants';
+import { Direction, letterDefinitions, MessageType, Vec2 } from '@common';
 @Injectable({
     providedIn: 'root',
 })
@@ -15,7 +15,6 @@ export class CommandsService {
     wordRegex: RegExp = /^[A-zÀ-ú]{1,15}$/;
     rackRegex: RegExp = /^[a-z*]{1,7}$/;
     messageRegex: RegExp = /^[A-zÀ-ú0-9 !.?'"]{1,512}$/;
-    successfulCommand: boolean;
 
     constructor(
         public messagingService: MessagingService,
@@ -25,6 +24,7 @@ export class CommandsService {
     ) {}
 
     parseInput(input: string): boolean {
+        let successfulCommand: boolean = false;
         // Arguments: [COMMAND, OPTIONS, WORD]
         if (input.startsWith('!')) {
             const args = input.split(' ');
@@ -36,22 +36,22 @@ export class CommandsService {
                     this.toggleDebug();
                     break;
                 case '!placer':
-                    this.successfulCommand = this.checkPlaceCommand(args[1], this.removeAccents(args[2]));
+                    successfulCommand = this.checkPlaceCommand(args[1], this.removeAccents(args[2]));
                     break;
                 case '!passer':
-                    this.successfulCommand = this.skipTurn();
+                    successfulCommand = this.skipTurn();
                     break;
                 case '!échanger':
-                    this.successfulCommand = this.exchangeLetters(this.removeAccents(args[1]));
+                    successfulCommand = this.exchangeLetters(this.removeAccents(args[1]));
                     break;
                 case '!réserve':
-                    this.successfulCommand = this.displayReserve();
+                    successfulCommand = this.displayReserve();
                     break;
                 default:
                     this.messagingService.send('', SystemMessages.InvalidCommand, MessageType.Error);
                     return false;
             }
-            if (this.successfulCommand) {
+            if (successfulCommand) {
                 this.messagingService.send('Commande réussie', input, MessageType.System, this.gameService.currentTurn);
             }
         } else {
