@@ -1,6 +1,7 @@
 import { Component, EventEmitter, HostListener, OnInit, Output } from '@angular/core';
-import { PlayerService } from '@app/services/player/player.service';
+import { CommandsService } from '@app/services/commands/commands.service';
 import { RackService } from '@app/services/rack/rack.service';
+import { ReserveService } from '@app/services/reserve/reserve.service';
 import { letterDefinitions } from '@common';
 
 interface Selection {
@@ -22,7 +23,7 @@ export class RackComponent implements OnInit {
     selection: Selection;
     isFocus: boolean;
 
-    constructor(readonly rackService: RackService, private readonly playerService: PlayerService) {
+    constructor(readonly rackService: RackService, private readonly commandService: CommandsService, readonly reserveService: ReserveService) {
         this.selection = {
             swap: {
                 index: -1,
@@ -117,7 +118,8 @@ export class RackComponent implements OnInit {
         }
 
         const sendLettersToExchange = lettersToExchange.join('');
-        this.playerService.exchangeLetters(sendLettersToExchange);
+        const command = '!échanger ' + sendLettersToExchange;
+        this.commandService.parseInput(command);
     }
 
     private handleKeyPress(key: string) {
