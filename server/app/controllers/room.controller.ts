@@ -1,8 +1,8 @@
 /* eslint-disable no-console */ // easier logging for the server
-import { Message } from '@common';
+import { generateId } from '@app/classes/id';
+import { Message, MessageType } from '@common';
 import * as http from 'http';
 import { Server, Socket } from 'socket.io';
-import { generateId } from '@app/classes/id';
 
 export class RoomController {
     private socketServer: Server;
@@ -31,8 +31,13 @@ export class RoomController {
 
             socket.on('message', (message: Message) => {
                 // TODO: when room are functional socket.broadcast.to('testroom').emit('message', message);
-                this.socketServer.emit('message', message);
-                console.log('Message sent on behalf of', socket.id);
+                console.log(message.messageType);
+                if (message.messageType === MessageType.Message) {
+                    this.socketServer.emit('message', message);
+                    console.log('Message sent on behalf of', socket.id);
+                } else {
+                    this.socketServer.to(socket.id).emit('message', message);
+                }
             });
 
             socket.on('newOnlineGame', () => {
