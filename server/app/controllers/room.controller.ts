@@ -1,4 +1,4 @@
-import { Message } from '@common';
+import { Message, MessageType } from '@common';
 import { Socket } from 'socket.io';
 import { Service } from 'typedi';
 import { SocketService } from '@app/services/socket-service';
@@ -28,8 +28,16 @@ export class RoomController {
             });
 
             socket.on('message', (message: Message) => {
-                const room = socket.rooms.values().next().value;
-                this.socketService.socketServer.in(room).emit('message', message);
+                // TODO: when room are functional socket.broadcast.to('testroom').emit('message', message);
+                logger.debug(`Socket: ${socket.id} sent ${message.messageType}`);
+
+                if (message.messageType === MessageType.Message) {
+                    const room = socket.rooms.values().next().value;
+                    this.socketService.socketServer.in(room).emit('message', message);
+                } else {
+                    this.socketService.socketServer.to(socket.id).emit('message', message);
+                }
+
                 logger.info(`Message sent on behalf of ${socket.id}`);
             });
 
