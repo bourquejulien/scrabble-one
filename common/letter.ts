@@ -3,7 +3,7 @@ export interface LetterData {
     maxQuantity: number;
 }
 
-export const letterDefinitions = new Map<string, LetterData>([
+export const LETTER_DEFINITIONS = new Map<string, LetterData>([
     ['a', { points: 1, maxQuantity: 9 }],
     ['b', { points: 3, maxQuantity: 2 }],
     ['c', { points: 3, maxQuantity: 2 }],

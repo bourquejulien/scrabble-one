@@ -8,7 +8,7 @@ import { PlayerService } from '@app/services/player/player.service';
 import { ReserveService } from '@app/services/reserve/reserve.service';
 import { SessionService } from '@app/services/session/session.service';
 import { VirtualPlayerService } from '@app/services/virtual-player/virtual-player.service';
-import { letterDefinitions, MessageType, ServerGameConfig, SinglePlayerGameConfig } from '@common';
+import { LETTER_DEFINITIONS, MessageType, ServerGameConfig, SinglePlayerGameConfig } from '@common';
 import { environmentExt } from '@environmentExt';
 import { BehaviorSubject, Subject } from 'rxjs';
 
@@ -102,7 +102,7 @@ export class GameService {
     private playerRackPoint(rack: string[]): number {
         let playerPoint = 0;
         for (const letter of rack) {
-            const currentLetterData = letterDefinitions.get(letter.toLowerCase());
+            const currentLetterData = LETTER_DEFINITIONS.get(letter.toLowerCase());
             if (currentLetterData?.points === undefined) return -1;
             playerPoint += currentLetterData.points;
         }

@@ -6,7 +6,7 @@ import { GameService } from '@app/services/game/game.service';
 import { MessagingService } from '@app/services/messaging/messaging.service';
 import { PlayerService } from '@app/services/player/player.service';
 import { ReserveService } from '@app/services/reserve/reserve.service';
-import { Direction, letterDefinitions, MessageType, Vec2 } from '@common';
+import { Direction, LETTER_DEFINITIONS, MessageType, Vec2 } from '@common';
 @Injectable({
     providedIn: 'root',
 })
@@ -79,7 +79,7 @@ export class CommandsService {
         const body: string[] = [];
         let reserveContent = '';
 
-        for (const letter of letterDefinitions) {
+        for (const letter of LETTER_DEFINITIONS) {
             const currentLetterAndQuantity = this.reserveService.getLetterAndQuantity(letter[0]);
             body.push(`${currentLetterAndQuantity}\n`);
         }

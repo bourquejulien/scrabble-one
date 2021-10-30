@@ -1,6 +1,6 @@
 import { Component, EventEmitter, HostListener, OnInit, Output } from '@angular/core';
 import { RackService } from '@app/services/rack/rack.service';
-import { letterDefinitions } from '@common';
+import { LETTER_DEFINITIONS } from '@common';
 
 interface Selection {
     swap: {
@@ -95,7 +95,7 @@ export class RackComponent implements OnInit {
     }
 
     retrievePoints(letter: string): number {
-        const currentLetterData = letterDefinitions.get(letter);
+        const currentLetterData = LETTER_DEFINITIONS.get(letter);
 
         if (currentLetterData) {
             return currentLetterData.points;
