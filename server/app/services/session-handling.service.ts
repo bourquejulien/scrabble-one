@@ -12,23 +12,25 @@ export class SessionHandlingService {
     }
 
     addHandler(sessionHandler: SessionHandler): void {
-        sessionHandler.players.forEach((p) => this.playerIds.set(p.id, sessionHandler.sessionInfo.id));
+        sessionHandler.players.forEach((p) => this.playerIds.set(p.playerInfo.id, sessionHandler.sessionInfo.id));
         this.sessionHandlers.push(sessionHandler);
     }
 
     removeHandler(id: string): SessionHandler | null {
+        // Does not remove well
         const index = this.sessionHandlers.findIndex((e) => e.sessionInfo.id === id);
         if (index < 0) return null;
 
         const sessionHandler = this.sessionHandlers[index];
 
-        sessionHandler.players.forEach((p) => this.playerIds.delete(p.id));
+        sessionHandler.players.forEach((p) => this.playerIds.delete(p.playerInfo.id));
         sessionHandler.destroy();
         return this.sessionHandlers.slice(index, 1)[0];
     }
 
     getHandler(id: string): SessionHandler | null {
-        const sessionId = this.playerIds.get(id);
-        return this.sessionHandlers.find((e) => e.sessionInfo.id === sessionId) ?? null;
+        // bug found while testing
+        // const sessionId = this.playerIds.get(id);
+        return this.sessionHandlers.find((e) => e.sessionInfo.id === id) ?? null;
     }
 }

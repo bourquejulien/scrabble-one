@@ -10,7 +10,7 @@ import { BoardHandler } from '@app/handlers/board-handler/board-handler';
 import { ReserveHandler } from '@app/handlers/reserve-handler/reserve-handler';
 import { DictionaryService } from '@app/services/dictionary/dictionary.service';
 import { expect } from 'chai';
-import { createSandbox, createStubInstance } from 'sinon';
+import { createSandbox, createStubInstance, stub } from 'sinon';
 import { Action } from './actions/action';
 /*
 const LETTERS = ['a', 'b', 'c', 'd', 'e', 'f', 'g'];
@@ -46,17 +46,17 @@ describe('VirtualPlayer', () => {
     it('starting turn should fill rack', async () => {
         reserveHandler.reserve.length = SIZE;
         const sandbox = createSandbox();
-        const stub = sandbox.stub(service, 'fillRack');
+        const stubFill = sandbox.stub(service, 'fillRack');
         await service.startTurn();
-        sandbox.assert.calledOnce(stub);
+        sandbox.assert.calledOnce(stubFill);
     });
 
     it('starting turn should eventually end turn', async () => {
         reserveHandler.reserve.length = SIZE;
         const sandbox = createSandbox();
-        const stub = sandbox.stub(service, 'endTurn');
+        const stubEnd = sandbox.stub(service, 'endTurn');
         await service.startTurn();
-        sandbox.assert.calledOnce(stub);
+        sandbox.assert.calledOnce(stubEnd);
     });
 
     it('starting turn should make next action return skip action sometimes', async () => {
@@ -70,20 +70,20 @@ describe('VirtualPlayer', () => {
     });
 
     // Julien where are you
-    it('starting turn should make next action return exchange action sometimes', () => {
+    it('starting turn should make next action return exchange action sometimes', async () => {
         const sandbox = createSandbox();
         const stubNextAction = sandbox.stub(service, 'nextAction' as any);
-        sandbox.stub(service, 'random').returns(RANDOM_RETURN_EXCHANGE);
+        stub(Math, 'random').returns(RANDOM_RETURN_EXCHANGE);
         // stubNextAction.callsFake(random);
-        // await service.startTurn();
+        await service.startTurn();
         sandbox.assert.calledOnce(stubNextAction);
     });
 
     it('ending turn should call next on behaviour subject', () => {
         const sandbox = createSandbox();
-        const stub = sandbox.stub(service.turnEnded, 'next');
+        const stubNext = sandbox.stub(service.turnEnded, 'next');
         service.endTurn();
-        sandbox.assert.calledOnce(stub);
+        sandbox.assert.calledOnce(stubNext);
     });
 
     it('getting id should return id', () => {
