@@ -8,7 +8,6 @@ import { DictionaryService } from '@app/services/dictionary/dictionary.service';
 import { BoardHandler } from '@app/handlers/board-handler/board-handler';
 import { PlayAction } from './actions/play-action';
 import { Action } from './actions/action';
-import { Observable, Subject } from 'rxjs';
 import { Player } from '@app/classes/player/player';
 import { PlayerInfo } from '@app/classes/player-info';
 import { SocketHandler } from '@app/handlers/socket-handler/socket-handler';
@@ -16,22 +15,20 @@ import * as logger from 'winston';
 
 const MIN_PLAYTIME_MILLISECONDS = 3000;
 
-export class VirtualPlayer implements Player {
+export class VirtualPlayer extends Player {
     isTurn: boolean;
 
     readonly playerData: PlayerData;
     private boardHandler: BoardHandler;
     private reserveHandler: ReserveHandler;
     private socketHandler: SocketHandler;
-    private readonly turnEnded: Subject<string>;
 
     constructor(
         readonly playerInfo: PlayerInfo,
         private readonly dictionaryService: DictionaryService,
         private readonly runAction: (action: Action) => Action | null,
     ) {
-        this.playerData = { score: 0, skippedTurns: 0, rack: [] };
-        this.turnEnded = new Subject<string>();
+        super();
     }
 
     init(boardHandler: BoardHandler, reserveHandler: ReserveHandler, socketHandler: SocketHandler): void {
@@ -61,19 +58,6 @@ export class VirtualPlayer implements Player {
         while (this.reserveHandler.length > 0 && this.playerData.rack.length < Config.RACK_SIZE) {
             this.playerData.rack.push(this.reserveHandler.drawLetter());
         }
-    }
-
-    onTurn(): Observable<string> {
-        return this.turnEnded.asObservable();
-    }
-
-    get id(): string {
-        return this.playerInfo.id;
-    }
-
-    private endTurn(): void {
-        this.isTurn = false;
-        this.turnEnded.next(this.playerInfo.id);
     }
 
     private nextAction(): Action {

@@ -1,7 +1,6 @@
 import { Player } from '@app/classes/player/player';
 import { PlayerInfo } from '@app/classes/player-info';
 import { PlayerData } from '@app/classes/player-data';
-import { Observable, Subject } from 'rxjs';
 import { Config } from '@app/config';
 import { ReserveHandler } from '@app/handlers/reserve-handler/reserve-handler';
 import { Answer, Placement } from '@common';
@@ -9,18 +8,15 @@ import { BoardHandler } from '@app/handlers/board-handler/board-handler';
 import { SocketHandler } from '@app/handlers/socket-handler/socket-handler';
 import * as logger from 'winston';
 
-export class HumanPlayer implements Player {
+export class HumanPlayer extends Player {
     isTurn: boolean;
     readonly playerData: PlayerData;
     private boardHandler: BoardHandler;
     private reserveHandler: ReserveHandler;
     private socketHandler: SocketHandler;
 
-    private readonly turnEnded: Subject<string>;
-
     constructor(readonly playerInfo: PlayerInfo) {
-        this.playerData = { score: 0, skippedTurns: 0, rack: [] };
-        this.turnEnded = new Subject<string>();
+        super();
     }
 
     init(boardHandler: BoardHandler, reserveHandler: ReserveHandler, socketHandler: SocketHandler): void {
@@ -75,7 +71,7 @@ export class HumanPlayer implements Player {
             return { isSuccess: false, body: 'Validation failed' };
         }
 
-        this.playerData.score += validationData.points;
+        this.playerData.baseScore += validationData.points;
 
         this.updateRack(lettersToPlace);
         this.fillRack();
@@ -120,19 +116,6 @@ export class HumanPlayer implements Player {
         this.endTurn();
 
         return { isSuccess: true, body: '' };
-    }
-
-    onTurn(): Observable<string> {
-        return this.turnEnded.asObservable();
-    }
-
-    get id(): string {
-        return this.playerInfo.id;
-    }
-
-    private endTurn(): void {
-        this.isTurn = false;
-        this.turnEnded.next(this.playerInfo.id);
     }
 
     private updateRack(lettersToPlace: string[]): void {

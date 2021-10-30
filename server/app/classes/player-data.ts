@@ -1,5 +1,6 @@
 export type PlayerData = {
-    score: number;
+    baseScore: number;
+    scoreAdjustment: number;
     skippedTurns: number;
     rack: string[];
 };
