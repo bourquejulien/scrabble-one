@@ -8,10 +8,11 @@ import { DictionaryService } from '@app/services/dictionary/dictionary.service';
 import { BoardHandler } from '@app/handlers/board-handler/board-handler';
 import { PlayAction } from './actions/play-action';
 import { Action } from './actions/action';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { Observable, Subject } from 'rxjs';
 import { Player } from '@app/classes/player/player';
 import { PlayerInfo } from '@app/classes/player-info';
 import { SocketHandler } from '@app/handlers/socket-handler/socket-handler';
+import * as logger from 'winston';
 
 const MIN_PLAYTIME_MILLISECONDS = 3000;
 
@@ -22,7 +23,7 @@ export class VirtualPlayer implements Player {
     private boardHandler: BoardHandler;
     private reserveHandler: ReserveHandler;
     private socketHandler: SocketHandler;
-    private readonly turnEnded: BehaviorSubject<string>;
+    private readonly turnEnded: Subject<string>;
 
     constructor(
         readonly playerInfo: PlayerInfo,
@@ -30,7 +31,7 @@ export class VirtualPlayer implements Player {
         private readonly runAction: (action: Action) => Action | null,
     ) {
         this.playerData = { score: 0, skippedTurns: 0, rack: [] };
-        this.turnEnded = new BehaviorSubject<string>(this.playerInfo.id);
+        this.turnEnded = new Subject<string>();
     }
 
     init(boardHandler: BoardHandler, reserveHandler: ReserveHandler, socketHandler: SocketHandler): void {
@@ -40,6 +41,8 @@ export class VirtualPlayer implements Player {
     }
 
     async startTurn(): Promise<void> {
+        logger.debug(`VirtualPlayer - StartTurn - Id: ${this.playerInfo.id}`);
+
         this.isTurn = true;
         this.socketHandler.sendData('onTurn', this.id);
 

@@ -1,7 +1,8 @@
 import { TimeSpan } from './time/timespan';
+import { GameType } from '@common';
 
 export interface GameConfig {
-    gameType: string;
+    gameType: GameType;
     playTime: TimeSpan;
     firstPlayerName: string;
     secondPlayerName: string;

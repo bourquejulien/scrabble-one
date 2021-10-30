@@ -1,4 +1,4 @@
-import { Answer, Message, MultiplayerCreateConfig, MultiplayerJoinConfig, ServerConfig, SinglePlayerConfig } from '@common';
+import { Message, MultiplayerCreateConfig, MultiplayerJoinConfig, ServerConfig, SinglePlayerConfig } from '@common';
 import { SessionHandlingService } from '@app/services/session-handling.service';
 import { BoardGeneratorService } from '@app/services/board/board-generator.service';
 import { Service } from 'typedi';
@@ -28,7 +28,7 @@ export class GameService {
         this.clientMessages = [];
     }
 
-    async startSinglePlayer(gameConfig: SinglePlayerConfig): Promise<ServerConfig> {
+    async initSinglePlayer(gameConfig: SinglePlayerConfig): Promise<ServerConfig> {
         const board = this.boardGeneratorService.generateBoard();
         const sessionInfo = {
             id: generateId(),
@@ -56,10 +56,6 @@ export class GameService {
         const humanPlayer = this.addHumanPlayer(humanPlayerInfo, sessionHandler);
         this.addVirtualPlayer(virtualPlayerInfo, sessionHandler);
 
-        sessionHandler.start();
-
-        sessionHandler.start();
-
         this.sessionHandlingService.addHandler(sessionHandler);
 
         logger.info(`Single player game: ${sessionHandler.sessionInfo.id} initialised`);
@@ -67,7 +63,7 @@ export class GameService {
         return sessionHandler.getServerConfig(humanPlayer.id);
     }
 
-    async startMultiplayer(gameConfig: MultiplayerCreateConfig): Promise<ServerConfig> {
+    async initMultiplayer(gameConfig: MultiplayerCreateConfig): Promise<ServerConfig> {
         const board = this.boardGeneratorService.generateBoard();
         const sessionInfo = {
             id: generateId(),
@@ -112,27 +108,36 @@ export class GameService {
 
         logger.info(`Multiplayer game: ${sessionHandler.sessionInfo.id} joined by ${humanPlayerInfo.id}`);
 
-        sessionHandler.start();
-
         return sessionHandler.getServerConfig(humanPlayer.id);
     }
 
-    async stopGame(id: string): Promise<Answer> {
+    async start(id: string): Promise<string | null> {
+        const sessionHandler = this.sessionHandlingService.getHandlerByPlayerId(id);
+
+        if (sessionHandler == null || sessionHandler.sessionData.isStarted) {
+            return null;
+        }
+
+        const firstPlayer = sessionHandler.start();
+
+        logger.info(`Game started: ${id}`);
+
+        return firstPlayer;
+    }
+
+    async stop(id: string): Promise<boolean> {
         const handler = this.sessionHandlingService.removeHandler(id);
 
         if (handler == null) {
             logger.warn(`Failed to stop game: ${id}`);
-            return { isSuccess: false, body: '' };
+            return false;
         }
 
         handler.destroy();
 
         logger.info(`Game stopped: ${id}`);
 
-        return {
-            isSuccess: true,
-            body: '',
-        };
+        return true;
     }
 
     private addHumanPlayer(playerInfo: PlayerInfo, sessionHandler: SessionHandler): HumanPlayer {

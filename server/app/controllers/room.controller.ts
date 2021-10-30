@@ -8,8 +8,6 @@ import * as logger from 'winston';
 
 @Service()
 export class RoomController {
-    private availableRooms: string[] = [];
-
     constructor(private readonly socketService: SocketService, private readonly sessionHandlingService: SessionHandlingService) {}
 
     async isRoomFull(socket: Socket, roomId: string): Promise<boolean> {
@@ -30,8 +28,8 @@ export class RoomController {
             });
 
             socket.on('message', (message: Message) => {
-                // TODO: when room are functional socket.broadcast.to('testroom').emit('message', message);
-                this.socketService.socketServer.emit('message', message);
+                const room = socket.rooms.values().next().value;
+                this.socketService.socketServer.in(room).emit('message', message);
                 logger.info(`Message sent on behalf of ${socket.id}`);
             });
 
@@ -43,13 +41,12 @@ export class RoomController {
                 const sessionId = this.sessionHandlingService.getSessionId(playerId);
 
                 if (sessionId !== '') {
-                    logger.info(`Joined room: ${sessionId}`);
-
                     if (!(await this.isRoomFull(socket, sessionId))) {
                         socket.join(sessionId);
+                        logger.info(`Joined room: ${sessionId}`);
                     }
 
-                    this.socketService.socketServer.emit('availableRooms', this.availableRooms);
+                    this.socketService.socketServer.emit('availableRooms', this.sessionHandlingService.availableSessions);
                 } else {
                     logger.info(`Invalid room ID provided: ${sessionId}`);
                 }

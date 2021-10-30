@@ -7,10 +7,10 @@ import { SessionData } from '@app/classes/session-data';
 import { Config } from '@app/config';
 import { Subscription } from 'rxjs';
 import { SocketHandler } from '@app/handlers/socket-handler/socket-handler';
-import * as logger from 'winston';
 
 export class SessionHandler {
     readonly sessionData: SessionData;
+    // TODO Use player handler?
     readonly players: Player[];
 
     private readonly playerSubscriptions: Map<string, Subscription>;
@@ -22,8 +22,10 @@ export class SessionHandler {
         readonly reserveHandler: ReserveHandler,
         readonly socketHandler: SocketHandler,
     ) {
-        this.players.forEach((p) => p.fillRack());
+        socketHandler.sessionId = sessionInfo.id;
         this.sessionData = { isActive: false, isStarted: false, timeLimitEpoch: 0 };
+        this.players = [];
+        this.playerSubscriptions = new Map<string, Subscription>();
     }
 
     getServerConfig(id: string): ServerConfig {
@@ -39,7 +41,7 @@ export class SessionHandler {
         };
     }
 
-    start() {
+    start(): string {
         this.sessionData.isActive = true;
         this.sessionData.isActive = false;
 
@@ -47,6 +49,8 @@ export class SessionHandler {
         this.timer = setInterval(() => this.timerTick(), Config.SESSION.REFRESH_INTERVAL_MS);
 
         this.initialTurn();
+
+        return this.players.filter((p) => p.isTurn).map((p) => p.id)[0] ?? '';
     }
 
     destroy(): void {
@@ -83,20 +87,19 @@ export class SessionHandler {
             this.players.forEach((p) => (p.isTurn = false));
         }
 
-        this.socketHandler.sendData('timertick', timeLeftMs);
+        this.socketHandler.sendData('timerTick', timeLeftMs);
     }
 
     private initialTurn(): void {
         const randomPlayerIndex = Math.floor(this.players.length * Math.random());
+        const id = this.players[randomPlayerIndex].id;
 
-        this.onTurn(this.players[randomPlayerIndex].id);
+        this.onTurn(id);
     }
 
     private onTurn(lastId: string): void {
         const nextPlayer = this.players.find((p) => p.id !== lastId);
         this.sessionData.timeLimitEpoch = new Date().getTime() + this.sessionInfo.playTimeMs;
-
-        logger.debug(`NextTurn - Session: ${this.sessionInfo.id} - LastPLayer: ${lastId} - NextPlayer: ${nextPlayer?.id ?? ''}`);
 
         nextPlayer?.startTurn();
     }

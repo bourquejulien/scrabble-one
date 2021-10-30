@@ -14,24 +14,29 @@ export class GameController {
     private configureRouter(): void {
         this.router = Router();
 
-        this.router.delete('/end/:id', async (req: Request, res: Response) => {
-            const answer = await this.gameService.stopGame(req.params.id);
-            res.status(answer.isSuccess ? Constants.HTTP_STATUS.DELETED : Constants.HTTP_STATUS.BAD_REQUEST);
+        this.router.delete('/stop/:id', async (req: Request, res: Response) => {
+            const isSuccess = await this.gameService.stop(req.params.id);
+            res.sendStatus(isSuccess ? Constants.HTTP_STATUS.DELETED : Constants.HTTP_STATUS.BAD_REQUEST);
+        });
+
+        this.router.get('/start/:id', async (req: Request, res: Response) => {
+            const answer = await this.gameService.start(req.params.id);
+            res.status(answer == null ? Constants.HTTP_STATUS.BAD_REQUEST : Constants.HTTP_STATUS.OK);
             res.json(answer);
         });
 
-        this.router.put('/start/single', async (req: Request, res: Response) => {
+        this.router.put('/init/single', async (req: Request, res: Response) => {
             try {
-                const answer = await this.gameService.startSinglePlayer(req.body);
+                const answer = await this.gameService.initSinglePlayer(req.body);
                 res.json(answer);
             } catch (e: unknown) {
                 res.status(Constants.HTTP_STATUS.BAD_REQUEST);
             }
         });
 
-        this.router.put('/start/multi', async (req: Request, res: Response) => {
+        this.router.put('/init/multi', async (req: Request, res: Response) => {
             try {
-                const answer = await this.gameService.startMultiplayer(req.body);
+                const answer = await this.gameService.initMultiplayer(req.body);
                 res.json(answer);
             } catch (e: unknown) {
                 res.status(Constants.HTTP_STATUS.BAD_REQUEST);

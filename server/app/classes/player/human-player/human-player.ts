@@ -1,12 +1,13 @@
 import { Player } from '@app/classes/player/player';
 import { PlayerInfo } from '@app/classes/player-info';
 import { PlayerData } from '@app/classes/player-data';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { Observable, Subject } from 'rxjs';
 import { Config } from '@app/config';
 import { ReserveHandler } from '@app/handlers/reserve-handler/reserve-handler';
 import { Answer, Placement } from '@common';
 import { BoardHandler } from '@app/handlers/board-handler/board-handler';
 import { SocketHandler } from '@app/handlers/socket-handler/socket-handler';
+import * as logger from 'winston';
 
 export class HumanPlayer implements Player {
     isTurn: boolean;
@@ -15,11 +16,11 @@ export class HumanPlayer implements Player {
     private reserveHandler: ReserveHandler;
     private socketHandler: SocketHandler;
 
-    private readonly turnEnded: BehaviorSubject<string>;
+    private readonly turnEnded: Subject<string>;
 
     constructor(readonly playerInfo: PlayerInfo) {
         this.playerData = { score: 0, skippedTurns: 0, rack: [] };
-        this.turnEnded = new BehaviorSubject<string>(this.playerInfo.id);
+        this.turnEnded = new Subject<string>();
     }
 
     init(boardHandler: BoardHandler, reserveHandler: ReserveHandler, socketHandler: SocketHandler): void {
@@ -29,6 +30,8 @@ export class HumanPlayer implements Player {
     }
 
     async startTurn(): Promise<void> {
+        logger.debug(`HumanPlayer - StartTurn - Id: ${this.playerInfo.id}`);
+
         this.isTurn = true;
         this.socketHandler.sendData('onTurn', this.id);
         return Promise.resolve();

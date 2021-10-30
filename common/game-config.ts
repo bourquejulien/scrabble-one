@@ -1,12 +1,14 @@
+import { GameType } from './game-type';
+
 export interface SinglePlayerConfig {
-    gameType: string;
+    gameType: GameType;
     playTimeMs: number;
     playerName: string;
     virtualPlayerName: string;
 }
 
 export interface MultiplayerCreateConfig {
-    gameType: string;
+    gameType: GameType;
     playTimeMs: number;
     playerName: string;
 }
@@ -18,7 +20,7 @@ export interface MultiplayerJoinConfig {
 
 export interface ServerConfig {
     id: string,
-    gameType: string,
+    gameType: GameType,
     playTimeMs: number,
     firstPlayerName: string,
     secondPlayerName: string,
