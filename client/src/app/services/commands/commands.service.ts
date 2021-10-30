@@ -70,7 +70,7 @@ export class CommandsService {
     }
 
     private displayReserve(): boolean {
-        let body: string[] = [];
+        const body: string[] = [];
         let reserveContent = '';
 
         for (const letter of letterDefinitions) {
