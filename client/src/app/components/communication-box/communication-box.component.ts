@@ -64,10 +64,14 @@ export class CommunicationBoxComponent implements AfterViewInit {
     }
 
     getFontColor(message: Message): string {
-        const isSystem = message.messageType === MessageType.System;
-        const isLog = message.messageType === MessageType.Log;
-        const isError = message.messageType === MessageType.Error;
-        return isSystem || isLog || isError ? Constants.WHITE_FONT : Constants.BLACK_FONT;
+        switch (message.messageType) {
+            case MessageType.Message:
+            case MessageType.System:
+            case MessageType.Error:
+                return Constants.WHITE_FONT;
+            default:
+                return Constants.BLACK_FONT;
+        }
     }
 
     getTitle(message: Message): string {

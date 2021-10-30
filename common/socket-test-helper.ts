@@ -1,12 +1,17 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-export class SocketClientMock {
+export class BroadCastObject {
+    fetchSockets() {
+        return;
+    }
+}
+export class SocketMock {
     // eslint-disable-next-line @typescript-eslint/ban-types
     callbacks: Map<string, (...args: any) => {}> = new Map();
     on(event: string, callback: any): void {
         this.callbacks.set(event, callback);
     }
 
-    serverSideEmit(event: string, ...params: any[]) {
+    oppositeEndpointEmit(event: string, ...params: any) {
         const callback = this.callbacks.get(event);
         if (callback) {
             callback(params);
@@ -20,5 +25,9 @@ export class SocketClientMock {
 
     close() {
         return;
+    }
+
+    async in(roomId: string): Promise<BroadCastObject> {
+        return new BroadCastObject();
     }
 }

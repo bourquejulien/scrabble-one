@@ -24,17 +24,14 @@ export class TimerService {
             if (this.timer.time.totalMilliseconds <= 0) {
                 this.stop();
                 this.countdownStopped.next(playerType);
-
             }
         });
         this.timer.timerUpdated.subscribe(() => {
             if (this.timer.time.totalMilliseconds <= 0) {
                 this.stop();
                 this.countdownStopped.next(playerType);
-
             }
         });
-
     }
 
     stop() {
