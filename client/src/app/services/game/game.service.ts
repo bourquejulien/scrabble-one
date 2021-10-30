@@ -46,28 +46,23 @@ export class GameService {
         this.gameEnding = new Subject<void>();
     }
 
-    private static randomizeTurn(): PlayerType {
-        const HALF = 0.5;
-        return Math.random() < HALF ? PlayerType.Local : PlayerType.Virtual;
-    }
-
-    async startSinglePlayer(config: SinglePlayerConfig) {
+    async startSinglePlayer(config: SinglePlayerConfig): Promise<void> {
         this.sessionService.serverConfig = await this.httpCLient.put<ServerConfig>(localUrl('init/single'), config).toPromise();
         this.socketService.join();
 
-        const startId = await this.httpCLient.get<string>(localUrl(`start/${this.sessionService.id}`)).toPromise();
-
-        this.handleTurnCompletion();
-
-        await this.startGame();
-        this.onNextTurn(startId);
+        await this.start();
     }
 
-    async startGame() {
-        await this.playerService.refresh();
+    async start(): Promise<void> {
+        const startId = await this.httpCLient.get<string>(localUrl(`start/${this.sessionService.id}`)).toPromise();
 
-        this.currentTurn = GameService.randomizeTurn();
+        this.socketService.on('onTurn', (id: string) => {
+            this.onNextTurn(id);
+        });
+
+        await this.playerService.refresh();
         this.gameRunning = true;
+        this.onNextTurn(startId);
     }
 
     async reset() {
@@ -147,12 +142,6 @@ export class GameService {
                 this.virtualPlayerService.playerData.rack,
             MessageType.System,
         );
-    }
-
-    private handleTurnCompletion() {
-        this.socketService.socketClient.on('onTurn', (id: string) => {
-            this.onNextTurn(id);
-        });
     }
 
     private async onNextTurn(id: string): Promise<void> {
