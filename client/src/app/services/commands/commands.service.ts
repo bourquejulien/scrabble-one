@@ -1,12 +1,12 @@
 import { Injectable } from '@angular/core';
+import { PlayerType } from '@app/classes/player/player-type';
 import { Constants } from '@app/constants/global.constants';
 import { SystemMessages } from '@app/constants/system-messages.constants';
 import { GameService } from '@app/services/game/game.service';
 import { MessagingService } from '@app/services/messaging/messaging.service';
 import { PlayerService } from '@app/services/player/player.service';
 import { ReserveService } from '@app/services/reserve/reserve.service';
-import { letterDefinitions, MessageType, Vec2, Direction } from '@common';
-import { PlayerType } from '@app/classes/player/player-type';
+import { Direction, letterDefinitions, MessageType, Vec2 } from '@common';
 
 @Injectable({
     providedIn: 'root',
@@ -70,7 +70,7 @@ export class CommandsService {
     }
 
     private displayReserve(): boolean {
-        const body: string[] = [];
+        let body: string[] = [];
         let reserveContent = '';
 
         for (const letter of letterDefinitions) {
