@@ -8,6 +8,7 @@ import { PlayerHandler } from '@app/handlers/player-handler/player-handler';
 import { Subscription } from 'rxjs';
 import { BoardHandler } from '@app/handlers/board-handler/board-handler';
 import { ReserveHandler } from '@app/handlers/reserve-handler/reserve-handler';
+import * as logger from 'winston';
 
 export class SessionHandler {
     readonly sessionData: SessionData;
@@ -98,11 +99,12 @@ export class SessionHandler {
     }
 
     private endGame(): void {
+        logger.debug(`SessionHandler - EndGame - Id: ${this.sessionInfo.id}`);
         this.players.forEach((p) => (p.playerData.scoreAdjustment -= p.rackPoints()));
 
         if (this.reserveHandler.length === 0 && this.playerHandler.rackEmptied) {
             this.players[0].playerData.scoreAdjustment += this.players[1].rackPoints();
-            this.players[1].playerData.scoreAdjustment += this.players[2].rackPoints();
+            this.players[1].playerData.scoreAdjustment += this.players[0].rackPoints();
         }
 
         this.socketHandler.sendData('endGame', this.playerHandler.winner);

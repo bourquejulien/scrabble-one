@@ -68,6 +68,7 @@ export class PlayerService {
     async refresh(): Promise<void> {
         await this.reserveService.refresh();
         await this.boardService.refresh();
+        await this.rackService.refresh();
     }
 
     reset(): void {
@@ -75,17 +76,7 @@ export class PlayerService {
         this.reserveService.reset();
     }
 
-    get rackLength(): number {
-        return this.rackService.length;
-    }
-
     get rack(): string[] {
         return this.rackService.rack;
     }
-
-    // TODO
-    // private updateRack(playerData: PlayerData): void {
-    //     this.playerData = playerData;
-    //     this.rackService.update(this.playerData.rack);
-    // }
 }

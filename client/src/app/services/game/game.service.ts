@@ -8,7 +8,7 @@ import { PlayerType } from '@app/classes/player/player-type';
 import { environmentExt } from '@environmentExt';
 import { SocketClientService } from '@app/services/socket-client/socket-client.service';
 
-const localUrl = (call: string, id?: string) => `${environmentExt.apiUrl}game/${call}${id ? '/' + id : ''}`;
+const localUrl = (base: string, call: string, id?: string) => `${environmentExt.apiUrl}${base}/${call}${id ? '/' + id : ''}`;
 
 @Injectable({
     providedIn: 'root',
@@ -37,14 +37,14 @@ export class GameService {
     }
 
     async startSinglePlayer(config: SinglePlayerConfig): Promise<void> {
-        this.sessionService.serverConfig = await this.httpCLient.put<ServerConfig>(localUrl('init/single'), config).toPromise();
+        this.sessionService.serverConfig = await this.httpCLient.put<ServerConfig>(localUrl('game', 'init/single'), config).toPromise();
         this.socketService.join();
 
         await this.start();
     }
 
     async start(): Promise<void> {
-        const startId = await this.httpCLient.get<string>(localUrl(`start/${this.sessionService.id}`)).toPromise();
+        const startId = await this.httpCLient.get<string>(localUrl('game', 'start', this.sessionService.id)).toPromise();
 
         this.socketService.on('onTurn', (id: string) => {
             this.onNextTurn(id);
@@ -55,7 +55,7 @@ export class GameService {
             this.gameEnding.next();
         });
 
-        await this.playerService.refresh();
+        await this.refresh();
         this.gameRunning = true;
         this.onNextTurn(startId);
     }
@@ -64,10 +64,11 @@ export class GameService {
         this.gameRunning = false;
         this.playerService.reset();
 
-        await this.httpCLient.delete(localUrl(`stop/${this.sessionService.id}`)).toPromise();
+        await this.httpCLient.delete(localUrl('game', 'stop', this.sessionService.id)).toPromise();
     }
 
     private async refresh(): Promise<void> {
+        this.stats = await this.httpCLient.get<SessionStats>(localUrl('player', 'stats', this.sessionService.id)).toPromise();
         await this.playerService.refresh();
     }
 
