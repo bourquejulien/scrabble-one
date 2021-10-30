@@ -22,6 +22,6 @@ export const Config = {
         ],
     },
     SESSION: {
-        REFRESH_INTERVAL_MS: 1000,
+        REFRESH_INTERVAL_MS: 250,
     },
 };

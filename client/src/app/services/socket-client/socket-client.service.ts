@@ -16,4 +16,8 @@ export class SocketClientService {
     join() {
         this.socketClient.emit('joinRoom', this.sessionService.id);
     }
+
+    on<T>(event: string, action: (param: T) => void) {
+        this.socketClient.on(event, action);
+    }
 }
