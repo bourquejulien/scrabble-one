@@ -1,7 +1,7 @@
 import { Component, OnDestroy, ViewChild } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { MatDrawer } from '@angular/material/sidenav';
-import { NavigationStart, Router } from '@angular/router';
+import { Router } from '@angular/router';
 import { PlayerType } from '@app/classes/player/player-type';
 import { ConfirmQuitDialogComponent } from '@app/components/confirm-quit-dialog/confirm-quit-dialog.component';
 import { EndGameComponent } from '@app/components/end-game/end-game.component';
@@ -10,8 +10,8 @@ import { ReserveService } from '@app/services/reserve/reserve.service';
 import { SessionService } from '@app/services/session/session.service';
 import { TimerService } from '@app/services/timer/timer.service';
 import { Subscription } from 'rxjs';
-import { filter } from 'rxjs/operators';
 import { PlayerService } from '@app/services/player/player.service';
+import { LocationStrategy } from '@angular/common';
 
 export enum Icon {
     Logout = 'exit_to_app',
@@ -21,9 +21,9 @@ export enum Icon {
 
 interface ButtonConfig {
     color: string;
-    routerLink?: string;
     icon: Icon;
     hover: string;
+    action: () => void;
 }
 
 @Component({
@@ -38,7 +38,6 @@ export class GamePageComponent implements OnDestroy {
     buttonConfig: ButtonConfig[] = [];
     iconList: string[];
     isOpen: boolean = true;
-    private readonly pageChange: Subscription;
 
     private onTurnSubscription: Subscription;
     private gameEndingSubscription: Subscription;
@@ -51,7 +50,16 @@ export class GamePageComponent implements OnDestroy {
         readonly dialog: MatDialog,
         readonly router: Router,
         readonly reserveService: ReserveService,
+        location: LocationStrategy,
     ) {
+        // Overrides back button behavior
+        // Reference: https://stackoverflow.com/a/56354475
+        history.pushState(null, '', window.location.href);
+        location.onPopState(() => {
+            this.confirmQuit();
+            history.pushState(null, '', window.location.href);
+        });
+
         this.playerType = gameService.onTurn.getValue();
         this.timerService = timerService;
         this.buttonConfig = [
@@ -59,32 +67,29 @@ export class GamePageComponent implements OnDestroy {
                 color: 'warn',
                 icon: Icon.Logout,
                 hover: 'Quitter la partie',
-                routerLink: '/',
+                action: () => this.confirmQuit(),
             },
             {
                 color: 'primary',
                 icon: Icon.Message,
                 hover: 'Ouvrir/Fermer la boite de communication',
+                action: () => this.toggleDrawer(),
             },
             {
                 color: 'warn',
                 icon: Icon.Skip,
                 hover: 'Passer son tour',
+                action: async () => this.playerService.skipTurn(),
             },
         ];
 
         this.gameEndingSubscription = gameService.gameEnding.subscribe(() => this.endGame());
         this.onTurnSubscription = gameService.onTurn.subscribe((e) => (this.playerType = e));
-
-        this.pageChange = router.events.pipe(filter((event): event is NavigationStart => event instanceof NavigationStart)).subscribe(() => {
-            this.confirmQuit();
-        });
     }
 
     ngOnDestroy(): void {
         this.gameEndingSubscription.unsubscribe();
         this.onTurnSubscription.unsubscribe();
-        this.pageChange.unsubscribe();
     }
 
     toggleDrawer(): void {
@@ -92,27 +97,15 @@ export class GamePageComponent implements OnDestroy {
         this.isOpen = !this.isOpen;
     }
 
-    callFunction(buttonIndex: number): void {
-        switch (buttonIndex) {
-            case 1:
-                this.toggleDrawer();
-                break;
-            case 2:
-                this.playerService.skipTurn();
-                break;
-        }
-    }
-
     confirmQuit(): void {
         const dialogRef = this.dialog.open(ConfirmQuitDialogComponent);
 
         dialogRef.afterClosed().subscribe((result) => {
-            if (result === true) {
-                this.router.navigate(['home']);
-                this.gameService.reset();
+            if (!result) {
                 return;
             }
-            this.router.navigate(['game']);
+            this.gameService.reset();
+            this.router.navigate(['home']);
         });
     }
 
