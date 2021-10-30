@@ -54,6 +54,17 @@ export class PlayerController {
             res.status(Constants.HTTP_STATUS.OK);
             res.json(humanPlayer.playerData.rack);
         });
+
+        this.router.get('/stats/:id', async (req: Request, res: Response) => {
+            const stats = this.sessionHandlingService.getHandlerByPlayerId(req.params.id)?.getStats(req.params.id);
+            if (stats == null) {
+                res.sendStatus(Constants.HTTP_STATUS.BAD_REQUEST);
+                return;
+            }
+
+            res.status(Constants.HTTP_STATUS.OK);
+            res.json(stats);
+        });
     }
 
     private getHumanPlayer(id: string): HumanPlayer | null {
