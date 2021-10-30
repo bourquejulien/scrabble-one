@@ -24,7 +24,7 @@ export class CommandsService {
     ) {}
 
     parseInput(input: string): boolean {
-        let successfulCommand: boolean = false;
+        let successfulCommand = false;
         // Arguments: [COMMAND, OPTIONS, WORD]
         if (input.startsWith('!')) {
             const args = input.split(' ');
