@@ -1,4 +1,4 @@
-import { Component, OnDestroy, ViewChild } from '@angular/core';
+import { Component, ElementRef, OnDestroy, ViewChild } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { MatDrawer } from '@angular/material/sidenav';
 import { Router } from '@angular/router';
@@ -51,13 +51,16 @@ export class GamePageComponent implements OnDestroy {
         readonly router: Router,
         readonly reserveService: ReserveService,
         location: LocationStrategy,
+        elementRef: ElementRef,
     ) {
         // Overrides back button behavior
         // Reference: https://stackoverflow.com/a/56354475
         history.pushState(null, '', window.location.href);
         location.onPopState(() => {
-            this.confirmQuit();
-            history.pushState(null, '', window.location.href);
+            if (elementRef.nativeElement.offsetParent != null) {
+                this.confirmQuit();
+                history.pushState(null, '', window.location.href);
+            }
         });
 
         this.playerType = gameService.onTurn.getValue();

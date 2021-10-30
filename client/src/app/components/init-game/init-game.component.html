@@ -6,9 +6,9 @@
     <p class='inputPresentationText' *ngIf='data.gameModeType === gameType.SinglePlayer'>Mode de jeu</p>
     <mat-form-field class='inputs' appearance='fill' *ngIf='data.gameModeType === gameType.SinglePlayer'>
         <mat-label>Mode de jeu</mat-label>
-        <mat-select name='gameTypes' appearance='fill' [(ngModel)]='gameConfig.gameType'>
-            <mat-option *ngFor='let gameTypeDescription of gameTypesList'
-                        [value]='gameTypeDescription[1]'>{{ gameTypeDescription[0] }}</mat-option>
+        <mat-select name='gameTypes' appearance='fill' [(ngModel)]='formConfig.gameType'>
+            <mat-option *ngFor='let gameType of gameTypesList'
+                        [value]='gameType'>{{ gameType }}</mat-option>
         </mat-select>
     </mat-form-field>
     <p class='inputPresentationText'
@@ -44,16 +44,16 @@
                 placeholder='Joueur 1'
                 name='name'
                 id='inputName'
-                [(ngModel)]='gameConfig.firstPlayerName'
-                (input)='botNameChange(gameConfig.firstPlayerName)'
+                [(ngModel)]='formConfig.firstPlayerName'
+                (input)='botNameChange(formConfig.firstPlayerName)'
             />
         </mat-form-field>
         <mat-form-field appearance='fill' *ngIf='data.gameModeType === gameType.SinglePlayer'>
             <mat-label>Joueur 2</mat-label>
-            <input matInput placeholder='Joueur 2' value='{{ gameConfig.secondPlayerName }}' />
+            <input matInput placeholder='Joueur 2' value='{{ formConfig.secondPlayerName }}' />
         </mat-form-field>
     </form>
-    <mat-checkbox color='primary' [(ngModel)]='gameConfig.isRandomBonus'>
+    <mat-checkbox color='primary' [(ngModel)]='formConfig.isRandomBonus'>
         <label class='inputPresentationText'>Bonus aléatoire</label>
     </mat-checkbox>
     <div *ngFor='let error of errorsList' class='alert'>{{ error }}</div>

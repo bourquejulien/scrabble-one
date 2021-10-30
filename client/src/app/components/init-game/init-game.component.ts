@@ -8,17 +8,14 @@ import { GameService } from '@app/services/game/game.service';
 import { GameType, SinglePlayerConfig } from '@common';
 
 interface FormConfig {
-    gameType: GameType;
+    gameType: string;
     playTime: TimeSpan;
     isRandomBonus: boolean;
     firstPlayerName: string;
     secondPlayerName: string;
 }
 
-const GAME_TYPES_LIST = [
-    ['Mode Solo Débutant', GameType.SinglePlayer],
-    ['Mode multijoueurs', GameType.Multiplayer],
-];
+const GAME_TYPES_LIST = ['Mode Solo Débutant'];
 const BOT_NAMES = ['Maurice', 'Claudette', 'Alphonse'];
 // eslint-disable-next-line @typescript-eslint/no-magic-numbers -- Lists all option, the list is a constant
 const TURN_LENGTH_MINUTES = [0, 1, 2, 3, 4, 5] as const;
@@ -60,18 +57,18 @@ export class InitGameComponent implements OnInit {
     readonly botNames = BOT_NAMES;
     readonly minutesList = TURN_LENGTH_MINUTES;
     readonly secondsList = TURN_LENGTH_SECONDS;
-    nameForm: FormGroup;
-    gameType = GameType;
-    errorsList: string[] = [];
+    readonly gameType = GameType;
+    readonly errorsList: string[] = [];
     minutes: number = DEFAULT_PLAY_TIME.totalMinutes;
     seconds: number = DEFAULT_PLAY_TIME.seconds;
-    gameConfig: FormConfig = {
-        gameType: GameType.SinglePlayer,
+    formConfig: FormConfig = {
+        gameType: GAME_TYPES_LIST[0],
         playTime: DEFAULT_PLAY_TIME,
         isRandomBonus: false,
         firstPlayerName: '',
         secondPlayerName: '',
     };
+    private nameForm: FormGroup;
 
     constructor(
         readonly gameService: GameService,
@@ -113,7 +110,7 @@ export class InitGameComponent implements OnInit {
     }
 
     async ngOnInit(): Promise<void> {
-        this.gameConfig.secondPlayerName = InitGameComponent.randomizeBotName(this.botNames);
+        this.formConfig.secondPlayerName = InitGameComponent.randomizeBotName(this.botNames);
     }
 
     async init(): Promise<void> {
@@ -139,18 +136,18 @@ export class InitGameComponent implements OnInit {
     }
 
     botNameChange(firstPlayerName: string): void {
-        while (firstPlayerName === this.gameConfig.secondPlayerName) {
-            this.gameConfig.secondPlayerName = InitGameComponent.randomizeBotName(BOT_NAMES);
+        while (firstPlayerName === this.formConfig.secondPlayerName) {
+            this.formConfig.secondPlayerName = InitGameComponent.randomizeBotName(BOT_NAMES);
         }
     }
 
     private async initSinglePlayer(): Promise<void> {
         const singlePlayerConfig: SinglePlayerConfig = {
-            gameType: this.gameConfig.gameType,
-            playTimeMs: this.gameConfig.playTime.totalMilliseconds,
-            playerName: this.gameConfig.firstPlayerName,
-            virtualPlayerName: this.gameConfig.secondPlayerName,
-            isRandomBonus: this.gameConfig.isRandomBonus,
+            gameType: GameType.SinglePlayer,
+            playTimeMs: this.formConfig.playTime.totalMilliseconds,
+            playerName: this.formConfig.firstPlayerName,
+            virtualPlayerName: this.formConfig.secondPlayerName,
+            isRandomBonus: this.formConfig.isRandomBonus,
         };
 
         await this.gameService.startSinglePlayer(singlePlayerConfig);
@@ -159,7 +156,7 @@ export class InitGameComponent implements OnInit {
 
     private async initMultiplayer(): Promise<void> {
         // const multiplayerConfig: MultiplayerCreateConfig = {
-        //     gameType: this.gameConfig.gameType,
+        //     gameType: GameType.Multiplayer,
         //     playTimeMs: this.gameConfig.playTime.totalMilliseconds,
         //     playerName: this.gameConfig.firstPlayerName,
         // };
@@ -178,7 +175,7 @@ export class InitGameComponent implements OnInit {
 
     private confirmInitialization(): boolean {
         const nameForm = new FormGroup({
-            control: new FormControl(this.gameConfig.firstPlayerName, [
+            control: new FormControl(this.formConfig.firstPlayerName, [
                 Validators.required,
                 Validators.minLength(MIN_SIZE_NAME),
                 Validators.maxLength(MAX_SIZE_NAME),
@@ -189,11 +186,11 @@ export class InitGameComponent implements OnInit {
         this.nameForm = nameForm;
 
         if (nameForm.valid) {
-            this.gameConfig.playTime = TimeSpan.fromMinutesSeconds(this.minutes, this.seconds);
+            this.formConfig.playTime = TimeSpan.fromMinutesSeconds(this.minutes, this.seconds);
 
             return true;
         } else {
-            this.errorsList = [];
+            this.errorsList.length = 0;
             for (const error of POSSIBLE_ERRORS) {
                 // nameForm.get('control') cannot be null since we initialize it in the constructor
                 if (this.nameForm.get('control')?.hasError(error.validationRule)) {

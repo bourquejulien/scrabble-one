@@ -74,16 +74,6 @@ export class GameService {
         await this.httpCLient.delete(localUrl(`stop/${this.sessionService.id}`)).toPromise();
     }
 
-    playerRackPoint(rack: string[]): number {
-        let playerPoint = 0;
-        for (const letter of rack) {
-            const currentLetterData = letterDefinitions.get(letter.toLowerCase());
-            if (currentLetterData?.points === undefined) return -1;
-            playerPoint += currentLetterData.points;
-        }
-        return playerPoint;
-    }
-
     emptyRackAndReserve() {
         if (this.reserveService.length === 0 && (this.playerService.rack.length === 0 || this.virtualPlayerService.playerData.rack.length === 0)) {
             this.endGamePoint();
@@ -94,6 +84,19 @@ export class GameService {
                 this.virtualPlayerService.playerData.score += this.playerRackPoint(this.playerService.rack);
             }
 
+            this.gameRunning = false;
+            this.gameEnding.next();
+        }
+    }
+
+    skipTurnLimit() {
+        if (
+            this.playerService.playerData.skippedTurns > Constants.MAX_SKIP_TURN &&
+            this.virtualPlayerService.playerData.skippedTurns > Constants.MAX_SKIP_TURN
+        ) {
+            this.playerService.playerData.skippedTurns = 0;
+            this.virtualPlayerService.playerData.skippedTurns = 0;
+            this.endGamePoint();
             this.gameRunning = false;
             this.gameEnding.next();
         }
@@ -117,17 +120,14 @@ export class GameService {
         }
     }
 
-    skipTurnLimit() {
-        if (
-            this.playerService.playerData.skippedTurns > Constants.MAX_SKIP_TURN &&
-            this.virtualPlayerService.playerData.skippedTurns > Constants.MAX_SKIP_TURN
-        ) {
-            this.playerService.playerData.skippedTurns = 0;
-            this.virtualPlayerService.playerData.skippedTurns = 0;
-            this.endGamePoint();
-            this.gameRunning = false;
-            this.gameEnding.next();
+    playerRackPoint(rack: string[]): number {
+        let playerPoint = 0;
+        for (const letter of rack) {
+            const currentLetterData = letterDefinitions.get(letter.toLowerCase());
+            if (currentLetterData?.points === undefined) return -1;
+            playerPoint += currentLetterData.points;
         }
+        return playerPoint;
     }
 
     sendRackInCommunication() {
