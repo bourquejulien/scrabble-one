@@ -3,10 +3,17 @@ import { FormControl, FormGroup, ValidatorFn, Validators } from '@angular/forms'
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 import { Error } from '@app/classes/errorName/error';
-import { GameConfig } from '@app/classes/game-config';
 import { TimeSpan } from '@app/classes/time/timespan';
 import { GameService } from '@app/services/game/game.service';
 import { GameType, SinglePlayerConfig } from '@common';
+
+interface FormConfig {
+    gameType: GameType;
+    playTime: TimeSpan;
+    isRandomBonus: boolean;
+    firstPlayerName: string;
+    secondPlayerName: string;
+}
 
 const GAME_TYPES_LIST = [
     ['Mode Solo Débutant', GameType.SinglePlayer],
@@ -53,34 +60,32 @@ export class InitGameComponent implements OnInit {
     readonly botNames = BOT_NAMES;
     readonly minutesList = TURN_LENGTH_MINUTES;
     readonly secondsList = TURN_LENGTH_SECONDS;
-    nextPage: string;
     nameForm: FormGroup;
     gameType = GameType;
     errorsList: string[] = [];
     minutes: number = DEFAULT_PLAY_TIME.totalMinutes;
     seconds: number = DEFAULT_PLAY_TIME.seconds;
-    gameConfig: GameConfig = {
+    gameConfig: FormConfig = {
         gameType: GameType.SinglePlayer,
         playTime: DEFAULT_PLAY_TIME,
+        isRandomBonus: false,
         firstPlayerName: '',
         secondPlayerName: '',
     };
 
     constructor(
-        public gameService: GameService,
-        private router: Router,
-        public dialogRef: MatDialogRef<InitGameComponent>,
-        @Inject(MAT_DIALOG_DATA) public data: { gameModeType: GameType },
-    ) {
-        this.setNextPage();
-    }
+        readonly gameService: GameService,
+        private readonly router: Router,
+        readonly dialogRef: MatDialogRef<InitGameComponent>,
+        @Inject(MAT_DIALOG_DATA) readonly data: { gameModeType: GameType },
+    ) {}
 
     private static nameValidatorFunction(control: FormControl): { [key: string]: boolean } | null {
         // We make sure that player name is considered as a string
         const playerName = control.value as string;
         if (playerName !== undefined && playerName !== null && playerName !== '') {
             for (let index = 0; index < playerName.length; index++) {
-                if (!/[a-zA-ZÉéÎîÉéÇçÏï]/.test(playerName.charAt(index))) return { ['containsOnlyLetters']: true };
+                if (!/[a-zA-ZÉéÎîÇçÏï]/.test(playerName.charAt(index))) return { ['containsOnlyLetters']: true };
             }
 
             const firstLetter = playerName[0];
@@ -103,7 +108,7 @@ export class InitGameComponent implements OnInit {
     @HostListener('keydown', ['$event'])
     async buttonDetect(event: KeyboardEvent) {
         if (event.key === 'Enter') {
-            await this.initialize();
+            await this.init();
         }
     }
 
@@ -111,22 +116,20 @@ export class InitGameComponent implements OnInit {
         this.gameConfig.secondPlayerName = InitGameComponent.randomizeBotName(this.botNames);
     }
 
-    async initialize(): Promise<void> {
+    async init(): Promise<void> {
         const needsToReroute: boolean = this.confirmInitialization();
 
         if (needsToReroute) {
             this.dialogRef.close();
 
-            // TODO Should be able to redirect to waiting room or GameService with proper configs
-            const singlePlayerConfig: SinglePlayerConfig = {
-                gameType: this.gameConfig.gameType,
-                playTimeMs: this.gameConfig.playTime.totalMilliseconds,
-                playerName: this.gameConfig.firstPlayerName,
-                virtualPlayerName: this.gameConfig.secondPlayerName,
-            };
-
-            await this.gameService.startSinglePlayer(singlePlayerConfig);
-            await this.router.navigate([this.nextPage]);
+            switch (this.data.gameModeType) {
+                case GameType.SinglePlayer:
+                    await this.initSingleplayer();
+                    break;
+                case GameType.Multiplayer:
+                    await this.initMultiplayer();
+                    break;
+            }
         }
     }
 
@@ -139,6 +142,29 @@ export class InitGameComponent implements OnInit {
         while (firstPlayerName === this.gameConfig.secondPlayerName) {
             this.gameConfig.secondPlayerName = InitGameComponent.randomizeBotName(BOT_NAMES);
         }
+    }
+
+    private async initSingleplayer(): Promise<void> {
+        const singlePlayerConfig: SinglePlayerConfig = {
+            gameType: this.gameConfig.gameType,
+            playTimeMs: this.gameConfig.playTime.totalMilliseconds,
+            playerName: this.gameConfig.firstPlayerName,
+            virtualPlayerName: this.gameConfig.secondPlayerName,
+        };
+
+        await this.gameService.startSinglePlayer(singlePlayerConfig);
+        await this.router.navigate(['game']);
+    }
+
+    private async initMultiplayer(): Promise<void> {
+        // const multiplayerConfig: MultiplayerCreateConfig = {
+        //     gameType: this.gameConfig.gameType,
+        //     playTimeMs: this.gameConfig.playTime.totalMilliseconds,
+        //     playerName: this.gameConfig.firstPlayerName,
+        // };
+
+        // TODO Pass config to waiting room
+        await this.router.navigate(['waiting-room']);
     }
 
     private forceSecondsToZero(): void {
@@ -175,14 +201,5 @@ export class InitGameComponent implements OnInit {
             }
         }
         return false;
-    }
-
-    private setNextPage(): void {
-        if (this.data.gameModeType === GameType.SinglePlayer) {
-            this.nextPage = 'game';
-        }
-        if (this.data.gameModeType === GameType.Multiplayer) {
-            this.nextPage = 'waiting-room';
-        }
     }
 }
