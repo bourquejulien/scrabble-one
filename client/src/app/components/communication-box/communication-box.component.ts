@@ -13,10 +13,12 @@ import { Message, MessageType } from '@common';
 })
 export class CommunicationBoxComponent implements AfterViewInit {
     @ViewChild('messageContainer') private messageContainer: ElementRef<HTMLDivElement>;
-    messages: Message[] = [];
+    messages: Message[];
     inputValue: string;
 
-    constructor(private commandsService: CommandsService, private sessionService: SessionService, private readonly socket: SocketClientService) {}
+    constructor(private commandsService: CommandsService, private sessionService: SessionService, private readonly socket: SocketClientService) {
+        this.messages = [];
+    }
 
     ngAfterViewInit(): void {
         this.socket.socketClient.on('message', (message: Message) => {

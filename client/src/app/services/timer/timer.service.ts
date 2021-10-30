@@ -8,13 +8,15 @@ import { PlayerType } from '@app/classes/player/player-type';
     providedIn: 'root',
 })
 export class TimerService {
-    readonly countdownStopped: Subject<PlayerType> = new Subject();
+    readonly countdownStopped: Subject<PlayerType>;
 
     private timer: Timer;
-    private countdownSubscription: Subscription | null = null;
+    private countdownSubscription: Subscription | null;
 
     constructor() {
+        this.countdownStopped = new Subject();
         this.timer = new Timer();
+        this.countdownSubscription = null;
     }
 
     start(delay: TimeSpan, playerType: PlayerType): void {

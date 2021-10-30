@@ -10,8 +10,10 @@ import { SocketClientService } from '@app/services/socket-client/socket-client.s
     styleUrls: ['./game-mode-page.component.scss'],
 })
 export class GameModePageComponent {
-    gameType = GameType;
-    constructor(public dialog: MatDialog, private readonly socket: SocketClientService) {}
+    gameType;
+    constructor(public dialog: MatDialog, private readonly socket: SocketClientService) {
+        this.gameType = GameType;
+    }
 
     openDialog(type: GameType): void {
         const dialogRef = this.dialog.open(InitGameComponent, { panelClass: 'init-game-dialog', data: { gameModeType: type } });

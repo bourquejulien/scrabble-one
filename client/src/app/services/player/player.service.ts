@@ -23,11 +23,7 @@ export class PlayerService {
 
     // TODO Should be replaced by stats once server-side events are used
     // TODO Rack could be update by ReserveService
-    playerData: PlayerData = {
-        score: 0,
-        skippedTurns: 0,
-        rack: [],
-    };
+    playerData: PlayerData;
 
     constructor(
         private readonly reserveService: ReserveService,
@@ -42,6 +38,11 @@ export class PlayerService {
         this.timerService.countdownStopped.subscribe((playerType) => {
             if (PlayerType.Local === playerType) this.completeTurn();
         });
+        this.playerData = {
+            score: 0,
+            skippedTurns: 0,
+            rack: [],
+        };
     }
 
     startTurn(playTime: TimeSpan): void {

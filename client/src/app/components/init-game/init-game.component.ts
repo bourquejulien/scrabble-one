@@ -47,22 +47,17 @@ const POSSIBLE_ERRORS: Error[] = [STARTS_LOWER_LETTER_ERROR, CONTAINS_NOT_LETTER
     styleUrls: ['./init-game.component.scss'],
 })
 export class InitGameComponent implements OnInit {
-    readonly gameTypesList = GAME_TYPES_LIST;
-    readonly botNames = BOT_NAMES;
-    readonly minutesList = TURN_LENGTH_MINUTES;
-    readonly secondsList = TURN_LENGTH_SECONDS;
+    readonly gameTypesList ;
+    readonly botNames;
+    readonly minutesList;
+    readonly secondsList;
     nextPage: string;
     nameForm: FormGroup;
-    gameType = GameType;
-    errorsList: string[] = [];
-    minutes: number = DEFAULT_PLAY_TIME.totalMinutes;
-    seconds: number = DEFAULT_PLAY_TIME.seconds;
-    gameConfig: GameConfig = {
-        gameType: GAME_TYPES_LIST[0],
-        playTime: DEFAULT_PLAY_TIME,
-        firstPlayerName: '',
-        secondPlayerName: '',
-    };
+    gameType;
+    errorsList: string[];
+    minutes: number;
+    seconds: number;
+    gameConfig: GameConfig;
 
     constructor(
         public gameService: GameService,
@@ -71,6 +66,22 @@ export class InitGameComponent implements OnInit {
         @Inject(MAT_DIALOG_DATA) public data: { gameModeType: GameType },
     ) {
         this.setNextPage();
+        // TO DO ask julien if this is legit?? its like, doing "index = number"
+        this.gameType = GameType;
+        this.errorsList = [];
+        this.minutes = DEFAULT_PLAY_TIME.totalMinutes;
+        this.seconds = DEFAULT_PLAY_TIME.seconds;
+        this.gameConfig = {
+            gameType: GAME_TYPES_LIST[0],
+            playTime: DEFAULT_PLAY_TIME,
+            firstPlayerName: '',
+            secondPlayerName: '',
+        };
+
+        this.gameTypesList = GAME_TYPES_LIST;
+        this.botNames = BOT_NAMES;
+        this.minutesList = TURN_LENGTH_MINUTES;
+        this.secondsList = TURN_LENGTH_SECONDS;
     }
 
     private static nameValidatorFunction(control: FormControl): { [key: string]: boolean } | null {

@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
 import { FontFace } from '@app/classes/font-face';
-import { Vec2, Bonus } from '@common';
 import { Constants } from '@app/constants/global.constants';
 import { BoardService } from '@app/services/board/board.service';
+import { Bonus, Vec2 } from '@common';
 
 const STAR_IMAGE_PATH = 'assets/img/star.svg';
 const LINE_WIDTH = 3;
@@ -25,17 +25,22 @@ const BONUS_COLORS = new Map([
     providedIn: 'root',
 })
 export class GridService {
-    readonly minFontSize: number = MIN_FONT_SIZE;
-    readonly maxFontSize: number = MAX_FONT_SIZE;
-    letterFontFace = FONT_FACE;
+    readonly minFontSize: number;
+    readonly maxFontSize: number;
+    letterFontFace: FontFace;
 
-    private readonly canvasSize: Vec2 = Constants.GRID.CANVAS_SIZE;
-    private readonly playGridSize: number = Constants.GRID.GRID_SIZE;
+    private readonly canvasSize: Vec2;
+    private readonly playGridSize: number;
     private readonly starImage: HTMLImageElement;
 
     constructor(private readonly boardService: BoardService) {
         this.starImage = new Image();
         this.starImage.src = STAR_IMAGE_PATH;
+        this.letterFontFace = FONT_FACE;
+        this.canvasSize = Constants.GRID.CANVAS_SIZE;
+        this.playGridSize = Constants.GRID.GRID_SIZE;
+        this.minFontSize = MIN_FONT_SIZE;
+        this.maxFontSize = MAX_FONT_SIZE;
     }
 
     private static getBonusText(bonus: Bonus): { kind: string; multiplier: string } {

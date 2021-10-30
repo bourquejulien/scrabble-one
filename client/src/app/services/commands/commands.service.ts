@@ -11,17 +11,22 @@ import { Direction, letterDefinitions, MessageType, Vec2 } from '@common';
     providedIn: 'root',
 })
 export class CommandsService {
-    private placeWordCommandRegex: RegExp = /^([a-o]){1}([1-9]|1[0-5]){1}([hv]){1}$/;
-    wordRegex: RegExp = /^[A-zÀ-ú]{1,15}$/;
-    rackRegex: RegExp = /^[a-z*]{1,7}$/;
-    messageRegex: RegExp = /^[A-zÀ-ú0-9 !.?'"]{1,512}$/;
+    private placeWordCommandRegex: RegExp;
+    wordRegex: RegExp;
+    rackRegex: RegExp;
+    messageRegex: RegExp;
 
     constructor(
         public messagingService: MessagingService,
         public playerService: PlayerService,
         public gameService: GameService,
         public reserveService: ReserveService,
-    ) {}
+    ) {
+        this.placeWordCommandRegex = /^([a-o]){1}([1-9]|1[0-5]){1}([hv]){1}$/;
+        this.wordRegex = /^[A-zÀ-ú]{1,15}$/;
+        this.rackRegex = /^[a-z*]{1,7}$/;
+        this.messageRegex = /^[A-zÀ-ú0-9 !.?'"]{1,512}$/;
+    }
 
     parseInput(input: string): boolean {
         let successfulCommand = false;

@@ -1,16 +1,16 @@
+import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { PlayerStats } from '@app/classes/player/player-stats';
+import { PlayerType } from '@app/classes/player/player-type';
 import { Constants } from '@app/constants/global.constants';
 import { MessagingService } from '@app/services/messaging/messaging.service';
 import { PlayerService } from '@app/services/player/player.service';
+import { ReserveService } from '@app/services/reserve/reserve.service';
+import { SessionService } from '@app/services/session/session.service';
 import { VirtualPlayerService } from '@app/services/virtual-player/virtual-player.service';
 import { letterDefinitions, MessageType, ServerGameConfig, SinglePlayerGameConfig } from '@common';
-import { BehaviorSubject, Subject } from 'rxjs';
-import { HttpClient } from '@angular/common/http';
-import { SessionService } from '@app/services/session/session.service';
-import { ReserveService } from '@app/services/reserve/reserve.service';
-import { PlayerType } from '@app/classes/player/player-type';
 import { environmentExt } from '@environmentExt';
+import { BehaviorSubject, Subject } from 'rxjs';
 
 const localUrl = (call: string, id?: string) => `${environmentExt.apiUrl}game/${call}${id ? '/' + id : ''}`;
 
@@ -18,17 +18,11 @@ const localUrl = (call: string, id?: string) => `${environmentExt.apiUrl}game/${
     providedIn: 'root',
 })
 export class GameService {
-    firstPlayerStats: PlayerStats = {
-        points: 0,
-        rackSize: 0,
-    };
-    secondPlayerStats: PlayerStats = {
-        points: 0,
-        rackSize: 0,
-    };
-    gameRunning: boolean = false;
-    skipTurnNb: number = 0;
-    currentTurn: PlayerType = PlayerType.Local;
+    firstPlayerStats: PlayerStats;
+    secondPlayerStats: PlayerStats;
+    gameRunning: boolean;
+    skipTurnNb: number;
+    currentTurn: PlayerType;
     onTurn: BehaviorSubject<PlayerType>;
     gameEnding: Subject<void>;
 
@@ -40,6 +34,17 @@ export class GameService {
         private readonly httpCLient: HttpClient,
         private readonly sessionService: SessionService,
     ) {
+        this.firstPlayerStats = {
+            points: 0,
+            rackSize: 0,
+        };
+        this.secondPlayerStats = {
+            points: 0,
+            rackSize: 0,
+        };
+        this.gameRunning = false;
+        this.skipTurnNb = 0;
+        this.currentTurn = PlayerType.Local;
         this.onTurn = new BehaviorSubject<PlayerType>(PlayerType.Local);
         this.gameEnding = new Subject<void>();
         playerService.turnComplete.subscribe((e) => this.handleTurnCompletion(e));
@@ -162,12 +167,12 @@ export class GameService {
         this.messaging.send(
             'Fin de partie - lettres restantes',
             this.sessionService.gameConfig.firstPlayerName +
-                ' : ' +
-                this.playerService.rack +
-                '\n' +
-                this.sessionService.gameConfig.secondPlayerName +
-                ' : ' +
-                this.virtualPlayerService.playerData.rack,
+            ' : ' +
+            this.playerService.rack +
+            '\n' +
+            this.sessionService.gameConfig.secondPlayerName +
+            ' : ' +
+            this.virtualPlayerService.playerData.rack,
             MessageType.System,
         );
     }

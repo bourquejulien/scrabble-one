@@ -34,9 +34,9 @@ export class GamePageComponent implements OnDestroy {
     @ViewChild('drawer', { static: true }) drawer: MatDrawer;
 
     playerType: PlayerType;
-    buttonConfig: ButtonConfig[] = [];
+    buttonConfig: ButtonConfig[];
     iconList: string[];
-    isOpen: boolean = true;
+    isOpen: boolean;
     private readonly pageChange: Subscription;
 
     private onTurnSubscription: Subscription;
@@ -50,6 +50,7 @@ export class GamePageComponent implements OnDestroy {
         readonly router: Router,
         readonly reserveService: ReserveService,
     ) {
+        this.isOpen = true;
         this.playerType = gameService.onTurn.getValue();
         this.timerService = timerService;
         this.buttonConfig = [
