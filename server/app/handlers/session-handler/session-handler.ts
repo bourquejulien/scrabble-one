@@ -41,10 +41,7 @@ export class SessionHandler {
 
     start(): string {
         this.sessionData.isActive = true;
-        this.sessionData.isActive = false;
-
         this.timer = setInterval(() => this.timerTick(), Config.SESSION.REFRESH_INTERVAL_MS);
-
         return this.playerHandler.start();
     }
 

@@ -1,14 +1,11 @@
 import { Injectable } from '@angular/core';
 import { PlayerStats } from '@app/classes/player/player-stats';
-import { Constants } from '@app/constants/global.constants';
-import { MessagingService } from '@app/services/messaging/messaging.service';
+// import { MessagingService } from '@app/services/messaging/messaging.service';
 import { PlayerService } from '@app/services/player/player.service';
-import { VirtualPlayerService } from '@app/services/virtual-player/virtual-player.service';
-import { GameType, letterDefinitions, MessageType, ServerConfig, SinglePlayerConfig } from '@common';
+import { GameType, ServerConfig, SinglePlayerConfig } from '@common';
 import { BehaviorSubject, Subject } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 import { SessionService } from '@app/services/session/session.service';
-import { ReserveService } from '@app/services/reserve/reserve.service';
 import { PlayerType } from '@app/classes/player/player-type';
 import { environmentExt } from '@environmentExt';
 import { SocketClientService } from '@app/services/socket-client/socket-client.service';
@@ -35,9 +32,7 @@ export class GameService {
 
     constructor(
         private readonly playerService: PlayerService,
-        private readonly virtualPlayerService: VirtualPlayerService,
-        private readonly reserveService: ReserveService,
-        private readonly messaging: MessagingService,
+        // private readonly messaging: MessagingService,
         private readonly httpCLient: HttpClient,
         private readonly sessionService: SessionService,
         private readonly socketService: SocketClientService,
@@ -68,89 +63,88 @@ export class GameService {
     async reset() {
         this.skipTurnNb = 0;
         this.gameRunning = false;
-        this.virtualPlayerService.reset();
         this.playerService.reset();
 
         await this.httpCLient.delete(localUrl(`stop/${this.sessionService.id}`)).toPromise();
     }
 
     emptyRackAndReserve() {
-        if (this.reserveService.length === 0 && (this.playerService.rack.length === 0 || this.virtualPlayerService.playerData.rack.length === 0)) {
-            this.endGamePoint();
-
-            if (this.playerService.rack.length === 0) {
-                this.playerService.playerData.score += this.playerRackPoint(this.virtualPlayerService.playerData.rack);
-            } else {
-                this.virtualPlayerService.playerData.score += this.playerRackPoint(this.playerService.rack);
-            }
-
-            this.gameRunning = false;
-            this.gameEnding.next();
-        }
+        // if (this.reserveService.length === 0 && (this.playerService.rack.length === 0 || this.virtualPlayerService.playerData.rack.length === 0)) {
+        //     this.endGamePoint();
+        //
+        //     if (this.playerService.rack.length === 0) {
+        //         this.playerService.playerData.score += this.playerRackPoint(this.virtualPlayerService.playerData.rack);
+        //     } else {
+        //         this.virtualPlayerService.playerData.score += this.playerRackPoint(this.playerService.rack);
+        //     }
+        //
+        //     this.gameRunning = false;
+        //     this.gameEnding.next();
+        // }
     }
 
     skipTurnLimit() {
-        if (
-            this.playerService.playerData.skippedTurns > Constants.MAX_SKIP_TURN &&
-            this.virtualPlayerService.playerData.skippedTurns > Constants.MAX_SKIP_TURN
-        ) {
-            this.playerService.playerData.skippedTurns = 0;
-            this.virtualPlayerService.playerData.skippedTurns = 0;
-            this.endGamePoint();
-            this.gameRunning = false;
-            this.gameEnding.next();
-        }
+        // if (
+        //     this.playerService.playerData.skippedTurns > Constants.MAX_SKIP_TURN &&
+        //     this.virtualPlayerService.playerData.skippedTurns > Constants.MAX_SKIP_TURN
+        // ) {
+        //     this.playerService.playerData.skippedTurns = 0;
+        //     this.virtualPlayerService.playerData.skippedTurns = 0;
+        //     this.endGamePoint();
+        //     this.gameRunning = false;
+        //     this.gameEnding.next();
+        // }
     }
 
     endGamePoint() {
-        const finalScorePlayer = this.firstPlayerStats.points - this.playerRackPoint(this.playerService.rack);
-        const finalScoreVirtualPlayer = this.secondPlayerStats.points - this.playerRackPoint(this.virtualPlayerService.playerData.rack);
-
-        this.firstPlayerStats.points = finalScorePlayer;
-        this.secondPlayerStats.points = finalScoreVirtualPlayer;
-
-        if (finalScorePlayer < 0) {
-            this.playerService.playerData.score = 0;
-            this.firstPlayerStats.points = 0;
-        }
-
-        if (finalScoreVirtualPlayer < 0) {
-            this.virtualPlayerService.playerData.score = 0;
-            this.secondPlayerStats.points = 0;
-        }
+        // const finalScorePlayer = this.firstPlayerStats.points - this.playerRackPoint(this.playerService.rack);
+        // const finalScoreVirtualPlayer = this.secondPlayerStats.points - this.playerRackPoint(this.virtualPlayerService.playerData.rack);
+        //
+        // this.firstPlayerStats.points = finalScorePlayer;
+        // this.secondPlayerStats.points = finalScoreVirtualPlayer;
+        //
+        // if (finalScorePlayer < 0) {
+        //     this.playerService.playerData.score = 0;
+        //     this.firstPlayerStats.points = 0;
+        // }
+        //
+        // if (finalScoreVirtualPlayer < 0) {
+        //     this.virtualPlayerService.playerData.score = 0;
+        //     this.secondPlayerStats.points = 0;
+        // }
     }
 
-    playerRackPoint(rack: string[]): number {
-        let playerPoint = 0;
-        for (const letter of rack) {
-            const currentLetterData = letterDefinitions.get(letter.toLowerCase());
-            if (currentLetterData?.points === undefined) return -1;
-            playerPoint += currentLetterData.points;
-        }
-        return playerPoint;
-    }
+    // playerRackPoint(rack: string[]): number {
+    //     let playerPoint = 0;
+    //     for (const letter of rack) {
+    //         const currentLetterData = letterDefinitions.get(letter.toLowerCase());
+    //         if (currentLetterData?.points === undefined) return -1;
+    //         playerPoint += currentLetterData.points;
+    //     }
+    //     return playerPoint;
+    // }
 
     sendRackInCommunication() {
-        this.messaging.send(
-            'Fin de partie - lettres restantes',
-            this.sessionService.gameConfig.firstPlayerName +
-                ' : ' +
-                this.playerService.rack +
-                '\n' +
-                this.sessionService.gameConfig.secondPlayerName +
-                ' : ' +
-                this.virtualPlayerService.playerData.rack,
-            MessageType.System,
-        );
+        // this.messaging.send(
+        //     'Fin de partie - lettres restantes',
+        //     this.sessionService.gameConfig.firstPlayerName +
+        //         ' : ' +
+        //         this.playerService.rack +
+        //         '\n' +
+        //         this.sessionService.gameConfig.secondPlayerName +
+        //         ' : ' +
+        //         this.virtualPlayerService.playerData.rack,
+        //     MessageType.System,
+        // );
     }
 
     private async onNextTurn(id: string): Promise<void> {
         if (!this.gameRunning) return;
 
-        this.firstPlayerStats.points = this.playerService.playerData.score;
-        this.secondPlayerStats.points = this.virtualPlayerService.playerData.score;
-        this.firstPlayerStats.rackSize = this.playerService.rack.length;
-        this.secondPlayerStats.rackSize = this.virtualPlayerService.playerData.rack.length;
+        // this.firstPlayerStats.points = this.playerService.playerData.score;
+        // this.secondPlayerStats.points = this.virtualPlayerService.playerData.score;
+        // this.firstPlayerStats.rackSize = this.playerService.rack.length;
+        // this.secondPlayerStats.rackSize = this.virtualPlayerService.playerData.rack.length;
 
         this.emptyRackAndReserve();
         this.skipTurnLimit();
