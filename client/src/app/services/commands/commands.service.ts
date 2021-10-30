@@ -1,13 +1,12 @@
 import { Injectable } from '@angular/core';
+import { PlayerType } from '@app/classes/player/player-type';
 import { Constants } from '@app/constants/global.constants';
 import { SystemMessages } from '@app/constants/system-messages.constants';
 import { GameService } from '@app/services/game/game.service';
 import { MessagingService } from '@app/services/messaging/messaging.service';
 import { PlayerService } from '@app/services/player/player.service';
 import { ReserveService } from '@app/services/reserve/reserve.service';
-import { letterDefinitions, MessageType, Vec2, Direction } from '@common';
-import { PlayerType } from '@app/classes/player/player-type';
-
+import { Direction, letterDefinitions, MessageType, Vec2 } from '@common';
 @Injectable({
     providedIn: 'root',
 })
@@ -25,9 +24,9 @@ export class CommandsService {
     ) {}
 
     parseInput(input: string): boolean {
+        let successfulCommand: boolean = false;
         // Arguments: [COMMAND, OPTIONS, WORD]
         if (input.startsWith('!')) {
-            let successfulCommand = true;
             const args = input.split(' ');
             switch (args[0]) {
                 case '!aide':
@@ -52,7 +51,9 @@ export class CommandsService {
                     this.messagingService.send('', SystemMessages.InvalidCommand, MessageType.Error);
                     return false;
             }
-            if (successfulCommand) this.messagingService.send('Commande réussie', input, MessageType.Log, this.gameService.currentTurn);
+            if (successfulCommand) {
+                this.messagingService.send('Commande réussie', input, MessageType.System, this.gameService.currentTurn);
+            }
         } else {
             if (this.messageRegex.test(input)) {
                 this.messagingService.send('', input, MessageType.Message);
@@ -95,20 +96,18 @@ export class CommandsService {
             this.messagingService.send('', SystemMessages.InvalidOptions, MessageType.Error);
             return false;
         }
-        // Arguments: [COMMAND, OPTIONS, WORD]
-        // Options: [Y, X, DIRECTION]
+
         if (this.wordRegex.test(word)) {
             const yCoordinate = Number(options.charCodeAt(0) - Constants.CHAR_OFFSET);
             const xCoordinate = Number(options.charAt(1)) - 1;
             const direction: Direction = options.charAt(2) === 'v' ? Direction.Down : Direction.Right;
             const vecCoordinate: Vec2 = { x: xCoordinate, y: yCoordinate };
             this.playerService.placeLetters(word, vecCoordinate, direction);
-        } else {
-            this.messagingService.send('', SystemMessages.InvalidWord, MessageType.Error);
-            return false;
-        }
 
-        return true;
+            return true;
+        }
+        this.messagingService.send('', SystemMessages.InvalidWord, MessageType.Error);
+        return false;
     }
 
     private exchangeLetters(letters: string): boolean {
@@ -117,10 +116,9 @@ export class CommandsService {
         if (this.rackRegex.test(letters)) {
             this.playerService.exchangeLetters(letters);
             return true;
-        } else {
-            this.messagingService.send('', SystemMessages.InvalidLetters, MessageType.Error);
-            return false;
         }
+        this.messagingService.send('', SystemMessages.InvalidLetters, MessageType.Error);
+        return false;
     }
 
     private skipTurn(): boolean {
@@ -132,7 +130,7 @@ export class CommandsService {
 
     private toggleDebug(): void {
         this.messagingService.debuggingMode = !this.messagingService.debuggingMode;
-        this.messagingService.send('', this.messagingService.debuggingMode ? SystemMessages.DebugOn : SystemMessages.DebugOff, MessageType.Log);
+        this.messagingService.send('', this.messagingService.debuggingMode ? SystemMessages.DebugOn : SystemMessages.DebugOff, MessageType.System);
     }
 
     private isUsersTurn(): boolean {
