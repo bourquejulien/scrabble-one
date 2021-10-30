@@ -6,8 +6,8 @@ export class SocketHandler {
 
     constructor(private readonly socketService: SocketService) {}
 
-    sendData<T>(event: string, data: T): void {
-        this.socketService.send<T>(event, data, this.id);
+    sendData<T>(event: string, data?: T): void {
+        this.socketService.send<T>(event, this.id, data);
     }
 
     sendMessage(message: Message): void {
