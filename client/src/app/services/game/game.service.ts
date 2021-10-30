@@ -1,8 +1,7 @@
 import { Injectable } from '@angular/core';
-import { PlayerStats } from '@app/classes/player/player-stats';
 // import { MessagingService } from '@app/services/messaging/messaging.service';
 import { PlayerService } from '@app/services/player/player.service';
-import { GameType, ServerConfig, SinglePlayerConfig } from '@common';
+import { GameType, PlayerStats, ServerConfig, SinglePlayerConfig } from '@common';
 import { BehaviorSubject, Subject } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 import { SessionService } from '@app/services/session/session.service';

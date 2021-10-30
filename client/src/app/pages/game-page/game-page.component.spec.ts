@@ -8,7 +8,6 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { RouterTestingModule } from '@angular/router/testing';
 import { GameConfig } from '@app/classes/game-config';
 import { cleanStyles } from '@app/classes/helpers/cleanup.helper';
-import { PlayerStats } from '@app/classes/player/player-stats';
 import { PlayerType } from '@app/classes/player/player-type';
 import { TimePipe } from '@app/classes/time/time.pipe';
 import { TimeSpan } from '@app/classes/time/timespan';
@@ -16,7 +15,7 @@ import { AppMaterialModule } from '@app/modules/material.module';
 import { GameService } from '@app/services/game/game.service';
 import { BehaviorSubject, Subject } from 'rxjs';
 import { GamePageComponent } from './game-page.component';
-import { GameType } from '@common';
+import { GameType, PlayerStats } from '@common';
 
 @Injectable({
     providedIn: 'root',
