@@ -124,7 +124,7 @@ export class InitGameComponent implements OnInit {
 
             switch (this.data.gameModeType) {
                 case GameType.SinglePlayer:
-                    await this.initSingleplayer();
+                    await this.initSinglePlayer();
                     break;
                 case GameType.Multiplayer:
                     await this.initMultiplayer();
@@ -144,12 +144,13 @@ export class InitGameComponent implements OnInit {
         }
     }
 
-    private async initSingleplayer(): Promise<void> {
+    private async initSinglePlayer(): Promise<void> {
         const singlePlayerConfig: SinglePlayerConfig = {
             gameType: this.gameConfig.gameType,
             playTimeMs: this.gameConfig.playTime.totalMilliseconds,
             playerName: this.gameConfig.firstPlayerName,
             virtualPlayerName: this.gameConfig.secondPlayerName,
+            isRandomBonus: this.gameConfig.isRandomBonus,
         };
 
         await this.gameService.startSinglePlayer(singlePlayerConfig);

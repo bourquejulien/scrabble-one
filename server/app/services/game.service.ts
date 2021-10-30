@@ -29,7 +29,7 @@ export class GameService {
     }
 
     async initSinglePlayer(gameConfig: SinglePlayerConfig): Promise<ServerConfig> {
-        const board = this.boardGeneratorService.generateBoard();
+        const board = this.boardGeneratorService.generateBoard(gameConfig.isRandomBonus);
         const sessionInfo = {
             id: generateId(),
             playTimeMs: gameConfig.playTimeMs,
@@ -64,7 +64,7 @@ export class GameService {
     }
 
     async initMultiplayer(gameConfig: MultiplayerCreateConfig): Promise<ServerConfig> {
-        const board = this.boardGeneratorService.generateBoard();
+        const board = this.boardGeneratorService.generateBoard(gameConfig.isRandomBonus);
         const sessionInfo = {
             id: generateId(),
             playTimeMs: gameConfig.playTimeMs,
