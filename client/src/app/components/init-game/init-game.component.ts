@@ -108,7 +108,6 @@ export class InitGameComponent implements OnInit {
     }
 
     async ngOnInit(): Promise<void> {
-        await this.gameService.reset();
         this.gameConfig.secondPlayerName = InitGameComponent.randomizeBotName(this.botNames);
     }
 

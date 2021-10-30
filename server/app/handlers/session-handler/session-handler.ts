@@ -10,6 +10,7 @@ import { SocketHandler } from '@app/handlers/socket-handler/socket-handler';
 
 export class SessionHandler {
     readonly sessionData: SessionData;
+    // TODO Use player handler?
     readonly players: Player[];
 
     private readonly playerSubscriptions: Map<string, Subscription>;

@@ -1,4 +1,4 @@
-import { Answer, Message, MultiplayerCreateConfig, MultiplayerJoinConfig, ServerConfig, SinglePlayerConfig } from '@common';
+import { Message, MultiplayerCreateConfig, MultiplayerJoinConfig, ServerConfig, SinglePlayerConfig } from '@common';
 import { SessionHandlingService } from '@app/services/session-handling.service';
 import { BoardGeneratorService } from '@app/services/board/board-generator.service';
 import { Service } from 'typedi';
@@ -125,22 +125,19 @@ export class GameService {
         return firstPlayer;
     }
 
-    async stop(id: string): Promise<Answer> {
+    async stop(id: string): Promise<boolean> {
         const handler = this.sessionHandlingService.removeHandler(id);
 
         if (handler == null) {
             logger.warn(`Failed to stop game: ${id}`);
-            return { isSuccess: false, body: '' };
+            return false;
         }
 
         handler.destroy();
 
         logger.info(`Game stopped: ${id}`);
 
-        return {
-            isSuccess: true,
-            body: '',
-        };
+        return true;
     }
 
     private addHumanPlayer(playerInfo: PlayerInfo, sessionHandler: SessionHandler): HumanPlayer {

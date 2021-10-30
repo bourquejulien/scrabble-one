@@ -6,7 +6,6 @@ import { PlayerService } from '@app/services/player/player.service';
 import { VirtualPlayerService } from '@app/services/virtual-player/virtual-player.service';
 import { Subject } from 'rxjs';
 import { GameService } from './game.service';
-import { PlayerType } from '@app/classes/player/player-type';
 
 // const MAX_LENGTH_RACK = 7;
 // const PLAYER_POINTS = 100;
@@ -35,8 +34,6 @@ describe('GameService', () => {
         });
 
         virtualPlayerServiceSpy.reset.and.returnValue();
-        virtualPlayerServiceSpy.refresh.and.returnValue(Promise.resolve());
-        virtualPlayerServiceSpy.turnComplete = new Subject<PlayerType>();
 
         TestBed.configureTestingModule({
             imports: [HttpClientTestingModule],

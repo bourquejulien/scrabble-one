@@ -14,10 +14,9 @@ export class GameController {
     private configureRouter(): void {
         this.router = Router();
 
-        this.router.get('/stop/:id', async (req: Request, res: Response) => {
-            const answer = await this.gameService.stop(req.params.id);
-            res.status(answer.isSuccess ? Constants.HTTP_STATUS.DELETED : Constants.HTTP_STATUS.BAD_REQUEST);
-            res.json(answer);
+        this.router.delete('/stop/:id', async (req: Request, res: Response) => {
+            const isSuccess = await this.gameService.stop(req.params.id);
+            res.sendStatus(isSuccess ? Constants.HTTP_STATUS.DELETED : Constants.HTTP_STATUS.BAD_REQUEST);
         });
 
         this.router.get('/start/:id', async (req: Request, res: Response) => {

@@ -76,7 +76,7 @@ export class GameService {
         this.virtualPlayerService.reset();
         this.playerService.reset();
 
-        await this.httpCLient.delete(localUrl(`stop/${this.sessionService.id}`));
+        await this.httpCLient.delete(localUrl(`stop/${this.sessionService.id}`)).toPromise();
     }
 
     playerRackPoint(rack: string[]): number {
