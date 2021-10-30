@@ -1,13 +1,13 @@
 import { SessionInfo } from '@app/classes/session-info';
-import { BoardHandler } from '@app/handlers/board-handler/board-handler';
-import { ServerConfig } from '@common';
+import { ServerConfig, SessionStats } from '@common';
 import { Player } from '@app/classes/player/player';
-import { ReserveHandler } from '@app/handlers/reserve-handler/reserve-handler';
 import { SessionData } from '@app/classes/session-data';
 import { Config } from '@app/config';
 import { SocketHandler } from '@app/handlers/socket-handler/socket-handler';
-import { PlayerHandler } from '@app/handlers/player-handler/player.handler';
+import { PlayerHandler } from '@app/handlers/player-handler/player-handler';
 import { Subscription } from 'rxjs';
+import { BoardHandler } from '@app/handlers/board-handler/board-handler';
+import { ReserveHandler } from '@app/handlers/reserve-handler/reserve-handler';
 
 export class SessionHandler {
     readonly sessionData: SessionData;
@@ -18,12 +18,12 @@ export class SessionHandler {
         readonly sessionInfo: SessionInfo,
         readonly boardHandler: BoardHandler,
         readonly reserveHandler: ReserveHandler,
-        readonly socketHandler: SocketHandler,
-        readonly playerHandler: PlayerHandler,
+        private readonly playerHandler: PlayerHandler,
+        private readonly socketHandler: SocketHandler,
     ) {
         socketHandler.sessionId = sessionInfo.id;
         this.sessionData = { isActive: false, isStarted: false, timeLimitEpoch: 0 };
-        this.playerSubscription = this.playerHandler.onTurn().subscribe(() => this.onTurn());
+        this.playerSubscription = this.playerHandler.onTurn().subscribe((id) => this.onTurn(id));
     }
 
     getServerConfig(id: string): ServerConfig {
@@ -45,14 +45,6 @@ export class SessionHandler {
         return this.playerHandler.start();
     }
 
-    destroy(): void {
-        this.sessionData.isActive = false;
-        this.sessionData.timeLimitEpoch = 0;
-        this.playerHandler.destroy();
-        this.playerSubscription.unsubscribe();
-        clearInterval(this.timer);
-    }
-
     addPlayer(player: Player): void {
         player.init(this.boardHandler, this.reserveHandler, this.socketHandler);
         this.playerHandler.addPlayer(player);
@@ -60,6 +52,25 @@ export class SessionHandler {
 
     removePlayer(id: string): Player | null {
         return this.playerHandler.removePlayer(id);
+    }
+
+    dispose(): void {
+        this.sessionData.isActive = false;
+        this.sessionData.timeLimitEpoch = 0;
+        this.playerHandler.dispose();
+        this.playerSubscription.unsubscribe();
+        clearInterval(this.timer);
+    }
+
+    getStats(id: string): SessionStats | null {
+        const firstPlayer = this.players.find((p) => p.id === id);
+        const secondPlayer = this.players.find((p) => p.id !== firstPlayer?.id ?? '');
+
+        if (firstPlayer == null || secondPlayer == null) {
+            return null;
+        }
+
+        return { localStats: firstPlayer.stats, remoteStats: secondPlayer.stats };
     }
 
     get players(): Player[] {
@@ -76,7 +87,30 @@ export class SessionHandler {
         this.socketHandler.sendData('timerTick', timeLeftMs);
     }
 
-    private onTurn(): void {
+    private onTurn(id: string): void {
+        if (this.isEndGame) {
+            this.endGame();
+            return;
+        }
+
+        this.players.find((p) => p.id === id)?.startTurn();
         this.sessionData.timeLimitEpoch = new Date().getTime() + this.sessionInfo.playTimeMs;
+    }
+
+    private endGame(): void {
+        this.players.forEach((p) => (p.playerData.scoreAdjustment -= p.rackPoints()));
+
+        if (this.reserveHandler.length === 0 && this.playerHandler.rackEmptied) {
+            this.players[0].playerData.scoreAdjustment += this.players[1].rackPoints();
+            this.players[1].playerData.scoreAdjustment += this.players[2].rackPoints();
+        }
+
+        this.socketHandler.sendData('endGame', this.playerHandler.winner);
+
+        this.dispose();
+    }
+
+    private get isEndGame(): boolean {
+        return this.playerHandler.isOverSkipLimit || (this.reserveHandler.length === 0 && this.playerHandler.rackEmptied);
     }
 }

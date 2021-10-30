@@ -1,5 +1,6 @@
 import { Player } from '@app/classes/player/player';
 import { Observable, Subject, Subscription } from 'rxjs';
+import { Config } from '@app/config';
 
 export class PlayerHandler {
     readonly players: Player[];
@@ -20,7 +21,7 @@ export class PlayerHandler {
         return this.players.filter((p) => p.isTurn).map((p) => p.id)[0] ?? '';
     }
 
-    destroy(): void {
+    dispose(): void {
         this.playerSubscriptions.forEach((s) => s.unsubscribe());
     }
 
@@ -46,6 +47,18 @@ export class PlayerHandler {
         return this.nextTurn.asObservable();
     }
 
+    get isOverSkipLimit(): boolean {
+        return this.players.map((p) => p.playerData.skippedTurns > Config.MAX_SKIP_TURN).reduce((acc, isMaxSkip) => acc && isMaxSkip);
+    }
+
+    get rackEmptied(): boolean {
+        return this.players.map((p) => p.playerData.rack.length === 0).reduce((acc, isEmpty) => acc || isEmpty);
+    }
+
+    get winner(): string {
+        return this.players.reduce((winner, player) => (winner.stats.points > player.stats.points ? winner : player)).id;
+    }
+
     private initialTurn(): void {
         const randomPlayerIndex = Math.floor(this.players.length * Math.random());
         const id = this.players[randomPlayerIndex].id;
@@ -54,13 +67,7 @@ export class PlayerHandler {
     }
 
     private switchTurn(lastId: string): void {
-        const nextPlayer = this.players.find((p) => p.id !== lastId);
-
-        if (nextPlayer == null) {
-            return;
-        }
-
-        nextPlayer.startTurn();
-        this.nextTurn.next(nextPlayer.id);
+        const nextPlayerId = this.players.map((p) => p.id).find((id) => id !== lastId) ?? '';
+        this.nextTurn.next(nextPlayerId);
     }
 }

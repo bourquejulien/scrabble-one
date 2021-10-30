@@ -1,16 +1,13 @@
 import { PlayerData } from '@app/classes/player-data';
-import { ReserveHandler } from '@app/handlers/reserve-handler/reserve-handler';
 import { Config } from '@app/config';
 import { SkipAction } from '@app/classes/player/virtual-player/actions/skip-action';
 import { ExchangeAction } from '@app/classes/player/virtual-player/actions/exchange-action';
 import { PlayGenerator } from '@app/classes/virtual-player/play-generator';
 import { DictionaryService } from '@app/services/dictionary/dictionary.service';
-import { BoardHandler } from '@app/handlers/board-handler/board-handler';
 import { PlayAction } from './actions/play-action';
 import { Action } from './actions/action';
 import { Player } from '@app/classes/player/player';
 import { PlayerInfo } from '@app/classes/player-info';
-import { SocketHandler } from '@app/handlers/socket-handler/socket-handler';
 import * as logger from 'winston';
 
 const MIN_PLAYTIME_MILLISECONDS = 3000;
@@ -19,9 +16,6 @@ export class VirtualPlayer extends Player {
     isTurn: boolean;
 
     readonly playerData: PlayerData;
-    private boardHandler: BoardHandler;
-    private reserveHandler: ReserveHandler;
-    private socketHandler: SocketHandler;
 
     constructor(
         readonly playerInfo: PlayerInfo,
@@ -29,12 +23,6 @@ export class VirtualPlayer extends Player {
         private readonly runAction: (action: Action) => Action | null,
     ) {
         super();
-    }
-
-    init(boardHandler: BoardHandler, reserveHandler: ReserveHandler, socketHandler: SocketHandler): void {
-        this.boardHandler = boardHandler;
-        this.reserveHandler = reserveHandler;
-        this.socketHandler = socketHandler;
     }
 
     async startTurn(): Promise<void> {
@@ -52,12 +40,6 @@ export class VirtualPlayer extends Player {
 
         this.fillRack();
         this.endTurn();
-    }
-
-    fillRack(): void {
-        while (this.reserveHandler.length > 0 && this.playerData.rack.length < Config.RACK_SIZE) {
-            this.playerData.rack.push(this.reserveHandler.drawLetter());
-        }
     }
 
     private nextAction(): Action {

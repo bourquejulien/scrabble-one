@@ -5,6 +5,7 @@ import { BoardHandler } from '@app/handlers/board-handler/board-handler';
 import { ReserveHandler } from '@app/handlers/reserve-handler/reserve-handler';
 import { SocketHandler } from '@app/handlers/socket-handler/socket-handler';
 import { letterDefinitions, PlayerStats } from '@common';
+import { Config } from '@app/config';
 
 export abstract class Player {
     isTurn: boolean;
@@ -12,23 +13,38 @@ export abstract class Player {
     readonly playerData: PlayerData;
 
     protected readonly turnEnded: Subject<string>;
+    protected boardHandler: BoardHandler;
+    protected reserveHandler: ReserveHandler;
+    protected socketHandler: SocketHandler;
 
     protected constructor() {
         this.playerData = { baseScore: 0, scoreAdjustment: 0, skippedTurns: 0, rack: [] };
         this.turnEnded = new Subject<string>();
     }
 
+    init(boardHandler: BoardHandler, reserveHandler: ReserveHandler, socketHandler: SocketHandler): void {
+        this.boardHandler = boardHandler;
+        this.reserveHandler = reserveHandler;
+        this.socketHandler = socketHandler;
+    }
+
+    fillRack(): void {
+        while (this.reserveHandler.length > 0 && this.playerData.rack.length < Config.RACK_SIZE) {
+            this.playerData.rack.push(this.reserveHandler.drawLetter());
+        }
+    }
+
     onTurn(): Observable<string> {
         return this.turnEnded.asObservable();
     }
 
-    playerRackPoints(): number {
+    rackPoints(): number {
         let playerPoint = 0;
         for (const letter of this.playerData.rack) {
             const currentLetterData = letterDefinitions.get(letter.toLowerCase());
-            if (currentLetterData?.points === undefined) return -1;
-            playerPoint += currentLetterData.points;
+            playerPoint += currentLetterData?.points ?? 0;
         }
+
         return playerPoint;
     }
 
@@ -37,7 +53,8 @@ export abstract class Player {
     }
 
     get stats(): PlayerStats {
-        return { points: this.playerData.baseScore + this.playerData.scoreAdjustment, rackSize: this.playerData.rack.length };
+        const points = Math.max(0, this.playerData.baseScore + this.playerData.scoreAdjustment);
+        return { points, rackSize: this.playerData.rack.length };
     }
 
     protected endTurn(): void {
@@ -45,7 +62,5 @@ export abstract class Player {
         this.turnEnded.next(this.playerInfo.id);
     }
 
-    abstract init(boardHandler: BoardHandler, reserveHandler: ReserveHandler, socketHandler: SocketHandler): void;
-    abstract fillRack(): void;
     abstract startTurn(): Promise<void>;
 }

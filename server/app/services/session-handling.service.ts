@@ -21,7 +21,7 @@ export class SessionHandlingService {
         if (sessionHandler == null) return null;
 
         sessionHandler.players.forEach((p) => this.playerIds.delete(p.id));
-        sessionHandler.destroy();
+        sessionHandler.dispose();
         return sessionHandler;
     }
 
