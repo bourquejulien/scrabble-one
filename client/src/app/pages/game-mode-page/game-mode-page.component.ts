@@ -1,8 +1,8 @@
 import { Component } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
-import { GameType } from '@app/classes/game-type';
 import { InitGameComponent } from '@app/components/init-game/init-game.component';
 import { SocketClientService } from '@app/services/socket-client/socket-client.service';
+import { GameType } from '@common';
 
 @Component({
     selector: 'app-game-mode-page',
@@ -21,7 +21,7 @@ export class GameModePageComponent {
     }
 
     createOnlineGame(): void {
-        this.openDialog(GameType.CreateOnline);
+        this.openDialog(GameType.Multiplayer);
         this.socket.socketClient.emit('newOnlineGame');
     }
 }

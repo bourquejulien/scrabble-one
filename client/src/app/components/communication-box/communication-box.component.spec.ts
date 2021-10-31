@@ -7,10 +7,8 @@ import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormsModule } from '@angular/forms';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { GameType } from '@app/classes/game-type';
 import { cleanStyles } from '@app/classes/helpers/cleanup.helper';
 import { PlayerType } from '@app/classes/player/player-type';
-import { SocketClientMock } from '@app/classes/serverside-socket-helper';
 import { TimeSpan } from '@app/classes/time/timespan';
 import { Constants } from '@app/constants/global.constants';
 import { AppMaterialModule } from '@app/modules/material.module';
@@ -18,7 +16,7 @@ import { CommandsService } from '@app/services/commands/commands.service';
 import { MessagingService } from '@app/services/messaging/messaging.service';
 import { SessionService } from '@app/services/session/session.service';
 import { SocketClientService } from '@app/services/socket-client/socket-client.service';
-import { Message, MessageType } from '@common';
+import { GameType, Message, MessageType, SocketMock } from '@common';
 import { CommunicationBoxComponent } from './communication-box.component';
 
 describe('CommunicationBoxComponent', () => {
@@ -27,10 +25,10 @@ describe('CommunicationBoxComponent', () => {
     let dummyMessage: Message;
     let messagingServiceSpy: jasmine.SpyObj<MessagingService>;
     let socketServiceSpyObj: jasmine.SpyObj<SocketClientService>;
-    const socketClient: SocketClientMock = new SocketClientMock();
+    const socketClient: SocketMock = new SocketMock();
     const commandsServiceSpy = jasmine.createSpyObj('CommandsService', {
         parseInput: (input: string) => {
-            if (input === 'false') {
+            if (input === '1') {
                 return false;
             }
             return true;
@@ -39,7 +37,7 @@ describe('CommunicationBoxComponent', () => {
 
     const sessionService = {
         gameConfig: {
-            gameType: GameType.Solo,
+            gameType: GameType.SinglePlayer,
             playTime: TimeSpan.fromMinutesSeconds(1, 0),
             firstPlayerName: 'Alphonse',
             secondPlayerName: 'Lucienne',
@@ -56,7 +54,7 @@ describe('CommunicationBoxComponent', () => {
                 { provide: SocketClientService, useValue: socketServiceSpyObj },
                 { provide: CommandsService, useValue: commandsServiceSpy },
                 { provide: SessionService, useValue: sessionService },
-                { provide: CommandsService, useValue: jasmine.createSpyObj('CommandsService', { parseInput: true }) },
+                { provide: CommandsService, useValue: commandsServiceSpy },
             ],
             imports: [AppMaterialModule, BrowserAnimationsModule, FormsModule, HttpClientTestingModule],
             schemas: [CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA],
@@ -76,7 +74,7 @@ describe('CommunicationBoxComponent', () => {
         };
     });
 
-    it('should create', () => {
+    it('should be created', () => {
         expect(component).toBeTruthy();
     });
 
@@ -88,10 +86,11 @@ describe('CommunicationBoxComponent', () => {
         expect(component.send('Message.')).toBeTruthy();
     });
 
-    /* TODO: it('should not clear input if input is not value', () => {
+    /* it('should not clear input if input is not value', () => {
+        fixture.destroy();
         const inputValue = 'some random input';
         component.inputValue = inputValue;
-        component.send('false');
+        component.send('1');
         expect(component.inputValue).toBe(inputValue);
     }); */
 
@@ -127,6 +126,22 @@ describe('CommunicationBoxComponent', () => {
         expect(component.getMessageColor(dummyMessage)).toBe(Constants.PLAYER_TWO_COLOR);
         dummyMessage.userId = PlayerType.Local;
         expect(component.getMessageColor(dummyMessage)).toBe(Constants.PLAYER_ONE_COLOR);
+        dummyMessage.messageType = MessageType.Game;
+        expect(component.getMessageColor(dummyMessage)).toBe(Constants.SYSTEM_COLOR);
+        dummyMessage.messageType = MessageType.Log;
+        expect(component.getMessageColor(dummyMessage)).toBe(Constants.SYSTEM_COLOR);
+        dummyMessage.messageType = MessageType.System;
+        expect(component.getMessageColor(dummyMessage)).toBe(Constants.SYSTEM_COLOR);
+    });
+
+    it('should return the correct font color', () => {
+        expect(component.getFontColor(dummyMessage)).toBe(Constants.WHITE_FONT);
+        dummyMessage.messageType = MessageType.Game;
+        expect(component.getFontColor(dummyMessage)).toBe(Constants.BLACK_FONT);
+        dummyMessage.messageType = MessageType.Message;
+        expect(component.getFontColor(dummyMessage)).toBe(Constants.WHITE_FONT);
+        dummyMessage.messageType = MessageType.System;
+        expect(component.getFontColor(dummyMessage)).toBe(Constants.WHITE_FONT);
     });
 
     it('should push new messages and call scroll', () => {
@@ -136,7 +151,7 @@ describe('CommunicationBoxComponent', () => {
         const scrollSpy = spyOn<any>(component, 'scroll').and.callThrough();
         const pushSpy = spyOn(component.messages, 'push').and.callThrough();
 
-        socketClient.serverSideEmit('message', dummyMessage);
+        socketClient.triggerEndpoint('message', dummyMessage);
 
         expect(scrollSpy).toHaveBeenCalled();
         expect(pushSpy).toHaveBeenCalled();
@@ -148,7 +163,7 @@ describe('CommunicationBoxComponent', () => {
 
         const pushSpy = spyOn(component.messages, 'push').and.callThrough();
 
-        socketClient.serverSideEmit('connect_error', 'error');
+        socketClient.triggerEndpoint('connect_error', 'error');
 
         expect(pushSpy).toHaveBeenCalled();
     });

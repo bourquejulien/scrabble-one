@@ -1,28 +1,40 @@
-import { IPlayer } from '@app/classes/player/player';
+import { Player } from '@app/classes/player/player';
 import { PlayerInfo } from '@app/classes/player-info';
 import { PlayerData } from '@app/classes/player-data';
-import { BehaviorSubject } from 'rxjs';
+import { Observable, Subject } from 'rxjs';
 import { Config } from '@app/config';
 import { ReserveHandler } from '@app/handlers/reserve-handler/reserve-handler';
-import { Placement, Answer } from '@common';
+import { Answer, Placement } from '@common';
 import { BoardHandler } from '@app/handlers/board-handler/board-handler';
+import { SocketHandler } from '@app/handlers/socket-handler/socket-handler';
+import * as logger from 'winston';
 
-// TODO Fix messaging service: over sockets, or in Answer?
-export class HumanPlayer implements IPlayer {
-    playerData: PlayerData;
-    readonly turnEnded: BehaviorSubject<string>;
+export class HumanPlayer implements Player {
+    isTurn: boolean;
+    readonly playerData: PlayerData;
+    private boardHandler: BoardHandler;
+    private reserveHandler: ReserveHandler;
+    private socketHandler: SocketHandler;
 
-    constructor(readonly playerInfo: PlayerInfo, private readonly boardHandler: BoardHandler, private readonly reserveHandler: ReserveHandler) {
+    private readonly turnEnded: Subject<string>;
+
+    constructor(readonly playerInfo: PlayerInfo) {
         this.playerData = { score: 0, skippedTurns: 0, rack: [] };
-        this.turnEnded = new BehaviorSubject<string>(this.playerInfo.id);
+        this.turnEnded = new Subject<string>();
+    }
+
+    init(boardHandler: BoardHandler, reserveHandler: ReserveHandler, socketHandler: SocketHandler): void {
+        this.boardHandler = boardHandler;
+        this.reserveHandler = reserveHandler;
+        this.socketHandler = socketHandler;
     }
 
     async startTurn(): Promise<void> {
-        return Promise.resolve();
-    }
+        logger.debug(`HumanPlayer - StartTurn - Id: ${this.playerInfo.id}`);
 
-    endTurn(): void {
-        this.turnEnded.next(this.playerInfo.id);
+        this.isTurn = true;
+        this.socketHandler.sendData('onTurn', this.id);
+        return Promise.resolve();
     }
 
     fillRack(): void {
@@ -32,6 +44,10 @@ export class HumanPlayer implements IPlayer {
     }
 
     async placeLetters(placements: Placement[]): Promise<Answer> {
+        if (!this.isTurn) {
+            return { isSuccess: false, body: 'Not your turn' };
+        }
+
         const lettersToPlace: string[] = [];
 
         placements = this.boardHandler.retrieveNewLetters(placements);
@@ -73,12 +89,14 @@ export class HumanPlayer implements IPlayer {
     }
 
     exchangeLetters(lettersToExchange: string[]): Answer {
-        if (!this.areLettersInRack(lettersToExchange)) {
-            return { isSuccess: false, body: 'Letters not in rack' };
+        if (!this.isTurn) {
+            return { isSuccess: false, body: 'Not your turn' };
         }
 
+        if (!this.areLettersInRack(lettersToExchange)) return { isSuccess: false, body: 'Letters not in rack' };
+
         if (this.reserveHandler.length < Config.RACK_SIZE) {
-            /* this.messagingService.send(SystemMessages.ImpossibleAction, SystemMessages.NotEnoughLetters, MessageType.Error); */
+            // this.socketService.send(SystemMessages.ImpossibleAction, SystemMessages.NotEnoughLetters, MessageType.Error);
             return { isSuccess: false, body: 'Letters not in rack' };
         }
 
@@ -104,8 +122,17 @@ export class HumanPlayer implements IPlayer {
         return { isSuccess: true, body: '' };
     }
 
+    onTurn(): Observable<string> {
+        return this.turnEnded.asObservable();
+    }
+
     get id(): string {
         return this.playerInfo.id;
+    }
+
+    private endTurn(): void {
+        this.isTurn = false;
+        this.turnEnded.next(this.playerInfo.id);
     }
 
     private updateRack(lettersToPlace: string[]): void {

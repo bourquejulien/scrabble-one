@@ -1,15 +1,17 @@
 import { Component, HostListener, Inject, OnInit } from '@angular/core';
 import { FormControl, FormGroup, ValidatorFn, Validators } from '@angular/forms';
-import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 import { Error } from '@app/classes/error-name/error';
 import { GameConfig } from '@app/classes/game-config';
-import { GameType } from '@app/classes/game-type';
 import { TimeSpan } from '@app/classes/time/timespan';
 import { GameService } from '@app/services/game/game.service';
-import { SinglePlayerGameConfig } from '@common';
+import { GameType, SinglePlayerConfig } from '@common';
 
-const GAME_TYPES_LIST = ['Mode Solo Débutant'];
+const GAME_TYPES_LIST = [
+    ['Mode Solo Débutant', GameType.SinglePlayer],
+    ['Mode multijoueurs', GameType.Multiplayer],
+];
 // eslint-disable-next-line @typescript-eslint/no-magic-numbers -- Lists all option, the list is a constant
 const TURN_LENGTH_MINUTES = [0, 1, 2, 3, 4, 5] as const;
 // eslint-disable-next-line @typescript-eslint/no-magic-numbers -- Lists all option, the list is a constant
@@ -71,7 +73,7 @@ export class InitGameComponent implements OnInit {
         this.minutes = DEFAULT_PLAY_TIME.totalMinutes;
         this.seconds = DEFAULT_PLAY_TIME.seconds;
         this.gameConfig = {
-            gameType: GAME_TYPES_LIST[0],
+            gameType: GameType.SinglePlayer,
             playTime: DEFAULT_PLAY_TIME,
             firstPlayerName: '',
             secondPlayerName: '',
@@ -118,7 +120,6 @@ export class InitGameComponent implements OnInit {
     }
 
     async ngOnInit(): Promise<void> {
-        await this.gameService.reset();
         this.gameConfig.secondPlayerName = InitGameComponent.randomizeBotName(this.botNames);
     }
 
@@ -129,7 +130,7 @@ export class InitGameComponent implements OnInit {
             this.dialogRef.close();
 
             // TODO Should be able to redirect to waiting room or GameService with proper configs
-            const singlePlayerConfig: SinglePlayerGameConfig = {
+            const singlePlayerConfig: SinglePlayerConfig = {
                 gameType: this.gameConfig.gameType,
                 playTimeMs: this.gameConfig.playTime.totalMilliseconds,
                 playerName: this.gameConfig.firstPlayerName,
@@ -192,10 +193,10 @@ export class InitGameComponent implements OnInit {
     }
 
     private setNextPage(): void {
-        if (this.data.gameModeType === GameType.Solo) {
+        if (this.data.gameModeType === GameType.SinglePlayer) {
             this.nextPage = 'game';
         }
-        if (this.data.gameModeType === GameType.CreateOnline) {
+        if (this.data.gameModeType === GameType.Multiplayer) {
             this.nextPage = 'waiting-room';
         }
     }
