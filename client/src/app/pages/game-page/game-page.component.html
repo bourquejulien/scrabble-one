@@ -26,18 +26,17 @@
     </mat-card>
     <div id="tools-container">
         <div class="comm-box-sidenav-content">
-            <div class="button-bar" *ngFor="let button of buttonConfig; let indexOfButton = index">
+            <div class="button-bar" *ngFor="let config of buttonConfig">
                 <button
                     mat-fab
-                    *ngIf="playerType === 'local' || button.icon !== 'block'"
+                    *ngIf="playerType === 'local' || config.icon !== 'block'"
                     class="fab-button"
-                    [color]="button.color"
-                    [routerLink]="button.routerLink"
-                    (click)="callFunction(indexOfButton)"
-                    [matTooltip]="button.hover"
+                    [color]="config.color"
+                    (click)="config.action()"
+                    [matTooltip]="config.hover"
                 >
                     <mat-icon>
-                        {{ button.icon }}
+                        {{ config.icon }}
                     </mat-icon>
                 </button>
             </div>

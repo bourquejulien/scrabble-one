@@ -20,6 +20,21 @@
             "type": "pwa-chrome",
             "url": "http://localhost:4200",
             "webRoot": "${workspaceFolder}/client"
-        }
+        },
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "Mocha Server Tests",
+            "program": "${workspaceFolder}/server/node_modules/mocha/bin/_mocha",
+            "args": [
+              "--config",
+              "${workspaceFolder}/server/.mocharc.json",
+            ],
+            "internalConsoleOptions": "openOnSessionStart",
+            "localRoot": "${workspaceFolder}/server",
+            "skipFiles": [
+              "<node_internals>/**"
+            ]
+          }
     ]
 }

@@ -1,44 +1,27 @@
 import { TestBed } from '@angular/core/testing';
-import { TimeSpan } from '@app/classes/time/timespan';
-import { asyncScheduler } from 'rxjs';
 import { TimerService } from './timer.service';
-import { PlayerType } from '@app/classes/player/player-type';
+import { SocketClientService } from '@app/services/socket-client/socket-client.service';
+import { PlayerService } from '@app/services/player/player.service';
+import createSpyObj = jasmine.createSpyObj;
 
 describe('TimerService', () => {
     let service: TimerService;
-    let currentTime: number;
+    let playerService: PlayerService;
+    let socketService: SocketClientService;
 
     beforeEach(() => {
-        currentTime = 0;
-        asyncScheduler.now = () => currentTime;
-    });
-
-    beforeEach(() => {
-        TestBed.configureTestingModule({});
+        playerService = createSpyObj(PlayerService, ['skipTurn']);
+        socketService = createSpyObj(SocketClientService, ['on']);
+        TestBed.configureTestingModule({
+            providers: [
+                { provide: SocketClientService, useValue: socketService },
+                { provide: PlayerService, useValue: playerService },
+            ],
+        });
         service = TestBed.inject(TimerService);
     });
 
     it('should be created', () => {
         expect(service).toBeTruthy();
-    });
-
-    it('should have a 0 time value after stop', () => {
-        service.start(TimeSpan.fromSeconds(1), PlayerType.Local);
-        service.stop();
-
-        expect(service.time.totalMilliseconds).toEqual(0);
-    });
-
-    it('time should not be 0 after starting timer', () => {
-        service.start(TimeSpan.fromSeconds(1), PlayerType.Local);
-
-        expect(service.time.totalMilliseconds).toEqual(TimeSpan.fromSeconds(1).totalMilliseconds);
-    });
-
-    it('should have a 0 time value after multiple stops', () => {
-        service.stop();
-        service.stop();
-
-        expect(service.time.totalMilliseconds).toEqual(0);
     });
 });

@@ -1,9 +1,8 @@
 import { Request, Response, Router } from 'express';
 import { Service } from 'typedi';
 import { Constants } from '@app/constants';
-import { SessionHandlingService } from '@app/services/session-handling.service';
+import { SessionHandlingService } from '@app/services/sessionHandling/session-handling.service';
 import { HumanPlayer } from '@app/classes/player/human-player/human-player';
-import { VirtualPlayer } from '@app/classes/player/virtual-player/virtual-player';
 
 @Service()
 export class PlayerController {
@@ -55,41 +54,15 @@ export class PlayerController {
             res.status(Constants.HTTP_STATUS.OK);
             res.json(humanPlayer.playerData);
         });
-
-        // TODO To remove once server is master over client
-        this.router.post('/virtual', async (req: Request, res: Response) => {
-            const virtualPlayer = this.getVirtualPlayer(req.body.id);
-
-            if (virtualPlayer === null) {
-                res.sendStatus(Constants.HTTP_STATUS.BAD_REQUEST);
-                return;
-            }
-
-            await virtualPlayer.startTurn();
-            const response = virtualPlayer.playerData;
-
-            res.status(Constants.HTTP_STATUS.OK);
-            res.json(response);
-        });
     }
 
     private getHumanPlayer(id: string): HumanPlayer | null {
-        const player = this.sessionHandlingService.getHandler(id)?.players.find((p) => p.id === id) ?? null;
+        const player = this.sessionHandlingService.getHandlerByPlayerId(id)?.players.find((p) => p.id === id) ?? null;
 
         if (player == null || !player.playerInfo.isHuman) {
             return null;
         }
 
         return player as HumanPlayer;
-    }
-
-    private getVirtualPlayer(id: string): VirtualPlayer | null {
-        const player = this.sessionHandlingService.getHandler(id)?.players.find((p) => p.id !== id) ?? null;
-
-        if (player == null || player.playerInfo.isHuman) {
-            return null;
-        }
-
-        return player as VirtualPlayer;
     }
 }
