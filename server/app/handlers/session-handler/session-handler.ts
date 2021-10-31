@@ -19,7 +19,7 @@ export class SessionHandler {
     constructor(
         readonly sessionInfo: SessionInfo,
         readonly boardHandler: BoardHandler,
-        readonly reserveHandler: ReserveHandler,
+        public reserveHandler: ReserveHandler,
         readonly socketHandler: SocketHandler,
     ) {
         socketHandler.sessionId = sessionInfo.id;

@@ -8,7 +8,7 @@ import { HumanPlayer } from '@app/classes/player/human-player/human-player';
 export class PlayerController {
     router: Router;
 
-    constructor(private readonly sessionHandlingService: SessionHandlingService) {
+    constructor(private sessionHandlingService: SessionHandlingService) {
         this.configureRouter();
     }
 

@@ -3,7 +3,7 @@ import * as http from 'http';
 import { AddressInfo } from 'net';
 import { Service } from 'typedi';
 import { SocketService } from '@app/services/socket/socket-service';
-import { RoomController } from '@app/controllers/room.controller';
+import { RoomController } from '@app/controllers/room/room.controller';
 
 @Service()
 export class Server {
