@@ -1,15 +1,15 @@
+import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { PlayerData } from '@app/classes/player-data';
+import { PlayerType } from '@app/classes/player/player-type';
 import { Timer } from '@app/classes/time/timer';
 import { TimeSpan } from '@app/classes/time/timespan';
-import { TimerService } from '@app/services/timer/timer.service';
-import { Subject } from 'rxjs';
-import { HttpClient } from '@angular/common/http';
-import { environment } from '@environment';
-import { SessionService } from '@app/services/session/session.service';
-import { PlayerData } from '@app/classes/player-data';
-import { ReserveService } from '@app/services/reserve/reserve.service';
 import { BoardService } from '@app/services/board/board.service';
-import { PlayerType } from '@app/classes/player/player-type';
+import { ReserveService } from '@app/services/reserve/reserve.service';
+import { SessionService } from '@app/services/session/session.service';
+import { TimerService } from '@app/services/timer/timer.service';
+import { environment } from '@environment';
+import { Subject } from 'rxjs';
 
 const MIN_PLAYTIME_SECONDS = 3;
 
@@ -51,14 +51,14 @@ export class VirtualPlayerService {
         this.endTurn();
     }
 
+    reset(): void {
+        this.playerData = { score: 0, skippedTurns: 0, rack: [] };
+        this.minTimer.stop();
+    }
+
     private endTurn() {
         this.minTimer.stop();
         this.timerService.stop();
         this.turnComplete.next(PlayerType.Virtual);
-    }
-
-    reset(): void {
-        this.playerData = { score: 0, skippedTurns: 0, rack: [] };
-        this.minTimer.stop();
     }
 }

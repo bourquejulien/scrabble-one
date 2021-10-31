@@ -81,6 +81,47 @@ export class GameService {
         this.httpCLient.delete(localUrl('end'));
     }
 
+    emptyRackAndReserve() {
+        const isReserveEmpty = this.reserveService.length === 0;
+        const isRackEmpty = this.playerService.rack.length === 0;
+        const isVirtualRackEmpty = this.virtualPlayerService.playerData.rack.length === 0;
+
+        if (isReserveEmpty && (isRackEmpty || isVirtualRackEmpty)) {
+            this.endGamePoint();
+
+            if (isRackEmpty) {
+                this.playerService.playerData.score += this.playerRackPoint(this.virtualPlayerService.playerData.rack);
+            } else {
+                this.virtualPlayerService.playerData.score += this.playerRackPoint(this.playerService.rack);
+            }
+
+            this.gameRunning = false;
+            this.gameEnding.next();
+        }
+    }
+
+    skipTurn() {
+        if (this.playerService.playerData.skippedTurns < 3) {
+            this.playerService.playerData.skippedTurns++;
+        }
+
+        this.nextTurn();
+    }
+
+    sendRackInCommunication() {
+        this.messaging.send(
+            'Fin de partie - lettres restantes',
+            this.sessionService.gameConfig.firstPlayerName +
+                ' : ' +
+                this.playerService.rack +
+                '\n' +
+                this.sessionService.gameConfig.secondPlayerName +
+                ' : ' +
+                this.virtualPlayerService.playerData.rack,
+            MessageType.System,
+        );
+    }
+
     private nextTurn() {
         if (!this.gameRunning) {
             return;
@@ -114,25 +155,6 @@ export class GameService {
         return playerPoint;
     }
 
-    emptyRackAndReserve() {
-        const isReserveEmpty = this.reserveService.length === 0;
-        const isRackEmpty = this.playerService.rack.length === 0;
-        const isVirtualRackEmpty = this.virtualPlayerService.playerData.rack.length === 0;
-
-        if (isReserveEmpty && (isRackEmpty || isVirtualRackEmpty)) {
-            this.endGamePoint();
-
-            if (isRackEmpty) {
-                this.playerService.playerData.score += this.playerRackPoint(this.virtualPlayerService.playerData.rack);
-            } else {
-                this.virtualPlayerService.playerData.score += this.playerRackPoint(this.playerService.rack);
-            }
-
-            this.gameRunning = false;
-            this.gameEnding.next();
-        }
-    }
-
     private endGamePoint() {
         const finalScorePlayer = this.firstPlayerStats.points - this.playerRackPoint(this.playerService.rack);
         const finalScoreVirtualPlayer = this.secondPlayerStats.points - this.playerRackPoint(this.virtualPlayerService.playerData.rack);
@@ -162,28 +184,6 @@ export class GameService {
             this.gameRunning = false;
             this.gameEnding.next();
         }
-    }
-
-    skipTurn() {
-        if (this.playerService.playerData.skippedTurns < 3) {
-            this.playerService.playerData.skippedTurns++;
-        }
-
-        this.nextTurn();
-    }
-
-    sendRackInCommunication() {
-        this.messaging.send(
-            'Fin de partie - lettres restantes',
-            this.sessionService.gameConfig.firstPlayerName +
-            ' : ' +
-            this.playerService.rack +
-            '\n' +
-            this.sessionService.gameConfig.secondPlayerName +
-            ' : ' +
-            this.virtualPlayerService.playerData.rack,
-            MessageType.System,
-        );
     }
 
     private handleTurnCompletion(playerType: PlayerType) {

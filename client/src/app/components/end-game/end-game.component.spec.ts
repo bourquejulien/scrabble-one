@@ -1,12 +1,12 @@
 import { NO_ERRORS_SCHEMA } from '@angular/compiler';
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { EndGameComponent } from './end-game.component';
-import { GameService } from '@app/services/game/game.service';
+import { MatDialogClose, MatDialogModule } from '@angular/material/dialog';
 import { cleanStyles } from '@app/classes/helpers/cleanup.helper';
 import { TimeSpan } from '@app/classes/time/timespan';
-import { MatDialogClose, MatDialogModule } from '@angular/material/dialog';
+import { GameService } from '@app/services/game/game.service';
 import { SessionService } from '@app/services/session/session.service';
+import { EndGameComponent } from './end-game.component';
 
 describe('EndGameComponent', () => {
     let component: EndGameComponent;
@@ -56,7 +56,7 @@ describe('EndGameComponent', () => {
         sessionService.gameConfig.secondPlayerName = 'Jean-Simon';
         const message = component.winner();
         expect(message).toBe(
-            'Félicitation au gagnant ' + sessionService.gameConfig.firstPlayerName + ':' + gameService.firstPlayerStats.points + ' points',
+            'Félicitation au gagnant ' + sessionService.gameConfig.firstPlayerName + ' : ' + gameService.firstPlayerStats.points + ' points',
         );
     });
 
@@ -67,7 +67,7 @@ describe('EndGameComponent', () => {
         sessionService.gameConfig.secondPlayerName = 'Jean-Simon';
         const message = component.winner();
         expect(message).toBe(
-            'Félicitation au gagnant ' + sessionService.gameConfig.secondPlayerName + ':' + gameService.secondPlayerStats.points + ' points',
+            'Félicitation au gagnant ' + sessionService.gameConfig.secondPlayerName + ' : ' + gameService.secondPlayerStats.points + ' points',
         );
     });
 

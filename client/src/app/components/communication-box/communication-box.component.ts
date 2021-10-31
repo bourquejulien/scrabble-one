@@ -60,7 +60,7 @@ export class CommunicationBoxComponent implements AfterViewInit {
             case MessageType.Error:
                 return Constants.SYSTEM_COLOR;
             case MessageType.Message:
-                return message.userId === PlayerType.Local ? Constants.PLAYER_ONE_COLOR : Constants.SYSTEM_COLOR;
+                return message.userId === PlayerType.Local ? Constants.PLAYER_ONE_COLOR : Constants.PLAYER_TWO_COLOR;
             default:
                 return Constants.SYSTEM_COLOR;
         }

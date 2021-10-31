@@ -4,7 +4,7 @@ import { Board } from '@app/classes/board/board';
 import { Dictionary } from '@app/classes/dictionary/dictionary';
 import { Config } from '@app/config';
 import JsonBonuses from '@assets/bonus.json';
-import { Bonus, BonusInfos, Direction, letterDefinitions, Placement, Vec2 } from '@common';
+import { Bonus, BonusInfos, Direction, LETTER_DEFINITIONS, Placement, Vec2 } from '@common';
 import { expect } from 'chai';
 import { BoardValidator } from './board-validator';
 
@@ -54,7 +54,7 @@ const generatePlacement = (word: string, initialPosition: Vec2, direction: Direc
 const generateLetters = (): { [key: string]: number } => {
     const letterValues: { [key: string]: number } = {};
 
-    for (const [letter, data] of letterDefinitions) {
+    for (const [letter, data] of LETTER_DEFINITIONS) {
         letterValues[letter] = data.points;
     }
 

@@ -11,10 +11,10 @@ import { Direction, LETTER_DEFINITIONS, MessageType, Vec2 } from '@common';
     providedIn: 'root',
 })
 export class CommandsService {
-    private placeWordCommandRegex: RegExp;
     wordRegex: RegExp;
     rackRegex: RegExp;
     messageRegex: RegExp;
+    private placeWordCommandRegex: RegExp;
 
     constructor(
         public messagingService: MessagingService,

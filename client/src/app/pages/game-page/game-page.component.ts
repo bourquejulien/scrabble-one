@@ -102,6 +102,16 @@ export class GamePageComponent implements OnDestroy {
         }
     }
 
+    endGame() {
+        this.gameService.sendRackInCommunication();
+        const dialogRef = this.dialog.open(EndGameComponent);
+        dialogRef.afterClosed().subscribe((result) => {
+            if (result) {
+                this.gameService.reset();
+            }
+        });
+    }
+
     private confirmQuit(): void {
         const dialogRef = this.dialog.open(ConfirmQuitDialogComponent);
 
@@ -112,16 +122,6 @@ export class GamePageComponent implements OnDestroy {
                 return;
             }
             this.router.navigate(['game']);
-        });
-    }
-
-    endGame() {
-        this.gameService.sendRackInCommunication();
-        const dialogRef = this.dialog.open(EndGameComponent);
-        dialogRef.afterClosed().subscribe((result) => {
-            if (result) {
-                this.gameService.reset();
-            }
         });
     }
 }

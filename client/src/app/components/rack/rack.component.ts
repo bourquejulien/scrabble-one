@@ -132,8 +132,9 @@ export class RackComponent implements OnInit {
         if (index !== -1 && this.isFocus) {
             this.swapSelectionIndex = index;
             this.selection.swap.lastIndex = index + 1;
+        } else {
+            this.reset();
         }
-        this.reset();
     }
 
     private set swapSelectionIndex(position: number) {

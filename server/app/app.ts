@@ -24,7 +24,7 @@ export class Application {
         dictionaryService: DictionaryService,
     ) {
         dictionaryService.retrieveDictionary();
-        
+
         this.internalError = StatusCodes.INTERNAL_SERVER_ERROR;
         this.app = express();
         this.config();

@@ -1,4 +1,5 @@
 /* eslint-disable max-classes-per-file -- Class is implemented for testing purposes only relevant ro this service*/
+/* eslint-disable dot-notation -- Need access to private functions and properties*/
 import { Injectable } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { BoardData, Bonus } from '@common';

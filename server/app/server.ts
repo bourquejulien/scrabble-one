@@ -7,22 +7,22 @@ import { RoomController } from './controllers/room.controller';
 @Service()
 export class Server {
     private static readonly appPort: string | number | boolean = Server.normalizePort(process.env.PORT || '3000');
-    // eslint-disable-next-line @typescript-eslint/no-magic-numbers
-    private static readonly baseDix: number = 10;
     private server: http.Server;
     private roomController: RoomController;
 
     constructor(private readonly application: Application) {}
 
     private static normalizePort(val: number | string): number | string | boolean {
-        const port: number = typeof val === 'string' ? parseInt(val, this.baseDix) : val;
+        const port = +val;
         if (isNaN(port)) {
             return val;
-        } else if (port >= 0) {
+        }
+        if (port >= 0) {
             return port;
         }
         return false;
     }
+
     init(): void {
         this.application.app.set('port', Server.appPort);
 

@@ -40,6 +40,12 @@ export class BoardComponent implements OnChanges, AfterViewInit {
         }
     }
 
+    updateFontSize(size: number): void {
+        this.gridService.letterFontFace.size = size;
+        this.gridService.drawGrid(this.gridContext);
+        this.gridService.drawSquares(this.squareContext);
+    }
+
     get width(): number {
         return Constants.GRID.CANVAS_SIZE.x;
     }
@@ -57,11 +63,5 @@ export class BoardComponent implements OnChanges, AfterViewInit {
         squareCanvas.height = gridCanvas.height = Math.ceil(gridCanvas.height * scaleFactor);
         this.gridContext.scale(scaleFactor, scaleFactor);
         this.squareContext.scale(scaleFactor, scaleFactor);
-    }
-
-    updateFontSize(size: number): void {
-        this.gridService.letterFontFace.size = size;
-        this.gridService.drawGrid(this.gridContext);
-        this.gridService.drawSquares(this.squareContext);
     }
 }

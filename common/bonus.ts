@@ -28,5 +28,4 @@ const BONUS_VALUE = new Map<Bonus, ScoreData>([
     [Bonus.None, { score: 0, isLetterBonus: false }],
 ]);
 
-// eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- All enum values are present in the map
 export const getBonusDetails = (bonus: Bonus): ScoreData => BONUS_VALUE.get(bonus)!;
