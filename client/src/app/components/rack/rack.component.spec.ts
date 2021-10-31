@@ -8,6 +8,7 @@ import { cleanStyles } from '@app/classes/helpers/cleanup.helper';
 import { RackComponent } from '@app/components/rack/rack.component';
 import { AppMaterialModule } from '@app/modules/material.module';
 import { RackService } from '@app/services/rack/rack.service';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 
 describe('RackComponent', () => {
     let component: RackComponent;
@@ -17,7 +18,7 @@ describe('RackComponent', () => {
     beforeEach(async () => {
         await TestBed.configureTestingModule({
             declarations: [RackComponent],
-            imports: [AppMaterialModule],
+            imports: [AppMaterialModule, HttpClientTestingModule],
             schemas: [CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA],
         }).compileComponents();
     });

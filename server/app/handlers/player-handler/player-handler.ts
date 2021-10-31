@@ -55,10 +55,6 @@ export class PlayerHandler {
         return this.players.map((p) => p.playerData.rack.length === 0).reduce((acc, isEmpty) => acc || isEmpty);
     }
 
-    get winner(): string {
-        return this.players.reduce((winner, player) => (winner.stats.points > player.stats.points ? winner : player)).id;
-    }
-
     private initialTurn(): void {
         const randomPlayerIndex = Math.floor(this.players.length * Math.random());
         const id = this.players[randomPlayerIndex].id;

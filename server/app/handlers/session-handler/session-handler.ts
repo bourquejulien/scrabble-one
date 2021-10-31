@@ -107,7 +107,7 @@ export class SessionHandler {
             this.players[1].playerData.scoreAdjustment += this.players[0].rackPoints();
         }
 
-        this.socketHandler.sendData('endGame', this.playerHandler.winner);
+        this.socketHandler.sendData('endGame');
 
         this.dispose();
     }

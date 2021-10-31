@@ -73,31 +73,31 @@ describe('InitGameComponent', () => {
     });
 
     it('should not contains any error', async () => {
-        component.gameConfig.firstPlayerName = NAMES[0];
+        component.formConfig.firstPlayerName = NAMES[0];
         await component.init();
         expect(component.errorsList).toEqual([]);
     });
 
     it('should not contains any error', async () => {
-        component.gameConfig.firstPlayerName = NAMES[1];
+        component.formConfig.firstPlayerName = NAMES[1];
         await component.init();
         expect(component.errorsList).toEqual([]);
     });
 
     it('should have error for lower letter', async () => {
-        component.gameConfig.firstPlayerName = NAMES[2];
+        component.formConfig.firstPlayerName = NAMES[2];
         await component.init();
         expect(component.errorsList).toEqual(['*Le nom doit débuter par une majuscule.\n']);
     });
 
     it('should have error for minimum length', async () => {
-        component.gameConfig.firstPlayerName = NAMES[3];
+        component.formConfig.firstPlayerName = NAMES[3];
         await component.init();
         expect(component.errorsList).toEqual(['*Le nom doit contenir au moins 3 caractères.\n']);
     });
 
     it('should have error for maximum length', async () => {
-        component.gameConfig.firstPlayerName = NAMES[4];
+        component.formConfig.firstPlayerName = NAMES[4];
         await component.init();
         expect(component.errorsList).toEqual(['*Le nom doit au maximum contenir 16 lettres.\n']);
     });
@@ -108,24 +108,24 @@ describe('InitGameComponent', () => {
     });
 
     it('should have error for not containing only letters', async () => {
-        component.gameConfig.firstPlayerName = NAMES[5];
+        component.formConfig.firstPlayerName = NAMES[5];
         await component.init();
         expect(component.errorsList).toEqual(['*Le nom doit seulement être composé de lettres.\n']);
     });
 
     it('should have error for not containing only letters and minimum length', async () => {
-        component.gameConfig.firstPlayerName = NAMES[6];
+        component.formConfig.firstPlayerName = NAMES[6];
         await component.init();
         expect(component.errorsList).toEqual(['*Le nom doit seulement être composé de lettres.\n', '*Le nom doit contenir au moins 3 caractères.\n']);
     });
 
     it('should change bot name', () => {
         const FIRST_PLAYER_NAME = 'Alphonse';
-        component.gameConfig.firstPlayerName = NAMES[7];
-        component.gameConfig.secondPlayerName = NAMES[7];
+        component.formConfig.firstPlayerName = NAMES[7];
+        component.formConfig.secondPlayerName = NAMES[7];
 
         component.botNameChange(FIRST_PLAYER_NAME);
-        expect(component.gameConfig.secondPlayerName).not.toEqual(FIRST_PLAYER_NAME);
+        expect(component.formConfig.secondPlayerName).not.toEqual(FIRST_PLAYER_NAME);
     });
 
     it('should call forceSecondsToZero ', fakeAsync(() => {
@@ -173,7 +173,7 @@ describe('InitGameComponent', () => {
     }));
 
     /* it('should create error if nameForm invalid', () => {
-    component.gameConfig.firstPlayerName = 'allo';
+    component.formConfig.firstPlayerName = 'allo';
     // const currentListLength = component.errorsList.length;
     component['confirmInitialization'];
 
