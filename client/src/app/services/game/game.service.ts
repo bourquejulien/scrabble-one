@@ -82,8 +82,9 @@ export class GameService {
     }
 
     private nextTurn() {
-        if (!this.gameRunning) return;
-
+        if (!this.gameRunning) {
+            return;
+        }
         this.firstPlayerStats.points = this.playerService.playerData.score;
         this.secondPlayerStats.points = this.virtualPlayerService.playerData.score;
         this.firstPlayerStats.rackSize = this.playerService.rack.length;

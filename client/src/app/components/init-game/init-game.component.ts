@@ -88,12 +88,14 @@ export class InitGameComponent implements OnInit {
         const playerName = control.value as string;
         if (playerName !== undefined && playerName !== null && playerName !== '') {
             for (let index = 0; index < playerName.length; index++) {
-                if (!/[a-zA-ZÉéÎîÉéÇçÏï]/.test(playerName.charAt(index))) return { ['containsOnlyLetters']: true };
+                if (!/[a-zA-ZÉéÎîÉéÇçÏï]/.test(playerName.charAt(index))) {
+                    return { ['containsOnlyLetters'] : true };
+                }
             }
 
             const firstLetter = playerName[0];
             if (firstLetter !== firstLetter.toUpperCase()) {
-                return { ['startsWithLowerLetter']: true };
+                return { ['startsWithLowerLetter'] : true };
             }
         }
         return null;

@@ -76,12 +76,13 @@ export class BoardValidator {
         const sortedPositions = sortedLetters.map((e) => e.position);
 
         if (this.board.positions.length === 0) {
-            if (!this.validateFirstPlacement(letters))
+            if (!this.validateFirstPlacement(letters)) {
                 return {
                     isSuccess: false,
                     description: 'Invalid first word',
                     points: 0,
                 };
+            }
         } else if (!this.ensureAggregation(positions)) {
             return { isSuccess: false, description: 'No aggregation', points: 0 };
         }

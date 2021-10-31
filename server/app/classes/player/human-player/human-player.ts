@@ -73,7 +73,9 @@ export class HumanPlayer implements IPlayer {
     }
 
     exchangeLetters(lettersToExchange: string[]): Answer {
-        if (!this.areLettersInRack(lettersToExchange)) return { isSuccess: false, body: 'Letters not in rack' };
+        if (!this.areLettersInRack(lettersToExchange)) {
+            return { isSuccess: false, body: 'Letters not in rack' };
+        }
 
         if (this.reserveHandler.length < Config.RACK_SIZE) {
             /* this.messagingService.send(SystemMessages.ImpossibleAction, SystemMessages.NotEnoughLetters, MessageType.Error); */

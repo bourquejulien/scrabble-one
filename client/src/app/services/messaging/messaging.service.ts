@@ -13,7 +13,9 @@ export class MessagingService {
     }
 
     send(title: string, body: string, messageType: MessageType, user?: PlayerType): void {
-        if (!user) user = PlayerType.Local;
+        if (!user) {
+            user = PlayerType.Local;
+        }
         const message = {
             title,
             body,

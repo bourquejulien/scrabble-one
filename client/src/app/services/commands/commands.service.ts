@@ -95,7 +95,9 @@ export class CommandsService {
     }
 
     private checkPlaceCommand(options: string, word: string): boolean {
-        if (!this.isUsersTurn()) return false;
+        if (!this.isUsersTurn()) {
+            return false;
+        }
 
         if (!this.placeWordCommandRegex.test(options)) {
             this.messagingService.send('', SystemMessages.InvalidOptions, MessageType.Error);
@@ -116,7 +118,9 @@ export class CommandsService {
     }
 
     private exchangeLetters(letters: string): boolean {
-        if (!this.isUsersTurn()) return false;
+        if (!this.isUsersTurn()) {
+            return false;
+        }
 
         if (this.rackRegex.test(letters)) {
             this.playerService.exchangeLetters(letters);
@@ -127,7 +131,9 @@ export class CommandsService {
     }
 
     private skipTurn(): boolean {
-        if (!this.isUsersTurn()) return false;
+        if (!this.isUsersTurn()) {
+            return false;
+        }
 
         this.playerService.skipTurn();
         return true;
