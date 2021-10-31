@@ -1,6 +1,11 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-export class BroadCastObject {
-    fetchSockets() {
+export class BroadcastOperator {
+    async fetchSockets() {
+        return ['socket1', 'socket2'];
+    }
+}
+export class RoomBroadcaster {
+    emit(event: string, message: any) {
         return;
     }
 }
@@ -14,12 +19,12 @@ export class SocketMock {
     oppositeEndpointEmit(event: string, ...params: any) {
         const callback = this.callbacks.get(event);
         if (callback) {
-            callback(params);
+            callback(...params);
         }
     }
 
     // eslint-disable-next-line no-unused-vars -- Dummy call without any logic
-    emit(event: string, ...params: any[]) {
+    emit(event: string, ...params: any) {
         return;
     }
 
@@ -27,7 +32,11 @@ export class SocketMock {
         return;
     }
 
-    async in(roomId: string): Promise<BroadCastObject> {
-        return new BroadCastObject();
+    in(roomId: string) {
+        return new BroadcastOperator();
+    }
+
+    to(roomId: string) {
+        return new RoomBroadcaster();
     }
 }
