@@ -1,5 +1,5 @@
 import { Message, MultiplayerCreateConfig, MultiplayerJoinConfig, ServerConfig, SinglePlayerConfig } from '@common';
-import { SessionHandlingService } from '@app/services/session-handling.service';
+import { SessionHandlingService } from '@app/services/sessionHandling/session-handling.service';
 import { BoardGeneratorService } from '@app/services/board/board-generator.service';
 import { Service } from 'typedi';
 import { SessionHandler } from '@app/handlers/session-handler/session-handler';
@@ -11,7 +11,7 @@ import { HumanPlayer } from '@app/classes/player/human-player/human-player';
 import { Action } from '@app/classes/player/virtual-player/actions/action';
 import { PlayerInfo } from '@app/classes/player-info';
 import { DictionaryService } from '@app/services/dictionary/dictionary.service';
-import { SocketService } from '@app/services/socket-service';
+import { SocketService } from '@app/services/socket/socket-service';
 import { SocketHandler } from '@app/handlers/socket-handler/socket-handler';
 import * as logger from 'winston';
 

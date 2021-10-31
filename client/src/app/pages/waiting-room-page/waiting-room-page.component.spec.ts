@@ -35,7 +35,7 @@ describe('WaitingRoomPageComponent', () => {
     it('should update available rooms from server', () => {
         component.ngOnInit();
         const availableRooms = ['123'];
-        socketClient.oppositeEndpointEmit('availableRooms', availableRooms);
+        socketClient.triggerEndpoint('availableRooms', availableRooms);
         expect(component['availableRooms']).toBe(availableRooms);
     });
 

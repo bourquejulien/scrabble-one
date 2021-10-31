@@ -27,7 +27,7 @@ describe('CommunicationBoxComponent', () => {
     const socketClient: SocketMock = new SocketMock();
     const commandsServiceSpy = jasmine.createSpyObj('CommandsService', {
         parseInput: (input: string) => {
-            if (input === 'false') {
+            if (input === '1') {
                 return false;
             }
             return true;
@@ -53,7 +53,7 @@ describe('CommunicationBoxComponent', () => {
                 { provide: SocketClientService, useValue: socketServiceSpyObj },
                 { provide: CommandsService, useValue: commandsServiceSpy },
                 { provide: SessionService, useValue: sessionService },
-                { provide: CommandsService, useValue: jasmine.createSpyObj('CommandsService', { parseInput: true }) },
+                { provide: CommandsService, useValue: commandsServiceSpy },
             ],
             imports: [AppMaterialModule, BrowserAnimationsModule, FormsModule, HttpClientTestingModule],
             schemas: [CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA],
@@ -89,7 +89,7 @@ describe('CommunicationBoxComponent', () => {
         fixture.destroy();
         const inputValue = 'some random input';
         component.inputValue = inputValue;
-        component.send('false');
+        component.send('1');
         expect(component.inputValue).toBe(inputValue);
     });
 
@@ -150,7 +150,7 @@ describe('CommunicationBoxComponent', () => {
         const scrollSpy = spyOn<any>(component, 'scroll').and.callThrough();
         const pushSpy = spyOn(component.messages, 'push').and.callThrough();
 
-        socketClient.oppositeEndpointEmit('message', dummyMessage);
+        socketClient.triggerEndpoint('message', dummyMessage);
 
         expect(scrollSpy).toHaveBeenCalled();
         expect(pushSpy).toHaveBeenCalled();
@@ -162,7 +162,7 @@ describe('CommunicationBoxComponent', () => {
 
         const pushSpy = spyOn(component.messages, 'push').and.callThrough();
 
-        socketClient.oppositeEndpointEmit('connect_error', 'error');
+        socketClient.triggerEndpoint('connect_error', 'error');
 
         expect(pushSpy).toHaveBeenCalled();
     });

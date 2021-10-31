@@ -37,7 +37,7 @@ describe('RoomListComponent', () => {
     it('should update available rooms from server', () => {
         component.ngOnInit();
         const availableRooms: string[] = ['123', '456', '789'];
-        socketClient.oppositeEndpointEmit('availableRooms', availableRooms);
+        socketClient.triggerEndpoint('availableRooms', availableRooms);
         expect(component['availableRooms']).toBe(availableRooms);
     });
 

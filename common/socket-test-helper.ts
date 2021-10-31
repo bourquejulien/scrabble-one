@@ -10,13 +10,14 @@ export class RoomBroadcaster {
     }
 }
 export class SocketMock {
+    id: number = 123;
     // eslint-disable-next-line @typescript-eslint/ban-types
     callbacks: Map<string, (...args: any) => {}> = new Map();
     on(event: string, callback: any): void {
         this.callbacks.set(event, callback);
     }
 
-    oppositeEndpointEmit(event: string, ...params: any) {
+    triggerEndpoint(event: string, ...params: any) {
         const callback = this.callbacks.get(event);
         if (callback) {
             callback(...params);
