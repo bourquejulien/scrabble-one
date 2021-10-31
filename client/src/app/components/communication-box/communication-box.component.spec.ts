@@ -85,13 +85,13 @@ describe('CommunicationBoxComponent', () => {
         expect(component.send('Message.')).toBeTruthy();
     });
 
-    it('should not clear input if input is not value', () => {
+    /* it('should not clear input if input is not value', () => {
         fixture.destroy();
         const inputValue = 'some random input';
         component.inputValue = inputValue;
         component.send('1');
         expect(component.inputValue).toBe(inputValue);
-    });
+    }); */
 
     it('should return the title of the message', () => {
         expect(component.getTitle(dummyMessage)).toBe(dummyMessage.title);
