@@ -2,10 +2,10 @@
 /* eslint-disable dot-notation */
 import { Application } from '@app/app';
 import { Constants } from '@app/constants';
-import { ReserveHandler } from '@app/handlers/reserve-handler/reserve-handler';
 import { SessionHandler } from '@app/handlers/session-handler/session-handler';
 import { SessionHandlingService } from '@app/services/sessionHandling/session-handling.service';
 import { expect } from 'chai';
+import { Player } from '@app/classes/player/player';
 import { createStubInstance, SinonStubbedInstance } from 'sinon';
 import request from 'supertest';
 import { Container } from 'typedi';
@@ -13,18 +13,14 @@ import { Container } from 'typedi';
 describe('PlayerController', () => {
     let stubSessionHandlingService: SinonStubbedInstance<SessionHandlingService>;
     let expressApp: Express.Application;
-    const stubReserve = ['a'];
 
     beforeEach(async () => {
         stubSessionHandlingService = createStubInstance(SessionHandlingService);
-
-        const stubReserveHandler = createStubInstance(ReserveHandler);
-        stubReserveHandler['reserve'] = stubReserve;
-
         const stubSessionHandler = createStubInstance(SessionHandler);
-        stubSessionHandler['reserveHandler'] = stubReserveHandler;
-
-        stubSessionHandlingService.getHandlerByPlayerId.returns(stubReserveHandler as unknown as SessionHandler);
+        const player1: Player = { id: '1', isTurn: false, playerInfo: { id: '1', isHuman: false, name: 'Monique' } } as Player;
+        const player2: Player = { id: '2', isTurn: false, playerInfo: { id: '2', isHuman: true, name: 'Monique' } } as Player;
+        stubSessionHandler['players'] = [player1, player2];
+        stubSessionHandlingService.getHandlerByPlayerId.returns(stubSessionHandler as unknown as SessionHandler);
 
         const app = Container.get(Application);
         Object.defineProperty(app['playerController'], 'sessionHandlingService', { value: stubSessionHandlingService });
@@ -32,8 +28,10 @@ describe('PlayerController', () => {
     });
 
     it('POST /api/player/exchange/  ', async () => {
+        const exchange = ['words', 'are', 'great'];
         request(expressApp)
-            .post('/api/player/exchange/123')
+            .post('/api/player/exchange/1')
+            .send(exchange)
             .expect(Constants.HTTP_STATUS.OK)
             .then((response) => {
                 expect(response.body).to.be.equal('');
@@ -42,7 +40,7 @@ describe('PlayerController', () => {
 
     it('POST /api/player/skip/  ', async () => {
         request(expressApp)
-            .post('/api/player/skip/123')
+            .post('/api/player/skip/1')
             .expect(Constants.HTTP_STATUS.OK)
             .then((response) => {
                 expect(response.body).to.be.equal('');
@@ -51,7 +49,7 @@ describe('PlayerController', () => {
 
     it('GET /api/player/retrieve/  ', async () => {
         request(expressApp)
-            .get('/api/player/retrieve/123')
+            .get('/api/player/retrieve/1')
             .expect(Constants.HTTP_STATUS.OK)
             .then((response) => {
                 expect(response.body).to.be.equal('');

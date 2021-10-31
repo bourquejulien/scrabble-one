@@ -10,24 +10,21 @@ import request from 'supertest';
 import { Container } from 'typedi';
 import { Placement } from '@common';
 import { SessionHandlingService } from '@app/services/sessionHandling/session-handling.service';
-import { ReserveHandler } from '@app/handlers/reserve-handler/reserve-handler';
 import { SessionHandler } from '@app/handlers/session-handler/session-handler';
+import { BoardHandler } from '@app/handlers/board-handler/board-handler';
 
 describe('BoardController', () => {
     let stubSessionHandlingService: SinonStubbedInstance<SessionHandlingService>;
     let expressApp: Express.Application;
-    const stubReserve = ['a'];
 
     beforeEach(async () => {
         stubSessionHandlingService = createStubInstance(SessionHandlingService);
 
-        const stubReserveHandler = createStubInstance(ReserveHandler);
-        stubReserveHandler['reserve'] = stubReserve;
-
         const stubSessionHandler = createStubInstance(SessionHandler);
-        stubSessionHandler['reserveHandler'] = stubReserveHandler;
+        const stubBoardHandler = createStubInstance(BoardHandler);
+        stubSessionHandler['boardHandler'] = stubBoardHandler as unknown as BoardHandler;
 
-        stubSessionHandlingService.getHandlerByPlayerId.returns(stubReserveHandler as unknown as SessionHandler);
+        stubSessionHandlingService.getHandlerByPlayerId.returns(stubSessionHandler as unknown as SessionHandler);
 
         const app = Container.get(Application);
         Object.defineProperty(app['boardController'], 'sessionHandlingService', { value: stubSessionHandlingService });
@@ -45,7 +42,7 @@ describe('BoardController', () => {
             .catch((err) => expect(err).to.be.undefined);
     });
 
-    it('POST /validate/123', async () => {
+    it('POST /validate/123 when there is a placement array', async () => {
         const placement: Placement[] = [{ letter: 'A', position: { x: 8, y: 8 } }];
         request(expressApp)
             .post('/api/board/validate/123')
@@ -56,9 +53,18 @@ describe('BoardController', () => {
             .catch((err) => expect(err).to.be.undefined);
     });
 
+    it('POST /validate/123 when there is no placement array', async () => {
+        request(expressApp)
+            .post('/api/board/validate/123')
+            .then((response) => {
+                expect(response.status).to.be.equal(Constants.HTTP_STATUS.OK);
+            })
+            .catch((err) => expect(err).to.be.undefined);
+    });
+
     it('POST /retrieve/123', async () => {
         request(expressApp)
-            .post('/api/board/retrieve/123')
+            .get('/api/board/retrieve/123')
             .then((response) => {
                 expect(response.status).to.be.equal(Constants.HTTP_STATUS.OK);
             })

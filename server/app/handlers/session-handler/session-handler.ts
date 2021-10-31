@@ -11,14 +11,14 @@ import { SocketHandler } from '@app/handlers/socket-handler/socket-handler';
 export class SessionHandler {
     sessionData: SessionData;
     // TODO Use player handler?
-    readonly players: Player[];
+    players: Player[];
 
     private readonly playerSubscriptions: Map<string, Subscription>;
     private timer: NodeJS.Timer;
 
     constructor(
         readonly sessionInfo: SessionInfo,
-        readonly boardHandler: BoardHandler,
+        public boardHandler: BoardHandler,
         public reserveHandler: ReserveHandler,
         readonly socketHandler: SocketHandler,
     ) {
