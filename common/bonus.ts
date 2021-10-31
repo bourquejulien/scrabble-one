@@ -14,7 +14,12 @@ export interface BonusInfos {
     position: Vec2;
 }
 
-const BONUS_VALUE = new Map<Bonus, { score: number; isLetterBonus: boolean }>([
+export interface ScoreData {
+    score: number;
+    isLetterBonus: boolean;
+}
+
+const BONUS_VALUE = new Map<Bonus, ScoreData>([
     [Bonus.L2, { score: 2, isLetterBonus: true }],
     [Bonus.L3, { score: 3, isLetterBonus: true }],
     [Bonus.W2, { score: 2, isLetterBonus: false }],
@@ -24,4 +29,4 @@ const BONUS_VALUE = new Map<Bonus, { score: number; isLetterBonus: boolean }>([
 ]);
 
 // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- All enum values are present in the map
-export const getBonusDetails = (bonus: Bonus): { score: number; isLetterBonus: boolean } => BONUS_VALUE.get(bonus)!;
+export const getBonusDetails = (bonus: Bonus): ScoreData => BONUS_VALUE.get(bonus)!;
