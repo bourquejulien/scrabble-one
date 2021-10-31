@@ -1,6 +1,6 @@
 import { Request, Response, Router } from 'express';
 import { Service } from 'typedi';
-import { GameService } from '@app/services/game.service';
+import { GameService } from '@app/services/game/game.service';
 import { Constants } from '@app/constants';
 
 @Service()
