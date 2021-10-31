@@ -30,7 +30,7 @@ export class Application {
         this.bindRoutes();
     }
 
-    bindRoutes(): void {
+    private bindRoutes(): void {
         this.app.use('/api/game', this.gameController.router);
         this.app.use('/api/board', this.boardController.router);
         this.app.use('/api/player', this.playerController.router);

@@ -30,7 +30,7 @@ describe('GameController', () => {
         playTimeMs: 120 * 1000,
     };
 
-    before(() => {
+    beforeEach(async () => {
         gameService = createStubInstance(GameService);
         // Methods: gameService.
         gameService.initMultiplayer.resolves(serverConfig);
@@ -40,6 +40,36 @@ describe('GameController', () => {
         expressApp = app.app;
     });
 
+    it('DELETE /stop', async () => {
+        request(expressApp)
+            .delete('/api/game/stop/123')
+            .send(singlePlayerConfig)
+            .then((response) => {
+                expect(response.status).to.be.equal(Constants.HTTP_STATUS.OK);
+            })
+            .catch((err) => expect(err).to.be.undefined);
+    });
+
+    it('GET /start', async () => {
+        request(expressApp)
+            .get('/api/game/start/123')
+            .send(singlePlayerConfig)
+            .then((response) => {
+                expect(response.status).to.be.equal(Constants.HTTP_STATUS.OK);
+            })
+            .catch((err) => expect(err).to.be.undefined);
+    });
+
+    it('PUT /init/single', async () => {
+        request(expressApp)
+            .put('/api/game/init/single')
+            .send(singlePlayerConfig)
+            .then((response) => {
+                expect(response.status).to.be.equal(Constants.HTTP_STATUS.OK);
+            })
+            .catch((err) => expect(err).to.be.undefined);
+    });
+
     it('PUT /init/multi', async () => {
         request(expressApp)
             .put('/api/game/init/multi')
@@ -47,6 +77,16 @@ describe('GameController', () => {
             .then((response) => {
                 expect(response.status).to.be.equal(Constants.HTTP_STATUS.OK);
                 expect(response.text).to.be.equal(JSON.stringify(serverConfig));
+            })
+            .catch((err) => expect(err).to.be.undefined);
+    });
+
+    it('PUT /join', async () => {
+        request(expressApp)
+            .put('/api/game/join')
+            .send(singlePlayerConfig)
+            .then((response) => {
+                expect(response.status).to.be.equal(Constants.HTTP_STATUS.OK);
             })
             .catch((err) => expect(err).to.be.undefined);
     });

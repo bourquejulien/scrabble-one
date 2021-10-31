@@ -15,7 +15,7 @@ describe('PlayerController', () => {
     let expressApp: Express.Application;
     const stubReserve = ['a'];
 
-    before(() => {
+    beforeEach(async () => {
         stubSessionHandlingService = createStubInstance(SessionHandlingService);
 
         const stubReserveHandler = createStubInstance(ReserveHandler);
@@ -27,16 +27,34 @@ describe('PlayerController', () => {
         stubSessionHandlingService.getHandlerByPlayerId.returns(stubReserveHandler as unknown as SessionHandler);
 
         const app = Container.get(Application);
-        Object.defineProperty(app['reserveController'], 'SessionHandlingService', { value: stubSessionHandlingService });
+        Object.defineProperty(app['playerController'], 'sessionHandlingService', { value: stubSessionHandlingService });
         expressApp = app.app;
     });
 
-    it('GET /api/reserve/retrieve/ when reserve is empty ', async () => {
+    it('POST /api/player/exchange/  ', async () => {
         request(expressApp)
-            .get('/api/reserve/retrieve/123')
+            .post('/api/player/exchange/123')
             .expect(Constants.HTTP_STATUS.OK)
             .then((response) => {
-                expect(response.body).to.be.equal(JSON.stringify(stubReserve));
+                expect(response.body).to.be.equal('');
+            });
+    });
+
+    it('POST /api/player/skip/  ', async () => {
+        request(expressApp)
+            .post('/api/player/skip/123')
+            .expect(Constants.HTTP_STATUS.OK)
+            .then((response) => {
+                expect(response.body).to.be.equal('');
+            });
+    });
+
+    it('GET /api/player/retrieve/  ', async () => {
+        request(expressApp)
+            .get('/api/player/retrieve/123')
+            .expect(Constants.HTTP_STATUS.OK)
+            .then((response) => {
+                expect(response.body).to.be.equal('');
             });
     });
 });
