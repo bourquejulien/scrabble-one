@@ -68,7 +68,7 @@ export class GameService {
         await this.httpCLient.delete(localUrl('game', 'stop', this.sessionService.id)).toPromise();
     }
 
-    async onNextTurn(id: string): Promise<void> {
+    private async onNextTurn(id: string): Promise<void> {
         if (!this.gameRunning) return;
 
         let playerType: PlayerType;

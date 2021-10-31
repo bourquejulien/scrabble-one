@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, AfterViewInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { RoomService } from '@app/services/room/room.service';
 
@@ -7,10 +7,11 @@ import { RoomService } from '@app/services/room/room.service';
     templateUrl: './room-list.component.html',
     styleUrls: ['./room-list.component.scss'],
 })
-export class RoomListComponent implements OnInit {
+export class RoomListComponent implements AfterViewInit {
     constructor(readonly roomService: RoomService, private router: Router) {}
 
-    ngOnInit(): void {
+    ngAfterViewInit(): void {
+        this.roomService.init();
         this.roomService.refresh();
     }
 

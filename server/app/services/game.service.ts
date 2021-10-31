@@ -1,4 +1,4 @@
-import { MultiplayerCreateConfig, MultiplayerJoinConfig, ServerConfig, SinglePlayerConfig } from '@common';
+import { JoinServerConfig, MultiplayerCreateConfig, MultiplayerJoinConfig, ServerConfig, SinglePlayerConfig } from '@common';
 import { SessionHandlingService } from '@app/services/session-handling.service';
 import { BoardGeneratorService } from '@app/services/board/board-generator.service';
 import { Service } from 'typedi';
@@ -61,7 +61,7 @@ export class GameService {
         return sessionHandler.getServerConfig(humanPlayer.id);
     }
 
-    async initMultiplayer(gameConfig: MultiplayerCreateConfig): Promise<ServerConfig> {
+    async initMultiplayer(gameConfig: MultiplayerCreateConfig): Promise<string> {
         const board = this.boardGeneratorService.generateBoard(gameConfig.isRandomBonus);
         const sessionInfo = {
             id: generateId(),
@@ -87,7 +87,7 @@ export class GameService {
 
         logger.info(`Multiplayer game: ${sessionHandler.sessionInfo.id} initialised`);
 
-        return sessionHandler.getServerConfig(humanPlayer.id);
+        return humanPlayer.id;
     }
 
     async joinMultiplayer(gameConfig: MultiplayerJoinConfig): Promise<ServerConfig | null> {
@@ -105,6 +105,8 @@ export class GameService {
 
         const humanPlayer = this.addHumanPlayer(humanPlayerInfo, sessionHandler);
 
+        this.sessionHandlingService.updateEntry(sessionHandler);
+
         logger.info(`Multiplayer game: ${sessionHandler.sessionInfo.id} joined by ${humanPlayerInfo.id}`);
 
         return sessionHandler.getServerConfig(humanPlayer.id);
@@ -112,16 +114,20 @@ export class GameService {
 
     async start(id: string): Promise<string | null> {
         const sessionHandler = this.sessionHandlingService.getHandlerByPlayerId(id);
+        const waitingPlayer = sessionHandler?.players.filter((p) => p.id !== id)[0];
 
-        if (sessionHandler == null || sessionHandler.sessionData.isStarted) {
+        if (sessionHandler == null || waitingPlayer == null || sessionHandler.sessionData.isStarted) {
             return null;
         }
 
-        const firstPlayer = sessionHandler.start();
+        const startId = sessionHandler.start();
+
+        const joinConfig: JoinServerConfig = { startId, serverConfig: sessionHandler.getServerConfig(waitingPlayer.id) };
+        this.socketService.send('onJoin', sessionHandler.sessionInfo.id, joinConfig);
 
         logger.info(`Game started: ${id}`);
 
-        return firstPlayer;
+        return startId;
     }
 
     async stop(id: string): Promise<boolean> {

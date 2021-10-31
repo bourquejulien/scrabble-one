@@ -42,7 +42,8 @@ export class RoomController {
             });
 
             socket.on('getRooms', () => {
-                socket.emit('availableRooms', this.sessionHandlingService.availableSessions);
+                const sessionInfo = this.sessionInfos;
+                socket.emit('availableRooms', sessionInfo);
             });
 
             socket.on('joinRoom', async (playerId: string) => {
@@ -54,11 +55,15 @@ export class RoomController {
                         logger.info(`Joined room: ${sessionId}`);
                     }
 
-                    this.socketService.socketServer.emit('availableRooms', this.sessionHandlingService.availableSessions);
+                    this.socketService.socketServer.emit('availableRooms', this.sessionInfos);
                 } else {
                     logger.info(`Invalid room ID provided: ${sessionId}`);
                 }
             });
         });
+    }
+
+    private get sessionInfos(): string[] {
+        return this.sessionHandlingService.availableSessions.map((s) => s.sessionInfo.id);
     }
 }

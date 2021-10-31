@@ -12,7 +12,7 @@ export class SessionHandlingService {
     }
 
     addHandler(sessionHandler: SessionHandler): void {
-        sessionHandler.players.forEach((p) => this.playerIds.set(p.id, sessionHandler.sessionInfo.id));
+        this.updateEntry(sessionHandler);
         this.sessionHandlers.push(sessionHandler);
     }
 
@@ -23,6 +23,18 @@ export class SessionHandlingService {
         sessionHandler.players.forEach((p) => this.playerIds.delete(p.id));
         sessionHandler.dispose();
         return sessionHandler;
+    }
+
+    updateEntry(sessionHandler: SessionHandler): void {
+        const idsToRemove: string[] = [];
+        for (const [key, value] of this.playerIds) {
+            if (value === sessionHandler.sessionInfo.id) {
+                idsToRemove.push(key);
+            }
+        }
+
+        idsToRemove.forEach((id) => this.playerIds.delete(id));
+        sessionHandler.players.forEach((p) => this.playerIds.set(p.id, sessionHandler.sessionInfo.id));
     }
 
     getHandlerByPlayerId(id: string): SessionHandler | null {
@@ -39,6 +51,6 @@ export class SessionHandlingService {
     }
 
     get availableSessions(): SessionHandler[] {
-        return this.sessionHandlers.filter((e) => e.sessionData.isStarted);
+        return this.sessionHandlers.filter((e) => !e.sessionData.isStarted);
     }
 }

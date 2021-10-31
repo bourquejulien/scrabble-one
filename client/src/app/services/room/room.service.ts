@@ -4,6 +4,7 @@ import { JoinServerConfig, MultiplayerCreateConfig, MultiplayerJoinConfig, Serve
 import { environmentExt } from '@environmentExt';
 import { HttpClient } from '@angular/common/http';
 import { GameService } from '@app/services/game/game.service';
+import { Observable, Subject } from 'rxjs';
 
 const localUrl = (base: string, call: string, id?: string) => `${environmentExt.apiUrl}${base}/${call}${id ? '/' + id : ''}`;
 
@@ -11,14 +12,22 @@ const localUrl = (base: string, call: string, id?: string) => `${environmentExt.
     providedIn: 'root',
 })
 export class RoomService {
-    private readonly availableRooms: string[];
+    private availableRooms: string[];
+    private readonly hasJoined: Subject<JoinServerConfig>;
 
     constructor(
         private readonly socketService: SocketClientService,
         private readonly gameService: GameService,
         private readonly httpCLient: HttpClient,
     ) {
-        this.availableRooms = [''];
+        this.availableRooms = [];
+        this.hasJoined = new Subject<JoinServerConfig>();
+    }
+
+    init(): void {
+        this.socketService.on('availableRooms', (rooms: string[]) => {
+            this.availableRooms = rooms;
+        });
     }
 
     async create(createConfig: MultiplayerCreateConfig): Promise<void> {
@@ -27,6 +36,7 @@ export class RoomService {
 
         this.socketService.on('onJoin', (joinServerConfig: JoinServerConfig) => {
             this.gameService.start(joinServerConfig.serverConfig, joinServerConfig.startId);
+            this.hasJoined.next(joinServerConfig);
         });
     }
 
@@ -49,5 +59,9 @@ export class RoomService {
 
     get rooms(): string[] {
         return this.availableRooms;
+    }
+
+    get onGameFull(): Observable<JoinServerConfig> {
+        return this.hasJoined.asObservable();
     }
 }

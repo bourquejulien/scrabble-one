@@ -43,7 +43,7 @@ export class GameController {
             }
         });
 
-        this.router.put('/join/', async (req: Request, res: Response) => {
+        this.router.put('/join', async (req: Request, res: Response) => {
             try {
                 const answer = await this.gameService.joinMultiplayer(req.body);
 
