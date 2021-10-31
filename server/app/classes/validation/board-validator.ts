@@ -127,7 +127,9 @@ export class BoardValidator {
     }
 
     private retrieveDirection(positions: Vec2[]): Direction {
-        if (positions.length < 2) return Direction.Right;
+        if (positions.length < 2) {
+            return Direction.Right;
+        }
 
         const firstPosition: Vec2 = positions[0];
         const secondPosition: Vec2 = positions[1];
@@ -144,9 +146,13 @@ export class BoardValidator {
 
         for (let i = 2; i < positions.length; i++) {
             if (positions[i - 1].x === positions[i].x) {
-                if (direction !== Direction.Down) return Direction.None;
+                if (direction !== Direction.Down) {
+                    return Direction.None;
+                }
             } else if (positions[i - 1].y === positions[i].y) {
-                if (direction !== Direction.Right) return Direction.None;
+                if (direction !== Direction.Right) {
+                    return Direction.None;
+                }
             } else {
                 return Direction.None;
             }
