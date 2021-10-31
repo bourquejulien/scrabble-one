@@ -10,7 +10,6 @@ import { LocationStrategy } from '@angular/common';
     styleUrls: ['./waiting-room-page.component.scss'],
 })
 export class WaitingRoomPageComponent implements OnDestroy, OnInit {
-    availableRooms: string[] = [];
     private roomSubscription: Subscription;
 
     constructor(readonly roomService: RoomService, private router: Router, location: LocationStrategy, elementRef: ElementRef) {

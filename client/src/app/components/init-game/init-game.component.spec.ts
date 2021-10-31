@@ -12,6 +12,7 @@ import { GameService } from '@app/services/game/game.service';
 import { InitGameComponent } from './init-game.component';
 import { PlayerType } from '@app/classes/player/player-type';
 import { GameType } from '@common';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 
 @Injectable({
     providedIn: 'root',
@@ -51,7 +52,7 @@ describe('InitGameComponent', () => {
     beforeEach(async () => {
         await TestBed.configureTestingModule({
             declarations: [InitGameComponent],
-            imports: [AppMaterialModule, BrowserAnimationsModule, FormsModule],
+            imports: [HttpClientTestingModule, AppMaterialModule, BrowserAnimationsModule, FormsModule],
             schemas: [CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA],
             providers: [
                 { provide: Router, useValue: routerMock },
