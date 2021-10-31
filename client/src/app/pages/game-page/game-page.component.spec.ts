@@ -8,7 +8,6 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { RouterTestingModule } from '@angular/router/testing';
 import { GameConfig } from '@app/classes/game-config';
 import { cleanStyles } from '@app/classes/helpers/cleanup.helper';
-import { PlayerStats } from '@app/classes/player/player-stats';
 import { PlayerType } from '@app/classes/player/player-type';
 import { TimePipe } from '@app/classes/time/time.pipe';
 import { TimeSpan } from '@app/classes/time/timespan';
@@ -16,20 +15,15 @@ import { AppMaterialModule } from '@app/modules/material.module';
 import { GameService } from '@app/services/game/game.service';
 import { BehaviorSubject, Subject } from 'rxjs';
 import { GamePageComponent } from './game-page.component';
-import { GameType } from '@common';
+import { GameType, SessionStats } from '@common';
 
 @Injectable({
     providedIn: 'root',
 })
 class GameServiceStub {
-    firstPlayerStats: PlayerStats = {
-        points: 0,
-        rackSize: 0,
-    };
-
-    secondPlayerStats: PlayerStats = {
-        points: 0,
-        rackSize: 0,
+    stats: SessionStats = {
+        localStats: { points: 0, rackSize: 0 },
+        remoteStats: { points: 0, rackSize: 0 },
     };
 
     onTurn: BehaviorSubject<PlayerType> = new BehaviorSubject<PlayerType>(PlayerType.Local);
@@ -68,7 +62,6 @@ class PlayAreaStubComponent {}
 describe('GamePageComponent', () => {
     let component: GamePageComponent;
     let fixture: ComponentFixture<GamePageComponent>;
-    let gameService: GameService;
 
     beforeEach(async () => {
         await TestBed.configureTestingModule({
@@ -83,7 +76,6 @@ describe('GamePageComponent', () => {
         fixture = TestBed.createComponent(GamePageComponent);
         component = fixture.componentInstance;
         fixture.detectChanges();
-        gameService = TestBed.inject(GameService);
     });
 
     it('should create', () => {
@@ -98,7 +90,8 @@ describe('GamePageComponent', () => {
     });
 
     it('should call sendRackInCommunication function if endGame called', () => {
-        const spy = spyOn(gameService, 'sendRackInCommunication').and.callThrough();
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Needed for spyOn service
+        const spy = spyOn<any>(component, 'sendRackInCommunication').and.callThrough();
 
         component.endGame();
         expect(spy).toHaveBeenCalled();

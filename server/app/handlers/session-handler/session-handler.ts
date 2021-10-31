@@ -1,31 +1,30 @@
 import { SessionInfo } from '@app/classes/session-info';
-import { BoardHandler } from '@app/handlers/board-handler/board-handler';
-import { ServerConfig } from '@common';
+import { ServerConfig, SessionStats } from '@common';
 import { Player } from '@app/classes/player/player';
-import { ReserveHandler } from '@app/handlers/reserve-handler/reserve-handler';
 import { SessionData } from '@app/classes/session-data';
 import { Config } from '@app/config';
-import { Subscription } from 'rxjs';
 import { SocketHandler } from '@app/handlers/socket-handler/socket-handler';
+import { PlayerHandler } from '@app/handlers/player-handler/player-handler';
+import { Subscription } from 'rxjs';
+import { BoardHandler } from '@app/handlers/board-handler/board-handler';
+import { ReserveHandler } from '@app/handlers/reserve-handler/reserve-handler';
+import * as logger from 'winston';
 
 export class SessionHandler {
     sessionData: SessionData;
-    // TODO Use player handler?
-    players: Player[];
-
-    private readonly playerSubscriptions: Map<string, Subscription>;
     private timer: NodeJS.Timer;
+    private readonly playerSubscription: Subscription;
 
     constructor(
-        readonly sessionInfo: SessionInfo,
+        public sessionInfo: SessionInfo,
         public boardHandler: BoardHandler,
         public reserveHandler: ReserveHandler,
-        readonly socketHandler: SocketHandler,
+        private playerHandler: PlayerHandler,
+        private socketHandler: SocketHandler,
     ) {
         socketHandler.sessionId = sessionInfo.id;
         this.sessionData = { isActive: false, isStarted: false, timeLimitEpoch: 0 };
-        this.players = [];
-        this.playerSubscriptions = new Map<string, Subscription>();
+        this.playerSubscription = this.playerHandler.onTurn().subscribe((id) => this.onTurn(id));
     }
 
     getServerConfig(id: string): ServerConfig {
@@ -43,41 +42,40 @@ export class SessionHandler {
 
     start(): string {
         this.sessionData.isActive = true;
-        this.sessionData.isActive = false;
-
-        this.players.forEach((p) => p.fillRack());
         this.timer = setInterval(() => this.timerTick(), Config.SESSION.REFRESH_INTERVAL_MS);
-
-        this.initialTurn();
-
-        return this.players.filter((p) => p.isTurn).map((p) => p.id)[0] ?? '';
-    }
-
-    destroy(): void {
-        this.sessionData.isActive = false;
-        this.sessionData.timeLimitEpoch = 0;
-        this.playerSubscriptions.forEach((s) => s.unsubscribe());
-        clearInterval(this.timer);
+        return this.playerHandler.start();
     }
 
     addPlayer(player: Player): void {
         player.init(this.boardHandler, this.reserveHandler, this.socketHandler);
-        this.playerSubscriptions[player.id] = player.onTurn().subscribe((lastId) => this.onTurn(lastId));
-
-        this.players.push(player);
+        this.playerHandler.addPlayer(player);
     }
 
     removePlayer(id: string): Player | null {
-        const playerIndex = this.players.findIndex((p) => p.id === id);
+        return this.playerHandler.removePlayer(id);
+    }
 
-        if (playerIndex < 0) return null;
+    dispose(): void {
+        this.sessionData.isActive = false;
+        this.sessionData.timeLimitEpoch = 0;
+        this.playerHandler.dispose();
+        this.playerSubscription.unsubscribe();
+        clearInterval(this.timer);
+    }
 
-        const removedPlayer = this.players.splice(playerIndex, 1)[0];
+    getStats(id: string): SessionStats | null {
+        const firstPlayer = this.players.find((p) => p.id === id);
+        const secondPlayer = this.players.find((p) => p.id !== firstPlayer?.id ?? '');
 
-        this.playerSubscriptions.get(removedPlayer.id)?.unsubscribe();
-        this.playerSubscriptions.delete(removedPlayer.id);
+        if (firstPlayer == null || secondPlayer == null) {
+            return null;
+        }
 
-        return removedPlayer;
+        return { localStats: firstPlayer.stats, remoteStats: secondPlayer.stats };
+    }
+
+    get players(): Player[] {
+        return this.playerHandler.players;
     }
 
     private timerTick(): void {
@@ -90,17 +88,31 @@ export class SessionHandler {
         this.socketHandler.sendData('timerTick', timeLeftMs);
     }
 
-    private initialTurn(): void {
-        const randomPlayerIndex = Math.floor(this.players.length * Math.random());
-        const id = this.players[randomPlayerIndex].id;
+    private onTurn(id: string): void {
+        if (this.isEndGame) {
+            this.endGame();
+            return;
+        }
 
-        this.onTurn(id);
+        this.players.find((p) => p.id === id)?.startTurn();
+        this.sessionData.timeLimitEpoch = new Date().getTime() + this.sessionInfo.playTimeMs;
     }
 
-    private onTurn(lastId: string): void {
-        const nextPlayer = this.players.find((p) => p.id !== lastId);
-        this.sessionData.timeLimitEpoch = new Date().getTime() + this.sessionInfo.playTimeMs;
+    private endGame(): void {
+        logger.debug(`SessionHandler - EndGame - Id: ${this.sessionInfo.id}`);
+        this.players.forEach((p) => (p.playerData.scoreAdjustment -= p.rackPoints()));
 
-        nextPlayer?.startTurn();
+        if (this.reserveHandler.length === 0 && this.playerHandler.rackEmptied) {
+            this.players[0].playerData.scoreAdjustment += this.players[1].rackPoints();
+            this.players[1].playerData.scoreAdjustment += this.players[0].rackPoints();
+        }
+
+        this.socketHandler.sendData('endGame');
+
+        this.dispose();
+    }
+
+    private get isEndGame(): boolean {
+        return this.playerHandler.isOverSkipLimit || (this.reserveHandler.length === 0 && this.playerHandler.rackEmptied);
     }
 }

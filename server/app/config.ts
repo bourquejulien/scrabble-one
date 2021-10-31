@@ -24,4 +24,5 @@ export const Config = {
     SESSION: {
         REFRESH_INTERVAL_MS: 250,
     },
+    MAX_SKIP_TURN: 3,
 };
