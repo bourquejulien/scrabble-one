@@ -15,6 +15,8 @@ export class RoomService {
     private availableRooms: string[];
     private readonly hasJoined: Subject<JoinServerConfig>;
 
+    private pendingRoomId: string | null;
+
     constructor(
         private readonly socketService: SocketClientService,
         private readonly gameService: GameService,
@@ -22,22 +24,34 @@ export class RoomService {
     ) {
         this.availableRooms = [];
         this.hasJoined = new Subject<JoinServerConfig>();
+        this.pendingRoomId = null;
     }
 
     init(): void {
         this.socketService.on('availableRooms', (rooms: string[]) => {
             this.availableRooms = rooms;
         });
+        this.pendingRoomId = null;
     }
 
     async create(createConfig: MultiplayerCreateConfig): Promise<void> {
         const id = await this.httpCLient.put<string>(localUrl('game', 'init/multi'), createConfig).toPromise();
         this.socketService.join(id);
 
+        this.pendingRoomId = id;
+
         this.socketService.on('onJoin', async (joinServerConfig: JoinServerConfig) => {
             await this.gameService.start(joinServerConfig.serverConfig, joinServerConfig.startId);
             this.hasJoined.next(joinServerConfig);
         });
+    }
+
+    async abort(): Promise<void> {
+        if (this.pendingRoomId == null) {
+            return;
+        }
+
+        await this.httpCLient.delete<string>(localUrl('game', 'stop', this.pendingRoomId)).toPromise();
     }
 
     async join(id: string): Promise<void> {

@@ -48,7 +48,7 @@ export class PlayerHandler {
     }
 
     get isOverSkipLimit(): boolean {
-        return this.players.map((p) => p.playerData.skippedTurns > Config.MAX_SKIP_TURN).reduce((acc, isMaxSkip) => acc || isMaxSkip);
+        return this.players.map((p) => p.playerData.skippedTurns > Config.MAX_SKIP_TURN).reduce((acc, isMaxSkip) => acc && isMaxSkip);
     }
 
     get rackEmptied(): boolean {

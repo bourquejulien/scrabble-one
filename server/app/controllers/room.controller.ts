@@ -32,8 +32,8 @@ export class RoomController {
                 logger.debug(`Socket: ${socket.id} sent ${message.messageType}`);
 
                 if (message.messageType === MessageType.Message) {
-                    const room = socket.rooms.values().next().value;
-                    this.socketService.socketServer.in(room).emit('message', message);
+                    const room = Array.from(socket.rooms).pop();
+                    this.socketService.socketServer.in(room ?? '').emit('message', message);
                 } else {
                     this.socketService.socketServer.to(socket.id).emit('message', message);
                 }

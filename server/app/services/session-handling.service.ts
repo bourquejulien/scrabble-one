@@ -17,11 +17,16 @@ export class SessionHandlingService {
     }
 
     removeHandler(id: string): SessionHandler | null {
-        const sessionHandler = this.getHandlerByPlayerId(id);
-        if (sessionHandler == null) return null;
+        const sessionId = this.getSessionId(id);
+
+        const index = this.sessionHandlers.findIndex((e) => e.sessionInfo.id === sessionId);
+        if (index === -1) return null;
+
+        const sessionHandler = this.sessionHandlers[index];
 
         sessionHandler.players.forEach((p) => this.playerIds.delete(p.id));
-        sessionHandler.dispose();
+        this.sessionHandlers.splice(index, 1);
+
         return sessionHandler;
     }
 
