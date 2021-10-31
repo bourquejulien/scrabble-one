@@ -106,7 +106,7 @@ export class GamePageComponent implements OnDestroy {
         const dialogRef = this.dialog.open(ConfirmQuitDialogComponent);
 
         dialogRef.afterClosed().subscribe((result) => {
-            if (result === true) {
+            if (result) {
                 this.router.navigate(['home']);
                 this.gameService.reset();
                 return;
@@ -119,7 +119,7 @@ export class GamePageComponent implements OnDestroy {
         this.gameService.sendRackInCommunication();
         const dialogRef = this.dialog.open(EndGameComponent);
         dialogRef.afterClosed().subscribe((result) => {
-            if (result === true) {
+            if (result) {
                 this.gameService.reset();
             }
         });
