@@ -34,8 +34,8 @@ export class RoomService {
         const id = await this.httpCLient.put<string>(localUrl('game', 'init/multi'), createConfig).toPromise();
         this.socketService.join(id);
 
-        this.socketService.on('onJoin', (joinServerConfig: JoinServerConfig) => {
-            this.gameService.start(joinServerConfig.serverConfig, joinServerConfig.startId);
+        this.socketService.on('onJoin', async (joinServerConfig: JoinServerConfig) => {
+            await this.gameService.start(joinServerConfig.serverConfig, joinServerConfig.startId);
             this.hasJoined.next(joinServerConfig);
         });
     }

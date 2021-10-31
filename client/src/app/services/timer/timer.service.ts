@@ -14,10 +14,10 @@ export class TimerService {
     constructor(socketService: SocketClientService, playerService: PlayerService) {
         this.timeSpan = TimeSpan.fromMilliseconds(0);
 
-        socketService.on('timerTick', (timeMs: number) => {
-            this.timeSpan = TimeSpan.fromSeconds(Math.round(timeMs / MS_TO_SEC_FACTOR));
+        socketService.on('timerTick', (time: { ms: number }) => {
+            this.timeSpan = TimeSpan.fromSeconds(Math.round(time.ms / MS_TO_SEC_FACTOR));
 
-            if (timeMs <= 0) {
+            if (time.ms <= 0) {
                 playerService.skipTurn();
             }
         });
