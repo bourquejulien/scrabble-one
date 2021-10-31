@@ -25,6 +25,7 @@ export class SessionHandlingService {
 
         sessionHandler.players.forEach((p) => this.playerIds.delete(p.playerInfo.id));
         sessionHandler.destroy();
+        // Pourquoi allons nous chercher le premier index comme valeur de retour
         return this.sessionHandlers.slice(index, 1)[0];
     }
 
