@@ -2,7 +2,7 @@ import { Request, Response, Router } from 'express';
 import { Service } from 'typedi';
 import { Constants } from '@app/constants';
 import { Placement } from '@common';
-import { SessionHandlingService } from '@app/services/session-handling.service';
+import { SessionHandlingService } from '@app/services/sessionHandling/session-handling.service';
 import { BoardHandler } from '@app/handlers/board-handler/board-handler';
 import { HumanPlayer } from '@app/classes/player/human-player/human-player';
 

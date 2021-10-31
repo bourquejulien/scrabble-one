@@ -1,8 +1,8 @@
 import { Message, MessageType } from '@common';
 import { Socket } from 'socket.io';
 import { Service } from 'typedi';
-import { SocketService } from '@app/services/socket-service';
-import { SessionHandlingService } from '@app/services/session-handling.service';
+import { SocketService } from '@app/services/socket/socket-service';
+import { SessionHandlingService } from '@app/services/sessionHandling/session-handling.service';
 import { Config } from '@app/config';
 import * as logger from 'winston';
 
@@ -10,16 +10,16 @@ import * as logger from 'winston';
 export class RoomController {
     constructor(private readonly socketService: SocketService, private readonly sessionHandlingService: SessionHandlingService) {}
 
-    async isRoomFull(socket: Socket, roomId: string): Promise<boolean> {
+    async isRoomFull(socket: Socket, sessionId: string): Promise<boolean> {
         const maxPlayers = Config.MAX_PLAYERS;
-        const roomSockets = await socket.in(roomId).fetchSockets();
+        const roomSockets = await socket.in(sessionId).fetchSockets();
 
         logger.info(`Inside isRoomFull: ${roomSockets.length}`);
 
         return roomSockets.length >= maxPlayers;
     }
 
-    socketHandler(): void {
+    handleSockets(): void {
         this.socketService.socketServer.on('connection', (socket) => {
             logger.info(`Connection with user id: ${socket.id}`);
 

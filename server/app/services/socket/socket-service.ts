@@ -12,10 +12,6 @@ export class SocketService {
 
     send<T>(event: string, roomId: string, message?: T) {
         const room = this.socketServer.to(roomId);
-        if (message) {
-            room.emit(event, message);
-        } else {
-            room.emit(event);
-        }
+        room.emit(event, message);
     }
 }

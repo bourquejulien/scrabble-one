@@ -1,5 +1,5 @@
-import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { Injectable } from '@angular/core';
 import { SessionService } from '@app/services/session/session.service';
 import { environmentExt } from '@environmentExt';
 
@@ -32,8 +32,13 @@ export class ReserveService {
     }
 
     getLetterAndQuantity(letterToUpdate: string): string {
-        const firstIndex = this.reserve.indexOf(letterToUpdate);
-        const lastIndex = this.reserve.lastIndexOf(letterToUpdate);
+        const firstIndex = this.reserve.indexOf(letterToUpdate); // -1
+        const lastIndex = this.reserve.lastIndexOf(letterToUpdate); // -1
+
+        if (lastIndex && firstIndex === -1) {
+            return `${letterToUpdate.toUpperCase()} : 0`;
+        }
+
         const currentQuantity = lastIndex - firstIndex + 1;
         return `${letterToUpdate.toUpperCase()} : ${currentQuantity}`;
     }

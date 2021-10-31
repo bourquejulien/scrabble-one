@@ -1,4 +1,4 @@
-import { SocketService } from '@app/services/socket-service';
+import { SocketService } from '@app/services/socket/socket-service';
 import { Message } from '@common';
 
 export class SocketHandler {

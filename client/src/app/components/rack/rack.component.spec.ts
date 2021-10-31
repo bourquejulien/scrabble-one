@@ -2,13 +2,13 @@
 /* eslint-disable @typescript-eslint/no-useless-constructor */
 /* eslint-disable @typescript-eslint/no-empty-function */
 /* eslint-disable no-unused-vars */
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { cleanStyles } from '@app/classes/helpers/cleanup.helper';
 import { RackComponent } from '@app/components/rack/rack.component';
 import { AppMaterialModule } from '@app/modules/material.module';
 import { RackService } from '@app/services/rack/rack.service';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
 
 describe('RackComponent', () => {
     let component: RackComponent;
@@ -185,6 +185,14 @@ describe('RackComponent', () => {
 
         component.onRightClick(POSITION);
         expect(component.selection.reserve).not.toContain(POSITION);
+    });
+
+    it('should clear selection on cancel exchange', () => {
+        component.selection.reserve = new Set([1, 2, 3]);
+
+        component.cancelExchange();
+
+        expect(component.selection.reserve.size).toEqual(0);
     });
 
     afterAll(() => cleanStyles());

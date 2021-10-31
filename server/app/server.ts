@@ -2,7 +2,7 @@ import { Application } from '@app/app';
 import * as http from 'http';
 import { AddressInfo } from 'net';
 import { Service } from 'typedi';
-import { SocketService } from '@app/services/socket-service';
+import { SocketService } from '@app/services/socket/socket-service';
 import { RoomController } from '@app/controllers/room.controller';
 
 @Service()
@@ -35,7 +35,7 @@ export class Server {
         this.server = http.createServer(this.application.app);
 
         this.socketService.init(this.server);
-        this.roomController.socketHandler();
+        this.roomController.handleSockets();
 
         this.server.listen(Server.appPort);
         this.server.on('error', (error: NodeJS.ErrnoException) => this.onError(error));

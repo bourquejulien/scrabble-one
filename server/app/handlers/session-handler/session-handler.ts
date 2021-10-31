@@ -11,7 +11,7 @@ import { ReserveHandler } from '@app/handlers/reserve-handler/reserve-handler';
 import * as logger from 'winston';
 
 export class SessionHandler {
-    readonly sessionData: SessionData;
+    sessionData: SessionData;
     private timer: NodeJS.Timer;
     private readonly playerSubscription: Subscription;
 
