@@ -63,6 +63,12 @@ export class RackService {
         for (const letter of rack) {
             this.rack[this.rack.indexOf('')] = letter;
         }
+
+        let emptyIndex = this.rack.indexOf('');
+        while (emptyIndex !== -1) {
+            this.rack.splice(emptyIndex, 1);
+            emptyIndex = this.rack.indexOf('');
+        }
     }
 
     mod(value: number): number {
