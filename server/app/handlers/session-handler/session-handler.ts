@@ -9,7 +9,7 @@ import { Subscription } from 'rxjs';
 import { SocketHandler } from '@app/handlers/socket-handler/socket-handler';
 
 export class SessionHandler {
-    readonly sessionData: SessionData;
+    sessionData: SessionData;
     // TODO Use player handler?
     readonly players: Player[];
 

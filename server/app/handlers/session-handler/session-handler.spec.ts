@@ -15,7 +15,7 @@ describe('SessionHandler', () => {
     let handler: SessionHandler;
     const sessionInfo: SessionInfo = {
         id: 'myUserId',
-        playTimeMs: 120*1000,
+        playTimeMs: 120 * 1000,
         gameType: GameType.SinglePlayer,
     };
     before(() => {

@@ -10,9 +10,9 @@ import * as logger from 'winston';
 export class RoomController {
     constructor(private readonly socketService: SocketService, private readonly sessionHandlingService: SessionHandlingService) {}
 
-    async isRoomFull(socket: Socket, roomId: string): Promise<boolean> {
+    async isRoomFull(socket: Socket, sessionId: string): Promise<boolean> {
         const maxPlayers = Config.MAX_PLAYERS;
-        const roomSockets = await socket.in(roomId).fetchSockets();
+        const roomSockets = await socket.in(sessionId).fetchSockets();
 
         logger.info(`Inside isRoomFull: ${roomSockets.length}`);
 
@@ -53,7 +53,7 @@ export class RoomController {
                         socket.join(sessionId);
                         logger.info(`Joined room: ${sessionId}`);
                     }
-
+                    // TODO: Is it still relevant?
                     this.socketService.socketServer.emit('availableRooms', this.sessionHandlingService.availableSessions);
                 } else {
                     logger.info(`Invalid room ID provided: ${sessionId}`);

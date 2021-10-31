@@ -3,7 +3,7 @@ import { Service } from 'typedi';
 
 @Service()
 export class SessionHandlingService {
-    private readonly sessionHandlers: SessionHandler[];
+    private sessionHandlers: SessionHandler[];
     private readonly playerIds: Map<string, string>;
 
     constructor() {

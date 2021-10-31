@@ -1,16 +1,30 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 export class BroadcastOperator {
-    async fetchSockets() {
-        return ['socket1', 'socket2'];
+    private isFull = true;
+    constructor(isFull: boolean) {
+        this.isFull = isFull;
     }
-}
-export class RoomBroadcaster {
+    async fetchSockets() {
+        if(this.isFull) return ['socket3', 'socket2'];
+        return ['socket1'];
+    }
     emit(event: string, message: any) {
         return;
     }
 }
 export class SocketMock {
     id: number = 123;
+    rooms = {
+        values: () => {
+            return {
+                next: () => {
+                    return {
+                        value: "roomIdISuppose",
+                    }
+                }
+            }
+        },
+    }
     // eslint-disable-next-line @typescript-eslint/ban-types
     callbacks: Map<string, (...args: any) => {}> = new Map();
     on(event: string, callback: any): void {
@@ -34,10 +48,14 @@ export class SocketMock {
     }
 
     in(roomId: string) {
-        return new BroadcastOperator();
+        return new BroadcastOperator(roomId === 'full');
     }
 
     to(roomId: string) {
-        return new RoomBroadcaster();
+        return new BroadcastOperator(roomId === 'full');
+    }
+
+    join(roomId: string) {
+        return;
     }
 }

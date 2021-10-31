@@ -7,7 +7,7 @@ import { expect } from 'chai';
 import { StatusCodes } from 'http-status-codes';
 import { createStubInstance, SinonStubbedInstance } from 'sinon';
 import request from 'supertest';
-import Container from 'typedi';
+import { Container } from 'typedi';
 
 const HTTP_STATUS_OK = StatusCodes.OK;
 // const HTTP_STATUS_CREATED = StatusCodes.CREATED;
@@ -48,5 +48,5 @@ describe('GameController', () => {
             .then((response) => {
                 expect(response.text).to.be.equal(JSON.stringify(serverConfig));
             });
-    });
+    }).timeout(1);
 });
