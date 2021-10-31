@@ -22,7 +22,7 @@ describe('SessionHandler', () => {
         gameType: GameType.SinglePlayer,
     };
 
-    before(() => {
+    beforeEach(() => {
         turnSubject = new Subject<string>();
 
         const stubBoardHandler = createStubInstance(BoardHandler);
