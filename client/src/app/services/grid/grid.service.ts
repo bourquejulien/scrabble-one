@@ -118,7 +118,9 @@ export class GridService {
     }
 
     private drawSymbol(letter: string, gridPosition: Vec2, context: CanvasRenderingContext2D) {
-        if (letter.length === 0) return;
+        if (letter.length === 0) {
+            return;
+        }
 
         const canvasPosition: Vec2 = this.computeCanvasCoord(gridPosition);
 
@@ -143,7 +145,9 @@ export class GridService {
     }
 
     private drawBonus(bonus: Bonus, gridPosition: Vec2, context: CanvasRenderingContext2D) {
-        if (bonus === Bonus.None) return;
+        if (bonus === Bonus.None) {
+            return;
+        }
 
         const canvasPosition: Vec2 = this.computeCanvasCoord(gridPosition);
         const { kind, multiplier } = GridService.getBonusText(bonus);

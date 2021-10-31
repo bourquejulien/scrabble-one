@@ -66,9 +66,8 @@ export class RoomController {
                         this.availableRooms.splice(roomIndex, 1);
                     }
                     this.socketServer.emit('availableRooms', this.availableRooms);
-                } else {
-                    console.log('Invalid room ID provided: ', roomId);
                 }
+                console.log('Invalid room ID provided: ', roomId);
             });
         });
     }

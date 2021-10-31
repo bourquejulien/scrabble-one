@@ -47,7 +47,9 @@ export class Trie implements ITrie {
 
     insert(word: string): void {
         const lastNode = this.getLastNode(word);
-        if (lastNode.index === word.length) return;
+        if (lastNode.index === word.length) {
+            return;
+        }
 
         let currentNode = lastNode.node;
 
@@ -80,7 +82,9 @@ export class Trie implements ITrie {
 
         for (let index = 0; index < word.length; index++) {
             const node = currentNode.getChildren(word[index]);
-            if (node == null) return { node: currentNode, index };
+            if (node == null) {
+                return { node: currentNode, index };
+            }
             currentNode = node;
         }
 

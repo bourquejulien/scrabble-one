@@ -18,7 +18,9 @@ export class SessionHandlingService {
 
     removeHandler(id: string): SessionHandler | null {
         const index = this.sessionHandlers.findIndex((e) => e.sessionInfo.id === id);
-        if (index < 0) return null;
+        if (index < 0) {
+            return null;
+        }
 
         const sessionHandler = this.sessionHandlers[index];
 

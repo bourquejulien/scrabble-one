@@ -39,8 +39,7 @@ export class TimerService {
     get time(): TimeSpan {
         if (this.countdownSubscription !== null) {
             return this.timer.time;
-        } else {
-            return TimeSpan.fromMilliseconds(0);
         }
+        return TimeSpan.fromMilliseconds(0);
     }
 }

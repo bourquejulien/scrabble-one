@@ -48,9 +48,9 @@ export class Timer {
         if (this.isRunning) {
             this.time = this.time.sub(TimeSpan.fromMilliseconds(TIME_PERIOD));
             this.timerUpdated.next(this.time);
-        } else {
-            this.stop();
+            return;
         }
+        this.stop();
     }
 
     private get isRunning(): boolean {

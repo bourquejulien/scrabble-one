@@ -1,8 +1,8 @@
-import { BoardError } from '@app/errors/board-error';
 import { Board, ImmutableBoard } from '@app/classes/board/board';
-import { Square, Vec2, Bonus, getBonusDetails, Placement, Direction, reverseDirection, ValidationResponse } from '@common';
 import { Dictionary } from '@app/classes/dictionary/dictionary';
 import { Config } from '@app/config';
+import { BoardError } from '@app/errors/board-error';
+import { Bonus, Direction, getBonusDetails, Placement, reverseDirection, Square, ValidationResponse, Vec2 } from '@common';
 
 export class BoardValidator {
     constructor(readonly board: ImmutableBoard, readonly dictionary: Dictionary, private letterPoints: { [key: string]: number }) {}
@@ -14,9 +14,8 @@ export class BoardValidator {
     private static sortLetters(letters: Placement[], direction: Direction): Placement[] {
         if (direction === Direction.Right) {
             return letters.sort((l1, l2) => l1.position.x - l2.position.x);
-        } else {
-            return letters.sort((l1, l2) => l1.position.y - l2.position.y);
         }
+        return letters.sort((l1, l2) => l1.position.y - l2.position.y);
     }
 
     private static ensureCoherence(clonedBoard: Board, sortedPositions: Vec2[], direction: Direction): boolean {
@@ -105,7 +104,9 @@ export class BoardValidator {
 
         const halfBoardSize = Math.floor(this.board.size / 2);
         for (const { position } of letters) {
-            if (position.x === halfBoardSize && position.y === halfBoardSize) return true;
+            if (position.x === halfBoardSize && position.y === halfBoardSize) {
+                return true;
+            }
         }
 
         return false;
@@ -113,12 +114,12 @@ export class BoardValidator {
 
     private ensureAggregation(positions: Vec2[]): boolean {
         for (const position of positions) {
-            if (
-                BoardValidator.validateSquare(this.board.getRelative(position, Direction.Left)) ||
-                BoardValidator.validateSquare(this.board.getRelative(position, Direction.Right)) ||
-                BoardValidator.validateSquare(this.board.getRelative(position, Direction.Up)) ||
-                BoardValidator.validateSquare(this.board.getRelative(position, Direction.Down))
-            ) {
+            const isLeftSquareValid = BoardValidator.validateSquare(this.board.getRelative(position, Direction.Left));
+            const isRigthSquareValid = BoardValidator.validateSquare(this.board.getRelative(position, Direction.Right));
+            const isUpSquareValid = BoardValidator.validateSquare(this.board.getRelative(position, Direction.Up));
+            const isDownSquareValid = BoardValidator.validateSquare(this.board.getRelative(position, Direction.Down));
+
+            if (isLeftSquareValid || isRigthSquareValid || isUpSquareValid || isDownSquareValid) {
                 return true;
             }
         }
@@ -212,9 +213,8 @@ export class BoardValidator {
 
         if (this.dictionary.lookup(word)) {
             return { isSuccess: true, description: '', points: totalPoint * multiplier };
-        } else {
-            return { isSuccess: false, description: `Word: (${word}) cannot be found in dictionary`, points: 0 };
         }
+        return { isSuccess: false, description: `Word: (${word}) cannot be found in dictionary`, points: 0 };
     }
 
     private getBingoBonus(placementLength: number): number {

@@ -20,9 +20,8 @@ export class Server {
             return val;
         } else if (port >= 0) {
             return port;
-        } else {
-            return false;
         }
+        return false;
     }
     init(): void {
         this.application.app.set('port', Server.appPort);

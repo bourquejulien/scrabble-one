@@ -111,7 +111,9 @@ export class HumanPlayer implements IPlayer {
     private updateRack(lettersToPlace: string[]): void {
         for (const letter of lettersToPlace) {
             const letterIndex = this.playerData.rack.indexOf(letter);
-            if (letterIndex === -1) return;
+            if (letterIndex === -1) {
+                return;
+            }
             this.playerData.rack.splice(letterIndex, 1);
         }
     }
