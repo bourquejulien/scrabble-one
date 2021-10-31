@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { SocketClientService } from '@app/services/socket-client/socket-client.service';
+import { RoomService } from '@app/services/room/room.service';
 
 @Component({
     selector: 'app-room-list',
@@ -8,18 +8,14 @@ import { SocketClientService } from '@app/services/socket-client/socket-client.s
     styleUrls: ['./room-list.component.scss'],
 })
 export class RoomListComponent implements OnInit {
-    availableRooms: string[] = [];
-    constructor(private readonly socket: SocketClientService, private router: Router) {}
+    constructor(readonly roomService: RoomService, private router: Router) {}
 
     ngOnInit(): void {
-        this.socket.socketClient.on('availableRooms', (availableRooms: string[]) => {
-            this.availableRooms = availableRooms;
-        });
-        this.socket.socketClient.emit('getRooms');
+        this.roomService.refresh();
     }
 
-    join(roomId?: string) {
-        this.socket.socketClient.emit('joinRoom', roomId);
-        this.router.navigate(['game']);
+    async join(roomId: string) {
+        await this.roomService.join(roomId);
+        await this.router.navigate(['game']);
     }
 }
