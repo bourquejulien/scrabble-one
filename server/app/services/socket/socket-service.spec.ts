@@ -26,7 +26,7 @@ describe('SocketService', () => {
     it('should send messages with the correct parameters', () => {
         const emitSpy = spy(service['socketServer'], 'to');
         const roomId = 'room1';
-        service.send('eventType', 'objectPlaceholder', roomId);
+        service.send('eventType', roomId, 'objectPlaceholder');
         assert.calledWith(emitSpy, roomId);
     });
 });

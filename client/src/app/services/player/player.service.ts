@@ -1,5 +1,4 @@
 import { Injectable } from '@angular/core';
-import { PlayerData } from '@app/classes/player-data';
 import { MessageType, Vec2, Direction, Answer } from '@common';
 import { BoardService } from '@app/services/board/board.service';
 import { MessagingService } from '@app/services/messaging/messaging.service';
@@ -15,14 +14,6 @@ const localUrl = (call: string, id: string) => `${environmentExt.apiUrl}player/$
     providedIn: 'root',
 })
 export class PlayerService {
-    // TODO Should be replaced by stats once server-side events are used
-    // TODO Rack could be update by ReserveService
-    playerData: PlayerData = {
-        score: 0,
-        skippedTurns: 0,
-        rack: [],
-    };
-
     constructor(
         private readonly reserveService: ReserveService,
         private readonly boardService: BoardService,
@@ -75,30 +66,17 @@ export class PlayerService {
     }
 
     async refresh(): Promise<void> {
-        const response = await this.httpClient.get(localUrl('retrieve', this.sessionService.id)).toPromise();
-
-        this.updateRack(response as PlayerData);
         await this.reserveService.refresh();
         await this.boardService.refresh();
+        await this.rackService.refresh();
     }
 
     reset(): void {
-        this.playerData.skippedTurns = 0;
-        this.playerData.score = 0;
         this.boardService.reset();
         this.reserveService.reset();
     }
 
-    get rackLength(): number {
-        return this.rackService.length;
-    }
-
     get rack(): string[] {
         return this.rackService.rack;
-    }
-
-    private updateRack(playerData: PlayerData): void {
-        this.playerData = playerData;
-        this.rackService.update(this.playerData.rack);
     }
 }

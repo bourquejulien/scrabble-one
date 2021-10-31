@@ -1,4 +1,4 @@
-import { Component, OnDestroy, ViewChild } from '@angular/core';
+import { Component, ElementRef, OnDestroy, ViewChild } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { MatDrawer } from '@angular/material/sidenav';
 import { Router } from '@angular/router';
@@ -12,6 +12,8 @@ import { TimerService } from '@app/services/timer/timer.service';
 import { Subscription } from 'rxjs';
 import { PlayerService } from '@app/services/player/player.service';
 import { LocationStrategy } from '@angular/common';
+import { MessageType } from '@common';
+import { MessagingService } from '@app/services/messaging/messaging.service';
 
 export enum Icon {
     Logout = 'exit_to_app',
@@ -50,14 +52,18 @@ export class GamePageComponent implements OnDestroy {
         readonly dialog: MatDialog,
         readonly router: Router,
         readonly reserveService: ReserveService,
+        readonly messagingService: MessagingService,
         location: LocationStrategy,
+        elementRef: ElementRef,
     ) {
         // Overrides back button behavior
         // Reference: https://stackoverflow.com/a/56354475
         history.pushState(null, '', window.location.href);
         location.onPopState(() => {
-            this.confirmQuit();
-            history.pushState(null, '', window.location.href);
+            if (elementRef.nativeElement.offsetParent != null) {
+                this.confirmQuit();
+                history.pushState(null, '', window.location.href);
+            }
         });
 
         this.playerType = gameService.onTurn.getValue();
@@ -110,12 +116,25 @@ export class GamePageComponent implements OnDestroy {
     }
 
     endGame() {
-        this.gameService.sendRackInCommunication();
+        this.sendRackInCommunication();
         const dialogRef = this.dialog.open(EndGameComponent);
         dialogRef.afterClosed().subscribe((result) => {
             if (result === true) {
                 this.gameService.reset();
             }
         });
+    }
+
+    private sendRackInCommunication() {
+        // Todo Get other player rack?
+        this.messagingService.send(
+            'Fin de partie - lettres restantes',
+            this.sessionService.gameConfig.firstPlayerName + ' : ' + this.playerService.rack,
+            // '\n' +
+            // this.sessionService.gameConfig.secondPlayerName +
+            // ' : ' +
+            // this.virtualPlayerService.playerData.rack,
+            MessageType.System,
+        );
     }
 }

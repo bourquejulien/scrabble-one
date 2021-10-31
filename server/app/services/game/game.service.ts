@@ -1,4 +1,4 @@
-import { Message, MultiplayerCreateConfig, MultiplayerJoinConfig, ServerConfig, SinglePlayerConfig } from '@common';
+import { MultiplayerCreateConfig, MultiplayerJoinConfig, ServerConfig, SinglePlayerConfig } from '@common';
 import { SessionHandlingService } from '@app/services/sessionHandling/session-handling.service';
 import { BoardGeneratorService } from '@app/services/board/board-generator.service';
 import { Service } from 'typedi';
@@ -14,22 +14,19 @@ import { DictionaryService } from '@app/services/dictionary/dictionary.service';
 import { SocketService } from '@app/services/socket/socket-service';
 import { SocketHandler } from '@app/handlers/socket-handler/socket-handler';
 import * as logger from 'winston';
+import { PlayerHandler } from '@app/handlers/player-handler/player-handler';
 
 @Service()
 export class GameService {
-    clientMessages: Message[];
-
     constructor(
         private readonly boardGeneratorService: BoardGeneratorService,
         private readonly sessionHandlingService: SessionHandlingService,
         private readonly dictionnaryService: DictionaryService,
         private readonly socketService: SocketService,
-    ) {
-        this.clientMessages = [];
-    }
+    ) {}
 
     async initSinglePlayer(gameConfig: SinglePlayerConfig): Promise<ServerConfig> {
-        const board = this.boardGeneratorService.generateBoard();
+        const board = this.boardGeneratorService.generateBoard(gameConfig.isRandomBonus);
         const sessionInfo = {
             id: generateId(),
             playTimeMs: gameConfig.playTimeMs,
@@ -38,8 +35,9 @@ export class GameService {
 
         const boardHandler = new BoardHandler(board, this.boardGeneratorService.generateBoardValidator(board));
         const reserveHandler = new ReserveHandler();
+        const socketHandler = new SocketHandler(this.socketService);
 
-        const sessionHandler = new SessionHandler(sessionInfo, boardHandler, reserveHandler, new SocketHandler(this.socketService));
+        const sessionHandler = new SessionHandler(sessionInfo, boardHandler, reserveHandler, new PlayerHandler(), socketHandler);
 
         const humanPlayerInfo: PlayerInfo = {
             id: generateId(),
@@ -64,7 +62,7 @@ export class GameService {
     }
 
     async initMultiplayer(gameConfig: MultiplayerCreateConfig): Promise<ServerConfig> {
-        const board = this.boardGeneratorService.generateBoard();
+        const board = this.boardGeneratorService.generateBoard(gameConfig.isRandomBonus);
         const sessionInfo = {
             id: generateId(),
             playTimeMs: gameConfig.playTimeMs,
@@ -73,8 +71,9 @@ export class GameService {
 
         const boardHandler = new BoardHandler(board, this.boardGeneratorService.generateBoardValidator(board));
         const reserveHandler = new ReserveHandler();
+        const socketHandler = new SocketHandler(this.socketService);
 
-        const sessionHandler = new SessionHandler(sessionInfo, boardHandler, reserveHandler, new SocketHandler(this.socketService));
+        const sessionHandler = new SessionHandler(sessionInfo, boardHandler, reserveHandler, new PlayerHandler(), socketHandler);
 
         const humanPlayerInfo: PlayerInfo = {
             id: generateId(),
@@ -133,7 +132,7 @@ export class GameService {
             return false;
         }
 
-        handler.destroy();
+        handler.dispose();
 
         logger.info(`Game stopped: ${id}`);
 

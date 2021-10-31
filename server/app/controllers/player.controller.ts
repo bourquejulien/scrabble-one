@@ -44,7 +44,7 @@ export class PlayerController {
             res.json(response);
         });
 
-        this.router.get('/retrieve/:id', async (req: Request, res: Response) => {
+        this.router.get('/rack/:id', async (req: Request, res: Response) => {
             const humanPlayer = this.getHumanPlayer(req.params.id);
             if (humanPlayer === null) {
                 res.sendStatus(Constants.HTTP_STATUS.BAD_REQUEST);
@@ -52,7 +52,18 @@ export class PlayerController {
             }
 
             res.status(Constants.HTTP_STATUS.OK);
-            res.json(humanPlayer.playerData);
+            res.json(humanPlayer.playerData.rack);
+        });
+
+        this.router.get('/stats/:id', async (req: Request, res: Response) => {
+            const stats = this.sessionHandlingService.getHandlerByPlayerId(req.params.id)?.getStats(req.params.id);
+            if (stats == null) {
+                res.sendStatus(Constants.HTTP_STATUS.BAD_REQUEST);
+                return;
+            }
+
+            res.status(Constants.HTTP_STATUS.OK);
+            res.json(stats);
         });
     }
 

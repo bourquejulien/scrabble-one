@@ -5,12 +5,14 @@ export interface SinglePlayerConfig {
     playTimeMs: number;
     playerName: string;
     virtualPlayerName: string;
+    isRandomBonus: boolean;
 }
 
 export interface MultiplayerCreateConfig {
     gameType: GameType;
     playTimeMs: number;
     playerName: string;
+    isRandomBonus: boolean;
 }
 
 export interface MultiplayerJoinConfig {
