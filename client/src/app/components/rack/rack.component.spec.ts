@@ -9,7 +9,6 @@ import { cleanStyles } from '@app/classes/helpers/cleanup.helper';
 import { RackComponent } from '@app/components/rack/rack.component';
 import { AppMaterialModule } from '@app/modules/material.module';
 import { RackService } from '@app/services/rack/rack.service';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
 
 describe('RackComponent', () => {
     let component: RackComponent;
