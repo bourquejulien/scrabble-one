@@ -3,7 +3,7 @@ import { Service } from 'typedi';
 
 @Service()
 export class SessionHandlingService {
-    private readonly sessionHandlers: SessionHandler[];
+    private sessionHandlers: SessionHandler[];
     private readonly playerIds: Map<string, string>;
 
     constructor() {
@@ -17,21 +17,28 @@ export class SessionHandlingService {
     }
 
     removeHandler(id: string): SessionHandler | null {
-        // Does not remove well
-        const index = this.sessionHandlers.findIndex((e) => e.sessionInfo.id === id);
-        if (index < 0) return null;
-
-        const sessionHandler = this.sessionHandlers[index];
+        const sessionHandler = this.getHandlerByPlayerId(id);
+        if (sessionHandler == null) return null;
 
         sessionHandler.players.forEach((p) => this.playerIds.delete(p.playerInfo.id));
         sessionHandler.destroy();
-        // Pourquoi allons nous chercher le premier index comme valeur de retour
-        return this.sessionHandlers.slice(index, 1)[0];
+        return sessionHandler;
     }
 
-    getHandler(id: string): SessionHandler | null {
-        // bug found while testing
-        // const sessionId = this.playerIds.get(id);
+    getHandlerByPlayerId(id: string): SessionHandler | null {
+        const sessionId = this.getSessionId(id);
+        return this.getHandlerBySessionId(sessionId);
+    }
+
+    getHandlerBySessionId(id: string): SessionHandler | null {
         return this.sessionHandlers.find((e) => e.sessionInfo.id === id) ?? null;
+    }
+
+    getSessionId(playerId: string): string {
+        return this.playerIds.get(playerId) ?? '';
+    }
+
+    get availableSessions(): SessionHandler[] {
+        return this.sessionHandlers.filter((e) => e.sessionData.isStarted);
     }
 }

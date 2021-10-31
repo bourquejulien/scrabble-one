@@ -1,16 +1,15 @@
 /* eslint-disable dot-notation */
 /* eslint-disable @typescript-eslint/no-magic-numbers */
 import { TestBed } from '@angular/core/testing';
-import { MessageType } from '@common';
+import { MessageType, SocketMock } from '@common';
 import { SocketClientService } from '@app/services/socket-client/socket-client.service';
 import { MessagingService } from './messaging.service';
-import { SocketClientMock } from '@app/classes/serverside-socket-helper';
 import { PlayerType } from '@app/classes/player/player-type';
 
 describe('MessagingService', () => {
     let service: MessagingService;
     let socketServiceSpyObj: jasmine.SpyObj<SocketClientService>;
-    const socketClient: SocketClientMock = new SocketClientMock();
+    const socketClient: SocketMock = new SocketMock();
 
     beforeEach(() => {
         socketServiceSpyObj = jasmine.createSpyObj('SocketClientService', [], { socketClient });
@@ -51,6 +50,6 @@ describe('MessagingService', () => {
         service.send('title3', 'body3', MessageType.Message, PlayerType.Virtual);
         service.send('title4', 'body4', MessageType.System, PlayerType.Virtual);
         service.send('title4', 'body4', MessageType.Game, PlayerType.Virtual);
-        expect(spy).toHaveBeenCalledTimes(4);
+        expect(spy).toHaveBeenCalledTimes(5);
     });
 });

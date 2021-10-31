@@ -1,14 +1,18 @@
 import { PlayerInfo } from '@app/classes/player-info';
 import { PlayerData } from '@app/classes/player-data';
-import { BehaviorSubject } from 'rxjs';
+import { Observable } from 'rxjs';
+import { BoardHandler } from '@app/handlers/board-handler/board-handler';
+import { ReserveHandler } from '@app/handlers/reserve-handler/reserve-handler';
+import { SocketHandler } from '@app/handlers/socket-handler/socket-handler';
 
-export interface IPlayer {
-    id: string;
-    playerInfo: PlayerInfo;
+export interface Player {
+    isTurn: boolean;
+    readonly id: string;
+    readonly playerInfo: PlayerInfo;
     readonly playerData: PlayerData;
-    readonly turnEnded: BehaviorSubject<string>;
 
-    startTurn(): Promise<void>;
-    endTurn(): void;
+    init(boardHandler: BoardHandler, reserveHandler: ReserveHandler, socketHandler: SocketHandler): void;
     fillRack(): void;
+    startTurn(): Promise<void>;
+    onTurn(): Observable<string>;
 }

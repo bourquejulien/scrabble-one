@@ -1,68 +1,62 @@
-/* eslint-disable no-console */ // easier logging for the server
-import { Message } from '@common';
-import * as http from 'http';
-import { Server, Socket } from 'socket.io';
-import { generateId } from '@app/classes/id';
+import { Message, MessageType } from '@common';
+import { Socket } from 'socket.io';
+import { Service } from 'typedi';
+import { SocketService } from '@app/services/socket/socket-service';
+import { SessionHandlingService } from '@app/services/sessionHandling/session-handling.service';
+import { Config } from '@app/config';
+import * as logger from 'winston';
 
+@Service()
 export class RoomController {
-    private socketServer: Server;
-    private availableRooms: string[] = [];
+    constructor(private readonly socketService: SocketService, private readonly sessionHandlingService: SessionHandlingService) {}
 
-    constructor(server: http.Server) {
-        this.socketServer = new Server(server, { cors: { origin: '*', methods: ['GET', 'POST'] } });
-    }
+    async isRoomFull(socket: Socket, sessionId: string): Promise<boolean> {
+        const maxPlayers = Config.MAX_PLAYERS;
+        const roomSockets = await socket.in(sessionId).fetchSockets();
 
-    async isRoomFull(socket: Socket, roomId: string): Promise<boolean> {
-        const maxPlayers = 2;
-        const roomSockets = await socket.in(roomId).fetchSockets();
-        console.log('Inside isRoomFull');
-        console.log(roomSockets.length);
+        logger.info(`Inside isRoomFull: ${roomSockets.length}`);
 
         return roomSockets.length >= maxPlayers;
     }
 
-    socketHandler(): void {
-        this.socketServer.on('connection', (socket) => {
-            console.log(`Connexion par l'utilisateur avec id : ${socket.id}`);
+    handleSockets(): void {
+        this.socketService.socketServer.on('connection', (socket) => {
+            logger.info(`Connection with user id: ${socket.id}`);
 
             socket.on('disconnect', (reason) => {
-                console.log(`Déconnexion par l'utilisateur avec id : ${socket.id} raison: ${reason}`);
+                logger.info(`User disconnect: ${socket.id} - Reason: ${reason}`);
             });
 
             socket.on('message', (message: Message) => {
                 // TODO: when room are functional socket.broadcast.to('testroom').emit('message', message);
-                this.socketServer.emit('message', message);
-                console.log('Message sent on behalf of', socket.id);
-            });
+                logger.debug(`Socket: ${socket.id} sent ${message.messageType}`);
 
-            socket.on('newOnlineGame', () => {
-                const roomId = generateId();
-                this.availableRooms.push(roomId);
+                if (message.messageType === MessageType.Message) {
+                    const room = socket.rooms.values().next().value;
+                    this.socketService.socketServer.in(room).emit('message', message);
+                } else {
+                    this.socketService.socketServer.to(socket.id).emit('message', message);
+                }
 
-                socket.join(roomId);
-                console.log('Created room: ', roomId);
+                logger.info(`Message sent on behalf of ${socket.id}`);
             });
 
             socket.on('getRooms', () => {
-                socket.emit('availableRooms', this.availableRooms);
+                socket.emit('availableRooms', this.sessionHandlingService.availableSessions);
             });
 
-            socket.on('joinRoom', async (roomId: string) => {
-                const roomIndex = this.availableRooms.indexOf(roomId);
+            socket.on('joinRoom', async (playerId: string) => {
+                const sessionId = this.sessionHandlingService.getSessionId(playerId);
 
-                if (roomIndex !== -1) {
-                    console.log('Joined room: ', roomId);
-                    socket.join(roomId);
-
-                    const isCurrentRoomFull = await this.isRoomFull(socket, roomId);
-
-                    if (isCurrentRoomFull) {
-                        console.log('Room is already full');
-                        this.availableRooms.splice(roomIndex, 1);
+                if (sessionId !== '') {
+                    if (!(await this.isRoomFull(socket, sessionId))) {
+                        socket.join(sessionId);
+                        logger.info(`Joined room: ${sessionId}`);
                     }
-                    this.socketServer.emit('availableRooms', this.availableRooms);
+                    // TODO: Is it still relevant?
+                    this.socketService.socketServer.emit('availableRooms', this.sessionHandlingService.availableSessions);
                 } else {
-                    console.log('Invalid room ID provided: ', roomId);
+                    logger.info(`Invalid room ID provided: ${sessionId}`);
                 }
             });
         });
