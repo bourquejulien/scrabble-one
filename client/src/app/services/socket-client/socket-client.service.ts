@@ -12,6 +12,11 @@ export class SocketClientService {
         this.socketClient = io(environment.serverUrl, { transports: ['websocket'], upgrade: false });
     }
 
+    reset(): void {
+        this.socketClient.disconnect();
+        this.socketClient.connect();
+    }
+
     join(id: string): void {
         this.socketClient.emit('joinRoom', id);
     }

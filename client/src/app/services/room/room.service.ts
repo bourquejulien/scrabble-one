@@ -52,6 +52,7 @@ export class RoomService {
         }
 
         await this.httpCLient.delete<string>(localUrl('game', 'stop', this.pendingRoomId)).toPromise();
+        this.socketService.reset();
     }
 
     async join(id: string): Promise<void> {
