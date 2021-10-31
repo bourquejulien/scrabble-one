@@ -3,8 +3,4 @@
     <div class="rack">
         <app-rack (reserveSelectionChange)="reserveSelection = $event"></app-rack>
     </div>
-    <div>
-        <button mat-button [ngClass]="{ invisible: reserveSelection.size === 0 }" class="exchange-command">Échanger</button>
-        <button mat-button (click)="cancelExchange()" [ngClass]="{ invisible: reserveSelection.size === 0 }" class="exchange-command">Annuler</button>
-    </div>
 </div>

@@ -14,3 +14,15 @@
         </div>
     </mat-card>
 </mat-card>
+<div id="buttons">
+    <button
+        mat-button
+        *ngIf="reserveService.length >= 7"
+        [ngClass]="{ invisible: selection.reserve.size === 0 }"
+        class="exchange-command"
+        (click)="exchangeLetters()"
+    >
+        Échanger
+    </button>
+    <button mat-button (click)="cancelExchange()" [ngClass]="{ invisible: selection.reserve.size === 0 }" class="exchange-command">Annuler</button>
+</div>
