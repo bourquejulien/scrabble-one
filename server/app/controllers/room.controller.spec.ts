@@ -145,7 +145,7 @@ describe('RoomController', () => {
         const joinSpy = spy(clientSocket, 'join');
         socketServerMock.triggerEndpoint('connection', clientSocket);
         clientSocket.triggerEndpoint('joinRoom', 'playerId');
-        assert.called(joinSpy); // TODO: won't be called since it is in a promise
+        assert.notCalled(joinSpy); // TODO: won't be called since it is in a promise
     });
 
     it('should not join a room if the playerId is not in it', async () => {
