@@ -2,7 +2,7 @@ import { Component, HostListener, Inject, OnInit } from '@angular/core';
 import { FormControl, FormGroup, ValidatorFn, Validators } from '@angular/forms';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { Router } from '@angular/router';
-import { Error } from '@app/classes/errorName/error';
+import { Error } from '@app/classes/error-name/error';
 import { GameConfig } from '@app/classes/game-config';
 import { GameType } from '@app/classes/game-type';
 import { TimeSpan } from '@app/classes/time/timespan';

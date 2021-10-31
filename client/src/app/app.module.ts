@@ -10,16 +10,16 @@ import { AppComponent } from '@app/pages/app/app.component';
 import { GamePageComponent } from '@app/pages/game-page/game-page.component';
 import { MainPageComponent } from '@app/pages/main-page/main-page.component';
 import { TimePipe } from './classes/time/time.pipe';
+import { BoardComponent } from './components/board/board/board.component';
 import { CommunicationBoxComponent } from './components/communication-box/communication-box.component';
 import { ConfirmQuitDialogComponent } from './components/confirm-quit-dialog/confirm-quit-dialog.component';
 import { EndGameComponent } from './components/end-game/end-game.component';
 import { InitGameComponent } from './components/init-game/init-game.component';
 import { RackComponent } from './components/rack/rack.component';
-import { SizeSelectorComponent } from './components/size-selector/size-selector/size-selector.component';
+import { SizeSelectorComponent } from './components/size-selector/size-selector.component';
 import { GameModePageComponent } from './pages/game-mode-page/game-mode-page.component';
 import { RoomListComponent } from './pages/room-list/room-list.component';
 import { WaitingRoomPageComponent } from './pages/waiting-room-page/waiting-room-page.component';
-import { BoardComponent } from './components/board/board/board.component';
 
 /**
  * Main module that is used in main.ts.
