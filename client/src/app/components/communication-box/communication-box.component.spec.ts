@@ -126,8 +126,6 @@ describe('CommunicationBoxComponent', () => {
         expect(component.getMessageColor(dummyMessage)).toBe(Constants.PLAYER_TWO_COLOR);
         dummyMessage.userId = PlayerType.Local;
         expect(component.getMessageColor(dummyMessage)).toBe(Constants.PLAYER_ONE_COLOR);
-        dummyMessage.messageType = MessageType.Game;
-        expect(component.getMessageColor(dummyMessage)).toBe(Constants.SYSTEM_COLOR);
         dummyMessage.messageType = MessageType.Log;
         expect(component.getMessageColor(dummyMessage)).toBe(Constants.SYSTEM_COLOR);
         dummyMessage.messageType = MessageType.System;
@@ -136,11 +134,11 @@ describe('CommunicationBoxComponent', () => {
 
     it('should return the correct font color', () => {
         expect(component.getFontColor(dummyMessage)).toBe(Constants.WHITE_FONT);
-        dummyMessage.messageType = MessageType.Game;
-        expect(component.getFontColor(dummyMessage)).toBe(Constants.BLACK_FONT);
         dummyMessage.messageType = MessageType.Message;
-        expect(component.getFontColor(dummyMessage)).toBe(Constants.WHITE_FONT);
+        expect(component.getFontColor(dummyMessage)).toBe(Constants.BLACK_FONT);
         dummyMessage.messageType = MessageType.System;
+        expect(component.getFontColor(dummyMessage)).toBe(Constants.WHITE_FONT);
+        dummyMessage.messageType = MessageType.Log;
         expect(component.getFontColor(dummyMessage)).toBe(Constants.WHITE_FONT);
     });
 
