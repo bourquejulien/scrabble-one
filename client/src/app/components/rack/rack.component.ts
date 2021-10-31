@@ -39,7 +39,9 @@ export class RackComponent implements OnInit {
     onKeyDown(event: KeyboardEvent) {
         this.handleKeyPress(event.key);
 
-        if (this.selection.swap.index < 0) return;
+        if (this.selection.swap.index < 0) {
+            return;
+        }
 
         switch (event.key) {
             case 'ArrowRight':
@@ -55,7 +57,9 @@ export class RackComponent implements OnInit {
 
     @HostListener('document:click', ['$event'])
     onDocumentClick(): void {
-        if (this.isFocus) return;
+        if (this.isFocus) {
+            return;
+        }
 
         this.reset();
     }
@@ -70,7 +74,9 @@ export class RackComponent implements OnInit {
     }
 
     onRightClick(position: number): boolean {
-        if (this.selection.reserve.delete(position) || this.selection.swap.index === position) return false; // Ensures no context menu is showed.
+        if (this.selection.reserve.delete(position) || this.selection.swap.index === position) {
+            return false; // Ensures no context menu is showed.
+        }
 
         this.selection.reserve.add(position);
 
@@ -83,11 +89,8 @@ export class RackComponent implements OnInit {
             return;
         }
 
-        if (event.deltaY < 0) {
-            this.swapSelectionIndex = this.rackService.mod(this.selection.swap.index + 1);
-        } else {
-            this.swapSelectionIndex = this.rackService.mod(this.selection.swap.index - 1);
-        }
+        this.swapSelectionIndex =
+            event.deltaY < 0 ? this.rackService.mod(this.selection.swap.index + 1) : this.rackService.mod(this.selection.swap.index - 1);
     }
 
     reset() {
@@ -99,11 +102,7 @@ export class RackComponent implements OnInit {
     retrievePoints(letter: string): number {
         const currentLetterData = LETTER_DEFINITIONS.get(letter);
 
-        if (currentLetterData) {
-            return currentLetterData.points;
-        }
-
-        return -1;
+        return currentLetterData ? currentLetterData.points : -1;
     }
 
     cancelExchange() {
@@ -133,9 +132,8 @@ export class RackComponent implements OnInit {
         if (index !== -1 && this.isFocus) {
             this.swapSelectionIndex = index;
             this.selection.swap.lastIndex = index + 1;
-        } else {
-            this.reset();
         }
+        this.reset();
     }
 
     private set swapSelectionIndex(position: number) {

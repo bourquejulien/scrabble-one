@@ -59,13 +59,12 @@ export class CommandsService {
             if (successfulCommand) {
                 this.messagingService.send('Commande réussie', input, MessageType.System, this.gameService.currentTurn);
             }
+        }
+        if (this.messageRegex.test(input)) {
+            this.messagingService.send('', input, MessageType.Message);
         } else {
-            if (this.messageRegex.test(input)) {
-                this.messagingService.send('', input, MessageType.Message);
-            } else {
-                this.messagingService.send(SystemMessages.InvalidFormat, SystemMessages.InvalidUserMessage, MessageType.Error);
-                return false;
-            }
+            this.messagingService.send(SystemMessages.InvalidFormat, SystemMessages.InvalidUserMessage, MessageType.Error);
+            return false;
         }
         return true;
     }
@@ -75,6 +74,7 @@ export class CommandsService {
         return word.normalize('NFD').replace(/\p{Diacritic}/gu, '');
     }
 
+    // TO DO return false... somewhere
     private displayReserve(): boolean {
         const body: string[] = [];
         let reserveContent = '';

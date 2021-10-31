@@ -7,19 +7,19 @@ import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormsModule } from '@angular/forms';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { GameType } from '@app/classes/game-type';
 import { cleanStyles } from '@app/classes/helpers/cleanup.helper';
 import { PlayerType } from '@app/classes/player/player-type';
+import { SocketClientMock } from '@app/classes/serverside-socket-helper';
 import { TimeSpan } from '@app/classes/time/timespan';
 import { Constants } from '@app/constants/global.constants';
 import { AppMaterialModule } from '@app/modules/material.module';
 import { CommandsService } from '@app/services/commands/commands.service';
 import { MessagingService } from '@app/services/messaging/messaging.service';
 import { SessionService } from '@app/services/session/session.service';
+import { SocketClientService } from '@app/services/socket-client/socket-client.service';
 import { Message, MessageType } from '@common';
 import { CommunicationBoxComponent } from './communication-box.component';
-import { SocketClientService } from '@app/services/socket-client/socket-client.service';
-import { GameType } from '@app/classes/game-type';
-import { SocketClientMock } from '@app/classes/serverside-socket-helper';
 
 describe('CommunicationBoxComponent', () => {
     let component: CommunicationBoxComponent;
@@ -32,9 +32,8 @@ describe('CommunicationBoxComponent', () => {
         parseInput: (input: string) => {
             if (input === 'false') {
                 return false;
-            } else {
-                return true;
             }
+            return true;
         },
     });
 

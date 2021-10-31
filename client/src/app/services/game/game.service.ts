@@ -95,26 +95,34 @@ export class GameService {
 
         if (this.currentTurn === PlayerType.Local) {
             this.onVirtualPlayerTurn();
-        } else {
-            this.onPlayerTurn();
+            return;
         }
+        this.onPlayerTurn();
     }
 
     private playerRackPoint(rack: string[]): number {
         let playerPoint = 0;
         for (const letter of rack) {
             const currentLetterData = LETTER_DEFINITIONS.get(letter.toLowerCase());
-            if (currentLetterData?.points === undefined) return -1;
+
+            if (currentLetterData?.points === undefined) {
+                return -1;
+            }
+
             playerPoint += currentLetterData.points;
         }
         return playerPoint;
     }
 
     emptyRackAndReserve() {
-        if (this.reserveService.length === 0 && (this.playerService.rack.length === 0 || this.virtualPlayerService.playerData.rack.length === 0)) {
+        const isReserveEmpty = this.reserveService.length === 0;
+        const isRackEmpty = this.playerService.rack.length === 0;
+        const isVirtualRackEmpty = this.virtualPlayerService.playerData.rack.length === 0;
+
+        if (isReserveEmpty && (isRackEmpty || isVirtualRackEmpty)) {
             this.endGamePoint();
 
-            if (this.playerService.rack.length === 0) {
+            if (isRackEmpty) {
                 this.playerService.playerData.score += this.playerRackPoint(this.virtualPlayerService.playerData.rack);
             } else {
                 this.virtualPlayerService.playerData.score += this.playerRackPoint(this.playerService.rack);
@@ -144,10 +152,10 @@ export class GameService {
     }
 
     private skipTurnLimit() {
-        if (
-            this.playerService.playerData.skippedTurns > Constants.MAX_SKIP_TURN &&
-            this.virtualPlayerService.playerData.skippedTurns > Constants.MAX_SKIP_TURN
-        ) {
+        const isPlayerSkipMaxTurns = this.playerService.playerData.skippedTurns > Constants.MAX_SKIP_TURN;
+        const isVirtualSkipMaxTurns = this.virtualPlayerService.playerData.skippedTurns > Constants.MAX_SKIP_TURN;
+
+        if (isPlayerSkipMaxTurns && isVirtualSkipMaxTurns) {
             this.playerService.playerData.skippedTurns = 0;
             this.virtualPlayerService.playerData.skippedTurns = 0;
             this.endGamePoint();

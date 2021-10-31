@@ -13,20 +13,18 @@ export class RackService {
     swapLeft(position: number): number {
         if (position > 0) {
             return this.swap(position, -1);
-        } else {
-            const exchange = this.rack.splice(0, 1);
-            return this.rack.push(exchange[0]) - 1;
         }
+        const exchange = this.rack.splice(0, 1);
+        return this.rack.push(exchange[0]) - 1;
     }
 
     swapRight(position: number): number {
         if (position < this.length - 1) {
             return this.swap(position, 1);
-        } else {
-            const exchange = this.rack.splice(0, this.length - 1);
-            this.rack.push(...exchange);
-            return 0;
         }
+        const exchange = this.rack.splice(0, this.length - 1);
+        this.rack.push(...exchange);
+        return 0;
     }
 
     indexOf(letter: string, fromIndex?: number): number {
@@ -76,7 +74,9 @@ export class RackService {
     }
 
     private swap(position: number, delta: number): number {
-        if (this.length === 0) return -1;
+        if (this.length === 0) {
+            return -1;
+        }
 
         const newPosition = this.mod(position + delta);
         [this.rack[position], this.rack[newPosition]] = [this.rack[newPosition], this.rack[position]];

@@ -47,7 +47,7 @@ const POSSIBLE_ERRORS: Error[] = [STARTS_LOWER_LETTER_ERROR, CONTAINS_NOT_LETTER
 })
 export class InitGameComponent implements OnInit {
     readonly gameTypesList;
-    readonly botNames: string [];
+    readonly botNames: string[];
     readonly minutesList;
     readonly secondsList;
     nextPage: string;
@@ -89,13 +89,13 @@ export class InitGameComponent implements OnInit {
         if (playerName !== undefined && playerName !== null && playerName !== '') {
             for (let index = 0; index < playerName.length; index++) {
                 if (!/[a-zA-ZÉéÎîÉéÇçÏï]/.test(playerName.charAt(index))) {
-                    return { ['containsOnlyLetters'] : true };
+                    return { ['containsOnlyLetters']: true };
                 }
             }
 
             const firstLetter = playerName[0];
             if (firstLetter !== firstLetter.toUpperCase()) {
-                return { ['startsWithLowerLetter'] : true };
+                return { ['startsWithLowerLetter']: true };
             }
         }
         return null;
@@ -153,11 +153,15 @@ export class InitGameComponent implements OnInit {
     }
 
     private forceSecondsToZero(): void {
-        if (this.minutes === TURN_LENGTH_MINUTES[5]) this.seconds = 0;
+        if (this.minutes === TURN_LENGTH_MINUTES[5]) {
+            this.seconds = 0;
+        }
     }
 
     private forceSecondsToThirty(): void {
-        if (this.minutes === TURN_LENGTH_MINUTES[0]) this.seconds = 30;
+        if (this.minutes === TURN_LENGTH_MINUTES[0]) {
+            this.seconds = 30;
+        }
     }
 
     private confirmInitialization(): boolean {
@@ -176,13 +180,12 @@ export class InitGameComponent implements OnInit {
             this.gameConfig.playTime = TimeSpan.fromMinutesSeconds(this.minutes, this.seconds);
 
             return true;
-        } else {
-            this.errorsList = [];
-            for (const error of POSSIBLE_ERRORS) {
-                // nameForm.get('control') cannot be null since we initialize it in the constructor
-                if (this.nameForm.get('control')?.hasError(error.validationRule)) {
-                    this.errorsList.push(error.validationMessage);
-                }
+        }
+        this.errorsList = [];
+        for (const error of POSSIBLE_ERRORS) {
+            // nameForm.get('control') cannot be null since we initialize it in the constructor
+            if (this.nameForm.get('control')?.hasError(error.validationRule)) {
+                this.errorsList.push(error.validationMessage);
             }
         }
         return false;

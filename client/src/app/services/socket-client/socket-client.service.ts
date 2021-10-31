@@ -8,7 +8,7 @@ import { io, Socket } from 'socket.io-client';
 export class SocketClientService {
     socketClient: Socket;
 
-    constructor(){
+    constructor() {
         this.socketClient = io(environment.serverUrl, { transports: ['websocket'], upgrade: false });
     }
 }

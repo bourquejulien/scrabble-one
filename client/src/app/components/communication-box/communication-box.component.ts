@@ -40,7 +40,9 @@ export class CommunicationBoxComponent implements AfterViewInit {
     }
 
     send(input: string): boolean {
-        if (input === '') return false;
+        if (input === '') {
+            return false;
+        }
         if (this.commandsService.parseInput(input)) {
             this.inputValue = '';
         }
@@ -58,8 +60,7 @@ export class CommunicationBoxComponent implements AfterViewInit {
             case MessageType.Error:
                 return Constants.SYSTEM_COLOR;
             case MessageType.Message:
-                if (message.userId === PlayerType.Local) return Constants.PLAYER_ONE_COLOR;
-                return Constants.PLAYER_TWO_COLOR;
+                return message.userId === PlayerType.Local ? Constants.PLAYER_ONE_COLOR : Constants.SYSTEM_COLOR;
             default:
                 return Constants.SYSTEM_COLOR;
         }
