@@ -17,6 +17,7 @@ describe('GameController', () => {
         secondPlayerName: 'Monique',
         gameType: GameType.Multiplayer,
         id: '1234567890',
+        startId: '1234567890',
         playTimeMs: 120 * 1000,
     };
 
