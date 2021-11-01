@@ -39,7 +39,7 @@ describe('ReserveController', () => {
     });
 
     it('GET /reserve/retrieve/  ', async () => {
-        request(expressApp)
+        return request(expressApp)
             .get('/api/reserve/retrieve/123')
             .expect(Constants.HTTP_STATUS.OK)
             .then((response) => {
@@ -49,7 +49,7 @@ describe('ReserveController', () => {
 
     it('GET /reserve/retrieve/ fail when there is no reserveHandler ', async () => {
         stubSessionHandlingService.getHandlerByPlayerId.returns(null);
-        request(expressApp)
+        return request(expressApp)
             .get('/api/reserve/retrieve/123')
             .expect(Constants.HTTP_STATUS.OK)
             .then((response) => {

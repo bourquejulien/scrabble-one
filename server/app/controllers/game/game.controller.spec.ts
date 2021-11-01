@@ -44,7 +44,7 @@ describe('GameController', () => {
 
     it('DELETE /stop', async () => {
         gameService.stop.resolves(true);
-        request(expressApp)
+        return request(expressApp)
             .delete('/api/game/stop/1')
             .send(singlePlayerConfig)
             .then((response) => {
@@ -54,7 +54,7 @@ describe('GameController', () => {
 
     it('DELETE /stop send error message when game wont stop', async () => {
         gameService.stop.resolves(false);
-        request(expressApp)
+        return request(expressApp)
             .delete('/api/game/stop/1')
             .send(singlePlayerConfig)
             .then((response) => {
@@ -63,7 +63,7 @@ describe('GameController', () => {
     });
 
     it('GET /start', async () => {
-        request(expressApp)
+        return request(expressApp)
             .get('/api/game/start/1')
             .send(singlePlayerConfig)
             .then((response) => {
@@ -73,7 +73,7 @@ describe('GameController', () => {
 
     it('GET /start send error message when game wont start', async () => {
         gameService.start.resolves('something');
-        request(expressApp)
+        return request(expressApp)
             .get('/api/game/start/1')
             .send(singlePlayerConfig)
             .then((response) => {
@@ -82,7 +82,7 @@ describe('GameController', () => {
     });
 
     it('PUT /init/single', async () => {
-        request(expressApp)
+        return request(expressApp)
             .put('/api/game/init/single')
             .send(singlePlayerConfig)
             .then((response) => {
@@ -92,7 +92,7 @@ describe('GameController', () => {
 
     it('PUT /init/single', async () => {
         gameService.initSinglePlayer.resolves(undefined);
-        request(expressApp)
+        return request(expressApp)
             .put('/api/game/init/single')
             .send(singlePlayerConfig)
             .then((response) => {
@@ -101,7 +101,7 @@ describe('GameController', () => {
     });
 
     it('PUT /init/multi', async () => {
-        request(expressApp)
+        return request(expressApp)
             .put('/api/game/init/multi')
             .send(singlePlayerConfig)
             .then((response) => {
@@ -112,7 +112,7 @@ describe('GameController', () => {
 
     it('PUT /init/multi error out', async () => {
         gameService.initMultiplayer.resolves(undefined);
-        request(expressApp)
+        return request(expressApp)
             .put('/api/game/init/multi')
             .send(singlePlayerConfig)
             .then((response) => {
@@ -122,7 +122,7 @@ describe('GameController', () => {
     });
 
     it('PUT /join', async () => {
-        request(expressApp)
+        return request(expressApp)
             .put('/api/game/join')
             .send(singlePlayerConfig)
             .then((response) => {
@@ -132,7 +132,7 @@ describe('GameController', () => {
 
     it('PUT /join not join the game', async () => {
         gameService.joinMultiplayer.resolves(null);
-        request(expressApp)
+        return request(expressApp)
             .put('/api/game/join')
             .send(singlePlayerConfig)
             .then((response) => {

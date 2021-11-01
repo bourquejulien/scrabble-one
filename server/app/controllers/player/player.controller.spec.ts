@@ -51,7 +51,7 @@ describe('PlayerController', () => {
 
     it('POST /api/player/exchange/2  ', async () => {
         const exchange = ['words', 'are', 'great'];
-        request(expressApp)
+        return request(expressApp)
             .post('/api/player/exchange/2')
             .send(exchange)
             .expect(Constants.HTTP_STATUS.OK)
@@ -62,7 +62,7 @@ describe('PlayerController', () => {
 
     it('POST /api/player/exchange/3  ', async () => {
         const exchange = ['words', 'are', 'great'];
-        request(expressApp)
+        return request(expressApp)
             .post('/api/player/exchange/3')
             .send(exchange)
             .expect(Constants.HTTP_STATUS.OK)
@@ -72,7 +72,7 @@ describe('PlayerController', () => {
     });
 
     it('POST /api/player/skip/ skip humanPlayer turn  ', async () => {
-        request(expressApp)
+        return request(expressApp)
             .post('/api/player/skip/2')
             .expect(Constants.HTTP_STATUS.OK)
             .then((response) => {
@@ -82,7 +82,7 @@ describe('PlayerController', () => {
 
     it('#getHumanPlayer should return null ', async () => {
         stubSessionHandlingService.getHandlerByPlayerId.returns(null);
-        request(expressApp)
+        return request(expressApp)
             .post('/api/player/skip/1')
             .expect(Constants.HTTP_STATUS.OK)
             .then((response) => {
@@ -91,7 +91,7 @@ describe('PlayerController', () => {
     });
 
     it('GET /api/player/rack/3  ', async () => {
-        request(expressApp)
+        return request(expressApp)
             .get('/api/player/rack/3')
             .expect(Constants.HTTP_STATUS.OK)
             .then((response) => {
@@ -100,7 +100,7 @@ describe('PlayerController', () => {
     });
 
     it('GET /api/player/rack/2  ', async () => {
-        request(expressApp)
+        return request(expressApp)
             .get('/api/player/rack/1')
             .expect(Constants.HTTP_STATUS.OK)
             .then((response) => {
@@ -109,7 +109,7 @@ describe('PlayerController', () => {
     });
 
     it('GET /api/player/rack/1  ', async () => {
-        request(expressApp)
+        return request(expressApp)
             .get('/api/player/rack/1')
             .expect(Constants.HTTP_STATUS.OK)
             .then((response) => {
@@ -118,7 +118,7 @@ describe('PlayerController', () => {
     });
 
     it('GET /api/player/stats/2  ', async () => {
-        request(expressApp)
+        return request(expressApp)
             .get('/api/player/stats/2')
             .expect(Constants.HTTP_STATUS.OK)
             .then((response) => {
@@ -128,7 +128,7 @@ describe('PlayerController', () => {
 
     it('GET /api/player/stats/123 should error out  ', async () => {
         stubSessionHandlingService.getHandlerByPlayerId.returns(null);
-        request(expressApp)
+        return request(expressApp)
             .get('/api/player/stats/123')
             .expect(Constants.HTTP_STATUS.BAD_REQUEST)
             .then((response) => {

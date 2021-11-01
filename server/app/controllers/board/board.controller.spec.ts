@@ -55,7 +55,7 @@ describe('BoardController', () => {
 
     it('POST /place/123 without valid user', async () => {
         const placement: Placement[] = [{ letter: 'A', position: { x: 8, y: 8 } }];
-        request(expressApp)
+        return request(expressApp)
             .post('/api/board/place/123')
             .send(placement)
             .then((response) => {
@@ -65,7 +65,7 @@ describe('BoardController', () => {
 
     it('POST /place/2 with valid user', async () => {
         const placement: Placement[] = [{ letter: 'A', position: { x: 8, y: 8 } }];
-        request(expressApp)
+        return request(expressApp)
             .post('/api/board/place/2')
             .send(placement)
             .then((response) => {
@@ -75,7 +75,7 @@ describe('BoardController', () => {
 
     it('POST /validate/123 when there is a placement array', async () => {
         const placement: Placement[] = [{ letter: 'A', position: { x: 8, y: 8 } }];
-        request(expressApp)
+        return request(expressApp)
             .post('/api/board/validate/123')
             .send(placement)
             .then((response) => {
@@ -86,7 +86,7 @@ describe('BoardController', () => {
     it('POST /validate/1 when there is no boardHandler', async () => {
         stubSessionHandlingService.getHandlerByPlayerId.returns(null);
         const placement: Placement[] = [{ letter: 'A', position: { x: 8, y: 8 } }];
-        request(expressApp)
+        return request(expressApp)
             .post('/api/board/validate/123')
             .send(placement)
             .then((response) => {
@@ -96,7 +96,7 @@ describe('BoardController', () => {
 
     it('POST /retrieve/123 when there is no boardHandler', async () => {
         stubSessionHandlingService.getHandlerByPlayerId.returns(null);
-        request(expressApp)
+        return request(expressApp)
             .get('/api/board/retrieve/123')
             .then((response) => {
                 expect(response.status).to.be.equal(Constants.HTTP_STATUS.OK);
@@ -108,7 +108,7 @@ describe('BoardController', () => {
         stubBoardHandler['board'] = createStubInstance(Board, { boardData: { board: [], filledPositions: [] } }) as unknown as Board;
         stubSessionHandler['boardHandler'] = stubBoardHandler as unknown as BoardHandler;
 
-        request(expressApp)
+        return request(expressApp)
             .get('/api/board/retrieve/1')
             .then((response) => {
                 expect(response.status).to.be.equal(Constants.HTTP_STATUS.OK);
@@ -116,7 +116,7 @@ describe('BoardController', () => {
     }); */
 
     it('POST /retrieve/1 ', async () => {
-        request(expressApp)
+        return request(expressApp)
             .get('/api/board/retrieve/1')
             .then((response) => {
                 expect(response.status).to.be.equal(Constants.HTTP_STATUS.OK);
