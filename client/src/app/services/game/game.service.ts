@@ -59,8 +59,6 @@ export class GameService {
         this.gameRunning = false;
         this.playerService.reset();
         this.socketService.reset();
-
-        await this.httpCLient.delete(localUrl('game', 'stop', this.sessionService.id)).toPromise();
     }
 
     private async onNextTurn(id: string): Promise<void> {

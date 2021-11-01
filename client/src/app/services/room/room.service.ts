@@ -47,8 +47,6 @@ export class RoomService {
             return;
         }
 
-        await this.httpCLient.delete<string>(localUrl('game', 'stop', this.pendingRoomId)).toPromise();
-
         this.socketService.reset();
         this.pendingRoomId = '';
     }

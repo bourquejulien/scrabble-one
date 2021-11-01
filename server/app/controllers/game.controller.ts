@@ -20,11 +20,6 @@ export class GameController {
             res.json(answer);
         });
 
-        this.router.delete('/stop/:id', async (req: Request, res: Response) => {
-            const isSuccess = await this.gameService.stop(req.params.id);
-            res.sendStatus(isSuccess ? Constants.HTTP_STATUS.DELETED : Constants.HTTP_STATUS.BAD_REQUEST);
-        });
-
         this.router.put('/init/single', async (req: Request, res: Response) => {
             try {
                 const answer = await this.gameService.initSinglePlayer(req.body);
