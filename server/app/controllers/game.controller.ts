@@ -56,5 +56,10 @@ export class GameController {
                 res.status(Constants.HTTP_STATUS.BAD_REQUEST);
             }
         });
+
+        this.router.put('/convert', async (req: Request, res: Response) => {
+            const isSuccess = await this.gameService.convert(req.body);
+            res.sendStatus(isSuccess ? Constants.HTTP_STATUS.OK : Constants.HTTP_STATUS.BAD_REQUEST);
+        });
     }
 }

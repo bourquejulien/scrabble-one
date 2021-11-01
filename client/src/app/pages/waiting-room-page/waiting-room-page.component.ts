@@ -32,7 +32,7 @@ export class WaitingRoomPageComponent implements OnDestroy, OnInit {
 
     async abort() {
         await this.roomService.abort();
-        await this.router.navigate(['home']);
+        await this.router.navigate(['settings']);
     }
 
     convertToSoloMode() {

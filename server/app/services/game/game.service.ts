@@ -1,4 +1,12 @@
-import { JoinServerConfig, MultiplayerCreateConfig, MultiplayerJoinConfig, ServerConfig, SinglePlayerConfig } from '@common';
+import {
+    GameType,
+    JoinServerConfig,
+    MultiplayerCreateConfig,
+    MultiplayerJoinConfig,
+    ServerConfig,
+    SinglePlayerConfig,
+    SinglePlayerConvertConfig,
+} from '@common';
 import { SessionHandlingService } from '@app/services/sessionHandling/session-handling.service';
 import { BoardGeneratorService } from '@app/services/board/board-generator.service';
 import { Service } from 'typedi';
@@ -105,11 +113,35 @@ export class GameService {
 
         const humanPlayer = this.addHumanPlayer(humanPlayerInfo, sessionHandler);
 
-        this.sessionHandlingService.updateEntry(sessionHandler);
+        this.sessionHandlingService.updateEntries(sessionHandler);
 
         logger.info(`Multiplayer game: ${sessionHandler.sessionInfo.id} joined by ${humanPlayerInfo.id}`);
 
         return sessionHandler.getServerConfig(humanPlayer.id);
+    }
+
+    async convert(config: SinglePlayerConvertConfig): Promise<boolean> {
+        const handler = this.sessionHandlingService.getHandlerByPlayerId(config.id);
+
+        if (handler == null || handler.sessionData.isStarted || handler.sessionInfo.gameType === GameType.Multiplayer) {
+            logger.warn(`Cannot convert game to solo mode - playerId: ${config.id}`);
+            return false;
+        }
+
+        handler.sessionInfo.gameType = GameType.SinglePlayer;
+
+        const virtualPlayerInfo: PlayerInfo = {
+            id: generateId(),
+            name: config.name,
+            isHuman: false,
+        };
+
+        this.addVirtualPlayer(virtualPlayerInfo, handler);
+        this.sessionHandlingService.updateEntries(handler);
+
+        logger.info(`Game converted: ${handler.sessionInfo.id}`);
+
+        return true;
     }
 
     async start(id: string): Promise<string | null> {

@@ -8,6 +8,11 @@ export interface SinglePlayerConfig {
     isRandomBonus: boolean;
 }
 
+export interface SinglePlayerConvertConfig {
+    id: string;
+    name: string;
+}
+
 export interface MultiplayerCreateConfig {
     gameType: GameType;
     playTimeMs: number;
