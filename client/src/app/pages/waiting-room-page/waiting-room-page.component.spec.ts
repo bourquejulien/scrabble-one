@@ -15,7 +15,7 @@ describe('WaitingRoomPageComponent', () => {
     const socketClient: SocketMock = new SocketMock();
 
     beforeEach(async () => {
-        socketServiceSpyObj = jasmine.createSpyObj('SocketClientService', [], { socketClient });
+        socketServiceSpyObj = jasmine.createSpyObj('SocketClientService', ['on'], { socketClient });
         await TestBed.configureTestingModule({
             declarations: [WaitingRoomPageComponent],
             imports: [HttpClientTestingModule, RouterTestingModule.withRoutes([{ path: 'game', component: GamePageComponent }])],

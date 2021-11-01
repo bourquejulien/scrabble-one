@@ -25,12 +25,12 @@ export class RoomService {
         this.availableRooms = [];
         this.hasJoined = new Subject<JoinServerConfig>();
         this.pendingRoomId = null;
+
+        this.socketService.on('availableRooms', (rooms: string[]) => (this.availableRooms = rooms));
+        this.socketService.on('onJoin', async (joinServerConfig: JoinServerConfig) => this.onTurn(joinServerConfig));
     }
 
     init(): void {
-        this.socketService.on('availableRooms', (rooms: string[]) => {
-            this.availableRooms = rooms;
-        });
         this.pendingRoomId = null;
     }
 
@@ -39,11 +39,6 @@ export class RoomService {
         this.socketService.join(id);
 
         this.pendingRoomId = id;
-
-        this.socketService.on('onJoin', async (joinServerConfig: JoinServerConfig) => {
-            await this.gameService.start(joinServerConfig.serverConfig, joinServerConfig.startId);
-            this.hasJoined.next(joinServerConfig);
-        });
     }
 
     async abort(): Promise<void> {
@@ -78,5 +73,10 @@ export class RoomService {
 
     get onGameFull(): Observable<JoinServerConfig> {
         return this.hasJoined.asObservable();
+    }
+
+    private async onTurn(joinServerConfig: JoinServerConfig): Promise<void> {
+        await this.gameService.start(joinServerConfig.serverConfig, joinServerConfig.startId);
+        this.hasJoined.next(joinServerConfig);
     }
 }

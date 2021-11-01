@@ -34,6 +34,9 @@ export class GameService {
 
         this.onTurn = new BehaviorSubject<PlayerType>(PlayerType.Local);
         this.gameEnding = new Subject<void>();
+
+        this.socketService.on('onTurn', async (id: string) => this.onNextTurn(id));
+        this.socketService.on('endGame', async () => this.endGame());
     }
 
     async startSinglePlayer(config: SinglePlayerConfig): Promise<void> {
@@ -46,15 +49,6 @@ export class GameService {
 
     async start(serverConfig: ServerConfig, startId: string): Promise<void> {
         this.sessionService.serverConfig = serverConfig;
-
-        this.socketService.on('onTurn', (id: string) => {
-            this.onNextTurn(id);
-        });
-
-        this.socketService.on('endGame', async () => {
-            await this.refresh();
-            this.gameEnding.next();
-        });
 
         await this.refresh();
         this.gameRunning = true;
@@ -88,6 +82,11 @@ export class GameService {
 
         this.currentTurn = playerType;
         this.onTurn.next(this.currentTurn);
+    }
+
+    private async endGame() {
+        await this.refresh();
+        this.gameEnding.next();
     }
 
     private async refresh(): Promise<void> {

@@ -11,19 +11,20 @@ const MS_TO_SEC_FACTOR = 1000;
 export class TimerService {
     private timeSpan: TimeSpan;
 
-    constructor(socketService: SocketClientService, playerService: PlayerService) {
+    constructor(socketService: SocketClientService, private readonly playerService: PlayerService) {
         this.timeSpan = TimeSpan.fromMilliseconds(0);
-
-        socketService.on('timerTick', (time: { ms: number }) => {
-            this.timeSpan = TimeSpan.fromSeconds(Math.round(time.ms / MS_TO_SEC_FACTOR));
-
-            if (time.ms <= 0) {
-                playerService.skipTurn();
-            }
-        });
+        socketService.on('timerTick', (time: { ms: number }) => this.onTicks(time.ms));
     }
 
     get time(): TimeSpan {
         return this.timeSpan;
+    }
+
+    private onTicks(timeMs: number): void {
+        this.timeSpan = TimeSpan.fromSeconds(Math.round(timeMs / MS_TO_SEC_FACTOR));
+
+        if (timeMs <= 0) {
+            this.playerService.skipTurn();
+        }
     }
 }
