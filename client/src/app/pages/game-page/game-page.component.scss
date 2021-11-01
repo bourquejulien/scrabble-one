@@ -1,20 +1,3 @@
-@import "../.././../styles.scss";
-
-.local.mat-toolbar {
-    background: $game-green;
-    color: #fff;
-}
-
-.remote.mat-toolbar {
-    background: $game-blue;
-    color: #fff;
-}
-
-.virtual.mat-toolbar.mat-primary {
-    background: $game-red;
-    color: #fff;
-}
-
 mat-drawer-container {
     height: 100%;
 }
@@ -28,7 +11,7 @@ mat-drawer-container {
 }
 
 .scoreboard.player-one-open {
-    background-color: $game-green;
+    background-color: var(--game-green);
     margin-left: 70rem;
     left: 0rem;
     top: 16.75rem;
@@ -38,7 +21,7 @@ mat-drawer-container {
 }
 
 .scoreboard.player-one-closed {
-    background-color: $game-green;
+    background-color: var(--game-green);
     margin-left: 92.5rem;
     left: 0rem;
     top: 16.75rem;
@@ -47,16 +30,11 @@ mat-drawer-container {
     transition: 0.45s;
 }
 
-.reserve-length-open {
+.scoreboard.reserve-length-open {
     font-size: large;
     color: #fff;
     background-color: #3f51b5;
     text-align: center;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    position: absolute;
     margin-left: 70rem;
     left: 0rem;
     top: 24.775rem;
@@ -65,12 +43,20 @@ mat-drawer-container {
     transition: 0.45s;
 }
 
+.scoreboard.reserve-length-closed {
+    font-size: large;
+    color: #fff;
+    background-color: #3f51b5;
+    text-align: center;
+    margin-left: 92.5rem;
+    left: 0rem;
+    top: 24.775rem;
+    width: 7.5rem;
+    height: 5rem;
+    transition: 0.45s;
+}
+
 .scoreboard.player-two-open {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    position: absolute;
     margin-left: 70rem;
     left: 0rem;
     top: 32.75rem;
@@ -88,30 +74,16 @@ mat-drawer-container {
     transition: 0.45s;
 }
 
-.scoreboard.player-two-open.multiplayer {
-    background-color: $game-blue;
-}
+.scoreboard{
+    &.player-two-open, &.player-two-closed {
+        &.singlePlayer {
+            background-color: var(--game-red);
+        }
 
-.scoreboard.player-two-open.singlePlayer {
-    background-color: $game-red;
-}
-
-.reserve-length-closed {
-    font-size: large;
-    color: #fff;
-    background-color: #3f51b5;
-    text-align: center;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    position: absolute;
-    margin-left: 92.5rem;
-    left: 0rem;
-    top: 24.775rem;
-    width: 7.5rem;
-    height: 5rem;
-    transition: 0.45s;
+        &.multiplayer {
+            background-color: var(--game-blue);
+        }
+    }
 }
 
 .vertical-flex-items {
@@ -169,11 +141,6 @@ mat-drawer-container {
 .fab-button {
     margin: 8px;
     min-width: inherit;
-}
-
-.tool-bar {
-    justify-content: space-between;
-    z-index: 2;
 }
 
 #tools-container {

@@ -20,6 +20,7 @@ import { GameModePageComponent } from './pages/game-mode-page/game-mode-page.com
 import { RoomListComponent } from './pages/room-list/room-list.component';
 import { WaitingRoomPageComponent } from './pages/waiting-room-page/waiting-room-page.component';
 import { BoardComponent } from './components/board/board/board.component';
+import { ToolbarComponent } from './components/toolbar/toolbar/toolbar.component';
 
 /**
  * Main module that is used in main.ts.
@@ -45,6 +46,7 @@ import { BoardComponent } from './components/board/board/board.component';
         RoomListComponent,
         InitGameComponent,
         BoardComponent,
+        ToolbarComponent,
     ],
     imports: [AppMaterialModule, AppRoutingModule, BrowserAnimationsModule, BrowserModule, FormsModule, HttpClientModule],
     providers: [],

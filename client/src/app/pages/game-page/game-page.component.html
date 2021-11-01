@@ -1,9 +1,5 @@
 <mat-drawer-container autosize>
-    <mat-toolbar [ngClass]="playerType" class="mat-app-background" color="primary" class="tool-bar">
-        <span>Scrabble</span>
-        <span>{{ sessionService.gameConfig.firstPlayerName }} contre {{ sessionService.gameConfig.secondPlayerName }}</span>
-        <span>Minuteur: {{ timerService.time | time }}</span>
-    </mat-toolbar>
+    <app-toolbar [playerType]='playerType'></app-toolbar>
     <mat-drawer #drawer autoFocus class="comm-box-sidenav" mode="side" opened>
         <app-communication-box></app-communication-box>
     </mat-drawer>
@@ -14,7 +10,7 @@
             >Lettres: {{ gameService.stats.localStats.rackSize }}
         </span>
     </mat-card>
-    <mat-card [ngClass]="isOpen ? 'reserve-length-open' : 'reserve-length-closed'" color="primary" >
+    <mat-card [ngClass]="isOpen ? 'reserve-length-open' : 'reserve-length-closed'" class="scoreboard" >
         <span> Nombre de lettres dans la réserve : {{ reserveService.length }} </span>
     </mat-card>
     <mat-card [ngClass]="[isOpen ? 'player-two-open' : 'player-two-closed', sessionService.gameConfig.gameType]" class="scoreboard">
