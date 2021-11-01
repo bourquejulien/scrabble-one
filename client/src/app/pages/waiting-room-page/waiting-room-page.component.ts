@@ -16,9 +16,11 @@ export class WaitingRoomPageComponent implements OnDestroy, OnInit {
 
     constructor(readonly roomService: RoomService, private router: Router, location: LocationStrategy, elementRef: ElementRef) {
         this.gameTypesList = Constants.GAME_TYPES_LIST;
+        history.pushState(null, '', window.location.href);
         location.onPopState(() => {
             if (elementRef.nativeElement.offsetParent != null) {
                 this.abort();
+                history.pushState(null, '', window.location.href);
             }
         });
     }
@@ -33,11 +35,11 @@ export class WaitingRoomPageComponent implements OnDestroy, OnInit {
 
     async abort() {
         await this.roomService.abort();
+        await this.router.navigate(['home']);
     }
 
-    convertToSoloMode() {
-        // TODO Add virtual player level selection
-        this.roomService.toSinglePlayer();
+    async convertToSoloMode() {
+        await this.roomService.toSinglePlayer();
     }
 
     private async nextPage() {

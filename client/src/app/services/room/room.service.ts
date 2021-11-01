@@ -1,6 +1,12 @@
 import { Injectable } from '@angular/core';
 import { SocketClientService } from '@app/services/socket-client/socket-client.service';
-import { MultiplayerCreateConfig, MultiplayerJoinConfig, ServerConfig, SinglePlayerConvertConfig } from '@common';
+import {
+    MultiplayerCreateConfig,
+    MultiplayerJoinConfig,
+    ServerConfig,
+    ConvertConfig,
+    AvailableGameConfig,
+} from '@common';
 import { environmentExt } from '@environmentExt';
 import { HttpClient } from '@angular/common/http';
 import { GameService } from '@app/services/game/game.service';
@@ -13,7 +19,7 @@ const localUrl = (base: string, call: string, id?: string) => `${environmentExt.
     providedIn: 'root',
 })
 export class RoomService {
-    private availableRooms: string[];
+    private availableRooms: AvailableGameConfig[];
     private readonly hasJoined: Subject<ServerConfig>;
 
     private pendingRoomId: string;
@@ -27,7 +33,7 @@ export class RoomService {
         this.hasJoined = new Subject<ServerConfig>();
         this.pendingRoomId = '';
 
-        this.socketService.on('availableRooms', (rooms: string[]) => (this.availableRooms = rooms));
+        this.socketService.on('availableRooms', (rooms: AvailableGameConfig[]) => (this.availableRooms = rooms));
         this.socketService.on('onJoin', async (serverConfig: ServerConfig) => this.onTurn(serverConfig));
     }
 
@@ -56,9 +62,9 @@ export class RoomService {
             return;
         }
 
-        const config: SinglePlayerConvertConfig = {
+        const config: ConvertConfig = {
             id: this.pendingRoomId,
-            name: Constants.BOT_NAMES[Math.floor(Constants.BOT_NAMES.length * Math.random())],
+            virtualPlayerName: Constants.BOT_NAMES[Math.floor(Constants.BOT_NAMES.length * Math.random())],
         };
 
         const serverConfig = await this.httpCLient.put<ServerConfig>(localUrl('game', 'convert'), config).toPromise();
@@ -80,7 +86,7 @@ export class RoomService {
         this.socketService.send('getRooms');
     }
 
-    get rooms(): string[] {
+    get rooms(): AvailableGameConfig[] {
         return this.availableRooms;
     }
 

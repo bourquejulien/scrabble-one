@@ -1,4 +1,4 @@
-import { GameType, Message, MessageType } from '@common';
+import { AvailableGameConfig, GameType, Message, MessageType } from '@common';
 import { Socket } from 'socket.io';
 import { Service } from 'typedi';
 import { SocketService } from '@app/services/socket/socket-service';
@@ -81,8 +81,12 @@ export class RoomController {
         });
     }
 
-    private get sessionInfos(): string[] {
-        return this.sessionHandlingService.availableSessions.map((s) => s.sessionInfo.id);
+    private get sessionInfos(): AvailableGameConfig[] {
+        return this.sessionHandlingService.availableSessions.map((s) => ({
+            id: s.sessionInfo.id,
+            playTimeMs: s.sessionInfo.playTimeMs,
+            waitingPlayerName: s.players[0].playerInfo.name,
+        }));
     }
 
     private async stop(id: string): Promise<boolean> {

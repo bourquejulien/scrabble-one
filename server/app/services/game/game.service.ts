@@ -1,4 +1,4 @@
-import { GameType, MultiplayerCreateConfig, MultiplayerJoinConfig, ServerConfig, SinglePlayerConfig, SinglePlayerConvertConfig } from '@common';
+import { GameType, MultiplayerCreateConfig, MultiplayerJoinConfig, ServerConfig, SinglePlayerConfig, ConvertConfig } from '@common';
 import { SessionHandlingService } from '@app/services/sessionHandling/session-handling.service';
 import { BoardGeneratorService } from '@app/services/board/board-generator.service';
 import { Service } from 'typedi';
@@ -116,7 +116,7 @@ export class GameService {
         return sessionHandler.getServerConfig(humanPlayer.id);
     }
 
-    async convert(convertConfig: SinglePlayerConvertConfig): Promise<ServerConfig | null> {
+    async convert(convertConfig: ConvertConfig): Promise<ServerConfig | null> {
         const handler = this.sessionHandlingService.getHandlerByPlayerId(convertConfig.id);
 
         if (handler == null || handler.sessionData.isStarted || handler.sessionInfo.gameType !== GameType.Multiplayer) {
@@ -126,7 +126,7 @@ export class GameService {
 
         const virtualPlayerInfo: PlayerInfo = {
             id: generateId(),
-            name: convertConfig.name,
+            name: convertConfig.virtualPlayerName,
             isHuman: false,
         };
 

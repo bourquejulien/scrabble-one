@@ -8,11 +8,6 @@ export interface SinglePlayerConfig {
     isRandomBonus: boolean;
 }
 
-export interface SinglePlayerConvertConfig {
-    id: string;
-    name: string;
-}
-
 export interface MultiplayerCreateConfig {
     gameType: GameType;
     playTimeMs: number;
@@ -24,6 +19,18 @@ export interface MultiplayerJoinConfig {
     sessionId: string;
     playerName: string;
 }
+
+export interface ConvertConfig {
+    id: string;
+    virtualPlayerName: string;
+}
+
+export interface AvailableGameConfig {
+    id: string;
+    playTimeMs: number;
+    waitingPlayerName: string,
+}
+
 
 export interface ServerConfig {
     id: string,
