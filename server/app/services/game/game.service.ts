@@ -1,12 +1,4 @@
-import {
-    GameType,
-    JoinServerConfig,
-    MultiplayerCreateConfig,
-    MultiplayerJoinConfig,
-    ServerConfig,
-    SinglePlayerConfig,
-    SinglePlayerConvertConfig,
-} from '@common';
+import { GameType, MultiplayerCreateConfig, MultiplayerJoinConfig, ServerConfig, SinglePlayerConfig, SinglePlayerConvertConfig } from '@common';
 import { SessionHandlingService } from '@app/services/sessionHandling/session-handling.service';
 import { BoardGeneratorService } from '@app/services/board/board-generator.service';
 import { Service } from 'typedi';
@@ -61,8 +53,9 @@ export class GameService {
 
         const humanPlayer = this.addHumanPlayer(humanPlayerInfo, sessionHandler);
         this.addVirtualPlayer(virtualPlayerInfo, sessionHandler);
-
         this.sessionHandlingService.addHandler(sessionHandler);
+
+        sessionHandler.start();
 
         logger.info(`Single player game: ${sessionHandler.sessionInfo.id} initialised`);
 
@@ -100,8 +93,9 @@ export class GameService {
 
     async joinMultiplayer(gameConfig: MultiplayerJoinConfig): Promise<ServerConfig | null> {
         const sessionHandler = this.sessionHandlingService.getHandlerBySessionId(gameConfig.sessionId);
+        const waitingPlayer = sessionHandler?.players[0];
 
-        if (sessionHandler == null || sessionHandler.sessionData.isStarted) {
+        if (sessionHandler == null || waitingPlayer == null || sessionHandler.sessionData.isStarted) {
             return null;
         }
 
@@ -112,25 +106,27 @@ export class GameService {
         };
 
         const humanPlayer = this.addHumanPlayer(humanPlayerInfo, sessionHandler);
-
         this.sessionHandlingService.updateEntries(sessionHandler);
+        sessionHandler.start();
+
+        this.socketService.send('onJoin', sessionHandler.sessionInfo.id, sessionHandler.getServerConfig(waitingPlayer.id));
 
         logger.info(`Multiplayer game: ${sessionHandler.sessionInfo.id} joined by ${humanPlayerInfo.id}`);
 
         return sessionHandler.getServerConfig(humanPlayer.id);
     }
 
-    async convert(config: SinglePlayerConvertConfig): Promise<JoinServerConfig | null> {
-        const handler = this.sessionHandlingService.getHandlerByPlayerId(config.id);
+    async convert(convertConfig: SinglePlayerConvertConfig): Promise<ServerConfig | null> {
+        const handler = this.sessionHandlingService.getHandlerByPlayerId(convertConfig.id);
 
         if (handler == null || handler.sessionData.isStarted || handler.sessionInfo.gameType !== GameType.Multiplayer) {
-            logger.warn(`Cannot convert game to single player mode - playerId: ${config.id}`);
+            logger.warn(`Cannot convert game to single player mode - playerId: ${convertConfig.id}`);
             return null;
         }
 
         const virtualPlayerInfo: PlayerInfo = {
             id: generateId(),
-            name: config.name,
+            name: convertConfig.name,
             isHuman: false,
         };
 
@@ -138,30 +134,11 @@ export class GameService {
         this.addVirtualPlayer(virtualPlayerInfo, handler);
         this.sessionHandlingService.updateEntries(handler);
 
-        const startId = handler.start();
-        const joinConfig: JoinServerConfig = { startId, serverConfig: handler.getServerConfig(config.id) };
+        handler.start();
 
         logger.info(`Game converted: ${handler.sessionInfo.id}`);
 
-        return joinConfig;
-    }
-
-    async start(id: string): Promise<string | null> {
-        const sessionHandler = this.sessionHandlingService.getHandlerByPlayerId(id);
-        const waitingPlayer = sessionHandler?.players.filter((p) => p.id !== id)[0];
-
-        if (sessionHandler == null || waitingPlayer == null || sessionHandler.sessionData.isStarted) {
-            return null;
-        }
-
-        const startId = sessionHandler.start();
-
-        const joinConfig: JoinServerConfig = { startId, serverConfig: sessionHandler.getServerConfig(waitingPlayer.id) };
-        this.socketService.send('onJoin', sessionHandler.sessionInfo.id, joinConfig);
-
-        logger.info(`Game started: ${id}`);
-
-        return startId;
+        return handler.getServerConfig(convertConfig.id);
     }
 
     private addHumanPlayer(playerInfo: PlayerInfo, sessionHandler: SessionHandler): HumanPlayer {

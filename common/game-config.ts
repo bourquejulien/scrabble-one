@@ -27,13 +27,9 @@ export interface MultiplayerJoinConfig {
 
 export interface ServerConfig {
     id: string,
+    startId: string,
     gameType: GameType,
     playTimeMs: number,
     firstPlayerName: string,
     secondPlayerName: string,
-}
-
-export interface JoinServerConfig {
-    startId: string,
-    serverConfig: ServerConfig,
 }

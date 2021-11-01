@@ -13,12 +13,9 @@ export class PlayerHandler {
         this.playerSubscriptions = new Map<string, Subscription>();
     }
 
-    start(): string {
+    start(): void {
         this.players.forEach((p) => p.fillRack());
-
         this.initialTurn();
-
-        return this.players.filter((p) => p.isTurn).map((p) => p.id)[0] ?? '';
     }
 
     dispose(): void {

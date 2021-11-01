@@ -33,6 +33,7 @@ export class SessionHandler {
 
         return {
             id: firstPlayer.id,
+            startId: this.players.filter((p) => p.isTurn).map((p) => p.id)[0] ?? '',
             gameType: this.sessionInfo.gameType,
             playTimeMs: this.sessionInfo.playTimeMs,
             firstPlayerName: firstPlayer.playerInfo.name,
@@ -40,11 +41,11 @@ export class SessionHandler {
         };
     }
 
-    start(): string {
+    start(): void {
         this.sessionData.isActive = true;
         this.sessionData.isStarted = true;
         this.timer = setInterval(() => this.timerTick(), Config.SESSION.REFRESH_INTERVAL_MS);
-        return this.playerHandler.start();
+        this.playerHandler.start();
     }
 
     addPlayer(player: Player): void {

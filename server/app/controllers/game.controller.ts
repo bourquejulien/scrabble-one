@@ -14,12 +14,6 @@ export class GameController {
     private configureRouter(): void {
         this.router = Router();
 
-        this.router.get('/start/:id', async (req: Request, res: Response) => {
-            const answer = await this.gameService.start(req.params.id);
-            res.status(answer == null ? Constants.HTTP_STATUS.BAD_REQUEST : Constants.HTTP_STATUS.OK);
-            res.json(answer);
-        });
-
         this.router.put('/init/single', async (req: Request, res: Response) => {
             try {
                 const answer = await this.gameService.initSinglePlayer(req.body);
