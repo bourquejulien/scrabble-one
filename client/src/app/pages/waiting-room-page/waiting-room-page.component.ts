@@ -13,17 +13,15 @@ export class WaitingRoomPageComponent implements OnDestroy, OnInit {
     private roomSubscription: Subscription;
 
     constructor(readonly roomService: RoomService, private router: Router, location: LocationStrategy, elementRef: ElementRef) {
-        history.pushState(null, '', window.location.href);
         location.onPopState(() => {
             if (elementRef.nativeElement.offsetParent != null) {
                 this.abort();
-                history.pushState(null, '', window.location.href);
             }
         });
     }
 
     ngOnInit() {
-        this.roomSubscription = this.roomService.onGameFull.subscribe(() => this.nextPage());
+        this.roomSubscription = this.roomService.onGameFull.subscribe(async () => this.nextPage());
     }
 
     ngOnDestroy() {
@@ -32,14 +30,14 @@ export class WaitingRoomPageComponent implements OnDestroy, OnInit {
 
     async abort() {
         await this.roomService.abort();
-        await this.router.navigate(['settings']);
     }
 
     convertToSoloMode() {
-        // TODO
+        // TODO Add virtual player level selection
+        this.roomService.toSinglePlayer();
     }
 
-    private nextPage() {
-        this.router.navigate(['game']);
+    private async nextPage() {
+        await this.router.navigate(['game']);
     }
 }

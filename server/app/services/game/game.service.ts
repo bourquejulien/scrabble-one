@@ -120,15 +120,13 @@ export class GameService {
         return sessionHandler.getServerConfig(humanPlayer.id);
     }
 
-    async convert(config: SinglePlayerConvertConfig): Promise<boolean> {
+    async convert(config: SinglePlayerConvertConfig): Promise<JoinServerConfig | null> {
         const handler = this.sessionHandlingService.getHandlerByPlayerId(config.id);
 
-        if (handler == null || handler.sessionData.isStarted || handler.sessionInfo.gameType === GameType.Multiplayer) {
-            logger.warn(`Cannot convert game to solo mode - playerId: ${config.id}`);
-            return false;
+        if (handler == null || handler.sessionData.isStarted || handler.sessionInfo.gameType !== GameType.Multiplayer) {
+            logger.warn(`Cannot convert game to single player mode - playerId: ${config.id}`);
+            return null;
         }
-
-        handler.sessionInfo.gameType = GameType.SinglePlayer;
 
         const virtualPlayerInfo: PlayerInfo = {
             id: generateId(),
@@ -136,12 +134,16 @@ export class GameService {
             isHuman: false,
         };
 
+        handler.sessionInfo.gameType = GameType.SinglePlayer;
         this.addVirtualPlayer(virtualPlayerInfo, handler);
         this.sessionHandlingService.updateEntries(handler);
 
+        const startId = handler.start();
+        const joinConfig: JoinServerConfig = { startId, serverConfig: handler.getServerConfig(config.id) };
+
         logger.info(`Game converted: ${handler.sessionInfo.id}`);
 
-        return true;
+        return joinConfig;
     }
 
     async start(id: string): Promise<string | null> {

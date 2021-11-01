@@ -79,12 +79,6 @@ export class SessionHandler {
         return this.playerHandler.players;
     }
 
-    get isConvertable(): boolean {
-        const isStopped = this.sessionData.isStarted && !this.sessionData.isActive;
-        const isVirtual = this.players.map((p) => p.playerInfo.isHuman).reduce((acc, isHuman) => acc && isHuman);
-        return !(isStopped || isVirtual);
-    }
-
     private timerTick(): void {
         const timeLeftMs = Math.max(0, this.sessionData.timeLimitEpoch - new Date().getTime());
 

@@ -7,6 +7,7 @@ import { TimeSpan } from '@app/classes/time/timespan';
 import { GameService } from '@app/services/game/game.service';
 import { GameType, MultiplayerCreateConfig, SinglePlayerConfig } from '@common';
 import { RoomService } from '@app/services/room/room.service';
+import { Constants } from '@app/constants/global.constants';
 
 interface FormConfig {
     gameType: string;
@@ -17,7 +18,6 @@ interface FormConfig {
 }
 
 const GAME_TYPES_LIST = ['Mode Solo Débutant'];
-const BOT_NAMES = ['Maurice', 'Claudette', 'Alphonse'];
 // eslint-disable-next-line @typescript-eslint/no-magic-numbers -- Lists all option, the list is a constant
 const TURN_LENGTH_MINUTES = [0, 1, 2, 3, 4, 5] as const;
 // eslint-disable-next-line @typescript-eslint/no-magic-numbers -- Lists all option, the list is a constant
@@ -55,7 +55,7 @@ const POSSIBLE_ERRORS: Error[] = [STARTS_LOWER_LETTER_ERROR, CONTAINS_NOT_LETTER
 })
 export class InitGameComponent implements OnInit {
     readonly gameTypesList = GAME_TYPES_LIST;
-    readonly botNames = BOT_NAMES;
+    readonly botNames = Constants.BOT_NAMES;
     readonly minutesList = TURN_LENGTH_MINUTES;
     readonly secondsList = TURN_LENGTH_SECONDS;
     readonly gameType = GameType;
@@ -139,7 +139,7 @@ export class InitGameComponent implements OnInit {
 
     botNameChange(firstPlayerName: string): void {
         while (firstPlayerName === this.formConfig.secondPlayerName) {
-            this.formConfig.secondPlayerName = InitGameComponent.randomizeBotName(BOT_NAMES);
+            this.formConfig.secondPlayerName = InitGameComponent.randomizeBotName(this.botNames);
         }
     }
 
