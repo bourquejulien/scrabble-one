@@ -3,6 +3,7 @@
     <mat-drawer #drawer autoFocus class="comm-box-sidenav" mode="side" opened>
         <app-communication-box></app-communication-box>
     </mat-drawer>
+    <div>
     <mat-card [ngClass]="isOpen ? 'player-one-open' : 'player-one-closed'" class="scoreboard">
         <span class="vertical-flex-items">{{ sessionService.gameConfig.firstPlayerName }}</span>
         <span class="vertical-flex-items">Score: {{ gameService.stats.localStats.points }} </span>
@@ -20,6 +21,7 @@
             >Lettres: {{ gameService.stats.remoteStats.rackSize }}
         </span>
     </mat-card>
+    </div>
     <div id="tools-container">
         <div class="comm-box-sidenav-content">
             <div class="button-bar" *ngFor="let config of buttonConfig">
