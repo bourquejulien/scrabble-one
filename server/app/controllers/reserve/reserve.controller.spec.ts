@@ -26,7 +26,7 @@ describe('ReserveController', () => {
         const stubSessionHandler = createStubInstance(SessionHandler);
         stubSessionHandler['reserveHandler'] = stubReserveHandler;
 
-        stubSessionHandlingService.getHandlerByPlayerId.returns(stubReserveHandler as unknown as SessionHandler);
+        stubSessionHandlingService.getHandlerByPlayerId.returns(stubSessionHandler as unknown as SessionHandler);
 
         const app = Container.get(Application);
         Object.defineProperty(app['reserveController'], 'sessionHandlingService', { value: stubSessionHandlingService, writable: true });
@@ -38,7 +38,17 @@ describe('ReserveController', () => {
         expect(expressApp).to.be.ok;
     });
 
-    it('GET /api/reserve/retrieve/ when ... ', async () => {
+    it('GET /reserve/retrieve/  ', async () => {
+        request(expressApp)
+            .get('/api/reserve/retrieve/123')
+            .expect(Constants.HTTP_STATUS.OK)
+            .then((response) => {
+                expect(response.body).to.be.equal(JSON.stringify(stubReserve));
+            });
+    });
+
+    it('GET /reserve/retrieve/ fail when there is no reserveHandler ', async () => {
+        stubSessionHandlingService.getHandlerByPlayerId.returns(null);
         request(expressApp)
             .get('/api/reserve/retrieve/123')
             .expect(Constants.HTTP_STATUS.OK)

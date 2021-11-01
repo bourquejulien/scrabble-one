@@ -10,7 +10,7 @@ import { HumanPlayer } from '@app/classes/player/human-player/human-player';
 export class BoardController {
     router: Router;
 
-    constructor(private readonly sessionHandlingService: SessionHandlingService) {
+    constructor(private sessionHandlingService: SessionHandlingService) {
         this.configureRouter();
     }
 
@@ -35,7 +35,7 @@ export class BoardController {
             const humanPlayer = this.getHumanPlayer(req.params.id);
             const placements: Placement[] = req.body;
 
-            if (humanPlayer === null || placements === undefined) {
+            if (humanPlayer === null) {
                 res.sendStatus(Constants.HTTP_STATUS.BAD_REQUEST);
                 return;
             }

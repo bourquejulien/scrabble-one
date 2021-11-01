@@ -20,6 +20,7 @@ describe('GameController', () => {
         playTimeMs: 120 * 1000,
         playerName: 'Claudette',
         virtualPlayerName: 'Alphonse',
+        isRandomBonus: true,
     };
 
     const serverConfig: ServerConfig = {
@@ -35,29 +36,49 @@ describe('GameController', () => {
         // Methods: gameService.
         gameService.initMultiplayer.resolves(serverConfig);
         gameService.initSinglePlayer.resolves(serverConfig);
+        gameService.joinMultiplayer.resolves(serverConfig);
         const app = Container.get(Application);
-        Object.defineProperty(app['gameController'], 'GameService', { value: gameService, writable: true });
+        Object.defineProperty(app['gameController'], 'gameService', { value: gameService, writable: true });
         expressApp = app.app;
     });
 
     it('DELETE /stop', async () => {
+        gameService.stop.resolves(true);
         request(expressApp)
-            .delete('/api/game/stop/123')
+            .delete('/api/game/stop/1')
             .send(singlePlayerConfig)
             .then((response) => {
                 expect(response.status).to.be.equal(Constants.HTTP_STATUS.OK);
-            })
-            .catch((err) => expect(err).to.be.undefined);
+            });
+    });
+
+    it('DELETE /stop send error message when game wont stop', async () => {
+        gameService.stop.resolves(false);
+        request(expressApp)
+            .delete('/api/game/stop/1')
+            .send(singlePlayerConfig)
+            .then((response) => {
+                expect(response.status).to.be.equal(Constants.HTTP_STATUS.OK);
+            });
     });
 
     it('GET /start', async () => {
         request(expressApp)
-            .get('/api/game/start/123')
+            .get('/api/game/start/1')
             .send(singlePlayerConfig)
             .then((response) => {
                 expect(response.status).to.be.equal(Constants.HTTP_STATUS.OK);
-            })
-            .catch((err) => expect(err).to.be.undefined);
+            });
+    });
+
+    it('GET /start send error message when game wont start', async () => {
+        gameService.start.resolves('something');
+        request(expressApp)
+            .get('/api/game/start/1')
+            .send(singlePlayerConfig)
+            .then((response) => {
+                expect(response.status).to.be.equal(Constants.HTTP_STATUS.OK);
+            });
     });
 
     it('PUT /init/single', async () => {
@@ -66,8 +87,17 @@ describe('GameController', () => {
             .send(singlePlayerConfig)
             .then((response) => {
                 expect(response.status).to.be.equal(Constants.HTTP_STATUS.OK);
-            })
-            .catch((err) => expect(err).to.be.undefined);
+            });
+    });
+
+    it('PUT /init/single', async () => {
+        gameService.initSinglePlayer.resolves(undefined);
+        request(expressApp)
+            .put('/api/game/init/single')
+            .send(singlePlayerConfig)
+            .then((response) => {
+                expect(response.status).to.be.equal(Constants.HTTP_STATUS.OK);
+            });
     });
 
     it('PUT /init/multi', async () => {
@@ -77,8 +107,18 @@ describe('GameController', () => {
             .then((response) => {
                 expect(response.status).to.be.equal(Constants.HTTP_STATUS.OK);
                 expect(response.text).to.be.equal(JSON.stringify(serverConfig));
-            })
-            .catch((err) => expect(err).to.be.undefined);
+            });
+    });
+
+    it('PUT /init/multi error out', async () => {
+        gameService.initMultiplayer.resolves(undefined);
+        request(expressApp)
+            .put('/api/game/init/multi')
+            .send(singlePlayerConfig)
+            .then((response) => {
+                expect(response.status).to.be.equal(Constants.HTTP_STATUS.OK);
+                expect(response.text).to.be.equal(JSON.stringify(serverConfig));
+            });
     });
 
     it('PUT /join', async () => {
@@ -87,7 +127,16 @@ describe('GameController', () => {
             .send(singlePlayerConfig)
             .then((response) => {
                 expect(response.status).to.be.equal(Constants.HTTP_STATUS.OK);
-            })
-            .catch((err) => expect(err).to.be.undefined);
+            });
+    });
+
+    it('PUT /join not join the game', async () => {
+        gameService.joinMultiplayer.resolves(null);
+        request(expressApp)
+            .put('/api/game/join')
+            .send(singlePlayerConfig)
+            .then((response) => {
+                expect(response.status).to.be.equal(Constants.HTTP_STATUS.OK);
+            });
     });
 });

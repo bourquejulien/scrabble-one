@@ -3,7 +3,7 @@ import { Observable, Subject, Subscription } from 'rxjs';
 import { Config } from '@app/config';
 
 export class PlayerHandler {
-    readonly players: Player[];
+    players: Player[];
     private readonly nextTurn: Subject<string>;
     private readonly playerSubscriptions: Map<string, Subscription>;
 

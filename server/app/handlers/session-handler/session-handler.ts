@@ -19,7 +19,7 @@ export class SessionHandler {
         public sessionInfo: SessionInfo,
         public boardHandler: BoardHandler,
         public reserveHandler: ReserveHandler,
-        private playerHandler: PlayerHandler,
+        public playerHandler: PlayerHandler, // TODO: change visibility from private to public to test
         private socketHandler: SocketHandler,
     ) {
         socketHandler.sessionId = sessionInfo.id;

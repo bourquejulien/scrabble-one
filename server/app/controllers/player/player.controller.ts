@@ -19,7 +19,7 @@ export class PlayerController {
             const humanPlayer = this.getHumanPlayer(req.params.id);
             const exchange: string[] = req.body;
 
-            if (humanPlayer === null || exchange === undefined) {
+            if (humanPlayer === null) {
                 res.sendStatus(Constants.HTTP_STATUS.BAD_REQUEST);
                 return;
             }
