@@ -1,10 +1,11 @@
 <mat-card class="rack" (wheel)="onMousewheel($event)" (mouseenter)="isFocus = true" (mouseleave)="isFocus = false">
     <mat-card
         class="tile"
-        [ngClass]="{ 'swap-selected': selection.swap.index === i, 'border-selected': selection.reserve.has(i)  }"
+        [ngClass]="{ 'swap-selected': selection.swap.index === i, 'border-selected': selection.reserve.has(i) }"
         (click)="onLeftClick(i)"
         (contextmenu)="onRightClick(i)"
-        *ngFor="let letter of rackService.rack; let i = index">
+        *ngFor="let letter of rackService.rack; let i = index"
+    >
         <div *ngIf="letter !== '*'">
             {{ letter | uppercase }}
             <sub class="letter-point">
@@ -13,3 +14,15 @@
         </div>
     </mat-card>
 </mat-card>
+<div id="buttons">
+    <button
+        mat-button
+        *ngIf="reserveService.length >= 7"
+        [ngClass]="{ invisible: selection.reserve.size === 0 }"
+        class="exchange-command"
+        (click)="exchangeLetters()"
+    >
+        Échanger
+    </button>
+    <button mat-button (click)="cancelExchange()" [ngClass]="{ invisible: selection.reserve.size === 0 }" class="exchange-command">Annuler</button>
+</div>

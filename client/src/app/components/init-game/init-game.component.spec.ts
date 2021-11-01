@@ -6,12 +6,12 @@ import { FormsModule } from '@angular/forms';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { Router } from '@angular/router';
-import { GameType } from '@app/classes/game-type';
 import { cleanStyles } from '@app/classes/helpers/cleanup.helper';
 import { AppMaterialModule } from '@app/modules/material.module';
 import { GameService } from '@app/services/game/game.service';
 import { InitGameComponent } from './init-game.component';
 import { PlayerType } from '@app/classes/player/player-type';
+import { GameType } from '@common';
 
 @Injectable({
     providedIn: 'root',
@@ -57,7 +57,7 @@ describe('InitGameComponent', () => {
                 { provide: Router, useValue: routerMock },
                 { provide: GameService, useClass: GameServiceStub },
                 { provide: MatDialogRef, useClass: MatDialogStub },
-                { provide: MAT_DIALOG_DATA, useValue: GameType.CreateOnline },
+                { provide: MAT_DIALOG_DATA, useValue: GameType.Multiplayer },
             ],
         }).compileComponents();
     });
@@ -73,59 +73,59 @@ describe('InitGameComponent', () => {
     });
 
     it('should not contains any error', async () => {
-        component.gameConfig.firstPlayerName = NAMES[0];
-        await component.initialize();
+        component.formConfig.firstPlayerName = NAMES[0];
+        await component.init();
         expect(component.errorsList).toEqual([]);
     });
 
     it('should not contains any error', async () => {
-        component.gameConfig.firstPlayerName = NAMES[1];
-        await component.initialize();
+        component.formConfig.firstPlayerName = NAMES[1];
+        await component.init();
         expect(component.errorsList).toEqual([]);
     });
 
     it('should have error for lower letter', async () => {
-        component.gameConfig.firstPlayerName = NAMES[2];
-        await component.initialize();
+        component.formConfig.firstPlayerName = NAMES[2];
+        await component.init();
         expect(component.errorsList).toEqual(['*Le nom doit débuter par une majuscule.\n']);
     });
 
     it('should have error for minimum length', async () => {
-        component.gameConfig.firstPlayerName = NAMES[3];
-        await component.initialize();
+        component.formConfig.firstPlayerName = NAMES[3];
+        await component.init();
         expect(component.errorsList).toEqual(['*Le nom doit contenir au moins 3 caractères.\n']);
     });
 
     it('should have error for maximum length', async () => {
-        component.gameConfig.firstPlayerName = NAMES[4];
-        await component.initialize();
+        component.formConfig.firstPlayerName = NAMES[4];
+        await component.init();
         expect(component.errorsList).toEqual(['*Le nom doit au maximum contenir 16 lettres.\n']);
     });
 
     it('should have error for not having name', async () => {
-        await component.initialize();
+        await component.init();
         expect(component.errorsList).toEqual(['*Un nom doit être entré.\n']);
     });
 
     it('should have error for not containing only letters', async () => {
-        component.gameConfig.firstPlayerName = NAMES[5];
-        await component.initialize();
+        component.formConfig.firstPlayerName = NAMES[5];
+        await component.init();
         expect(component.errorsList).toEqual(['*Le nom doit seulement être composé de lettres.\n']);
     });
 
     it('should have error for not containing only letters and minimum length', async () => {
-        component.gameConfig.firstPlayerName = NAMES[6];
-        await component.initialize();
+        component.formConfig.firstPlayerName = NAMES[6];
+        await component.init();
         expect(component.errorsList).toEqual(['*Le nom doit seulement être composé de lettres.\n', '*Le nom doit contenir au moins 3 caractères.\n']);
     });
 
     it('should change bot name', () => {
         const FIRST_PLAYER_NAME = 'Alphonse';
-        component.gameConfig.firstPlayerName = NAMES[7];
-        component.gameConfig.secondPlayerName = NAMES[7];
+        component.formConfig.firstPlayerName = NAMES[7];
+        component.formConfig.secondPlayerName = NAMES[7];
 
         component.botNameChange(FIRST_PLAYER_NAME);
-        expect(component.gameConfig.secondPlayerName).not.toEqual(FIRST_PLAYER_NAME);
+        expect(component.formConfig.secondPlayerName).not.toEqual(FIRST_PLAYER_NAME);
     });
 
     it('should call forceSecondsToZero ', fakeAsync(() => {
@@ -173,23 +173,23 @@ describe('InitGameComponent', () => {
     }));
 
     /* it('should create error if nameForm invalid', () => {
-    component.gameConfig.firstPlayerName = 'allo';
+    component.formConfig.firstPlayerName = 'allo';
     // const currentListLength = component.errorsList.length;
     component['confirmInitialization'];
 
     expect(component.errorsList[0]).toEqual('*Le nom doit débuter par une majuscule.\n');
 });*/
 
-    it('should Initialize when pressing enter ', fakeAsync(() => {
+    it('should init when pressing enter ', fakeAsync(() => {
         const keyEvent = new KeyboardEvent('keypress', { key: 'Enter', cancelable: true });
-        const spy = spyOn(component, 'initialize').and.callThrough();
+        const spy = spyOn(component, 'init').and.callThrough();
         component.buttonDetect(keyEvent);
         expect(spy).toHaveBeenCalled();
     }));
 
-    it('should not Initialize when pressing something else than enter ', fakeAsync(() => {
+    it('should not init when pressing something else than enter ', fakeAsync(() => {
         const keyEvent = new KeyboardEvent('keypress', { key: 'y', cancelable: true });
-        const spy = spyOn(component, 'initialize').and.callThrough();
+        const spy = spyOn(component, 'init').and.callThrough();
         component.buttonDetect(keyEvent);
         expect(spy).not.toHaveBeenCalled();
     }));

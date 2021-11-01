@@ -9,32 +9,34 @@
     </mat-drawer>
     <mat-card [ngClass]="isOpen ? 'scoreboard-player-one-open' : 'scoreboard-player-one-closed'">
         <span class="vertical-flex-items">{{ sessionService.gameConfig.firstPlayerName }}</span>
-        <span class="vertical-flex-items">Score: {{ gameService.firstPlayerStats.points }} </span>
-        <span class="vertical-flex-items" *ngIf="gameService.firstPlayerStats.rackSize < 7"
-            >Lettres: {{ gameService.firstPlayerStats.rackSize }}
+        <span class="vertical-flex-items">Score: {{ gameService.stats.localStats.points }} </span>
+        <span class="vertical-flex-items" *ngIf="gameService.stats.localStats.rackSize < 7"
+            >Lettres: {{ gameService.stats.localStats.rackSize }}
         </span>
+    </mat-card>
+    <mat-card [ngClass]="isOpen ? 'reserve-length-open' : 'reserve-length-closed'" color="primary">
+        <span> Nombre de lettres dans la réserve : {{ reserveService.length }} </span>
     </mat-card>
     <mat-card [ngClass]="isOpen ? 'scoreboard-player-two-open' : 'scoreboard-player-two-closed'">
         <span class="vertical-flex-items">{{ sessionService.gameConfig.secondPlayerName }}</span>
-        <span class="vertical-flex-items">Score: {{ gameService.secondPlayerStats.points }} </span>
-        <span class="vertical-flex-items" *ngIf="gameService.secondPlayerStats.rackSize < 7"
-            >Lettres: {{ gameService.secondPlayerStats.rackSize }}
+        <span class="vertical-flex-items">Score: {{ gameService.stats.remoteStats.points }} </span>
+        <span class="vertical-flex-items" *ngIf="gameService.stats.remoteStats.rackSize < 7"
+            >Lettres: {{ gameService.stats.remoteStats.rackSize }}
         </span>
     </mat-card>
     <div id="tools-container">
         <div class="comm-box-sidenav-content">
-            <div class="button-bar" *ngFor="let button of buttonConfig; let indexOfButton = index">
+            <div class="button-bar" *ngFor="let config of buttonConfig">
                 <button
                     mat-fab
-                    *ngIf="playerType === 'local' || button.icon !== 'block'"
+                    *ngIf="playerType === 'local' || config.icon !== 'block'"
                     class="fab-button"
-                    [color]="button.color"
-                    [routerLink]="button.routerLink"
-                    (click)="callFunction(indexOfButton)"
-                    [matTooltip]="button.hover"
+                    [color]="config.color"
+                    (click)="config.action()"
+                    [matTooltip]="config.hover"
                 >
                     <mat-icon>
-                        {{ button.icon }}
+                        {{ config.icon }}
                     </mat-icon>
                 </button>
             </div>

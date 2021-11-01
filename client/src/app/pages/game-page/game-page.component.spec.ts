@@ -1,42 +1,36 @@
 /* eslint-disable max-classes-per-file -- Needs many stub implementations */
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { Component, CUSTOM_ELEMENTS_SCHEMA, Injectable, NO_ERRORS_SCHEMA } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { MatDialogClose, MatDialogModule } from '@angular/material/dialog';
 import { MatToolbar } from '@angular/material/toolbar';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { RouterTestingModule } from '@angular/router/testing';
 import { GameConfig } from '@app/classes/game-config';
 import { cleanStyles } from '@app/classes/helpers/cleanup.helper';
-import { PlayerStats } from '@app/classes/player/player-stats';
+import { PlayerType } from '@app/classes/player/player-type';
 import { TimePipe } from '@app/classes/time/time.pipe';
 import { TimeSpan } from '@app/classes/time/timespan';
 import { AppMaterialModule } from '@app/modules/material.module';
 import { GameService } from '@app/services/game/game.service';
 import { BehaviorSubject, Subject } from 'rxjs';
 import { GamePageComponent } from './game-page.component';
-import { RouterTestingModule } from '@angular/router/testing';
-import { MatDialogClose, MatDialogModule } from '@angular/material/dialog';
-import { PlayerType } from '@app/classes/player/player-type';
-
-const GAME_TYPES_LIST = ['Mode Solo Débutant'];
+import { GameType, SessionStats } from '@common';
 
 @Injectable({
     providedIn: 'root',
 })
 class GameServiceStub {
-    firstPlayerStats: PlayerStats = {
-        points: 0,
-        rackSize: 0,
-    };
-
-    secondPlayerStats: PlayerStats = {
-        points: 0,
-        rackSize: 0,
+    stats: SessionStats = {
+        localStats: { points: 0, rackSize: 0 },
+        remoteStats: { points: 0, rackSize: 0 },
     };
 
     onTurn: BehaviorSubject<PlayerType> = new BehaviorSubject<PlayerType>(PlayerType.Local);
     gameEnding: Subject<void> = new Subject<void>();
     currentTurn: PlayerType = PlayerType.Local;
     gameConfig: GameConfig = {
-        gameType: GAME_TYPES_LIST[0],
+        gameType: GameType.SinglePlayer,
         playTime: TimeSpan.fromSeconds(0),
         firstPlayerName: '',
         secondPlayerName: '',
@@ -68,13 +62,12 @@ class PlayAreaStubComponent {}
 describe('GamePageComponent', () => {
     let component: GamePageComponent;
     let fixture: ComponentFixture<GamePageComponent>;
-    let gameService: GameService;
 
     beforeEach(async () => {
         await TestBed.configureTestingModule({
             declarations: [GamePageComponent, PlayAreaStubComponent, MatToolbar, TimePipe, MatDialogClose],
             providers: [{ provide: GameService, useClass: GameServiceStub }],
-            imports: [AppMaterialModule, MatDialogModule, BrowserAnimationsModule, RouterTestingModule.withRoutes([])],
+            imports: [AppMaterialModule, MatDialogModule, BrowserAnimationsModule, RouterTestingModule.withRoutes([]), HttpClientTestingModule],
             schemas: [CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA],
         }).compileComponents();
     });
@@ -83,26 +76,10 @@ describe('GamePageComponent', () => {
         fixture = TestBed.createComponent(GamePageComponent);
         component = fixture.componentInstance;
         fixture.detectChanges();
-        gameService = TestBed.inject(GameService);
     });
 
     it('should create', () => {
         expect(component).toBeTruthy();
-    });
-
-    it('should call toggleDrawer function if second button index', () => {
-        const currentButtonIndex = 1;
-        const spy = spyOn(component, 'toggleDrawer');
-
-        component.callFunction(currentButtonIndex);
-        expect(spy).toHaveBeenCalled();
-    });
-
-    it('should call nextTurn function if third button index', () => {
-        const currentButtonIndex = 2;
-        component.callFunction(currentButtonIndex);
-
-        expect(component.gameService.currentTurn).toEqual(PlayerType.Virtual);
     });
 
     it('should call toggle function if toggleDrawer called', () => {
@@ -113,7 +90,8 @@ describe('GamePageComponent', () => {
     });
 
     it('should call sendRackInCommunication function if endGame called', () => {
-        const spy = spyOn(gameService, 'sendRackInCommunication').and.callThrough();
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Needed for spyOn service
+        const spy = spyOn<any>(component, 'sendRackInCommunication').and.callThrough();
 
         component.endGame();
         expect(spy).toHaveBeenCalled();

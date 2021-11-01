@@ -1,4 +1,9 @@
 import { Injectable } from '@angular/core';
+import { environmentExt } from '@environmentExt';
+import { HttpClient } from '@angular/common/http';
+import { SessionService } from '@app/services/session/session.service';
+
+const localUrl = (call: string, id: string) => `${environmentExt.apiUrl}player/${call}/${id}`;
 
 @Injectable({
     providedIn: 'root',
@@ -6,7 +11,7 @@ import { Injectable } from '@angular/core';
 export class RackService {
     readonly rack: string[];
 
-    constructor() {
+    constructor(private readonly httpClient: HttpClient, private readonly sessionService: SessionService) {
         this.rack = [];
     }
 
@@ -44,7 +49,16 @@ export class RackService {
         this.rack.length = 0;
     }
 
-    update(rack: string[]): void {
+    mod(value: number): number {
+        return ((value % this.length) + this.length) % this.length;
+    }
+
+    async refresh(): Promise<void> {
+        const rack = await this.httpClient.get<string[]>(localUrl('rack', this.sessionService.id)).toPromise();
+        this.update(rack);
+    }
+
+    private update(rack: string[]): void {
         rack = rack.slice();
 
         for (let i = 0; i < rack.length - this.rack.length; ) {
@@ -63,10 +77,12 @@ export class RackService {
         for (const letter of rack) {
             this.rack[this.rack.indexOf('')] = letter;
         }
-    }
 
-    mod(value: number): number {
-        return ((value % this.length) + this.length) % this.length;
+        let emptyIndex = this.rack.indexOf('');
+        while (emptyIndex !== -1) {
+            this.rack.splice(emptyIndex, 1);
+            emptyIndex = this.rack.indexOf('');
+        }
     }
 
     private swap(position: number, delta: number): number {

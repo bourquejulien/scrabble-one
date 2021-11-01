@@ -9,6 +9,7 @@ export const Config = {
         GRID_SIZE: 15,
     },
     RACK_SIZE: 7,
+    MAX_PLAYERS: 2,
     DICTIONARY_PATH: 'assets/dictionary.json',
     VIRTUAL_PLAYER: {
         SKIP_PERCENTAGE: 0.1,
@@ -20,4 +21,8 @@ export const Config = {
             { percentage: 0.3, range: { min: 13, max: 18 } },
         ],
     },
+    SESSION: {
+        REFRESH_INTERVAL_MS: 250,
+    },
+    MAX_SKIP_TURN: 3,
 };

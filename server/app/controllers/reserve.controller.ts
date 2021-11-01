@@ -1,7 +1,7 @@
 import { Request, Response, Router } from 'express';
 import { Service } from 'typedi';
 import { Constants } from '@app/constants';
-import { SessionHandlingService } from '@app/services/session-handling.service';
+import { SessionHandlingService } from '@app/services/sessionHandling/session-handling.service';
 import { ReserveHandler } from '@app/handlers/reserve-handler/reserve-handler';
 
 @Service()
@@ -29,6 +29,6 @@ export class ReserveController {
     }
 
     private getReserveHandler(id: string): ReserveHandler | null {
-        return this.sessionHandlingService.getHandler(id)?.reserveHandler ?? null;
+        return this.sessionHandlingService.getHandlerByPlayerId(id)?.reserveHandler ?? null;
     }
 }

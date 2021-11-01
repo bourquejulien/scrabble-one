@@ -1,37 +1,31 @@
-import { IPlayer } from '@app/classes/player/player';
+import { Player } from '@app/classes/player/player';
 import { PlayerInfo } from '@app/classes/player-info';
 import { PlayerData } from '@app/classes/player-data';
-import { BehaviorSubject } from 'rxjs';
 import { Config } from '@app/config';
-import { ReserveHandler } from '@app/handlers/reserve-handler/reserve-handler';
-import { Placement, Answer } from '@common';
-import { BoardHandler } from '@app/handlers/board-handler/board-handler';
+import { Answer, Placement } from '@common';
+import * as logger from 'winston';
 
-// TODO Fix messaging service: over sockets, or in Answer?
-export class HumanPlayer implements IPlayer {
-    playerData: PlayerData;
-    readonly turnEnded: BehaviorSubject<string>;
+export class HumanPlayer extends Player {
+    isTurn: boolean;
+    readonly playerData: PlayerData;
 
-    constructor(readonly playerInfo: PlayerInfo, private readonly boardHandler: BoardHandler, private readonly reserveHandler: ReserveHandler) {
-        this.playerData = { score: 0, skippedTurns: 0, rack: [] };
-        this.turnEnded = new BehaviorSubject<string>(this.playerInfo.id);
+    constructor(readonly playerInfo: PlayerInfo) {
+        super();
     }
 
     async startTurn(): Promise<void> {
+        logger.debug(`HumanPlayer - StartTurn - Id: ${this.playerInfo.id}`);
+
+        this.isTurn = true;
+        this.socketHandler.sendData('onTurn', this.id);
         return Promise.resolve();
     }
 
-    endTurn(): void {
-        this.turnEnded.next(this.playerInfo.id);
-    }
-
-    fillRack(): void {
-        while (this.reserveHandler.length > 0 && this.playerData.rack.length < Config.RACK_SIZE) {
-            this.playerData.rack.push(this.reserveHandler.drawLetter());
-        }
-    }
-
     async placeLetters(placements: Placement[]): Promise<Answer> {
+        if (!this.isTurn) {
+            return { isSuccess: false, body: 'Not your turn' };
+        }
+
         const lettersToPlace: string[] = [];
 
         placements = this.boardHandler.retrieveNewLetters(placements);
@@ -59,7 +53,7 @@ export class HumanPlayer implements IPlayer {
             return { isSuccess: false, body: 'Validation failed' };
         }
 
-        this.playerData.score += validationData.points;
+        this.playerData.baseScore += validationData.points;
 
         this.updateRack(lettersToPlace);
         this.fillRack();
@@ -73,10 +67,14 @@ export class HumanPlayer implements IPlayer {
     }
 
     exchangeLetters(lettersToExchange: string[]): Answer {
+        if (!this.isTurn) {
+            return { isSuccess: false, body: 'Not your turn' };
+        }
+
         if (!this.areLettersInRack(lettersToExchange)) return { isSuccess: false, body: 'Letters not in rack' };
 
         if (this.reserveHandler.length < Config.RACK_SIZE) {
-            /* this.messagingService.send(SystemMessages.ImpossibleAction, SystemMessages.NotEnoughLetters, MessageType.Error); */
+            // this.socketService.send(SystemMessages.ImpossibleAction, SystemMessages.NotEnoughLetters, MessageType.Error);
             return { isSuccess: false, body: 'Letters not in rack' };
         }
 
@@ -100,10 +98,6 @@ export class HumanPlayer implements IPlayer {
         this.endTurn();
 
         return { isSuccess: true, body: '' };
-    }
-
-    get id(): string {
-        return this.playerInfo.id;
     }
 
     private updateRack(lettersToPlace: string[]): void {

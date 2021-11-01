@@ -3,10 +3,8 @@
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { PlayerService } from '@app/services/player/player.service';
-import { VirtualPlayerService } from '@app/services/virtual-player/virtual-player.service';
 import { Subject } from 'rxjs';
 import { GameService } from './game.service';
-import { PlayerType } from '@app/classes/player/player-type';
 
 // const MAX_LENGTH_RACK = 7;
 // const PLAYER_POINTS = 100;
@@ -15,7 +13,6 @@ describe('GameService', () => {
     let service: GameService;
     // let reserveService: ReserveService;
     let playerService: jasmine.SpyObj<PlayerService>;
-    let virtualPlayerServiceSpy: jasmine.SpyObj<VirtualPlayerService>;
     let mockRack: string[];
 
     beforeEach(() => {
@@ -29,21 +26,9 @@ describe('GameService', () => {
 
         playerService.reset.and.returnValue();
 
-        virtualPlayerServiceSpy = jasmine.createSpyObj('VirtualPlayerService', ['reset', 'fillRack', 'startTurn'], {
-            playerData: { score: 0, skippedTurns: 0, rack: mockRack },
-            turnComplete: new Subject(),
-        });
-
-        virtualPlayerServiceSpy.reset.and.returnValue();
-        virtualPlayerServiceSpy.startTurn.and.returnValue(Promise.resolve());
-        virtualPlayerServiceSpy.turnComplete = new Subject<PlayerType>();
-
         TestBed.configureTestingModule({
             imports: [HttpClientTestingModule],
-            providers: [
-                { provide: VirtualPlayerService, useValue: virtualPlayerServiceSpy },
-                { provide: PlayerService, useValue: playerService },
-            ],
+            providers: [{ provide: PlayerService, useValue: playerService }],
         });
 
         service = TestBed.inject(GameService);

@@ -11,21 +11,21 @@ export class EndGameComponent {
     constructor(private readonly gameService: GameService, private readonly sessionService: SessionService) {}
 
     winner(): string {
-        if (this.gameService.firstPlayerStats.points > this.gameService.secondPlayerStats.points) {
+        if (this.gameService.stats.localStats.points > this.gameService.stats.remoteStats.points) {
             return (
                 'Félicitation au gagnant ' +
                 this.sessionService.gameConfig.firstPlayerName +
                 ':' +
-                this.gameService.firstPlayerStats.points +
+                this.gameService.stats.localStats.points +
                 ' points'
             );
         }
-        if (this.gameService.firstPlayerStats.points < this.gameService.secondPlayerStats.points) {
+        if (this.gameService.stats.localStats.points < this.gameService.stats.remoteStats.points) {
             return (
                 'Félicitation au gagnant ' +
                 this.sessionService.gameConfig.secondPlayerName +
                 ':' +
-                this.gameService.secondPlayerStats.points +
+                this.gameService.stats.remoteStats.points +
                 ' points'
             );
         } else {

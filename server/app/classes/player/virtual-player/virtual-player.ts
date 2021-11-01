@@ -1,35 +1,36 @@
 import { PlayerData } from '@app/classes/player-data';
-import { ReserveHandler } from '@app/handlers/reserve-handler/reserve-handler';
 import { Config } from '@app/config';
 import { SkipAction } from '@app/classes/player/virtual-player/actions/skip-action';
 import { ExchangeAction } from '@app/classes/player/virtual-player/actions/exchange-action';
 import { PlayGenerator } from '@app/classes/virtual-player/play-generator';
 import { DictionaryService } from '@app/services/dictionary/dictionary.service';
-import { BoardHandler } from '@app/handlers/board-handler/board-handler';
 import { PlayAction } from './actions/play-action';
 import { Action } from './actions/action';
-import { BehaviorSubject } from 'rxjs';
-import { IPlayer } from '@app/classes/player/player';
+import { Player } from '@app/classes/player/player';
 import { PlayerInfo } from '@app/classes/player-info';
+import * as logger from 'winston';
 
 const MIN_PLAYTIME_MILLISECONDS = 3000;
 
-export class VirtualPlayer implements IPlayer {
+export class VirtualPlayer extends Player {
+    isTurn: boolean;
+
     readonly playerData: PlayerData;
-    readonly turnEnded: BehaviorSubject<string>;
 
     constructor(
         readonly playerInfo: PlayerInfo,
         private readonly dictionaryService: DictionaryService,
-        private readonly boardHandler: BoardHandler,
-        private readonly reserve: ReserveHandler,
         private readonly runAction: (action: Action) => Action | null,
     ) {
-        this.playerData = { score: 0, skippedTurns: 0, rack: [] };
-        this.turnEnded = new BehaviorSubject<string>(this.playerInfo.id);
+        super();
     }
 
     async startTurn(): Promise<void> {
+        logger.debug(`VirtualPlayer - StartTurn - Id: ${this.playerInfo.id}`);
+
+        this.isTurn = true;
+        this.socketHandler.sendData('onTurn', this.id);
+
         await this.delay(MIN_PLAYTIME_MILLISECONDS);
 
         let action = this.runAction(this.nextAction());
@@ -41,20 +42,6 @@ export class VirtualPlayer implements IPlayer {
         this.endTurn();
     }
 
-    endTurn(): void {
-        this.turnEnded.next(this.playerInfo.id);
-    }
-
-    fillRack(): void {
-        while (this.reserve.length > 0 && this.playerData.rack.length < Config.RACK_SIZE) {
-            this.playerData.rack.push(this.reserve.drawLetter());
-        }
-    }
-
-    get id(): string {
-        return this.playerInfo.id;
-    }
-
     private nextAction(): Action {
         let random = Math.random();
 
@@ -64,7 +51,7 @@ export class VirtualPlayer implements IPlayer {
         random -= Config.VIRTUAL_PLAYER.SKIP_PERCENTAGE;
 
         if (random < Config.VIRTUAL_PLAYER.EXCHANGE_PERCENTAGE) {
-            return new ExchangeAction(this.reserve, /* this.messaging ,*/ this.playerData);
+            return new ExchangeAction(this.reserveHandler, /* this.messaging ,*/ this.playerData);
         }
 
         const playGenerator = new PlayGenerator(this.dictionaryService, this.boardHandler, this.playerData.rack);

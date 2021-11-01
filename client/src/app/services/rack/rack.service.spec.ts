@@ -1,3 +1,4 @@
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 
 import { RackService } from './rack.service';
@@ -8,7 +9,9 @@ describe('RackService', () => {
     let service: RackService;
 
     beforeEach(() => {
-        TestBed.configureTestingModule({});
+        TestBed.configureTestingModule({
+            imports: [HttpClientTestingModule],
+        });
         service = TestBed.inject(RackService);
 
         service.rack.push(...LETTERS);
