@@ -118,10 +118,14 @@ export class GridService {
     }
     drawSelectionSquare(tempContext: CanvasRenderingContext2D, position: Vec2): void {
         const gridCoord = this.computeCanvasCoord(position);
+        // const boardData = this.boardService.gameBoard;
+        // const square = boardData.board[position.x][position.y];
         tempContext.beginPath();
         tempContext.lineWidth = LINE_WIDTH;
         tempContext.strokeStyle = STROKE_STYLE_SELECTION;
+        // tempContext.fillStyle = BONUS_COLORS.get(square.bonus) ?? 'white';
         tempContext.rect(gridCoord.x - this.squareWidth / 2, gridCoord.y - this.squareHeight / 2, this.squareWidth, this.squareHeight);
+        // tempContext.fillRect(gridCoord.x - this.squareWidth / 2, gridCoord.y - this.squareHeight / 2, this.squareWidth, this.squareHeight);
         tempContext.stroke();
     }
     drawDirectionArrow(tempContext: CanvasRenderingContext2D, position: Vec2, direction: boolean): void {
