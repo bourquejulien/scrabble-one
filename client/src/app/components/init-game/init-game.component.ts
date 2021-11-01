@@ -17,7 +17,6 @@ interface FormConfig {
     secondPlayerName: string;
 }
 
-const GAME_TYPES_LIST = ['Mode Solo Débutant'];
 // eslint-disable-next-line @typescript-eslint/no-magic-numbers -- Lists all option, the list is a constant
 const TURN_LENGTH_MINUTES = [0, 1, 2, 3, 4, 5] as const;
 // eslint-disable-next-line @typescript-eslint/no-magic-numbers -- Lists all option, the list is a constant
@@ -54,7 +53,7 @@ const POSSIBLE_ERRORS: Error[] = [STARTS_LOWER_LETTER_ERROR, CONTAINS_NOT_LETTER
     styleUrls: ['./init-game.component.scss'],
 })
 export class InitGameComponent implements OnInit {
-    readonly gameTypesList = GAME_TYPES_LIST;
+    readonly gameTypesList = Constants.GAME_TYPES_LIST;
     readonly botNames = Constants.BOT_NAMES;
     readonly minutesList = TURN_LENGTH_MINUTES;
     readonly secondsList = TURN_LENGTH_SECONDS;
@@ -63,7 +62,7 @@ export class InitGameComponent implements OnInit {
     minutes: number = DEFAULT_PLAY_TIME.totalMinutes;
     seconds: number = DEFAULT_PLAY_TIME.seconds;
     formConfig: FormConfig = {
-        gameType: GAME_TYPES_LIST[0],
+        gameType: Constants.GAME_TYPES_LIST[0],
         playTime: DEFAULT_PLAY_TIME,
         isRandomBonus: false,
         firstPlayerName: '',

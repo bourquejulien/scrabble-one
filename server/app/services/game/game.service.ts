@@ -165,16 +165,22 @@ export class GameService {
     }
 
     async stop(id: string): Promise<boolean> {
-        const handler = this.sessionHandlingService.removeHandler(id);
+        const handler = this.sessionHandlingService.getHandlerByPlayerId(id);
 
         if (handler == null) {
             logger.warn(`Failed to stop game: ${id}`);
             return false;
         }
 
-        handler.dispose();
+        if (handler.sessionInfo.gameType === GameType.Multiplayer && handler.sessionData.isActive) {
+            handler.endGame();
+            logger.info(`Game ended: ${id}`);
+        } else {
+            handler.dispose();
+            this.sessionHandlingService.removeHandler(id);
 
-        logger.info(`Game stopped: ${id}`);
+            logger.info(`Game disposed: ${id}`);
+        }
 
         return true;
     }

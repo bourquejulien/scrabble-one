@@ -3,6 +3,7 @@ import { Router } from '@angular/router';
 import { RoomService } from '@app/services/room/room.service';
 import { Subscription } from 'rxjs';
 import { LocationStrategy } from '@angular/common';
+import { Constants } from '@app/constants/global.constants';
 
 @Component({
     selector: 'app-waiting-room-page',
@@ -10,9 +11,11 @@ import { LocationStrategy } from '@angular/common';
     styleUrls: ['./waiting-room-page.component.scss'],
 })
 export class WaitingRoomPageComponent implements OnDestroy, OnInit {
+    readonly gameTypesList: string[];
     private roomSubscription: Subscription;
 
     constructor(readonly roomService: RoomService, private router: Router, location: LocationStrategy, elementRef: ElementRef) {
+        this.gameTypesList = Constants.GAME_TYPES_LIST;
         location.onPopState(() => {
             if (elementRef.nativeElement.offsetParent != null) {
                 this.abort();
