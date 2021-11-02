@@ -85,9 +85,8 @@ export class Board implements ImmutableBoard {
                 break;
         }
 
-        if (row < 0 || column < 0 || row > this.size - 1 || column > this.size - 1) return null;
-
-        return this.board[column][row];
+        const isOverflow = row < 0 || column < 0 || row > this.size - 1 || column > this.size - 1;
+        return isOverflow ? null : this.board[column][row];
     }
 
     clone(): Board {

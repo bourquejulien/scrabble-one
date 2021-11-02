@@ -1,4 +1,6 @@
 /* eslint-disable max-classes-per-file -- TrieNode is for internal use only */
+import { WordDefinition } from '@common';
+
 class TrieNode {
     readonly character: string;
     readonly isWord: boolean;
@@ -25,14 +27,14 @@ class TrieNode {
 
 export interface IReadOnlyTrie {
     contains(word: string): boolean;
-    startsWith(word: string): { isWord: boolean; isOther: boolean };
+    startsWith(word: string): WordDefinition;
     get size(): number;
 }
 
 export interface ITrie {
     insert(word: string): void;
     contains(word: string): boolean;
-    startsWith(word: string): { isWord: boolean; isOther: boolean };
+    startsWith(word: string): WordDefinition;
     get size(): number;
 }
 
@@ -47,7 +49,9 @@ export class Trie implements ITrie {
 
     insert(word: string): void {
         const lastNode = this.getLastNode(word);
-        if (lastNode.index === word.length) return;
+        if (lastNode.index === word.length) {
+            return;
+        }
 
         let currentNode = lastNode.node;
 
@@ -65,7 +69,7 @@ export class Trie implements ITrie {
         return node !== null && node.isWord;
     }
 
-    startsWith(word: string): { isWord: boolean; isOther: boolean } {
+    startsWith(word: string): WordDefinition {
         const node = this.getNode(word);
         return { isWord: node !== null && node.isWord, isOther: node !== null && node.hasChildren };
     }
@@ -80,7 +84,9 @@ export class Trie implements ITrie {
 
         for (let index = 0; index < word.length; index++) {
             const node = currentNode.getChildren(word[index]);
-            if (node == null) return { node: currentNode, index };
+            if (node == null) {
+                return { node: currentNode, index };
+            }
             currentNode = node;
         }
 

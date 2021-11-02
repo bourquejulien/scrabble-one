@@ -1,10 +1,12 @@
-import { letterDefinitions } from '@common';
+import { LETTER_DEFINITIONS } from '@common';
 
 export class ReserveHandler {
-    readonly reserve: string[] = [];
+    readonly reserve: string[];
 
     constructor() {
-        for (const [letter, letterData] of letterDefinitions) {
+        this.reserve = [];
+
+        for (const [letter, letterData] of LETTER_DEFINITIONS) {
             for (let i = 0; i < letterData.maxQuantity; i++) {
                 this.reserve.push(letter);
             }

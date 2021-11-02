@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { TimeSpan } from '@app/classes/time/timespan';
-import { SocketClientService } from '@app/services/socket-client/socket-client.service';
 import { PlayerService } from '@app/services/player/player.service';
+import { SocketClientService } from '@app/services/socket-client/socket-client.service';
 
 const MS_TO_SEC_FACTOR = 1000;
 

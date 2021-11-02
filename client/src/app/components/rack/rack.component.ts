@@ -2,7 +2,7 @@ import { Component, EventEmitter, HostListener, OnInit, Output } from '@angular/
 import { CommandsService } from '@app/services/commands/commands.service';
 import { RackService } from '@app/services/rack/rack.service';
 import { ReserveService } from '@app/services/reserve/reserve.service';
-import { letterDefinitions } from '@common';
+import { LETTER_DEFINITIONS } from '@common';
 
 interface Selection {
     swap: {
@@ -39,7 +39,9 @@ export class RackComponent implements OnInit {
     onKeyDown(event: KeyboardEvent) {
         this.handleKeyPress(event.key);
 
-        if (this.selection.swap.index < 0) return;
+        if (this.selection.swap.index < 0) {
+            return;
+        }
 
         switch (event.key) {
             case 'ArrowRight':
@@ -55,7 +57,9 @@ export class RackComponent implements OnInit {
 
     @HostListener('document:click', ['$event'])
     onDocumentClick(): void {
-        if (this.isFocus) return;
+        if (this.isFocus) {
+            return;
+        }
 
         this.reset();
     }
@@ -70,7 +74,9 @@ export class RackComponent implements OnInit {
     }
 
     onRightClick(position: number): boolean {
-        if (this.selection.reserve.delete(position) || this.selection.swap.index === position) return false; // Ensures no context menu is showed.
+        if (this.selection.reserve.delete(position) || this.selection.swap.index === position) {
+            return false; // Ensures no context menu is showed.
+        }
 
         this.selection.reserve.add(position);
 
@@ -83,11 +89,8 @@ export class RackComponent implements OnInit {
             return;
         }
 
-        if (event.deltaY < 0) {
-            this.swapSelectionIndex = this.rackService.mod(this.selection.swap.index + 1);
-        } else {
-            this.swapSelectionIndex = this.rackService.mod(this.selection.swap.index - 1);
-        }
+        this.swapSelectionIndex =
+            event.deltaY < 0 ? this.rackService.mod(this.selection.swap.index + 1) : this.rackService.mod(this.selection.swap.index - 1);
     }
 
     reset() {
@@ -97,13 +100,9 @@ export class RackComponent implements OnInit {
     }
 
     retrievePoints(letter: string): number {
-        const currentLetterData = letterDefinitions.get(letter);
+        const currentLetterData = LETTER_DEFINITIONS.get(letter);
 
-        if (currentLetterData) {
-            return currentLetterData.points;
-        }
-
-        return -1;
+        return currentLetterData ? currentLetterData.points : -1;
     }
 
     cancelExchange() {
@@ -124,7 +123,9 @@ export class RackComponent implements OnInit {
 
     private handleKeyPress(key: string) {
         // TODO isFocus a verifier avec un charge
-        if (key.length !== 1 || !key.match('([a-z]|\\*)')) return;
+        if (key.length !== 1 || !key.match('([a-z]|\\*)')) {
+            return;
+        }
 
         const index = this.rackService.indexOf(key, this.selection.swap.lastIndex);
 

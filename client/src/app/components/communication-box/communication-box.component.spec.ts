@@ -15,9 +15,10 @@ import { AppMaterialModule } from '@app/modules/material.module';
 import { CommandsService } from '@app/services/commands/commands.service';
 import { MessagingService } from '@app/services/messaging/messaging.service';
 import { SessionService } from '@app/services/session/session.service';
+import { SocketClientService } from '@app/services/socket-client/socket-client.service';
 import { GameType, Message, MessageType, SocketMock } from '@common';
 import { CommunicationBoxComponent } from './communication-box.component';
-import { SocketClientService } from '@app/services/socket-client/socket-client.service';
+
 describe('CommunicationBoxComponent', () => {
     let component: CommunicationBoxComponent;
     let fixture: ComponentFixture<CommunicationBoxComponent>;
@@ -125,8 +126,6 @@ describe('CommunicationBoxComponent', () => {
         expect(component.getMessageColor(dummyMessage)).toBe(Constants.PLAYER_TWO_COLOR);
         dummyMessage.userId = PlayerType.Local;
         expect(component.getMessageColor(dummyMessage)).toBe(Constants.PLAYER_ONE_COLOR);
-        dummyMessage.messageType = MessageType.Game;
-        expect(component.getMessageColor(dummyMessage)).toBe(Constants.SYSTEM_COLOR);
         dummyMessage.messageType = MessageType.Log;
         expect(component.getMessageColor(dummyMessage)).toBe(Constants.SYSTEM_COLOR);
         dummyMessage.messageType = MessageType.System;
@@ -135,11 +134,11 @@ describe('CommunicationBoxComponent', () => {
 
     it('should return the correct font color', () => {
         expect(component.getFontColor(dummyMessage)).toBe(Constants.WHITE_FONT);
-        dummyMessage.messageType = MessageType.Game;
-        expect(component.getFontColor(dummyMessage)).toBe(Constants.BLACK_FONT);
         dummyMessage.messageType = MessageType.Message;
-        expect(component.getFontColor(dummyMessage)).toBe(Constants.WHITE_FONT);
+        expect(component.getFontColor(dummyMessage)).toBe(Constants.BLACK_FONT);
         dummyMessage.messageType = MessageType.System;
+        expect(component.getFontColor(dummyMessage)).toBe(Constants.WHITE_FONT);
+        dummyMessage.messageType = MessageType.Log;
         expect(component.getFontColor(dummyMessage)).toBe(Constants.WHITE_FONT);
     });
 

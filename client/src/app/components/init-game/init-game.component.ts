@@ -1,8 +1,8 @@
 import { Component, HostListener, Inject, OnInit } from '@angular/core';
 import { FormControl, FormGroup, ValidatorFn, Validators } from '@angular/forms';
-import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
+import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { Router } from '@angular/router';
-import { Error } from '@app/classes/errorName/error';
+import { Error } from '@app/classes/error-name/error';
 import { TimeSpan } from '@app/classes/time/timespan';
 import { GameService } from '@app/services/game/game.service';
 import { GameType, MultiplayerCreateConfig, SinglePlayerConfig } from '@common';
@@ -53,21 +53,15 @@ const POSSIBLE_ERRORS: Error[] = [STARTS_LOWER_LETTER_ERROR, CONTAINS_NOT_LETTER
     styleUrls: ['./init-game.component.scss'],
 })
 export class InitGameComponent implements OnInit {
-    readonly gameTypesList = Constants.GAME_TYPES_LIST;
-    readonly botNames = Constants.BOT_NAMES;
-    readonly minutesList = TURN_LENGTH_MINUTES;
-    readonly secondsList = TURN_LENGTH_SECONDS;
-    readonly gameType = GameType;
-    readonly errorsList: string[] = [];
-    minutes: number = DEFAULT_PLAY_TIME.totalMinutes;
-    seconds: number = DEFAULT_PLAY_TIME.seconds;
-    formConfig: FormConfig = {
-        gameType: Constants.GAME_TYPES_LIST[0],
-        playTime: DEFAULT_PLAY_TIME,
-        isRandomBonus: false,
-        firstPlayerName: '',
-        secondPlayerName: '',
-    };
+    readonly gameTypesList;
+    readonly botNames: string[];
+    readonly minutesList;
+    readonly secondsList;
+    readonly gameType;
+    readonly errorsList: string[];
+    minutes: number;
+    seconds: number;
+    formConfig: FormConfig;
     private nameForm: FormGroup;
 
     constructor(
@@ -76,14 +70,32 @@ export class InitGameComponent implements OnInit {
         private readonly roomService: RoomService,
         readonly dialogRef: MatDialogRef<InitGameComponent>,
         @Inject(MAT_DIALOG_DATA) readonly data: { gameModeType: GameType },
-    ) {}
+    ) {
+        this.gameTypesList = Constants.GAME_TYPES_LIST;
+        this.botNames = Constants.BOT_NAMES;
+        this.minutesList = TURN_LENGTH_MINUTES;
+        this.secondsList = TURN_LENGTH_SECONDS;
+        this.gameType = GameType;
+        this.errorsList = [];
+        this.minutes = DEFAULT_PLAY_TIME.totalMinutes;
+        this.seconds = DEFAULT_PLAY_TIME.seconds;
+        this.formConfig = {
+            gameType: this.gameTypesList[0],
+            playTime: DEFAULT_PLAY_TIME,
+            isRandomBonus: false,
+            firstPlayerName: '',
+            secondPlayerName: '',
+        };
+    }
 
     private static nameValidatorFunction(control: FormControl): { [key: string]: boolean } | null {
         // We make sure that player name is considered as a string
         const playerName = control.value as string;
         if (playerName !== undefined && playerName !== null && playerName !== '') {
             for (let index = 0; index < playerName.length; index++) {
-                if (!/[a-zA-ZÉéÎîÇçÏï]/.test(playerName.charAt(index))) return { ['containsOnlyLetters']: true };
+                if (!/[a-zA-ZÉéÎîÉéÇçÏï]/.test(playerName.charAt(index))) {
+                    return { ['containsOnlyLetters']: true };
+                }
             }
 
             const firstLetter = playerName[0];
@@ -168,11 +180,15 @@ export class InitGameComponent implements OnInit {
     }
 
     private forceSecondsToZero(): void {
-        if (this.minutes === TURN_LENGTH_MINUTES[5]) this.seconds = 0;
+        if (this.minutes === TURN_LENGTH_MINUTES[5]) {
+            this.seconds = 0;
+        }
     }
 
     private forceSecondsToThirty(): void {
-        if (this.minutes === TURN_LENGTH_MINUTES[0]) this.seconds = 30;
+        if (this.minutes === TURN_LENGTH_MINUTES[0]) {
+            this.seconds = 30;
+        }
     }
 
     private confirmInitialization(): boolean {
