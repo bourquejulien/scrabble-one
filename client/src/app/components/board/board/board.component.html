@@ -34,12 +34,7 @@
     </div>
     <div class="parent">
         <div id="play-button" class="inline-block-child">
-            <button
-                mat-button
-                mat-dialog-close
-                *ngIf="placeLetterService.tempRack.length > 0"
-                (click)="placeLetterService.enterOperation(placeLetterService.isHorizontal)"
-            >
+            <button mat-button mat-dialog-close *ngIf="placeLetterService.tempRack.length > 0" (click)="placeLetterService.enterOperation()">
                 jouer
             </button>
         </div>

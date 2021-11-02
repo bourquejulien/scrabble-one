@@ -38,7 +38,7 @@ export class PlaceLetterService {
         for (const letter of this.tempRack) {
             word += letter;
         }
-        this.playerService.placeLetters(word, this.positionInit, direction);
+        this.playerService.placeLetters(word, { x: this.positionInit.x - 1, y: this.positionInit.y - 1 }, direction);
     }
 
     backSpaceOperation(tempContext: CanvasRenderingContext2D): void {

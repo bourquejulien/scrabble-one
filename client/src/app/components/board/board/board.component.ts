@@ -6,7 +6,6 @@ import { BoardService } from '@app/services/board/board.service';
 import { GridService } from '@app/services/grid/grid.service';
 import { MouseHandlingService } from '@app/services/mouse-handling/mouse-handling.service';
 import { PlaceLetterService } from '@app/services/place-letter/place-letter.service';
-import { PlayerService } from '@app/services/player/player.service';
 import { RackService } from '@app/services/rack/rack.service';
 import FontFaceObserver from 'fontfaceobserver';
 // TODO add to constant file
@@ -39,7 +38,7 @@ export class BoardComponent implements OnChanges, AfterViewInit {
         readonly mouseHandlingService: MouseHandlingService,
         readonly rackService: RackService,
         readonly boardService: BoardService,
-        readonly playerService: PlayerService,
+
         readonly placeLetterService: PlaceLetterService,
     ) {}
 
@@ -92,6 +91,7 @@ export class BoardComponent implements OnChanges, AfterViewInit {
             this.squareSelected = false;
         } else if (enterValid) {
             this.placeLetterService.enterOperation();
+            this.gridService.resetCanvas(this.tempContext);
         } else {
             this.handleKeyPress2(event.key);
             const validKey: boolean =
