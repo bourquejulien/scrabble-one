@@ -5,6 +5,6 @@ import { SkipAction } from './skip-action';
 
 describe('SkipAction', () => {
     it('should return null', () => {
-        expect(new SkipAction({ score: 0, skippedTurns: 0, rack: [] }).execute()).to.be.null;
+        expect(new SkipAction({ baseScore: 0, scoreAdjustment: 0, skippedTurns: 0, rack: [] }).execute()).to.be.null;
     });
 });

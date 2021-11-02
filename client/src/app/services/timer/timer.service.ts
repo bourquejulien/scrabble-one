@@ -13,6 +13,7 @@ export class TimerService {
 
     constructor(socketService: SocketClientService, playerService: PlayerService) {
         this.timeSpan = TimeSpan.fromMilliseconds(0);
+
         socketService.on('timerTick', (timeMs: number) => {
             this.timeSpan = TimeSpan.fromSeconds(Math.round(timeMs / MS_TO_SEC_FACTOR));
 

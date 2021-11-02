@@ -5,8 +5,8 @@
     <p class="inputPresentationText" *ngIf="data.gameModeType === gameType.SinglePlayer">Mode de jeu</p>
     <mat-form-field class="inputs" appearance="fill" *ngIf="data.gameModeType === gameType.SinglePlayer">
         <mat-label>Mode de jeu</mat-label>
-        <mat-select name="gameTypes" appearance="fill" [(ngModel)]="gameConfig.gameType">
-            <mat-option *ngFor="let gameTypeDescription of gameTypesList" [value]="gameTypeDescription[1]">{{ gameTypeDescription[0] }}</mat-option>
+        <mat-select name="gameTypes" appearance="fill" [(ngModel)]="formConfig.gameType">
+            <mat-option *ngFor="let gameType of gameTypesList" [value]="gameType">{{ gameType }}</mat-option>
         </mat-select>
     </mat-form-field>
     <p class="inputPresentationText" *ngIf="data.gameModeType === gameType.SinglePlayer || data.gameModeType === gameType.Multiplayer">
@@ -26,7 +26,7 @@
             </mat-select>
         </mat-form-field>
     </div>
-    <p class="containerInput" class="inputPresentationText" *ngIf="data.gameModeType === gameType.SinglePlayer; else elseBlock">Nom des joueurs</p>
+    <p class="inputPresentationText" *ngIf="data.gameModeType === gameType.SinglePlayer; else elseBlock">Nom des joueurs</p>
     <ng-template #elseBlock>
         <label class="inputPresentationText">Nom du joueur</label>
     </ng-template>
@@ -38,19 +38,17 @@
                 placeholder="Joueur 1"
                 name="name"
                 id="inputName"
-                [(ngModel)]="gameConfig.firstPlayerName"
-                (input)="botNameChange(gameConfig.firstPlayerName)"
+                [(ngModel)]="formConfig.firstPlayerName"
+                (input)="botNameChange(formConfig.firstPlayerName)"
             />
         </mat-form-field>
         <mat-form-field appearance="fill" *ngIf="data.gameModeType === gameType.SinglePlayer">
             <mat-label>Joueur 2</mat-label>
-            <input matInput placeholder="Joueur 2" value="{{ gameConfig.secondPlayerName }}" />
+            <input matInput placeholder="Joueur 2" value="{{ formConfig.secondPlayerName }}" />
         </mat-form-field>
     </form>
-    <mat-checkbox color="primary" *ngIf="data.gameModeType === gameType.SinglePlayer || data.gameModeType === gameType.Multiplayer">
-        <label class="inputPresentationText">Bonus aléatoire</label>
-    </mat-checkbox>
+    <mat-checkbox color="primary" class="inputPresentationText" [(ngModel)]="formConfig.isRandomBonus"> Bonus aléatoire </mat-checkbox>
     <div *ngFor="let error of errorsList" class="alert">{{ error }}</div>
 
-    <button mat-raised-button (click)="this.initialize()" color="primary" id="confirm">Confirmer</button>
+    <button mat-raised-button (click)="this.init()" color="primary" id="confirm">Confirmer</button>
 </div>

@@ -1,17 +1,21 @@
 import { Component, HostListener, Inject, OnInit } from '@angular/core';
 import { FormControl, FormGroup, ValidatorFn, Validators } from '@angular/forms';
-import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
+import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 import { Error } from '@app/classes/error-name/error';
-import { GameConfig } from '@app/classes/game-config';
 import { TimeSpan } from '@app/classes/time/timespan';
 import { GameService } from '@app/services/game/game.service';
 import { GameType, SinglePlayerConfig } from '@common';
 
-const GAME_TYPES_LIST = [
-    ['Mode Solo Débutant', GameType.SinglePlayer],
-    ['Mode multijoueurs', GameType.Multiplayer],
-];
+interface FormConfig {
+    gameType: string;
+    playTime: TimeSpan;
+    isRandomBonus: boolean;
+    firstPlayerName: string;
+    secondPlayerName: string;
+}
+
+const GAME_TYPES_LIST = ['Mode Solo Débutant'];
 // eslint-disable-next-line @typescript-eslint/no-magic-numbers -- Lists all option, the list is a constant
 const TURN_LENGTH_MINUTES = [0, 1, 2, 3, 4, 5] as const;
 // eslint-disable-next-line @typescript-eslint/no-magic-numbers -- Lists all option, the list is a constant
@@ -52,37 +56,34 @@ export class InitGameComponent implements OnInit {
     readonly botNames: string[];
     readonly minutesList;
     readonly secondsList;
-    nextPage: string;
-    nameForm: FormGroup;
-    gameType;
-    errorsList: string[];
+    readonly gameType;
+    readonly errorsList: string[];
     minutes: number;
     seconds: number;
-    gameConfig: GameConfig;
+    formConfig: FormConfig;
+    private nameForm: FormGroup;
 
     constructor(
-        public gameService: GameService,
-        private router: Router,
-        public dialogRef: MatDialogRef<InitGameComponent>,
-        @Inject(MAT_DIALOG_DATA) public data: { gameModeType: GameType },
+        readonly gameService: GameService,
+        private readonly router: Router,
+        readonly dialogRef: MatDialogRef<InitGameComponent>,
+        @Inject(MAT_DIALOG_DATA) readonly data: { gameModeType: GameType },
     ) {
-        this.setNextPage();
-        // TO DO ask julien if this is legit?? its like, doing "index = number"
-        this.gameType = GameType;
-        this.errorsList = [];
-        this.minutes = DEFAULT_PLAY_TIME.totalMinutes;
-        this.seconds = DEFAULT_PLAY_TIME.seconds;
-        this.gameConfig = {
-            gameType: GameType.SinglePlayer,
-            playTime: DEFAULT_PLAY_TIME,
-            firstPlayerName: '',
-            secondPlayerName: '',
-        };
-
         this.gameTypesList = GAME_TYPES_LIST;
         this.botNames = ['Maurice', 'Claudette', 'Alphonse'];
         this.minutesList = TURN_LENGTH_MINUTES;
         this.secondsList = TURN_LENGTH_SECONDS;
+        this.gameType = GameType;
+        this.errorsList = [];
+        this.minutes = DEFAULT_PLAY_TIME.totalMinutes;
+        this.seconds = DEFAULT_PLAY_TIME.seconds;
+        this.formConfig = {
+            gameType: GAME_TYPES_LIST[0],
+            playTime: DEFAULT_PLAY_TIME,
+            isRandomBonus: false,
+            firstPlayerName: '',
+            secondPlayerName: '',
+        };
     }
 
     private static nameValidatorFunction(control: FormControl): { [key: string]: boolean } | null {
@@ -115,30 +116,28 @@ export class InitGameComponent implements OnInit {
     @HostListener('keydown', ['$event'])
     async buttonDetect(event: KeyboardEvent) {
         if (event.key === 'Enter') {
-            await this.initialize();
+            await this.init();
         }
     }
 
     async ngOnInit(): Promise<void> {
-        this.gameConfig.secondPlayerName = InitGameComponent.randomizeBotName(this.botNames);
+        this.formConfig.secondPlayerName = InitGameComponent.randomizeBotName(this.botNames);
     }
 
-    async initialize(): Promise<void> {
+    async init(): Promise<void> {
         const needsToReroute: boolean = this.confirmInitialization();
 
         if (needsToReroute) {
             this.dialogRef.close();
 
-            // TODO Should be able to redirect to waiting room or GameService with proper configs
-            const singlePlayerConfig: SinglePlayerConfig = {
-                gameType: this.gameConfig.gameType,
-                playTimeMs: this.gameConfig.playTime.totalMilliseconds,
-                playerName: this.gameConfig.firstPlayerName,
-                virtualPlayerName: this.gameConfig.secondPlayerName,
-            };
-
-            await this.gameService.startSinglePlayer(singlePlayerConfig);
-            await this.router.navigate([this.nextPage]);
+            switch (this.data.gameModeType) {
+                case GameType.SinglePlayer:
+                    await this.initSinglePlayer();
+                    break;
+                case GameType.Multiplayer:
+                    await this.initMultiplayer();
+                    break;
+            }
         }
     }
 
@@ -148,9 +147,33 @@ export class InitGameComponent implements OnInit {
     }
 
     botNameChange(firstPlayerName: string): void {
-        while (firstPlayerName === this.gameConfig.secondPlayerName) {
-            this.gameConfig.secondPlayerName = InitGameComponent.randomizeBotName(this.botNames);
+        while (firstPlayerName === this.formConfig.secondPlayerName) {
+            this.formConfig.secondPlayerName = InitGameComponent.randomizeBotName(this.botNames);
         }
+    }
+
+    private async initSinglePlayer(): Promise<void> {
+        const singlePlayerConfig: SinglePlayerConfig = {
+            gameType: GameType.SinglePlayer,
+            playTimeMs: this.formConfig.playTime.totalMilliseconds,
+            playerName: this.formConfig.firstPlayerName,
+            virtualPlayerName: this.formConfig.secondPlayerName,
+            isRandomBonus: this.formConfig.isRandomBonus,
+        };
+
+        await this.gameService.startSinglePlayer(singlePlayerConfig);
+        await this.router.navigate(['game']);
+    }
+
+    private async initMultiplayer(): Promise<void> {
+        // const multiplayerConfig: MultiplayerCreateConfig = {
+        //     gameType: GameType.Multiplayer,
+        //     playTimeMs: this.gameConfig.playTime.totalMilliseconds,
+        //     playerName: this.gameConfig.firstPlayerName,
+        // };
+
+        // TODO Pass config to waiting room
+        await this.router.navigate(['waiting-room']);
     }
 
     private forceSecondsToZero(): void {
@@ -167,7 +190,7 @@ export class InitGameComponent implements OnInit {
 
     private confirmInitialization(): boolean {
         const nameForm = new FormGroup({
-            control: new FormControl(this.gameConfig.firstPlayerName, [
+            control: new FormControl(this.formConfig.firstPlayerName, [
                 Validators.required,
                 Validators.minLength(MIN_SIZE_NAME),
                 Validators.maxLength(MAX_SIZE_NAME),
@@ -178,26 +201,18 @@ export class InitGameComponent implements OnInit {
         this.nameForm = nameForm;
 
         if (nameForm.valid) {
-            this.gameConfig.playTime = TimeSpan.fromMinutesSeconds(this.minutes, this.seconds);
+            this.formConfig.playTime = TimeSpan.fromMinutesSeconds(this.minutes, this.seconds);
 
             return true;
-        }
-        this.errorsList = [];
-        for (const error of POSSIBLE_ERRORS) {
-            // nameForm.get('control') cannot be null since we initialize it in the constructor
-            if (this.nameForm.get('control')?.hasError(error.validationRule)) {
-                this.errorsList.push(error.validationMessage);
+        } else {
+            this.errorsList.length = 0;
+            for (const error of POSSIBLE_ERRORS) {
+                // nameForm.get('control') cannot be null since we initialize it in the constructor
+                if (this.nameForm.get('control')?.hasError(error.validationRule)) {
+                    this.errorsList.push(error.validationMessage);
+                }
             }
         }
         return false;
-    }
-
-    private setNextPage(): void {
-        if (this.data.gameModeType === GameType.SinglePlayer) {
-            this.nextPage = 'game';
-        }
-        if (this.data.gameModeType === GameType.Multiplayer) {
-            this.nextPage = 'waiting-room';
-        }
     }
 }

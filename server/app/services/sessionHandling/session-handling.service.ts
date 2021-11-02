@@ -23,7 +23,7 @@ export class SessionHandlingService {
         }
 
         sessionHandler.players.forEach((p) => this.playerIds.delete(p.id));
-        sessionHandler.destroy();
+        sessionHandler.dispose();
         return sessionHandler;
     }
 

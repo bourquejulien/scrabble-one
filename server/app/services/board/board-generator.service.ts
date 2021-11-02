@@ -10,18 +10,7 @@ import { Service } from 'typedi';
 export class BoardGeneratorService {
     static bonusNumber: Map<Bonus, number>;
 
-    mustShuffle: boolean;
-
-    constructor(private readonly dictionaryService: DictionaryService) {
-        BoardGeneratorService.bonusNumber = new Map<Bonus, number>([
-            [Bonus.L2, 0],
-            [Bonus.W2, 0],
-            [Bonus.L3, 0],
-            [Bonus.W3, 0],
-        ]);
-
-        this.mustShuffle = true;
-    }
+    constructor(private readonly dictionaryService: DictionaryService) {}
 
     private static retrieveLetterValues(): { [key: string]: number } {
         const letterValues: { [key: string]: number } = {};
@@ -33,14 +22,14 @@ export class BoardGeneratorService {
         return letterValues;
     }
 
-    private static retrieveBonuses(mustShuffle: boolean): BonusInfos[] {
+    private static retrieveBonuses(isRandomBonus: boolean): BonusInfos[] {
         let bonuses: BonusInfos[] = [];
 
         for (const jsonBonus of JsonBonuses) {
             const bonusInfo: BonusInfos = { bonus: jsonBonus.Bonus as Bonus, position: jsonBonus.Position };
             bonuses.push(bonusInfo);
         }
-        if (mustShuffle) {
+        if (isRandomBonus) {
             bonuses = this.shuffleBonuses(bonuses);
         }
         return bonuses;
@@ -78,8 +67,8 @@ export class BoardGeneratorService {
         return bonusBank;
     }
 
-    generateBoard(): Board {
-        return new Board(Config.GRID.GRID_SIZE, BoardGeneratorService.retrieveBonuses(this.mustShuffle));
+    generateBoard(isRandomBonus: boolean): Board {
+        return new Board(Config.GRID.GRID_SIZE, BoardGeneratorService.retrieveBonuses(isRandomBonus));
     }
 
     generateBoardValidator(board: Board): BoardValidator {
