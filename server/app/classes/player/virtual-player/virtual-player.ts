@@ -9,6 +9,7 @@ import { Action } from './actions/action';
 import { Player } from '@app/classes/player/player';
 import { PlayerInfo } from '@app/classes/player-info';
 import * as logger from 'winston';
+import { Timer } from '@app/classes/delay';
 
 const MIN_PLAYTIME_MILLISECONDS = 3000;
 
@@ -31,7 +32,7 @@ export class VirtualPlayer extends Player {
         this.isTurn = true;
         this.socketHandler.sendData('onTurn', this.id);
 
-        await this.delay(MIN_PLAYTIME_MILLISECONDS);
+        await Timer.delay(MIN_PLAYTIME_MILLISECONDS);
 
         let action = this.runAction(this.nextAction());
         while (action) {
@@ -58,13 +59,5 @@ export class VirtualPlayer extends Player {
         const playGenerator = new PlayGenerator(this.dictionaryService, this.boardHandler, this.playerData.rack);
 
         return new PlayAction(this.boardHandler, playGenerator, this.playerData /* , this.messaging*/);
-    }
-
-    private async delay(timeMs: number): Promise<void> {
-        return new Promise<void>((resolve) => {
-            setTimeout(() => {
-                resolve();
-            }, timeMs);
-        });
     }
 }

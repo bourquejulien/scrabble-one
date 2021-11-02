@@ -16,11 +16,11 @@ export class SessionHandler {
     private readonly playerSubscription: Subscription;
 
     constructor(
-        readonly sessionInfo: SessionInfo,
-        readonly boardHandler: BoardHandler,
-        readonly reserveHandler: ReserveHandler,
-        private readonly playerHandler: PlayerHandler,
-        private readonly socketHandler: SocketHandler,
+        public sessionInfo: SessionInfo,
+        public boardHandler: BoardHandler,
+        public reserveHandler: ReserveHandler,
+        public playerHandler: PlayerHandler, // TODO: change visibility from private to public to test
+        private socketHandler: SocketHandler,
     ) {
         socketHandler.sessionId = sessionInfo.id;
         this.sessionData = { isActive: false, isStarted: false, timeLimitEpoch: 0 };
@@ -33,6 +33,7 @@ export class SessionHandler {
 
         return {
             id: firstPlayer.id,
+            startId: this.players.filter((p) => p.isTurn).map((p) => p.id)[0] ?? '',
             gameType: this.sessionInfo.gameType,
             playTimeMs: this.sessionInfo.playTimeMs,
             firstPlayerName: firstPlayer.playerInfo.name,
@@ -40,11 +41,11 @@ export class SessionHandler {
         };
     }
 
-    start(): string {
+    start(): void {
         this.sessionData.isActive = true;
         this.sessionData.isStarted = true;
         this.timer = setInterval(() => this.timerTick(), Config.SESSION.REFRESH_INTERVAL_MS);
-        return this.playerHandler.start();
+        this.playerHandler.start();
     }
 
     addPlayer(player: Player): void {
@@ -75,6 +76,20 @@ export class SessionHandler {
         return { localStats: firstPlayer.stats, remoteStats: secondPlayer.stats };
     }
 
+    endGame(): void {
+        logger.debug(`SessionHandler - EndGame - Id: ${this.sessionInfo.id}`);
+        this.players.forEach((p) => (p.playerData.scoreAdjustment -= p.rackPoints()));
+
+        if (this.reserveHandler.length === 0 && this.playerHandler.rackEmptied) {
+            this.players[0].playerData.scoreAdjustment += this.players[1].rackPoints();
+            this.players[1].playerData.scoreAdjustment += this.players[0].rackPoints();
+        }
+
+        this.socketHandler.sendData('endGame');
+
+        this.dispose();
+    }
+
     get players(): Player[] {
         return this.playerHandler.players;
     }
@@ -97,20 +112,6 @@ export class SessionHandler {
 
         this.players.find((p) => p.id === id)?.startTurn();
         this.sessionData.timeLimitEpoch = new Date().getTime() + this.sessionInfo.playTimeMs;
-    }
-
-    private endGame(): void {
-        logger.debug(`SessionHandler - EndGame - Id: ${this.sessionInfo.id}`);
-        this.players.forEach((p) => (p.playerData.scoreAdjustment -= p.rackPoints()));
-
-        if (this.reserveHandler.length === 0 && this.playerHandler.rackEmptied) {
-            this.players[0].playerData.scoreAdjustment += this.players[1].rackPoints();
-            this.players[1].playerData.scoreAdjustment += this.players[0].rackPoints();
-        }
-
-        this.socketHandler.sendData('endGame');
-
-        this.dispose();
     }
 
     private get isEndGame(): boolean {

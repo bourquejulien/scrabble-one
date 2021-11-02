@@ -4,7 +4,7 @@ import { BoardError } from '@app/errors/board-error';
 import { Placement, ValidationResponse } from '@common';
 
 export class BoardHandler {
-    constructor(private readonly board: Board, private readonly boardValidator: BoardValidator) {}
+    constructor(private board: Board, private boardValidator: BoardValidator) {}
 
     lookupLetters(letters: Placement[]): ValidationResponse {
         return this.boardValidator.validate(letters);

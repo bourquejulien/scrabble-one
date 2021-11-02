@@ -5,11 +5,11 @@
 <mat-card class="room-container">
     <div class="list" *ngIf="roomService.rooms.length !== 0">
         <mat-action-list *ngFor="let room of roomService.rooms; let i = index">
-            <button mat-list-item (click)="join(room)">
+            <button mat-list-item (click)="join(room.id)">
                 <mat-icon matListIcon>groups</mat-icon>
                 <h3 matLine>Salle {{ i }}</h3>
                 <p matLine>
-                    <span> Une personne en attente </span>
+                    <span> Une personne en attente : {{room.waitingPlayerName}} </span>
                 </p>
             </button>
         </mat-action-list>
