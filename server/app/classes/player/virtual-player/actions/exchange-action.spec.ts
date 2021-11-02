@@ -8,21 +8,20 @@ import { ExchangeAction } from './exchange-action';
 const LETTERS = ['a', 'b', 'c', 'd', 'e', 'f', 'g'];
 /* eslint-disable dot-notation */
 describe('Exchange Action', () => {
-    let service: ExchangeAction;
     const reserve: ReserveHandler = new ReserveHandler();
-    const playerData: PlayerData = { score: 0, skippedTurns: 0, rack: [] };
+    const playerData: PlayerData = { baseScore: 0, scoreAdjustment: 0, skippedTurns: 0, rack: [] };
+    let action = new ExchangeAction(reserve, playerData);
     beforeEach(() => {
-        service = new ExchangeAction(reserve, playerData);
+        LETTERS.forEach((l) => playerData.rack.push(l));
     });
 
     it('should create action', () => {
-        expect(service).to.be.ok;
+        expect(action).to.be.ok;
     });
 
     it('execute should change letters', () => {
-        // needs to spy on playerData
-        playerData.rack = LETTERS;
-        service = new ExchangeAction(reserve, playerData);
-        service.execute();
+        action = new ExchangeAction(reserve, playerData);
+        action.execute();
+        expect(playerData.rack).to.not.eql(LETTERS);
     });
 });

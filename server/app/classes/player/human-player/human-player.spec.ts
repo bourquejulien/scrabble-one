@@ -1,3 +1,4 @@
+/* eslint-disable dot-notation */
 /* eslint-disable no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable no-unused-expressions */
@@ -19,6 +20,7 @@ import { Observable } from 'rxjs';
 const LETTERS = ['a', 'b', 'c', 'd', 'e', 'f', 'g'];
 const RACK = ['a', '*', 'c', 'd', 'e', 'f', 'g'];
 const NOT_FILLED_RACK = ['a', 'b', 'c', 'd', 'e'];
+const SIZE = 9;
 const PLACEMENT: Placement[] = [
     { letter: 'a', position: { x: 0, y: 0 } },
     { letter: 'b', position: { x: 0, y: 1 } },
@@ -29,6 +31,7 @@ const VALID_PLACEMENT: Placement[] = [
     { letter: 'a', position: { x: 0, y: 1 } },
     { letter: 'c', position: { x: 0, y: 2 } },
 ];
+
 // const ARBITRARY_SCORE = 40;
 // const ARBITRARY_SKIPPED_TURN = 40;
 export class SocketHandlerMock extends SocketHandler {
@@ -46,13 +49,14 @@ export class SocketServiceMock extends SocketService {
         // Does nothing
     }
 
-    send<T>(event: string, message: T, roomId: string) {
+    send<T>(event: string, roomId: string, message?: T) {
         // Does nothing
     }
 }
 export class BoardHandlerMock extends BoardHandler {
     lookupLetters(letters: Placement[]): ValidationResponse {
-        return { isSuccess: true, points: 0, description: '' };
+        if (letters === VALID_PLACEMENT) return { isSuccess: true, points: 0, description: '' };
+        return { isSuccess: false, points: 0, description: '' };
     }
 
     placeLetters(letters: Placement[]): ValidationResponse {
@@ -63,7 +67,6 @@ export class BoardHandlerMock extends BoardHandler {
         return placements;
     }
 }
-const SIZE = 9;
 describe('HumanPlayer', () => {
     const board = new Board(SIZE);
     const boardValidator = createStubInstance(BoardValidator) as unknown as BoardValidator;
@@ -160,5 +163,17 @@ describe('HumanPlayer', () => {
     it('onTurn should return turnEnded as observable', () => {
         const returnValue = service.onTurn();
         expect(typeof returnValue).to.eql(typeof new Observable<string>());
+    });
+    it('place letters should fail if validation fails', async () => {
+        const RESET_LETTERS = ['a', 'b', 'c', 'd', 'e', 'f', 'g'];
+        RESET_LETTERS.forEach((l) => service.playerData.rack.push(l));
+        const returnValue = await service.placeLetters(PLACEMENT);
+        expect(returnValue).to.eql({ isSuccess: false, body: 'Validation failed' });
+    });
+    it('update rack should go bad if letterindex === -1', () => {
+        service['updateRack'](['z']);
+        const sandbox = createSandbox();
+        const stub = sandbox.stub(service.playerData.rack, 'splice');
+        sandbox.assert.notCalled(stub);
     });
 });

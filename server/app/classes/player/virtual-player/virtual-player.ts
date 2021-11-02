@@ -15,7 +15,7 @@ const MIN_PLAYTIME_MILLISECONDS = 3000;
 export class VirtualPlayer extends Player {
     isTurn: boolean;
 
-    readonly playerData: PlayerData;
+    playerData: PlayerData;
 
     constructor(
         readonly playerInfo: PlayerInfo,

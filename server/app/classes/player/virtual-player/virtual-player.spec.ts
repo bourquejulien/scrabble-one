@@ -44,10 +44,11 @@ export class SocketServiceMock extends SocketService {
         // Does nothing
     }
 
-    send<T>(event: string, message: T, roomId: string) {
+    send<T>(event: string, roomId: string, message?: T) {
         // Does nothing
     }
 }
+
 export class BoardHandlerMock extends BoardHandler {
     lookupLetters(letters: Placement[]): ValidationResponse {
         return { isSuccess: false, points: 0, description: '' };

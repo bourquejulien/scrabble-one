@@ -17,15 +17,15 @@ import { SessionHandlingService } from './session-handling.service';
 import { SocketHandler } from '@app/handlers/socket-handler/socket-handler';
 import { SocketService } from '@app/services/socket/socket-service';
 import { GameType } from '@common';
+import { PlayerHandler } from '@app/handlers/player-handler/player-handler';
 
 const MAX_HANDLERS = 5;
 const BOARD_SIZE = 5;
 const TIME_MS = 1000;
 
-export class PlayerMock implements Player {
+export class PlayerMock extends Player {
     // Will be removed
     isTurn: boolean;
-    id: string;
     playerInfo: PlayerInfo;
     playerData: PlayerData;
     async startTurn(): Promise<void> {
@@ -43,7 +43,9 @@ export class PlayerMock implements Player {
         // Does nothing
     }
 }
+
 describe('SessionHandlingService', () => {
+    const playerHandler = new PlayerHandler();
     const service = new SessionHandlingService();
     const reserveHandler = new ReserveHandler();
     const board = new Board(BOARD_SIZE);
@@ -68,16 +70,16 @@ describe('SessionHandlingService', () => {
         for (let id = 0; id < MAX_HANDLERS; id++) {
             const idAsString: string = id.toString();
             const sessionInfo: SessionInfo = { id: idAsString, playTimeMs: TIME_MS, gameType: GameType.Multiplayer };
-            service.addHandler(new SessionHandler(sessionInfo, boardHandler, reserveHandler, socketHandler));
+            service.addHandler(new SessionHandler(sessionInfo, boardHandler, reserveHandler, playerHandler, socketHandler));
             expect(service.getHandlerBySessionId(idAsString)).to.be.not.null;
         }
     });
     it('should remove handlers when theres some', () => {
         const sessionInfo: SessionInfo = { id: '0', playTimeMs: TIME_MS, gameType: GameType.Multiplayer };
-        const sessHandler = new SessionHandler(sessionInfo, boardHandler, reserveHandler, socketHandler);
-        sessHandler.addPlayer(new PlayerMock());
-        sessHandler.addPlayer(new PlayerMock());
-        service.addHandler(new SessionHandler(sessionInfo, boardHandler, reserveHandler, socketHandler));
+        const sessHandler = new SessionHandler(sessionInfo, boardHandler, reserveHandler, playerHandler, socketHandler);
+        sessHandler.addPlayer(new PlayerMock['()']());
+        sessHandler.addPlayer(new PlayerMock['()']());
+        service.addHandler(new SessionHandler(sessionInfo, boardHandler, reserveHandler, playerHandler, socketHandler));
         service.removeHandler('0');
         expect(service.getHandlerBySessionId('0')).to.be.null;
     });

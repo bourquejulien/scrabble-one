@@ -5,7 +5,7 @@ import { Config } from '@app/config';
 export class PlayerHandler {
     readonly players: Player[];
     private readonly nextTurn: Subject<string>;
-    private readonly playerSubscriptions: Map<string, Subscription>;
+    private playerSubscriptions: Map<string, Subscription>;
 
     constructor() {
         this.players = [];

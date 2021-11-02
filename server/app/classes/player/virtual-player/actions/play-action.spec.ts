@@ -1,91 +1,92 @@
 /* eslint-disable dot-notation */
 /* eslint-disable max-classes-per-file */
-/*
-import { Message } from '@app/classes/message';
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable no-unused-vars */
+/* eslint-disable no-unused-expressions */
+/* eslint-disable @typescript-eslint/no-unused-expressions */
+import { Board } from '@app/classes/board/board';
 import { PlayerData } from '@app/classes/player-data';
-import { TimeSpan } from '@app/classes/time/timespan';
-import { Play } from '@app/classes/virtual-player/play';
-import { PlayGenerator } from '@app/classes/virtual-player/play-generator';
-import { BoardService } from '@app/services/board/board.service';
-import { MessagingService } from '@app/services/messaging/messaging.service';
-import { TimerService } from '@app/services/timer/timer.service';
-import { Subject } from 'rxjs';
-import { PlaceAction } from './place-action';
+import { BoardValidator } from '@app/classes/validation/board-validator';
+import { BoardHandler } from '@app/handlers/board-handler/board-handler';
+import { Placement, ValidationResponse } from '@common';
+import { expect } from 'chai';
+import { createStubInstance } from 'sinon';
 import { PlayAction } from './play-action';
+import { PlayGenerator } from '@app/classes/virtual-player/play-generator';
+import { DictionaryService } from '@app/services/dictionary/dictionary.service';
+import { Play } from '@app/classes/virtual-player/play';
 
-let stubbedTime = TimeSpan.fromSeconds(1);
+const VALID_PLACEMENT: Placement[] = [
+    { letter: 'B', position: { x: 0, y: 0 } },
+    { letter: 'a', position: { x: 0, y: 1 } },
+    { letter: 'c', position: { x: 0, y: 2 } },
+];
+const SIZE = 9;
+const PLAY: Play[] = [{ score: 8, word: 'bac', letters: VALID_PLACEMENT }];
 
-class TimerServiceStub {
-    get time(): TimeSpan {
-        return stubbedTime;
+export class BoardHandlerMock extends BoardHandler {
+    lookupLetters(letters: Placement[]): ValidationResponse {
+        if (letters === VALID_PLACEMENT) return { isSuccess: true, points: 0, description: '' };
+        return { isSuccess: false, points: 0, description: '' };
+    }
+
+    placeLetters(letters: Placement[]): ValidationResponse {
+        return { isSuccess: false, points: 0, description: '' };
+    }
+
+    retrieveNewLetters(placements: Placement[]): Placement[] {
+        return placements;
     }
 }
 
-class PlayGeneratorStub {
-    orderedPlays: Play[] = [{ score: 0, word: '', letters: [] }];
-    canGenerate = false;
-    timesCalled = 0;
+export class PlayGeneratorMockA extends PlayGenerator {
+    get orderedPlays(): Play[] {
+        return PLAY;
+    }
     generateNext(): boolean {
-        stubbedTime = stubbedTime.sub(TimeSpan.fromSeconds(1));
-        this.timesCalled++;
-        return this.canGenerate;
+        return false;
     }
 }
 
-describe('PlayAction', () => {
-    let boardService: BoardService;
-    let messagingServiceSpy: jasmine.SpyObj<MessagingService>;
-    let timerServiceStub: TimerServiceStub;
-    let playGeneratorStub: PlayGeneratorStub;
-    let playerData: PlayerData;
-    let playAction: PlayAction;
-
+export class PlayGeneratorMockB extends PlayGenerator {
+    get orderedPlays(): Play[] {
+        return [];
+    }
+    generateNext(): boolean {
+        return false;
+    }
+}
+const LETTERS = ['a', 'b', 'c', 'd', 'e', 'f', 'g'];
+/* eslint-disable dot-notation */
+describe('Play Action', () => {
+    const board = new Board(SIZE);
+    const boardValidator = createStubInstance(BoardValidator) as unknown as BoardValidator;
+    const boardHandler = new BoardHandlerMock(board, boardValidator);
+    const dictionary = new DictionaryService();
+    const playGenerator: PlayGenerator = new PlayGeneratorMockA(dictionary, boardHandler, LETTERS);
+    const playerData: PlayerData = { baseScore: 0, scoreAdjustment: 0, skippedTurns: 0, rack: [] };
+    let action = new PlayAction(boardHandler, playGenerator, playerData);
     beforeEach(() => {
-        boardService = jasmine.createSpyObj('BoardService', ['lookupLetters']);
-        messagingServiceSpy = jasmine.createSpyObj('MessagingService', ['subject', 'onMessage', 'send']);
-        messagingServiceSpy['subject'] = new Subject<Message>();
-        messagingServiceSpy.onMessage.and.returnValue(messagingServiceSpy['subject'].asObservable());
-        timerServiceStub = new TimerServiceStub();
-        playGeneratorStub = new PlayGeneratorStub();
-        playerData = { score: 0, skippedTurns: 0, rack: [] };
-
-        playAction = new PlayAction(
-            boardService,
-            timerServiceStub as TimerService,
-            playGeneratorStub as unknown as PlayGenerator,
-            playerData,
-            messagingServiceSpy,
-        );
-    });
-    it('should return null when no words are generated', () => {
-        playGeneratorStub.orderedPlays = [];
-        expect(playAction.execute()).toBeNull();
+        LETTERS.forEach((l) => playerData.rack.push(l));
     });
 
-    it('should return 0 to 0 score range interval if no math is found', () => {
-        spyOn(Math, 'random').and.returnValue(1);
-        // eslint-disable-next-line dot-notation -- Need to access private method for testing
-        expect(playAction['getScoreRange']()).toEqual({ min: 0, max: 0 });
+    it('should create action', () => {
+        expect(action).to.be.ok;
     });
 
-    it('should generate words until no time is left', () => {
-        const TIME_TO_ELAPSE = 20;
-        playGeneratorStub.canGenerate = true;
-
-        stubbedTime = TimeSpan.fromSeconds(TIME_TO_ELAPSE);
-        playAction.execute();
-
-        expect(playGeneratorStub.timesCalled).toEqual(TIME_TO_ELAPSE);
+    it('should generate play', () => {
+        const returnValue = action.execute();
+        expect(returnValue).to.be.not.null;
     });
 
-    it('should return PlaceAction instance when words are generated', () => {
-        spyOn(Math, 'random').and.returnValue(0);
-
-        const nextAction = playAction.execute();
-
-        expect(playAction.execute()).toBeInstanceOf(PlaceAction);
-        // eslint-disable-next-line dot-notation -- Access to private property needed for testing
-        expect((nextAction as PlaceAction)['play']).toEqual(playGeneratorStub.orderedPlays[0]);
+    // This test will work when ill be able to stub random
+    /*
+    it('should not generate plays', () => {
+        const playGeneratorMock = new PlayGeneratorMockB(dictionary, boardHandler, LETTERS);
+        action = new PlayAction(boardHandler, playGeneratorMock, playerData);
+        action['playGenerator']['plays'][0].score = Math.floor(Math.random() * action['() - min + 1) + min)
+        const returnValue = action.execute();
+        expect(returnValue).to.be.null;
     });
+    */
 });
-*/
