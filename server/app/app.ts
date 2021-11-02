@@ -1,6 +1,6 @@
 import { HttpException } from '@app/classes/http.exception';
-import { BoardController } from '@app/controllers/board.controller';
-import { GameController } from '@app/controllers/game.controller';
+import { BoardController } from '@app/controllers/board/board.controller';
+import { GameController } from '@app/controllers/game/game.controller';
 import cookieParser from 'cookie-parser';
 import cors from 'cors';
 import express from 'express';
@@ -8,8 +8,8 @@ import { StatusCodes } from 'http-status-codes';
 import logger from 'morgan';
 import { Service } from 'typedi';
 import { DictionaryService } from '@app/services/dictionary/dictionary.service';
-import { ReserveController } from '@app/controllers/reserve.controller';
-import { PlayerController } from './controllers/player.controller';
+import { ReserveController } from '@app/controllers/reserve/reserve.controller';
+import { PlayerController } from './controllers/player/player.controller';
 
 @Service()
 export class Application {
@@ -41,7 +41,9 @@ export class Application {
 
     private config(): void {
         // Middlewares configuration
-        this.app.use(logger('dev'));
+        if (process.env.NODE_ENV === 'test') {
+            this.app.use(logger('dev'));
+        }
         this.app.use(express.json());
         this.app.use(express.urlencoded({ extended: true }));
         this.app.use(cookieParser());

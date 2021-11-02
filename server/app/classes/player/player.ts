@@ -11,7 +11,7 @@ export abstract class Player {
     playerInfo: PlayerInfo;
     playerData: PlayerData;
 
-    protected readonly turnEnded: Subject<string>;
+    protected turnEnded: Subject<string>;
     protected boardHandler: BoardHandler;
     protected reserveHandler: ReserveHandler;
     protected socketHandler: SocketHandler;

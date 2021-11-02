@@ -3,7 +3,7 @@ import { Observable, Subject, Subscription } from 'rxjs';
 import { Config } from '@app/config';
 
 export class PlayerHandler {
-    readonly players: Player[];
+    players: Player[];
     private readonly nextTurn: Subject<string>;
     private playerSubscriptions: Map<string, Subscription>;
 
@@ -13,12 +13,9 @@ export class PlayerHandler {
         this.playerSubscriptions = new Map<string, Subscription>();
     }
 
-    start(): string {
+    start(): void {
         this.players.forEach((p) => p.fillRack());
-
         this.initialTurn();
-
-        return this.players.filter((p) => p.isTurn).map((p) => p.id)[0] ?? '';
     }
 
     dispose(): void {

@@ -3,10 +3,13 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
 import { SocketClientService } from '@app/services/socket-client/socket-client.service';
-import { SocketMock } from '@common';
 import { GamePageComponent } from '@app/pages/game-page/game-page.component';
 import { WaitingRoomPageComponent } from './waiting-room-page.component';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { SocketMock } from '@app/classes/socket-test-helper';
+import { AppMaterialModule } from '@app/modules/material.module';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { FormsModule } from '@angular/forms';
 
 describe('WaitingRoomPageComponent', () => {
     let component: WaitingRoomPageComponent;
@@ -18,7 +21,13 @@ describe('WaitingRoomPageComponent', () => {
         socketServiceSpyObj = jasmine.createSpyObj('SocketClientService', ['on'], { socketClient });
         await TestBed.configureTestingModule({
             declarations: [WaitingRoomPageComponent],
-            imports: [HttpClientTestingModule, RouterTestingModule.withRoutes([{ path: 'game', component: GamePageComponent }])],
+            imports: [
+                HttpClientTestingModule,
+                RouterTestingModule.withRoutes([{ path: 'game', component: GamePageComponent }]),
+                AppMaterialModule,
+                BrowserAnimationsModule,
+                FormsModule,
+            ],
             providers: [{ provide: SocketClientService, useValue: socketServiceSpyObj }],
         }).compileComponents();
     });

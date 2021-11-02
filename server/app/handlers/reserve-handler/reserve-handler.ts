@@ -1,7 +1,7 @@
 import { LETTER_DEFINITIONS } from '@common';
 
 export class ReserveHandler {
-    reserve: string[] = [];
+    reserve: string[];
 
     constructor() {
         this.reserve = [];

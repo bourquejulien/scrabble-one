@@ -20,15 +20,23 @@ export interface MultiplayerJoinConfig {
     playerName: string;
 }
 
+export interface ConvertConfig {
+    id: string;
+    virtualPlayerName: string;
+}
+
+export interface AvailableGameConfig {
+    id: string;
+    playTimeMs: number;
+    waitingPlayerName: string,
+}
+
+
 export interface ServerConfig {
     id: string,
+    startId: string,
     gameType: GameType,
     playTimeMs: number,
     firstPlayerName: string,
     secondPlayerName: string,
-}
-
-export interface JoinServerConfig {
-    startId: string,
-    serverConfig: ServerConfig,
 }

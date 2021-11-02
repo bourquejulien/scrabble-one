@@ -6,7 +6,7 @@
  */
 export const Constants = {
     HTTP_STATUS: {
-        OK: 201,
+        OK: 200,
         CREATED: 201,
         DELETED: 204,
         BAD_REQUEST: 400,

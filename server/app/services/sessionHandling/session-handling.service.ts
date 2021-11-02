@@ -12,7 +12,7 @@ export class SessionHandlingService {
     }
 
     addHandler(sessionHandler: SessionHandler): void {
-        this.updateEntry(sessionHandler);
+        this.updateEntries(sessionHandler);
         this.sessionHandlers.push(sessionHandler);
     }
 
@@ -30,7 +30,7 @@ export class SessionHandlingService {
         return sessionHandler;
     }
 
-    updateEntry(sessionHandler: SessionHandler): void {
+    updateEntries(sessionHandler: SessionHandler): void {
         const idsToRemove: string[] = [];
         for (const [key, value] of this.playerIds) {
             if (value === sessionHandler.sessionInfo.id) {
