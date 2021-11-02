@@ -3,34 +3,44 @@
 /* eslint-disable no-unused-expressions */
 /* eslint-disable @typescript-eslint/no-unused-expressions */
 import { SessionInfo } from '@app/classes/session-info';
-import { GameType } from '@common';
+import { GameType, ServerConfig } from '@common';
 import { expect } from 'chai';
 import { createStubInstance, SinonStubbedInstance } from 'sinon';
 import { BoardHandler } from '@app/handlers/board-handler/board-handler';
 import { ReserveHandler } from '@app/handlers/reserve-handler/reserve-handler';
 import { SocketHandler } from '@app/handlers/socket-handler/socket-handler';
 import { SessionHandler } from './session-handler';
-const TIME_MS = 1000;
-/*
-export class PlayerMock implements IPlayer {
+import { Player } from '@app/classes/player/player';
+import { PlayerData } from '@app/classes/player-data';
+import { PlayerInfo } from '@app/classes/player-info';
+import { Observable } from 'rxjs';
+const TIME_MS = 120*1000;
+
+export class PlayerMock implements Player {
     // Will be removed
+    isTurn: boolean;
     id: string;
+    playerInfo: PlayerInfo;
     playerData: PlayerData;
-    readonly turnEnded: BehaviorSubject<string>;
-    constructor(readonly playerInfo: PlayerInfo) {
+    constructor(playerInfo: PlayerInfo){
         this.playerInfo = playerInfo;
     }
     async startTurn(): Promise<void> {
         // Does Nothing
     }
-    endTurn(): void {
+    onTurn(): Observable<string>{
         // Does Nothing
+        return new Observable();
     }
     fillRack(): void {
         // Does Nothing
     }
+    // eslint-disable-next-line no-unused-vars
+    init(boardHandler: BoardHandler, reserveHandler: ReserveHandler, socketHandler: SocketHandler): void {
+        // Does nothing
+    };
 }
-*/
+
 describe('SessionHandler', () => {
     let handler: SessionHandler;
     const sessionInfo: SessionInfo = {
@@ -48,14 +58,18 @@ describe('SessionHandler', () => {
     it('should be created', () => {
         expect(handler).to.be.ok;
     });
+    //
     it('should return a good server config', () => {
-        const returnValue = handler.getServerConfig('0');
-        const expectedServerConfig: ServerGameConfig = {
-            id: '0',
-            gameType: 'test',
+        const playersInfos: PlayerInfo = {id:'myUserId', name:'tester', isHuman:true };
+        handler.addPlayer(new PlayerMock(playersInfos));
+        handler.addPlayer(new PlayerMock(playersInfos));
+        const returnValue = handler.getServerConfig('myUserId');
+        const expectedServerConfig: ServerConfig = {
+            id: 'myUserId',
+            gameType: GameType.SinglePlayer,
             playTimeMs: TIME_MS,
             firstPlayerName: 'tester',
-            secondPlayerName: 'tester2',
+            secondPlayerName: 'tester',
         };
         expect(returnValue).to.eql(expectedServerConfig);
     });

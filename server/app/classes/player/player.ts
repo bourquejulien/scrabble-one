@@ -7,10 +7,9 @@ import { SocketHandler } from '@app/handlers/socket-handler/socket-handler';
 
 export interface Player {
     isTurn: boolean;
-    readonly id: string;
-    readonly playerInfo: PlayerInfo;
-    readonly playerData: PlayerData;
-
+    id: string;
+    playerInfo: PlayerInfo;
+    playerData: PlayerData;
     init(boardHandler: BoardHandler, reserveHandler: ReserveHandler, socketHandler: SocketHandler): void;
     fillRack(): void;
     startTurn(): Promise<void>;

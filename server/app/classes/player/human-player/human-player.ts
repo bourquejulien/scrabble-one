@@ -92,13 +92,11 @@ export class HumanPlayer implements Player {
         if (!this.isTurn) {
             return { isSuccess: false, body: 'Not your turn' };
         }
-
-        if (!this.areLettersInRack(lettersToExchange)) return { isSuccess: false, body: 'Letters not in rack' };
-
         if (this.reserveHandler.length < Config.RACK_SIZE) {
             // this.socketService.send(SystemMessages.ImpossibleAction, SystemMessages.NotEnoughLetters, MessageType.Error);
             return { isSuccess: false, body: 'Letters not in rack' };
         }
+        if (!this.areLettersInRack(lettersToExchange)) return { isSuccess: false, body: 'Letters not in rack' };
 
         lettersToExchange.forEach(() => {
             this.playerData.rack.push(this.reserveHandler.drawLetter());

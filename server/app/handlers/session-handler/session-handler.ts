@@ -11,9 +11,9 @@ import { SocketHandler } from '@app/handlers/socket-handler/socket-handler';
 export class SessionHandler {
     sessionData: SessionData;
     // TODO Use player handler?
-    readonly players: Player[];
+    players: Player[];
 
-    private readonly playerSubscriptions: Map<string, Subscription>;
+    private playerSubscriptions: Map<string, Subscription>;
     private timer: NodeJS.Timer;
 
     constructor(
@@ -28,8 +28,8 @@ export class SessionHandler {
         this.playerSubscriptions = new Map<string, Subscription>();
     }
 
-    getServerConfig(id: string): ServerConfig {
-        const firstPlayer = this.players.find((p) => p.id === id) ?? this.players[0];
+    getServerConfig(sessionId: string): ServerConfig {
+        const firstPlayer = this.players.find((p) => p.id === sessionId) ?? this.players[0];
         const secondPlayer = this.players.find((p) => p.id !== firstPlayer.id) ?? this.players[1];
 
         return {

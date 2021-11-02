@@ -1,7 +1,7 @@
 import { letterDefinitions } from '@common';
 
 export class ReserveHandler {
-    readonly reserve: string[] = [];
+    reserve: string[] = [];
 
     constructor() {
         for (const [letter, letterData] of letterDefinitions) {
