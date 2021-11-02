@@ -59,7 +59,7 @@ describe('BoardController', () => {
             .post('/api/board/place/123')
             .send(placement)
             .then((response) => {
-                expect(response.status).to.be.equal(Constants.HTTP_STATUS.OK);
+                expect(response.status).to.be.equal(Constants.HTTP_STATUS.BAD_REQUEST);
             });
     });
 
@@ -99,23 +99,11 @@ describe('BoardController', () => {
         return request(expressApp)
             .get('/api/board/retrieve/123')
             .then((response) => {
-                expect(response.status).to.be.equal(Constants.HTTP_STATUS.OK);
+                expect(response.status).to.be.equal(Constants.HTTP_STATUS.BAD_REQUEST);
             });
     });
 
-    /* it('POST /retrieve/1 successfully  ', async () => {
-        const stubBoardHandler = createStubInstance(BoardHandler);
-        stubBoardHandler['board'] = createStubInstance(Board, { boardData: { board: [], filledPositions: [] } }) as unknown as Board;
-        stubSessionHandler['boardHandler'] = stubBoardHandler as unknown as BoardHandler;
-
-        return request(expressApp)
-            .get('/api/board/retrieve/1')
-            .then((response) => {
-                expect(response.status).to.be.equal(Constants.HTTP_STATUS.OK);
-            });
-    }); */
-
-    it('POST /retrieve/1 ', async () => {
+    it('POST /retrieve/1 successfully ', async () => {
         return request(expressApp)
             .get('/api/board/retrieve/1')
             .then((response) => {

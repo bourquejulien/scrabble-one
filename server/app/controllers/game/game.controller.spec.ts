@@ -15,6 +15,8 @@ describe('GameController', () => {
     let gameService: SinonStubbedInstance<GameService>;
     let expressApp: Express.Application;
 
+    const multiplayerConfig = 'multiplayerConfig';
+
     const singlePlayerConfig: SinglePlayerConfig = {
         gameType: GameType.SinglePlayer,
         playTimeMs: 120 * 1000,
@@ -33,8 +35,7 @@ describe('GameController', () => {
 
     beforeEach(async () => {
         gameService = createStubInstance(GameService);
-        // Methods: gameService.
-        gameService.initMultiplayer.resolves(serverConfig);
+        gameService.initMultiplayer.resolves(multiplayerConfig);
         gameService.initSinglePlayer.resolves(serverConfig);
         gameService.joinMultiplayer.resolves(serverConfig);
         const app = Container.get(Application);
@@ -48,7 +49,7 @@ describe('GameController', () => {
             .delete('/api/game/stop/1')
             .send(singlePlayerConfig)
             .then((response) => {
-                expect(response.status).to.be.equal(Constants.HTTP_STATUS.OK);
+                expect(response.status).to.be.equal(Constants.HTTP_STATUS.DELETED);
             });
     });
 
@@ -58,11 +59,12 @@ describe('GameController', () => {
             .delete('/api/game/stop/1')
             .send(singlePlayerConfig)
             .then((response) => {
-                expect(response.status).to.be.equal(Constants.HTTP_STATUS.OK);
+                expect(response.status).to.be.equal(Constants.HTTP_STATUS.BAD_REQUEST);
             });
     });
 
     it('GET /start', async () => {
+        gameService.start.resolves('startId');
         return request(expressApp)
             .get('/api/game/start/1')
             .send(singlePlayerConfig)
@@ -72,12 +74,12 @@ describe('GameController', () => {
     });
 
     it('GET /start send error message when game wont start', async () => {
-        gameService.start.resolves('something');
+        gameService.start.resolves();
         return request(expressApp)
             .get('/api/game/start/1')
             .send(singlePlayerConfig)
             .then((response) => {
-                expect(response.status).to.be.equal(Constants.HTTP_STATUS.OK);
+                expect(response.status).to.be.equal(Constants.HTTP_STATUS.BAD_REQUEST);
             });
     });
 
@@ -90,8 +92,8 @@ describe('GameController', () => {
             });
     });
 
-    it('PUT /init/single', async () => {
-        gameService.initSinglePlayer.resolves(undefined);
+    it('PUT /init/single should not work when having the wrong info', async () => {
+        gameService.initSinglePlayer.resolves({} as unknown as ServerConfig);
         return request(expressApp)
             .put('/api/game/init/single')
             .send(singlePlayerConfig)
@@ -100,28 +102,28 @@ describe('GameController', () => {
             });
     });
 
-    it('PUT /init/multi', async () => {
+    it('PUT /init/multi succesfully', async () => {
         return request(expressApp)
             .put('/api/game/init/multi')
             .send(singlePlayerConfig)
             .then((response) => {
                 expect(response.status).to.be.equal(Constants.HTTP_STATUS.OK);
-                expect(response.text).to.be.equal(JSON.stringify(serverConfig));
+                expect(response.body).to.deep.equal(multiplayerConfig);
             });
     });
 
-    it('PUT /init/multi error out', async () => {
-        gameService.initMultiplayer.resolves(undefined);
+    it('PUT /init/multi should not work when there is no user', async () => {
+        gameService.initMultiplayer.resolves('');
         return request(expressApp)
             .put('/api/game/init/multi')
             .send(singlePlayerConfig)
             .then((response) => {
-                expect(response.status).to.be.equal(Constants.HTTP_STATUS.OK);
-                expect(response.text).to.be.equal(JSON.stringify(serverConfig));
+                expect(response.status).to.be.equal(Constants.HTTP_STATUS.BAD_REQUEST);
+                expect(response.text).to.deep.equal(serverConfig);
             });
     });
 
-    it('PUT /join', async () => {
+    it('PUT /join successfully', async () => {
         return request(expressApp)
             .put('/api/game/join')
             .send(singlePlayerConfig)
@@ -131,7 +133,7 @@ describe('GameController', () => {
     });
 
     it('PUT /join not join the game', async () => {
-        gameService.joinMultiplayer.resolves(null);
+        gameService.joinMultiplayer.resolves({} as unknown as ServerConfig);
         return request(expressApp)
             .put('/api/game/join')
             .send(singlePlayerConfig)

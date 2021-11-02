@@ -17,7 +17,7 @@ describe('PlayerController', () => {
     let stubSessionHandlingService: SinonStubbedInstance<SessionHandlingService>;
     let expressApp: Express.Application;
     const sessionStats: SessionStats = { localStats: { points: 100, rackSize: 5 }, remoteStats: { points: 200, rackSize: 1 } };
-
+    const exchangeLettersResponse = 'ExchangeLetterResponse';
     beforeEach(async () => {
         stubSessionHandlingService = createStubInstance(SessionHandlingService);
         const stubSessionHandler = createStubInstance(SessionHandler);
@@ -34,7 +34,7 @@ describe('PlayerController', () => {
             // eslint-disable-next-line @typescript-eslint/no-empty-function
             skipTurn: () => {},
             exchangeLetters: () => {
-                return 'ExchangeLetterResponse';
+                return exchangeLettersResponse;
             },
         } as unknown as HumanPlayer;
         const player3: Player = { id: '1', isTurn: false, playerInfo: { id: '3', isHuman: false, name: 'Alphonse' } } as Player;
@@ -49,80 +49,80 @@ describe('PlayerController', () => {
         expressApp = app.app;
     });
 
-    it('POST /api/player/exchange/2  ', async () => {
+    it('POST /api/player/exchange/2   ', async () => {
         const exchange = ['words', 'are', 'great'];
         return request(expressApp)
             .post('/api/player/exchange/2')
             .send(exchange)
-            .expect(Constants.HTTP_STATUS.OK)
             .then((response) => {
-                expect(response.body).to.be.equal('');
+                expect(response.status).to.be.equal(Constants.HTTP_STATUS.OK);
+                expect(response.body).to.be.equal(exchangeLettersResponse);
             });
     });
 
-    it('POST /api/player/exchange/3  ', async () => {
+    it('POST /api/player/exchange/3 should not exchange for non-human players  ', async () => {
         const exchange = ['words', 'are', 'great'];
         return request(expressApp)
             .post('/api/player/exchange/3')
             .send(exchange)
-            .expect(Constants.HTTP_STATUS.OK)
             .then((response) => {
-                expect(response.body).to.be.equal('');
+                expect(response.status).to.be.equal(Constants.HTTP_STATUS.BAD_REQUEST);
+                expect(response.body).to.deep.equal({});
             });
     });
 
     it('POST /api/player/skip/ skip humanPlayer turn  ', async () => {
         return request(expressApp)
             .post('/api/player/skip/2')
-            .expect(Constants.HTTP_STATUS.OK)
             .then((response) => {
-                expect(response.body).to.be.equal('');
+                expect(response.status).to.be.equal(Constants.HTTP_STATUS.OK);
+                expect(response.body).to.deep.equal('');
             });
     });
 
-    it('#getHumanPlayer should return null ', async () => {
+    it('#getHumanPlayer should return an error if there is no playerHandler ', async () => {
         stubSessionHandlingService.getHandlerByPlayerId.returns(null);
         return request(expressApp)
             .post('/api/player/skip/1')
-            .expect(Constants.HTTP_STATUS.OK)
             .then((response) => {
-                expect(response.body).to.be.equal('');
+                expect(response.status).to.be.equal(Constants.HTTP_STATUS.BAD_REQUEST);
+                expect(response.body).to.deep.equal({});
             });
     });
 
-    it('GET /api/player/rack/3  ', async () => {
+    it('GET /api/player/rack/3 not get rack for non-human player ', async () => {
         return request(expressApp)
             .get('/api/player/rack/3')
-            .expect(Constants.HTTP_STATUS.OK)
             .then((response) => {
-                expect(response.body).to.be.equal('');
+                expect(response.status).to.be.equal(Constants.HTTP_STATUS.BAD_REQUEST);
+                expect(response.body).to.deep.equal({});
             });
     });
 
-    it('GET /api/player/rack/2  ', async () => {
+    it('GET /api/player/rack/2 should return rack of humain player ', async () => {
         return request(expressApp)
             .get('/api/player/rack/1')
-            .expect(Constants.HTTP_STATUS.OK)
             .then((response) => {
-                expect(response.body).to.be.equal('');
+                expect(response.status).to.be.equal(Constants.HTTP_STATUS.OK);
+                expect(response.body).to.deep.equal('');
             });
     });
 
     it('GET /api/player/rack/1  ', async () => {
         return request(expressApp)
             .get('/api/player/rack/1')
-            .expect(Constants.HTTP_STATUS.OK)
             .then((response) => {
-                expect(response.body).to.be.equal('');
+                expect(response.status).to.be.equal(Constants.HTTP_STATUS.OK);
+                expect(response.body).to.deep.equal('');
             });
     });
 
-    it('GET /api/player/stats/2  ', async () => {
+    it('GET /api/player/stats/2 should return the correct rack info of a humain player ', async () => {
         return request(expressApp)
             .get('/api/player/stats/2')
-            .expect(Constants.HTTP_STATUS.OK)
             .then((response) => {
-                expect(response.body).to.be.equal('');
+                expect(response.status).to.be.equal(Constants.HTTP_STATUS.OK);
+                expect(response.body).to.deep.equal(sessionStats);
             });
     });
 
@@ -130,9 +130,8 @@ describe('PlayerController', () => {
         stubSessionHandlingService.getHandlerByPlayerId.returns(null);
         return request(expressApp)
             .get('/api/player/stats/123')
-            .expect(Constants.HTTP_STATUS.BAD_REQUEST)
             .then((response) => {
-                expect(response.body).to.be.equal('');
+                expect(response.status).to.be.equal(Constants.HTTP_STATUS.BAD_REQUEST);
             });
     });
 });

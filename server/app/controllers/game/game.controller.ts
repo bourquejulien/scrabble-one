@@ -46,11 +46,11 @@ export class GameController {
         this.router.put('/join', async (req: Request, res: Response) => {
             const answer = await this.gameService.joinMultiplayer(req.body);
 
-            if (answer == null) {
-                res.status(Constants.HTTP_STATUS.NOT_FOUND);
+            if (answer) {
+                res.json(answer);
                 return;
             }
-            res.json(answer);
+            res.status(Constants.HTTP_STATUS.NOT_FOUND);
         });
     }
 }

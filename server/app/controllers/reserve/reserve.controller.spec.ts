@@ -40,20 +40,20 @@ describe('ReserveController', () => {
 
     it('GET /reserve/retrieve/  ', async () => {
         return request(expressApp)
-            .get('/api/reserve/retrieve/123')
-            .expect(Constants.HTTP_STATUS.OK)
+            .get('/api/reserve/retrieve/1')
             .then((response) => {
-                expect(response.body).to.be.equal(JSON.stringify(stubReserve));
+                expect(response.status).to.be.equal(Constants.HTTP_STATUS.OK);
+                expect(response.body).to.deep.equal(stubReserve);
             });
     });
 
-    it('GET /reserve/retrieve/ fail when there is no reserveHandler ', async () => {
+    it('GET /reserve/retrieve/ fail when there is no player with this id ', async () => {
         stubSessionHandlingService.getHandlerByPlayerId.returns(null);
         return request(expressApp)
             .get('/api/reserve/retrieve/123')
-            .expect(Constants.HTTP_STATUS.OK)
             .then((response) => {
-                expect(response.body).to.be.equal(JSON.stringify(stubReserve));
+                expect(response.status).to.be.equal(Constants.HTTP_STATUS.BAD_REQUEST);
+                expect(response.body).to.deep.equal({});
             });
     });
 });
