@@ -23,12 +23,6 @@ export class PlayerService {
 
     async placeLetters(word: string, position: Vec2, direction: Direction): Promise<boolean> {
         const positionToPlace = this.boardService.retrievePlacements(word, position, direction);
-        const validationData = await this.boardService.lookupLetters(positionToPlace);
-
-        if (!validationData.isSuccess) {
-            return false;
-        }
-
         const answer = await this.boardService.placeLetters(positionToPlace);
 
         if (!answer.isSuccess) {
