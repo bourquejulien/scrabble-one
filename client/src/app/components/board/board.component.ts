@@ -3,6 +3,7 @@ import { PlayerType } from '@app/classes/player/player-type';
 import { specialCharacter } from '@app/classes/special-character';
 import { Constants } from '@app/constants/global.constants';
 import { BoardService } from '@app/services/board/board.service';
+import { GameService } from '@app/services/game/game.service';
 import { GridService } from '@app/services/grid/grid.service';
 import { MouseHandlingService } from '@app/services/mouse-handling/mouse-handling.service';
 import { PlaceLetterService } from '@app/services/place-letter/place-letter.service';
@@ -38,13 +39,15 @@ export class BoardComponent implements OnChanges, AfterViewInit {
         readonly mouseHandlingService: MouseHandlingService,
         readonly rackService: RackService,
         readonly boardService: BoardService,
-
+        readonly gameService: GameService,
         readonly placeLetterService: PlaceLetterService,
     ) {}
 
     @HostListener('body:mousedown', ['$event'])
     onMouseDown(event: MouseEvent): void {
-        if (this.isFocus && this.placeLetterService.myRack.length === 0) {
+        console.log(this.gameService.currentTurn);
+        const canClick = this.isFocus && this.placeLetterService.myRack.length === 0 && this.gameService.currentTurn === PlayerType.Local;
+        if (canClick) {
             this.mouseHandlingService.mouseHitDetect(event);
             if (this.placeLetterService.gridPosition === undefined) {
                 this.placeLetterService.gridPosition = this.mouseHandlingService.position;
@@ -69,6 +72,8 @@ export class BoardComponent implements OnChanges, AfterViewInit {
                 }
                 this.squareSelected = true;
             }
+        } else {
+            this.gridService.resetCanvas(this.tempContext);
         }
     }
 
@@ -151,7 +156,6 @@ export class BoardComponent implements OnChanges, AfterViewInit {
 
     play(): void {
         this.placeLetterService.enterOperation();
-        console.log('clean');
         this.gridService.resetCanvas(this.tempContext);
     }
 
