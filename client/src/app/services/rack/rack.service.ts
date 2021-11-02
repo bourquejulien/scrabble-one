@@ -1,7 +1,7 @@
-import { Injectable } from '@angular/core';
-import { environmentExt } from '@environmentExt';
 import { HttpClient } from '@angular/common/http';
+import { Injectable } from '@angular/core';
 import { SessionService } from '@app/services/session/session.service';
+import { environmentExt } from '@environmentExt';
 
 const localUrl = (call: string, id: string) => `${environmentExt.apiUrl}player/${call}/${id}`;
 
@@ -9,7 +9,7 @@ const localUrl = (call: string, id: string) => `${environmentExt.apiUrl}player/$
     providedIn: 'root',
 })
 export class RackService {
-    readonly rack: string[];
+    rack: string[];
 
     constructor(private readonly httpClient: HttpClient, private readonly sessionService: SessionService) {
         this.rack = [];
@@ -59,7 +59,7 @@ export class RackService {
     private update(rack: string[]): void {
         rack = rack.slice();
 
-        for (let i = 0; i < rack.length - this.rack.length; ) {
+        for (let i = 0; i < rack.length - this.rack.length;) {
             this.rack.push('');
         }
 

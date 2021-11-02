@@ -15,22 +15,22 @@ const localUrl = (call: string, id: string) => `${environmentExt.apiUrl}player/$
 })
 export class PlayerService {
     constructor(
+        private rackService: RackService,
         private readonly reserveService: ReserveService,
         private readonly boardService: BoardService,
         private readonly messagingService: MessagingService,
-        private readonly rackService: RackService,
-        private readonly sessionService: SessionService,
+        private sessionService: SessionService,
         private readonly httpClient: HttpClient,
     ) {}
 
     async placeLetters(word: string, position: Vec2, direction: Direction): Promise<void> {
         const positionToPlace = this.boardService.retrievePlacements(word, position, direction);
-        const validationData = await this.boardService.lookupLetters(positionToPlace);
+        // const validationData = await this.boardService.lookupLetters(positionToPlace);
 
-        if (!validationData.isSuccess) {
-            this.messagingService.send('', validationData.description, MessageType.Log);
-            return;
-        }
+        // if (!validationData.isSuccess) {
+        //     this.messagingService.send('', validationData.description, MessageType.Log);
+        //     return;
+        // }
 
         const answer = await this.boardService.placeLetters(positionToPlace);
 
@@ -43,7 +43,9 @@ export class PlayerService {
     }
 
     async exchangeLetters(lettersToExchange: string): Promise<void> {
+        console.log('session id: ' + this.sessionService.id);
         const letterArray = lettersToExchange.split('');
+        console.log('response: ' + this.httpClient.post<Answer>(localUrl('exchange', this.sessionService.id), letterArray).toPromise());
         const answer = await this.httpClient.post<Answer>(localUrl('exchange', this.sessionService.id), letterArray).toPromise();
 
         if (!answer.isSuccess) {
