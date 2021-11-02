@@ -33,7 +33,7 @@ describe('RoomController', () => {
         expect(controller).to.be.ok;
     });
 
-    it('should call emit when a message is received from the user', () => {
+    it('should call emit when a message is received from user', () => {
         const message: Message = {
             title: 'Title',
             body: 'body',
@@ -49,7 +49,7 @@ describe('RoomController', () => {
 
         socketServerMock.triggerEndpoint('connection', clientSocket);
         clientSocket.triggerEndpoint('message', message);
-        message.messageType = MessageType.Game;
+        message.messageType = MessageType.System;
         clientSocket.triggerEndpoint('message', message);
 
         assert.calledOnce(toRoomSpy);

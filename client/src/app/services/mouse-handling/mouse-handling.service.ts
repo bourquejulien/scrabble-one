@@ -15,9 +15,11 @@ export enum MouseButton {
     providedIn: 'root',
 })
 export class MouseHandlingService {
-    private gridPosition: Vec2 = { x: -1, y: -1 };
+    private gridPosition: Vec2;
 
-    constructor(private readonly gridService: GridService) {}
+    constructor(private readonly gridService: GridService) {
+        this.gridPosition = { x: -1, y: -1 };
+    }
 
     mouseHitDetect(event: MouseEvent) {
         if (event.button === MouseButton.Left) {

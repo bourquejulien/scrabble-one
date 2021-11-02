@@ -1,5 +1,4 @@
 import { Component } from '@angular/core';
-import { BehaviorSubject } from 'rxjs';
 
 @Component({
     selector: 'app-main-page',
@@ -7,6 +6,9 @@ import { BehaviorSubject } from 'rxjs';
     styleUrls: ['./main-page.component.scss'],
 })
 export class MainPageComponent {
-    readonly title: string = 'LOG2990';
-    message: BehaviorSubject<string> = new BehaviorSubject<string>('');
+    readonly title: string;
+
+    constructor() {
+        this.title = 'LOG2990';
+    }
 }

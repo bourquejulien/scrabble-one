@@ -14,7 +14,7 @@ import { PlayerController } from './controllers/player.controller';
 @Service()
 export class Application {
     app: express.Application;
-    private readonly internalError: number = StatusCodes.INTERNAL_SERVER_ERROR;
+    private readonly internalError: number;
 
     constructor(
         private readonly gameController: GameController,
@@ -25,12 +25,13 @@ export class Application {
     ) {
         dictionaryService.retrieveDictionary();
 
+        this.internalError = StatusCodes.INTERNAL_SERVER_ERROR;
         this.app = express();
         this.config();
         this.bindRoutes();
     }
 
-    bindRoutes(): void {
+    private bindRoutes(): void {
         this.app.use('/api/game', this.gameController.router);
         this.app.use('/api/board', this.boardController.router);
         this.app.use('/api/player', this.playerController.router);
