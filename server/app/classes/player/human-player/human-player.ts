@@ -48,7 +48,7 @@ export class HumanPlayer extends Player {
 
         const validationData = await this.boardHandler.lookupLetters(placements);
         if (!validationData.isSuccess) {
-            this.socketHandler.sendMessage({ title: '', body: validationData.description, messageType: MessageType.Log }, this.id);
+            this.socketHandler.sendMessage({ title: '', body: validationData.description, messageType: MessageType.Error }, this.id);
             this.endTurn();
             return { isSuccess: false, body: '' };
         }

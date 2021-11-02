@@ -7,9 +7,10 @@ import { SessionService } from '@app/services/session/session.service';
     providedIn: 'root',
 })
 export class MessagingService {
-    debuggingMode: boolean;
+    isDebug: boolean;
+
     constructor(private readonly socket: SocketClientService, private readonly sessionService: SessionService) {
-        this.debuggingMode = false;
+        this.isDebug = false;
     }
 
     send(title: string, body: string, messageType: MessageType): void {

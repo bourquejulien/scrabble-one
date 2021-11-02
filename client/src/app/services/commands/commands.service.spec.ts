@@ -30,7 +30,7 @@ describe('CommandsService', () => {
             ],
         });
         service = TestBed.inject(CommandsService);
-        service.messagingService.debuggingMode = true;
+        service.messagingService.isDebug = true;
     });
 
     it('should be created', () => {
@@ -45,11 +45,11 @@ describe('CommandsService', () => {
     });
 
     it('#parseInput should toggle debugging mode', () => {
-        service.messagingService.debuggingMode = false;
+        service.messagingService.isDebug = false;
         service.parseInput('!debug');
-        expect(service.messagingService.debuggingMode).toBeTrue();
+        expect(service.messagingService.isDebug).toBeTrue();
         service.parseInput('!debug');
-        expect(service.messagingService.debuggingMode).toBeFalse();
+        expect(service.messagingService.isDebug).toBeFalse();
     });
 
     it('#parseInput should send an error message when exchange letter command is invalid', () => {

@@ -24,7 +24,7 @@ describe('MessagingService', () => {
     });
 
     it('#send should send all messages when debugging is on', () => {
-        service.debuggingMode = true;
+        service.isDebug = true;
 
         service['socket'].socketClient.on('message', (message) => {
             expect(message.messageType).toBe(MessageType.Error);
@@ -44,7 +44,7 @@ describe('MessagingService', () => {
 
     it('#send should not send all messages when debugging is off', () => {
         const spy = spyOn(service['socket'].socketClient, 'emit');
-        service.debuggingMode = false;
+        service.isDebug = false;
         service.send('title1', 'body1', MessageType.Error, PlayerType.Virtual);
         service.send('title2', 'body2', MessageType.Log, PlayerType.Virtual);
         service.send('title3', 'body3', MessageType.Message, PlayerType.Virtual);

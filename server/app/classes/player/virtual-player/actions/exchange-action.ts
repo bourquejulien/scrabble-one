@@ -21,7 +21,7 @@ export class ExchangeAction implements Action {
         }
 
         this.playerData.skippedTurns = 0;
-        this.socketHandler.sendMessage({ title: '', body: 'Lettres échangées :' + exchangedLetters, messageType: MessageType.Debug });
+        this.socketHandler.sendMessage({ title: '', body: `${exchangedLetters.length} lettres échangées`, messageType: MessageType.Message });
 
         return null;
     }

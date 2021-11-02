@@ -1,7 +1,7 @@
 export enum MessageType {
     Message,
+    RemoteMessage,
     Command,
-    Debug,
     Log,
     Error,
     System,

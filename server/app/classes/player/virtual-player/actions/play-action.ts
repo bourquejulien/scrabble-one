@@ -66,7 +66,8 @@ export class PlayAction implements Action {
             alternatives += filteredPlays[alternativeIndex].word + ' ';
         }
 
-        this.socketHandler.sendMessage({ title: '', body: 'Mot alternatifs: ' + alternatives, messageType: MessageType.Debug });
+        this.socketHandler.sendMessage({ title: '', body: 'Mot placé : ' + play.word, messageType: MessageType.Message });
+        this.socketHandler.sendMessage({ title: '', body: 'Mot alternatifs : ' + alternatives, messageType: MessageType.Log });
 
         return new PlaceAction(this.boardHandler, play, this.playerData);
     }

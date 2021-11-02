@@ -47,7 +47,7 @@ export class VirtualPlayer extends Player {
         let random = Math.random();
 
         if (random < Config.VIRTUAL_PLAYER.SKIP_PERCENTAGE) {
-            return new SkipAction(this.playerData);
+            return new SkipAction(this.playerData, this.socketHandler);
         }
         random -= Config.VIRTUAL_PLAYER.SKIP_PERCENTAGE;
 

@@ -51,11 +51,25 @@ export class RoomController {
             socket.on('message', (message: Message) => {
                 logger.debug(`Socket: ${socket.id} sent ${message.messageType}`);
 
-                if (message.messageType === MessageType.Message) {
-                    const sessionId = this.sessionHandlingService.getSessionId(this.socketIdToPlayerId.get(socket.id) ?? '');
-                    this.socketService.socketServer.in(sessionId).emit('message', message);
-                } else {
-                    this.socketService.socketServer.to(socket.id).emit('message', message);
+                const playerId = this.socketIdToPlayerId.get(socket.id) ?? '';
+                const sessionHandler = this.sessionHandlingService.getHandlerByPlayerId(playerId);
+
+                if (playerId == null || sessionHandler == null) {
+                    logger.warn(`Invalid socket id: ${socket.id}`);
+                    return;
+                }
+
+                const otherPlayerId = sessionHandler.players.find((p) => p.id !== playerId)?.id ?? '';
+
+                switch (message.messageType) {
+                    case MessageType.Message:
+                        this.socketService.socketServer.in(sessionHandler.sessionInfo.id).emit('message', message);
+                        break;
+                    case MessageType.RemoteMessage:
+                        this.socketService.socketServer.in(otherPlayerId).emit('message', message);
+                        break;
+                    default:
+                        this.socketService.socketServer.to(socket.id).emit('message', message);
                 }
 
                 logger.info(`Message sent on behalf of ${socket.id}`);

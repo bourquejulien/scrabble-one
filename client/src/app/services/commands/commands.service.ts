@@ -142,13 +142,13 @@ export class CommandsService {
     }
 
     private toggleDebug(): void {
-        this.messagingService.debuggingMode = !this.messagingService.debuggingMode;
-        this.messagingService.send('', this.messagingService.debuggingMode ? SystemMessages.DebugOn : SystemMessages.DebugOff, MessageType.System);
+        this.messagingService.isDebug = !this.messagingService.isDebug;
+        this.messagingService.send('', this.messagingService.isDebug ? SystemMessages.DebugOn : SystemMessages.DebugOff, MessageType.System);
     }
 
     private isUsersTurn(): boolean {
         if (this.gameService.currentTurn === PlayerType.Virtual) {
-            this.messagingService.send('', SystemMessages.InvalidTurn, MessageType.Log);
+            this.messagingService.send('', SystemMessages.InvalidTurn, MessageType.System);
             return false;
         }
         return true;

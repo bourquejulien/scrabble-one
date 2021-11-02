@@ -4,6 +4,7 @@ import { CommandsService } from '@app/services/commands/commands.service';
 import { SessionService } from '@app/services/session/session.service';
 import { SocketClientService } from '@app/services/socket-client/socket-client.service';
 import { Message, MessageType } from '@common';
+import { MessagingService } from '@app/services/messaging/messaging.service';
 
 @Component({
     selector: 'app-communication-box',
@@ -19,6 +20,7 @@ export class CommunicationBoxComponent {
         private readonly commandsService: CommandsService,
         private readonly sessionService: SessionService,
         private readonly socket: SocketClientService,
+        private readonly messagingService: MessagingService,
     ) {
         this.messages = [];
         this.socket.on('message', (message: Message) => {
@@ -28,7 +30,7 @@ export class CommunicationBoxComponent {
         this.socket.socketClient.on('connect_error', (err) => {
             // TODO: this is for debug
             const socketErrorMsg: Message = {
-                title: 'Socket Error: Closing Connection',
+                title: 'Connection avec le serveur perdue',
                 body: `${err.message}`,
                 messageType: MessageType.Error,
                 fromId: this.sessionService.id,
@@ -54,11 +56,8 @@ export class CommunicationBoxComponent {
 
     getMessageColor(message: Message): string {
         switch (message.messageType) {
-            case MessageType.Log:
-            case MessageType.System:
-            case MessageType.Error:
-                return Constants.SYSTEM_COLOR;
             case MessageType.Message:
+            case MessageType.RemoteMessage:
                 return message.fromId === this.sessionService.id ? Constants.PLAYER_ONE_COLOR : Constants.PLAYER_TWO_COLOR;
             case MessageType.Command:
                 return Constants.PLAYER_ONE_COLOR;
@@ -78,16 +77,15 @@ export class CommunicationBoxComponent {
                     ? this.sessionService.gameConfig.firstPlayerName
                     : this.sessionService.gameConfig.secondPlayerName;
             case MessageType.Command:
+            case MessageType.RemoteMessage:
                 return this.sessionService.gameConfig.firstPlayerName;
             default:
                 return message.title;
         }
     }
 
-    // eslint-disable-next-line no-unused-vars
     shouldDisplay(message: Message) {
-        // TODO To check
-        return true;
+        return message.messageType !== MessageType.Log || this.messagingService.isDebug;
     }
 
     private scroll(): void {
