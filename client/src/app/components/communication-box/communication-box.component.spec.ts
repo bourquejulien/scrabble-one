@@ -70,7 +70,7 @@ describe('CommunicationBoxComponent', () => {
             title: 'Title',
             body: 'Body',
             messageType: MessageType.Error,
-            userId: PlayerType.Virtual,
+            fromId: PlayerType.Virtual,
         };
     });
 
@@ -105,9 +105,9 @@ describe('CommunicationBoxComponent', () => {
         component['sessionService']['gameConfig']['secondPlayerName'] = secondPlayerName;
         expect(component.getTitle(dummyMessage)).toBe(dummyMessage.title);
         dummyMessage.messageType = MessageType.Message;
-        dummyMessage.userId = PlayerType.Local;
+        dummyMessage.fromId = PlayerType.Local;
         expect(component.getTitle(dummyMessage)).toEqual(firstPlayerName);
-        dummyMessage.userId = PlayerType.Virtual;
+        dummyMessage.fromId = PlayerType.Virtual;
         expect(component.getTitle(dummyMessage)).toEqual(secondPlayerName);
     });
 
@@ -122,9 +122,9 @@ describe('CommunicationBoxComponent', () => {
     it('should return the correct CSS colors', () => {
         expect(component.getMessageColor(dummyMessage)).toBe(Constants.SYSTEM_COLOR);
         dummyMessage.messageType = MessageType.Message;
-        dummyMessage.userId = PlayerType.Virtual;
+        dummyMessage.fromId = PlayerType.Virtual;
         expect(component.getMessageColor(dummyMessage)).toBe(Constants.PLAYER_TWO_COLOR);
-        dummyMessage.userId = PlayerType.Local;
+        dummyMessage.fromId = PlayerType.Local;
         expect(component.getMessageColor(dummyMessage)).toBe(Constants.PLAYER_ONE_COLOR);
         dummyMessage.messageType = MessageType.Log;
         expect(component.getMessageColor(dummyMessage)).toBe(Constants.SYSTEM_COLOR);
@@ -143,9 +143,6 @@ describe('CommunicationBoxComponent', () => {
     });
 
     it('should push new messages and call scroll', () => {
-        // Configure asynchronous event handling
-        component.ngAfterViewInit();
-
         const scrollSpy = spyOn<any>(component, 'scroll').and.callThrough();
         const pushSpy = spyOn(component.messages, 'push').and.callThrough();
 
@@ -156,9 +153,6 @@ describe('CommunicationBoxComponent', () => {
     });
 
     it('should push an error message when the socket server is not available', () => {
-        // Configure asynchronous event handling
-        component.ngAfterViewInit();
-
         const pushSpy = spyOn(component.messages, 'push').and.callThrough();
 
         socketClient.triggerEndpoint('connect_error', 'error');

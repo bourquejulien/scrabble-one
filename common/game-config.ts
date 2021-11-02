@@ -31,7 +31,6 @@ export interface AvailableGameConfig {
     waitingPlayerName: string,
 }
 
-
 export interface ServerConfig {
     id: string,
     startId: string,

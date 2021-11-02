@@ -14,7 +14,7 @@ export class WaitingRoomPageComponent implements OnDestroy, OnInit {
     readonly gameTypesList: string[];
     private roomSubscription: Subscription;
 
-    constructor(readonly roomService: RoomService, private router: Router, location: LocationStrategy, elementRef: ElementRef) {
+    constructor(private readonly roomService: RoomService, private readonly router: Router, location: LocationStrategy, elementRef: ElementRef) {
         this.gameTypesList = Constants.GAME_TYPES_LIST;
         history.pushState(null, '', window.location.href);
         location.onPopState(() => {

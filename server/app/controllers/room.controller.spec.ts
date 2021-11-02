@@ -38,7 +38,7 @@ describe('RoomController', () => {
             title: 'Title',
             body: 'body',
             messageType: MessageType.Message,
-            userId: 'user1',
+            fromId: 'user1',
         };
 
         controller['handleSockets']();

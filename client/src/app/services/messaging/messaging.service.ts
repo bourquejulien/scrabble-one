@@ -1,26 +1,23 @@
 import { Injectable } from '@angular/core';
-import { PlayerType } from '@app/classes/player/player-type';
 import { SocketClientService } from '@app/services/socket-client/socket-client.service';
-import { MessageType } from '@common';
+import { Message, MessageType } from '@common';
+import { SessionService } from '@app/services/session/session.service';
 
 @Injectable({
     providedIn: 'root',
 })
 export class MessagingService {
     debuggingMode: boolean;
-    constructor(private readonly socket: SocketClientService) {
+    constructor(private readonly socket: SocketClientService, private readonly sessionService: SessionService) {
         this.debuggingMode = false;
     }
 
-    send(title: string, body: string, messageType: MessageType, user?: PlayerType): void {
-        if (!user) {
-            user = PlayerType.Local;
-        }
-        const message = {
+    send(title: string, body: string, messageType: MessageType): void {
+        const message: Message = {
             title,
             body,
             messageType,
-            userId: user,
+            fromId: this.sessionService.id,
         };
         this.socket.socketClient.emit('message', message);
     }

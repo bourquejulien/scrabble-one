@@ -1,5 +1,4 @@
-import { AfterViewInit, Component, ElementRef, ViewChild } from '@angular/core';
-import { PlayerType } from '@app/classes/player/player-type';
+import { Component, ElementRef, ViewChild } from '@angular/core';
 import { Constants } from '@app/constants/global.constants';
 import { CommandsService } from '@app/services/commands/commands.service';
 import { SessionService } from '@app/services/session/session.service';
@@ -11,28 +10,28 @@ import { Message, MessageType } from '@common';
     templateUrl: './communication-box.component.html',
     styleUrls: ['./communication-box.component.scss'],
 })
-export class CommunicationBoxComponent implements AfterViewInit {
+export class CommunicationBoxComponent {
     @ViewChild('messageContainer') private messageContainer: ElementRef<HTMLDivElement>;
     messages: Message[];
     inputValue: string;
 
-    constructor(private commandsService: CommandsService, private sessionService: SessionService, private readonly socket: SocketClientService) {
+    constructor(
+        private readonly commandsService: CommandsService,
+        private readonly sessionService: SessionService,
+        private readonly socket: SocketClientService,
+    ) {
         this.messages = [];
-    }
-
-    ngAfterViewInit(): void {
-        this.socket.socketClient.on('message', (message: Message) => {
+        this.socket.on('message', (message: Message) => {
             this.messages.push(message);
             this.scroll();
         });
-
         this.socket.socketClient.on('connect_error', (err) => {
             // TODO: this is for debug
             const socketErrorMsg: Message = {
                 title: 'Socket Error: Closing Connection',
                 body: `${err.message}`,
                 messageType: MessageType.Error,
-                userId: PlayerType.Local,
+                fromId: this.sessionService.id,
             };
             this.messages.push(socketErrorMsg);
             this.socket.socketClient.close();
@@ -60,7 +59,9 @@ export class CommunicationBoxComponent implements AfterViewInit {
             case MessageType.Error:
                 return Constants.SYSTEM_COLOR;
             case MessageType.Message:
-                return message.userId === PlayerType.Local ? Constants.PLAYER_ONE_COLOR : Constants.PLAYER_TWO_COLOR;
+                return message.fromId === this.sessionService.id ? Constants.PLAYER_ONE_COLOR : Constants.PLAYER_TWO_COLOR;
+            case MessageType.Command:
+                return Constants.PLAYER_ONE_COLOR;
             default:
                 return Constants.SYSTEM_COLOR;
         }
@@ -73,16 +74,20 @@ export class CommunicationBoxComponent implements AfterViewInit {
     getTitle(message: Message): string {
         switch (message.messageType) {
             case MessageType.Message:
-                return message.userId === PlayerType.Local
+                return message.fromId === this.sessionService.id
                     ? this.sessionService.gameConfig.firstPlayerName
                     : this.sessionService.gameConfig.secondPlayerName;
+            case MessageType.Command:
+                return this.sessionService.gameConfig.firstPlayerName;
             default:
                 return message.title;
         }
     }
 
+    // eslint-disable-next-line no-unused-vars
     shouldDisplay(message: Message) {
-        return message.userId === PlayerType.Local || (message.userId === PlayerType.Virtual && message.messageType === MessageType.Message);
+        // TODO To check
+        return true;
     }
 
     private scroll(): void {

@@ -97,14 +97,14 @@ export class RoomController {
             return false;
         }
 
+        await Timer.delay(END_GAME_DELAY_MS);
+
         if (handler.sessionInfo.gameType === GameType.Multiplayer && handler.sessionData.isActive) {
-            await Timer.delay(END_GAME_DELAY_MS);
             handler.endGame();
             logger.info(`Game ended: ${id}`);
         } else {
             handler.dispose();
             this.sessionHandlingService.removeHandler(id);
-
             logger.info(`Game disposed: ${id}`);
         }
 

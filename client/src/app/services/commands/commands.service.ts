@@ -7,6 +7,7 @@ import { MessagingService } from '@app/services/messaging/messaging.service';
 import { PlayerService } from '@app/services/player/player.service';
 import { ReserveService } from '@app/services/reserve/reserve.service';
 import { Direction, LETTER_DEFINITIONS, MessageType, Vec2 } from '@common';
+
 @Injectable({
     providedIn: 'root',
 })
@@ -17,10 +18,10 @@ export class CommandsService {
     private placeWordCommandRegex: RegExp;
 
     constructor(
-        public messagingService: MessagingService,
-        public playerService: PlayerService,
-        public gameService: GameService,
-        public reserveService: ReserveService,
+        private readonly messagingService: MessagingService,
+        private readonly playerService: PlayerService,
+        private readonly gameService: GameService,
+        private readonly reserveService: ReserveService,
     ) {
         this.placeWordCommandRegex = /^([a-o]){1}([1-9]|1[0-5]){1}([hv]){1}$/;
         this.wordRegex = /^[A-zÀ-ú]{1,15}$/;
@@ -30,8 +31,10 @@ export class CommandsService {
 
     parseInput(input: string): boolean {
         let successfulCommand = false;
+        const isCommand = input.startsWith('!');
+
         // Arguments: [COMMAND, OPTIONS, WORD]
-        if (input.startsWith('!')) {
+        if (isCommand) {
             const args = input.split(' ');
             switch (args[0]) {
                 case '!aide':
@@ -57,11 +60,11 @@ export class CommandsService {
                     return false;
             }
             if (successfulCommand) {
-                this.messagingService.send('Commande réussie', input, MessageType.System, this.gameService.currentTurn);
+                this.messagingService.send('Commande réussie', input, MessageType.System);
             }
         }
         if (this.messageRegex.test(input)) {
-            this.messagingService.send('', input, MessageType.Message);
+            this.messagingService.send('', input, isCommand ? MessageType.Command : MessageType.Message);
         } else {
             this.messagingService.send(SystemMessages.InvalidFormat, SystemMessages.InvalidUserMessage, MessageType.Error);
             return false;

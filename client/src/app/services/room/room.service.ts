@@ -72,7 +72,6 @@ export class RoomService {
         };
 
         const serverConfig = await this.httpCLient.put<ServerConfig>(localUrl('game', 'join'), joinConfig).toPromise();
-        this.socketService.join(serverConfig.id);
         await this.gameService.start(serverConfig);
     }
 
