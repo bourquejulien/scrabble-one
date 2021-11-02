@@ -7,6 +7,7 @@ import { TimeSpan } from '@app/classes/time/timespan';
 import { GameService } from '@app/services/game/game.service';
 import { GameType, MultiplayerCreateConfig, SinglePlayerConfig } from '@common';
 import { RoomService } from '@app/services/room/room.service';
+import { Constants } from '@app/constants/global.constants';
 
 interface FormConfig {
     gameType: string;
@@ -16,7 +17,6 @@ interface FormConfig {
     secondPlayerName: string;
 }
 
-const GAME_TYPES_LIST = ['Mode Solo Débutant'];
 // eslint-disable-next-line @typescript-eslint/no-magic-numbers -- Lists all option, the list is a constant
 const TURN_LENGTH_MINUTES = [0, 1, 2, 3, 4, 5] as const;
 // eslint-disable-next-line @typescript-eslint/no-magic-numbers -- Lists all option, the list is a constant
@@ -71,8 +71,8 @@ export class InitGameComponent implements OnInit {
         readonly dialogRef: MatDialogRef<InitGameComponent>,
         @Inject(MAT_DIALOG_DATA) readonly data: { gameModeType: GameType },
     ) {
-        this.gameTypesList = GAME_TYPES_LIST;
-        this.botNames = ['Maurice', 'Claudette', 'Alphonse'];
+        this.gameTypesList = Constants.GAME_TYPES_LIST;
+        this.botNames = Constants.BOT_NAMES;
         this.minutesList = TURN_LENGTH_MINUTES;
         this.secondsList = TURN_LENGTH_SECONDS;
         this.gameType = GameType;
@@ -80,7 +80,7 @@ export class InitGameComponent implements OnInit {
         this.minutes = DEFAULT_PLAY_TIME.totalMinutes;
         this.seconds = DEFAULT_PLAY_TIME.seconds;
         this.formConfig = {
-            gameType: GAME_TYPES_LIST[0],
+            gameType: this.gameTypesList[0],
             playTime: DEFAULT_PLAY_TIME,
             isRandomBonus: false,
             firstPlayerName: '',
