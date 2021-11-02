@@ -5,8 +5,10 @@ import { Constants } from '@app/constants/global.constants';
 import { BoardService } from '@app/services/board/board.service';
 import { GridService } from '@app/services/grid/grid.service';
 import { MouseHandlingService } from '@app/services/mouse-handling/mouse-handling.service';
+import { PlaceLetterService } from '@app/services/place-letter/place-letter.service';
+import { PlayerService } from '@app/services/player/player.service';
 import { RackService } from '@app/services/rack/rack.service';
-import { Vec2 } from '@common';
+import { Direction, Vec2 } from '@common';
 import FontFaceObserver from 'fontfaceobserver';
 
 const MAX_SIZE = 15;
@@ -44,6 +46,8 @@ export class BoardComponent implements OnChanges, AfterViewInit {
         readonly mouseHandlingService: MouseHandlingService,
         readonly rackService: RackService,
         readonly boardService: BoardService,
+        readonly playerService: PlayerService,
+        readonly placeLetterService: PlaceLetterService,
     ) {
         this.tempRack = [];
         this.myRack = [];
@@ -52,8 +56,6 @@ export class BoardComponent implements OnChanges, AfterViewInit {
     @HostListener('body:mousedown', ['$event'])
     onMouseDown(event: MouseEvent): void {
         if (this.isFocus && this.myRack.length === 0) {
-            this.rackService.rack.pop();
-            this.rackService.rack.push('*');
             this.mouseHandlingService.mouseHitDetect(event);
             if (this.gridPosition === undefined) {
                 this.gridPosition = this.mouseHandlingService.position;
@@ -79,25 +81,16 @@ export class BoardComponent implements OnChanges, AfterViewInit {
     @HostListener('body:keydown', ['$event'])
     onKeyDown(event: KeyboardEvent): void {
         const backSpaceValid: boolean = this.backSpaceEnable(event.key) && !this.isPositionInit() && this.inGrid(this.gridPosition);
+        const enterValid: boolean = event.key === 'Enter' && this.tempRack.length > 0;
         const lastSquare = this.gridPosition.x > MAX_SIZE || this.gridPosition.y > MAX_SIZE;
         if (backSpaceValid) {
-            this.gridService.clearSquare(this.tempContext, this.gridPosition);
-            if (this.isHorizontal) {
-                this.gridService.cleanSquare(this.tempContext, { x: this.gridPosition.x - 1, y: this.gridPosition.y });
-            } else this.gridService.cleanSquare(this.tempContext, { x: this.gridPosition.x, y: this.gridPosition.y - 1 });
-
-            this.rackService.rack.push(this.myRack[this.myRack.length - 1]);
-            this.tempRack.pop();
-            this.myRack.pop();
-            this.nextAvailableSquare(false);
-            this.gridService.drawSelectionSquare(this.tempContext, this.gridPosition);
-            this.gridService.drawDirectionArrow(this.tempContext, this.gridPosition, this.isHorizontal);
+            this.backSpaceOperation();
             this.isLastSquare = false;
         } else if (event.key === 'Escape') {
-            this.gridService.resetCanvas(this.tempContext);
-            this.cancel();
-            this.isHorizontal = true;
+            this.escapeOperation();
             this.isLastSquare = false;
+        } else if (enterValid) {
+            this.enterOperation();
         } else {
             this.handleKeyPress2(event.key);
             const validKey: boolean = this.squareSelected === true && this.isLetter && this.inGrid(this.gridPosition);
@@ -122,9 +115,6 @@ export class BoardComponent implements OnChanges, AfterViewInit {
                 } else {
                     this.gridService.drawSelectionSquare(this.tempContext, this.gridPosition);
                 }
-                console.log(this.rackService.rack);
-                console.log(this.myRack);
-                console.log(this.tempRack);
             }
         }
     }
@@ -218,7 +208,7 @@ export class BoardComponent implements OnChanges, AfterViewInit {
             }
         }
     }
-
+    // place letter
     private samePosition(position: Vec2) {
         if (this.gridPosition.x === position.x && this.gridPosition.y === position.y) {
             this.isHorizontal = false;
@@ -230,13 +220,13 @@ export class BoardComponent implements OnChanges, AfterViewInit {
             this.isHorizontal = true;
         }
     }
-
+    // in place letter
     private isPositionInit(): boolean {
         if (this.gridPosition.x === this.positionInit.x && this.gridPosition.y === this.positionInit.y) {
             return true;
         } else return false;
     }
-
+    // placeletter
     private inGrid(position: Vec2): boolean {
         if (position.x >= MIN_SIZE && position.x <= MAX_SIZE) {
             if (position.y >= MIN_SIZE && position.y <= MAX_SIZE) {
@@ -248,7 +238,7 @@ export class BoardComponent implements OnChanges, AfterViewInit {
             return false;
         }
     }
-
+    // placeletter service
     private backSpaceEnable(key: string): boolean {
         if (key === 'Backspace' && this.squareSelected) {
             return true;
@@ -256,7 +246,7 @@ export class BoardComponent implements OnChanges, AfterViewInit {
             return false;
         }
     }
-
+    // placeLetter service
     private nextAvailableSquare(isForward: boolean): void {
         if (isForward) {
             do {
@@ -285,12 +275,45 @@ export class BoardComponent implements OnChanges, AfterViewInit {
             } while (!this.boardService.positionIsAvailable(this.gridPosition));
         }
     }
-
+    // in place letter
     private cancel(): void {
         for (let i = this.myRack.length - 1; i >= 0; i--) {
             this.rackService.rack.push(this.myRack[i]);
             this.myRack.pop();
         }
         this.tempRack = [];
+    }
+    // placeLetter service
+    private backSpaceOperation(): void {
+        this.gridService.clearSquare(this.tempContext, this.gridPosition);
+        if (this.isHorizontal) {
+            this.gridService.cleanSquare(this.tempContext, { x: this.gridPosition.x - 1, y: this.gridPosition.y });
+        } else this.gridService.cleanSquare(this.tempContext, { x: this.gridPosition.x, y: this.gridPosition.y - 1 });
+
+        this.rackService.rack.push(this.myRack[this.myRack.length - 1]);
+        this.tempRack.pop();
+        this.myRack.pop();
+        this.nextAvailableSquare(false);
+        this.gridService.drawSelectionSquare(this.tempContext, this.gridPosition);
+        this.gridService.drawDirectionArrow(this.tempContext, this.gridPosition, this.isHorizontal);
+    }
+    // place letter
+    private escapeOperation(): void {
+        this.gridService.resetCanvas(this.tempContext);
+        this.cancel();
+        this.isHorizontal = true;
+    }
+    // in place letter
+    private enterOperation(): void {
+        let word = '';
+        let direction: Direction;
+        if (this.isHorizontal) {
+            direction = Direction.Right;
+        } else direction = Direction.Down;
+        for (const letter of this.tempRack) {
+            word += letter;
+        }
+
+        this.playerService.placeLetters(word, this.positionInit, direction);
     }
 }

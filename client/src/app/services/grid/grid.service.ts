@@ -116,6 +116,7 @@ export class GridService {
             this.drawImage(this.starImage, { x: centerSquare + 1, y: centerSquare + 1 }, squareContext);
         }
     }
+
     drawSelectionSquare(tempContext: CanvasRenderingContext2D, position: Vec2): void {
         const gridCoord = this.computeCanvasCoord(position);
         // const boardData = this.boardService.gameBoard;
