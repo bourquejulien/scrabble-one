@@ -18,7 +18,9 @@ export class SessionHandlingService {
 
     removeHandler(id: string): SessionHandler | null {
         const sessionHandler = this.getHandlerByPlayerId(id);
-        if (sessionHandler == null) return null;
+        if (sessionHandler == null) {
+            return null;
+        }
 
         sessionHandler.players.forEach((p) => this.playerIds.delete(p.id));
         sessionHandler.dispose();

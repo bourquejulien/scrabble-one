@@ -6,22 +6,27 @@ import { GameService } from '@app/services/game/game.service';
 import { MessagingService } from '@app/services/messaging/messaging.service';
 import { PlayerService } from '@app/services/player/player.service';
 import { ReserveService } from '@app/services/reserve/reserve.service';
-import { Direction, letterDefinitions, MessageType, Vec2 } from '@common';
+import { Direction, LETTER_DEFINITIONS, MessageType, Vec2 } from '@common';
 @Injectable({
     providedIn: 'root',
 })
 export class CommandsService {
-    placeWordCommandRegex: RegExp = /^([a-o]){1}([1-9]|1[0-5]){1}([hv]){1}$/;
-    wordRegex: RegExp = /^[A-zÀ-ú]{1,15}$/;
-    rackRegex: RegExp = /^[a-z*]{1,7}$/;
-    messageRegex: RegExp = /^[A-zÀ-ú0-9 !.?'"]{1,512}$/;
+    wordRegex: RegExp;
+    rackRegex: RegExp;
+    messageRegex: RegExp;
+    private placeWordCommandRegex: RegExp;
 
     constructor(
         public messagingService: MessagingService,
         public playerService: PlayerService,
         public gameService: GameService,
         public reserveService: ReserveService,
-    ) {}
+    ) {
+        this.placeWordCommandRegex = /^([a-o]){1}([1-9]|1[0-5]){1}([hv]){1}$/;
+        this.wordRegex = /^[A-zÀ-ú]{1,15}$/;
+        this.rackRegex = /^[a-z*]{1,7}$/;
+        this.messageRegex = /^[A-zÀ-ú0-9 !.?'"]{1,512}$/;
+    }
 
     parseInput(input: string): boolean {
         let successfulCommand = false;
@@ -54,13 +59,12 @@ export class CommandsService {
             if (successfulCommand) {
                 this.messagingService.send('Commande réussie', input, MessageType.System, this.gameService.currentTurn);
             }
+        }
+        if (this.messageRegex.test(input)) {
+            this.messagingService.send('', input, MessageType.Message);
         } else {
-            if (this.messageRegex.test(input)) {
-                this.messagingService.send('', input, MessageType.Message);
-            } else {
-                this.messagingService.send(SystemMessages.InvalidFormat, SystemMessages.InvalidUserMessage, MessageType.Error);
-                return false;
-            }
+            this.messagingService.send(SystemMessages.InvalidFormat, SystemMessages.InvalidUserMessage, MessageType.Error);
+            return false;
         }
         return true;
     }
@@ -70,11 +74,12 @@ export class CommandsService {
         return word.normalize('NFD').replace(/\p{Diacritic}/gu, '');
     }
 
+    // TO DO return false... somewhere
     private displayReserve(): boolean {
         const body: string[] = [];
         let reserveContent = '';
 
-        for (const letter of letterDefinitions) {
+        for (const letter of LETTER_DEFINITIONS) {
             const currentLetterAndQuantity = this.reserveService.getLetterAndQuantity(letter[0]);
             body.push(`${currentLetterAndQuantity}\n`);
         }
@@ -90,7 +95,9 @@ export class CommandsService {
     }
 
     private checkPlaceCommand(options: string, word: string): boolean {
-        if (!this.isUsersTurn()) return false;
+        if (!this.isUsersTurn()) {
+            return false;
+        }
 
         if (!this.placeWordCommandRegex.test(options)) {
             this.messagingService.send('', SystemMessages.InvalidOptions, MessageType.Error);
@@ -111,7 +118,9 @@ export class CommandsService {
     }
 
     private exchangeLetters(letters: string): boolean {
-        if (!this.isUsersTurn()) return false;
+        if (!this.isUsersTurn()) {
+            return false;
+        }
 
         if (this.rackRegex.test(letters)) {
             this.playerService.exchangeLetters(letters);
@@ -122,7 +131,9 @@ export class CommandsService {
     }
 
     private skipTurn(): boolean {
-        if (!this.isUsersTurn()) return false;
+        if (!this.isUsersTurn()) {
+            return false;
+        }
 
         this.playerService.skipTurn();
         return true;

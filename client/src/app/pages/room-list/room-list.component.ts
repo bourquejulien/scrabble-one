@@ -8,8 +8,10 @@ import { SocketClientService } from '@app/services/socket-client/socket-client.s
     styleUrls: ['./room-list.component.scss'],
 })
 export class RoomListComponent implements OnInit {
-    availableRooms: string[] = [];
-    constructor(private readonly socket: SocketClientService, private router: Router) {}
+    availableRooms: string[];
+    constructor(private readonly socket: SocketClientService, private router: Router) {
+        this.availableRooms = [];
+    }
 
     ngOnInit(): void {
         this.socket.socketClient.on('availableRooms', (availableRooms: string[]) => {

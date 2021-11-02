@@ -1,12 +1,11 @@
-import { PlayerInfo } from '@app/classes/player-info';
 import { PlayerData } from '@app/classes/player-data';
-import { Observable, Subject } from 'rxjs';
+import { PlayerInfo } from '@app/classes/player-info';
+import { Config } from '@app/config';
 import { BoardHandler } from '@app/handlers/board-handler/board-handler';
 import { ReserveHandler } from '@app/handlers/reserve-handler/reserve-handler';
 import { SocketHandler } from '@app/handlers/socket-handler/socket-handler';
-import { letterDefinitions, PlayerStats } from '@common';
-import { Config } from '@app/config';
-
+import { LETTER_DEFINITIONS, PlayerStats } from '@common';
+import { Observable, Subject } from 'rxjs';
 export abstract class Player {
     isTurn: boolean;
     readonly playerInfo: PlayerInfo;
@@ -41,7 +40,7 @@ export abstract class Player {
     rackPoints(): number {
         let playerPoint = 0;
         for (const letter of this.playerData.rack) {
-            const currentLetterData = letterDefinitions.get(letter.toLowerCase());
+            const currentLetterData = LETTER_DEFINITIONS.get(letter.toLowerCase());
             playerPoint += currentLetterData?.points ?? 0;
         }
 
