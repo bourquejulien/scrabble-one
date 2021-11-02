@@ -8,11 +8,9 @@ import { MouseHandlingService } from '@app/services/mouse-handling/mouse-handlin
 import { PlaceLetterService } from '@app/services/place-letter/place-letter.service';
 import { PlayerService } from '@app/services/player/player.service';
 import { RackService } from '@app/services/rack/rack.service';
-import { Direction, Vec2 } from '@common';
 import FontFaceObserver from 'fontfaceobserver';
 
 const MAX_SIZE = 15;
-const MIN_SIZE = 1;
 
 @Component({
     selector: 'app-board',
@@ -29,14 +27,9 @@ export class BoardComponent implements OnChanges, AfterViewInit {
     isLetter: boolean;
     isFocus: boolean;
     isUpper: boolean;
-    isLastSquare: boolean;
     letter: string;
     squareSelected: boolean = false;
-    isHorizontal: boolean = true;
-    gridPosition: Vec2;
-    positionInit: Vec2;
-    tempRack: string[];
-    myRack: string[];
+
     private gridContext: CanvasRenderingContext2D;
     private squareContext: CanvasRenderingContext2D;
     private tempContext: CanvasRenderingContext2D;
@@ -48,30 +41,30 @@ export class BoardComponent implements OnChanges, AfterViewInit {
         readonly boardService: BoardService,
         readonly playerService: PlayerService,
         readonly placeLetterService: PlaceLetterService,
-    ) {
-        this.tempRack = [];
-        this.myRack = [];
-    }
+    ) {}
 
     @HostListener('body:mousedown', ['$event'])
     onMouseDown(event: MouseEvent): void {
-        if (this.isFocus && this.myRack.length === 0) {
+        if (this.isFocus && this.placeLetterService.myRack.length === 0) {
             this.mouseHandlingService.mouseHitDetect(event);
-            if (this.gridPosition === undefined) {
-                this.gridPosition = this.mouseHandlingService.position;
-                this.positionInit = { x: this.gridPosition.x, y: this.gridPosition.y };
+            if (this.placeLetterService.gridPosition === undefined) {
+                this.placeLetterService.gridPosition = this.mouseHandlingService.position;
+                this.placeLetterService.positionInit = { x: this.placeLetterService.gridPosition.x, y: this.placeLetterService.gridPosition.y };
                 this.gridService.resetCanvas(this.tempContext);
             } else {
-                this.samePosition(this.mouseHandlingService.position);
+                this.placeLetterService.samePosition(this.mouseHandlingService.position);
                 this.gridService.resetCanvas(this.tempContext);
             }
-            const squareValid: boolean = this.inGrid(this.gridPosition) && this.boardService.positionIsAvailable(this.gridPosition);
+            const squareValid: boolean =
+                this.placeLetterService.inGrid(this.placeLetterService.gridPosition) &&
+                this.boardService.positionIsAvailable(this.placeLetterService.gridPosition);
             if (squareValid) {
-                this.gridService.drawSelectionSquare(this.tempContext, this.gridPosition);
+                this.gridService.drawSelectionSquare(this.tempContext, this.placeLetterService.gridPosition);
                 const lastSquare =
-                    (this.gridPosition.x === MAX_SIZE && this.isHorizontal) || (this.gridPosition.y === MAX_SIZE && !this.isHorizontal);
+                    (this.placeLetterService.gridPosition.x === MAX_SIZE && this.placeLetterService.isHorizontal) ||
+                    (this.placeLetterService.gridPosition.y === MAX_SIZE && !this.placeLetterService.isHorizontal);
                 if (!lastSquare) {
-                    this.gridService.drawDirectionArrow(this.tempContext, this.gridPosition, this.isHorizontal);
+                    this.gridService.drawDirectionArrow(this.tempContext, this.placeLetterService.gridPosition, this.placeLetterService.isHorizontal);
                 }
                 this.squareSelected = true;
             }
@@ -80,40 +73,45 @@ export class BoardComponent implements OnChanges, AfterViewInit {
 
     @HostListener('body:keydown', ['$event'])
     onKeyDown(event: KeyboardEvent): void {
-        const backSpaceValid: boolean = this.backSpaceEnable(event.key) && !this.isPositionInit() && this.inGrid(this.gridPosition);
-        const enterValid: boolean = event.key === 'Enter' && this.tempRack.length > 0;
-        const lastSquare = this.gridPosition.x > MAX_SIZE || this.gridPosition.y > MAX_SIZE;
+        const backSpaceValid: boolean =
+            this.placeLetterService.backSpaceEnable(event.key, this.squareSelected) &&
+            !this.isPositionInit() &&
+            this.placeLetterService.inGrid(this.placeLetterService.gridPosition);
+        const enterValid: boolean = event.key === 'Enter' && this.placeLetterService.tempRack.length > 0;
+        const lastSquare = this.placeLetterService.gridPosition.x > MAX_SIZE || this.placeLetterService.gridPosition.y > MAX_SIZE;
         if (backSpaceValid) {
-            this.backSpaceOperation();
-            this.isLastSquare = false;
+            this.placeLetterService.backSpaceOperation(this.tempContext);
+            this.placeLetterService.isLastSquare = false;
         } else if (event.key === 'Escape') {
-            this.escapeOperation();
-            this.isLastSquare = false;
+            this.placeLetterService.escapeOperation(this.tempContext);
+            this.placeLetterService.isLastSquare = false;
+            this.squareSelected = false;
         } else if (enterValid) {
-            this.enterOperation();
+            this.placeLetterService.enterOperation(this.placeLetterService.isHorizontal);
         } else {
             this.handleKeyPress2(event.key);
-            const validKey: boolean = this.squareSelected === true && this.isLetter && this.inGrid(this.gridPosition);
-            if (validKey && !this.isLastSquare) {
-                this.gridService.cleanSquare(this.tempContext, this.gridPosition);
-                this.gridService.drawSymbol(this.letter, this.gridPosition, this.tempContext);
+            const validKey: boolean =
+                this.squareSelected === true && this.isLetter && this.placeLetterService.inGrid(this.placeLetterService.gridPosition);
+            if (validKey && !this.placeLetterService.isLastSquare) {
+                this.gridService.cleanSquare(this.tempContext, this.placeLetterService.gridPosition);
+                this.gridService.drawSymbol(this.letter, this.placeLetterService.gridPosition, this.tempContext);
                 if (this.isUpper) {
                     this.rackService.rack.splice(this.rackService.indexOf('*'), 1);
-                    this.tempRack.push(this.letter);
-                    this.myRack.push('*');
+                    this.placeLetterService.tempRack.push(this.letter);
+                    this.placeLetterService.myRack.push('*');
                 } else {
                     this.rackService.rack.splice(this.rackService.indexOf(this.letter), 1);
-                    this.tempRack.push(this.letter);
-                    this.myRack.push(this.letter);
+                    this.placeLetterService.tempRack.push(this.letter);
+                    this.placeLetterService.myRack.push(this.letter);
                 }
 
-                this.nextAvailableSquare(true);
+                this.placeLetterService.nextAvailableSquare(true);
 
-                if (!lastSquare && !this.isLastSquare) {
-                    this.gridService.drawSelectionSquare(this.tempContext, this.gridPosition);
-                    this.gridService.drawDirectionArrow(this.tempContext, this.gridPosition, this.isHorizontal);
+                if (!lastSquare && !this.placeLetterService.isLastSquare) {
+                    this.gridService.drawSelectionSquare(this.tempContext, this.placeLetterService.gridPosition);
+                    this.gridService.drawDirectionArrow(this.tempContext, this.placeLetterService.gridPosition, this.placeLetterService.isHorizontal);
                 } else {
-                    this.gridService.drawSelectionSquare(this.tempContext, this.gridPosition);
+                    this.gridService.drawSelectionSquare(this.tempContext, this.placeLetterService.gridPosition);
                 }
             }
         }
@@ -208,112 +206,12 @@ export class BoardComponent implements OnChanges, AfterViewInit {
             }
         }
     }
-    // place letter
-    private samePosition(position: Vec2) {
-        if (this.gridPosition.x === position.x && this.gridPosition.y === position.y) {
-            this.isHorizontal = false;
-        } else {
-            this.cancel();
-            this.myRack = [];
-            this.gridPosition = position;
-            this.positionInit = { x: position.x, y: position.y };
-            this.isHorizontal = true;
-        }
-    }
-    // in place letter
     private isPositionInit(): boolean {
-        if (this.gridPosition.x === this.positionInit.x && this.gridPosition.y === this.positionInit.y) {
+        if (
+            this.placeLetterService.gridPosition.x === this.placeLetterService.positionInit.x &&
+            this.placeLetterService.gridPosition.y === this.placeLetterService.positionInit.y
+        ) {
             return true;
         } else return false;
-    }
-    // placeletter
-    private inGrid(position: Vec2): boolean {
-        if (position.x >= MIN_SIZE && position.x <= MAX_SIZE) {
-            if (position.y >= MIN_SIZE && position.y <= MAX_SIZE) {
-                return true;
-            } else {
-                return false;
-            }
-        } else {
-            return false;
-        }
-    }
-    // placeletter service
-    private backSpaceEnable(key: string): boolean {
-        if (key === 'Backspace' && this.squareSelected) {
-            return true;
-        } else {
-            return false;
-        }
-    }
-    // placeLetter service
-    private nextAvailableSquare(isForward: boolean): void {
-        if (isForward) {
-            do {
-                if (!this.boardService.positionIsAvailable(this.gridPosition)) {
-                    this.tempRack.push(this.boardService.getLetter(this.gridPosition));
-                }
-                if (this.gridPosition.x === MAX_SIZE) {
-                    this.isLastSquare = true;
-                }
-                if (this.isHorizontal && this.gridPosition.x < MAX_SIZE) {
-                    this.gridPosition.x += 1;
-                } else if (!this.isHorizontal && this.gridPosition.y < MAX_SIZE) {
-                    this.gridPosition.y += 1;
-                }
-            } while (!this.boardService.positionIsAvailable(this.gridPosition));
-        } else {
-            do {
-                if (!this.boardService.positionIsAvailable(this.gridPosition)) {
-                    this.tempRack.pop();
-                }
-                if (this.isHorizontal && this.gridPosition.x > MIN_SIZE) {
-                    this.gridPosition.x -= 1;
-                } else if (!this.isHorizontal && this.gridPosition.y > MIN_SIZE) {
-                    this.gridPosition.y -= 1;
-                }
-            } while (!this.boardService.positionIsAvailable(this.gridPosition));
-        }
-    }
-    // in place letter
-    private cancel(): void {
-        for (let i = this.myRack.length - 1; i >= 0; i--) {
-            this.rackService.rack.push(this.myRack[i]);
-            this.myRack.pop();
-        }
-        this.tempRack = [];
-    }
-    // placeLetter service
-    private backSpaceOperation(): void {
-        this.gridService.clearSquare(this.tempContext, this.gridPosition);
-        if (this.isHorizontal) {
-            this.gridService.cleanSquare(this.tempContext, { x: this.gridPosition.x - 1, y: this.gridPosition.y });
-        } else this.gridService.cleanSquare(this.tempContext, { x: this.gridPosition.x, y: this.gridPosition.y - 1 });
-
-        this.rackService.rack.push(this.myRack[this.myRack.length - 1]);
-        this.tempRack.pop();
-        this.myRack.pop();
-        this.nextAvailableSquare(false);
-        this.gridService.drawSelectionSquare(this.tempContext, this.gridPosition);
-        this.gridService.drawDirectionArrow(this.tempContext, this.gridPosition, this.isHorizontal);
-    }
-    // place letter
-    private escapeOperation(): void {
-        this.gridService.resetCanvas(this.tempContext);
-        this.cancel();
-        this.isHorizontal = true;
-    }
-    // in place letter
-    private enterOperation(): void {
-        let word = '';
-        let direction: Direction;
-        if (this.isHorizontal) {
-            direction = Direction.Right;
-        } else direction = Direction.Down;
-        for (const letter of this.tempRack) {
-            word += letter;
-        }
-
-        this.playerService.placeLetters(word, this.positionInit, direction);
     }
 }

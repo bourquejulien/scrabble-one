@@ -16,7 +16,7 @@ export class PlaceLetterService {
     myRack: string[];
     gridPosition: Vec2;
     positionInit: Vec2;
-    isHorizontal: boolean;
+    isHorizontal: boolean = true;
     isLastSquare: boolean;
 
     constructor(
@@ -38,7 +38,8 @@ export class PlaceLetterService {
         for (const letter of this.tempRack) {
             word += letter;
         }
-
+        console.log(word);
+        console.log(this.positionInit);
         this.playerService.placeLetters(word, this.positionInit, direction);
     }
 
@@ -60,14 +61,7 @@ export class PlaceLetterService {
         this.gridService.resetCanvas(tempContext);
         this.cancel();
         this.isHorizontal = true;
-    }
-
-    cancel(): void {
-        for (let i = this.myRack.length - 1; i >= 0; i--) {
-            this.rackService.rack.push(this.myRack[i]);
-            this.myRack.pop();
-        }
-        this.tempRack = [];
+        this.gridPosition = this.positionInit;
     }
 
     isPositionInit(position: Vec2): boolean {
@@ -135,5 +129,12 @@ export class PlaceLetterService {
                 }
             } while (!this.boardService.positionIsAvailable(this.gridPosition));
         }
+    }
+    private cancel(): void {
+        for (let i = this.myRack.length - 1; i >= 0; i--) {
+            this.rackService.rack.push(this.myRack[i]);
+            this.myRack.pop();
+        }
+        this.tempRack = [];
     }
 }
