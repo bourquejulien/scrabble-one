@@ -120,7 +120,7 @@ export class GridService {
     drawSelectionSquare(tempContext: CanvasRenderingContext2D, position: Vec2): void {
         const gridCoord = this.computeCanvasCoord(position);
         // const boardData = this.boardService.gameBoard;
-        // const square = boardData.board[position.x][position.y];
+        // const square = boardData.board[position.x - 1][position.y - 1];
         tempContext.beginPath();
         tempContext.lineWidth = LINE_WIDTH;
         tempContext.strokeStyle = STROKE_STYLE_SELECTION;
@@ -129,6 +129,15 @@ export class GridService {
         // tempContext.fillRect(gridCoord.x - this.squareWidth / 2, gridCoord.y - this.squareHeight / 2, this.squareWidth, this.squareHeight);
         tempContext.stroke();
     }
+    drawBonusOfPosition(squareContext: CanvasRenderingContext2D, position: Vec2): void {
+        // const gridCoord = this.computeCanvasCoord(position);
+        const boardData = this.boardService.gameBoard;
+        const square = boardData.board[position.x - 1][position.y - 1];
+        if (square.bonus !== Bonus.None) {
+            this.drawBonus(square.bonus, { x: position.x, y: position.y }, squareContext);
+        }
+    }
+
     drawDirectionArrow(tempContext: CanvasRenderingContext2D, position: Vec2, direction: boolean): void {
         const gridCoord = this.computeCanvasCoord(position);
         if (direction) {
@@ -178,7 +187,7 @@ export class GridService {
             this.squareHeight + COORD_CLEAR_SQUARE,
         );
     }
-    cleanSquare(tempContext: CanvasRenderingContext2D, position: Vec2): void {
+    cleanInsideSquare(tempContext: CanvasRenderingContext2D, position: Vec2): void {
         const gridCoord = this.computeCanvasCoord(position);
         tempContext.clearRect(
             gridCoord.x - this.squareWidth / 2 + 3,

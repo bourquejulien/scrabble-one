@@ -9,7 +9,7 @@ import { PlaceLetterService } from '@app/services/place-letter/place-letter.serv
 import { PlayerService } from '@app/services/player/player.service';
 import { RackService } from '@app/services/rack/rack.service';
 import FontFaceObserver from 'fontfaceobserver';
-
+// TODO add to constant file
 const MAX_SIZE = 15;
 
 @Component({
@@ -59,6 +59,7 @@ export class BoardComponent implements OnChanges, AfterViewInit {
                 this.placeLetterService.inGrid(this.placeLetterService.gridPosition) &&
                 this.boardService.positionIsAvailable(this.placeLetterService.gridPosition);
             if (squareValid) {
+                this.gridService.cleanInsideSquare(this.squareContext, this.placeLetterService.gridPosition);
                 this.gridService.drawSelectionSquare(this.tempContext, this.placeLetterService.gridPosition);
                 const lastSquare =
                     (this.placeLetterService.gridPosition.x === MAX_SIZE && this.placeLetterService.isHorizontal) ||
@@ -77,23 +78,27 @@ export class BoardComponent implements OnChanges, AfterViewInit {
             this.placeLetterService.backSpaceEnable(event.key, this.squareSelected) &&
             !this.isPositionInit() &&
             this.placeLetterService.inGrid(this.placeLetterService.gridPosition);
+
         const enterValid: boolean = event.key === 'Enter' && this.placeLetterService.tempRack.length > 0;
         const lastSquare = this.placeLetterService.gridPosition.x > MAX_SIZE || this.placeLetterService.gridPosition.y > MAX_SIZE;
         if (backSpaceValid) {
             this.placeLetterService.backSpaceOperation(this.tempContext);
+            this.gridService.drawBonusOfPosition(this.squareContext, this.placeLetterService.gridPosition);
             this.placeLetterService.isLastSquare = false;
         } else if (event.key === 'Escape') {
             this.placeLetterService.escapeOperation(this.tempContext);
             this.placeLetterService.isLastSquare = false;
+            this.gridService.drawSquares(this.squareContext);
             this.squareSelected = false;
         } else if (enterValid) {
-            this.placeLetterService.enterOperation(this.placeLetterService.isHorizontal);
+            this.placeLetterService.enterOperation();
         } else {
             this.handleKeyPress2(event.key);
             const validKey: boolean =
                 this.squareSelected === true && this.isLetter && this.placeLetterService.inGrid(this.placeLetterService.gridPosition);
             if (validKey && !this.placeLetterService.isLastSquare) {
-                this.gridService.cleanSquare(this.tempContext, this.placeLetterService.gridPosition);
+                this.gridService.cleanInsideSquare(this.tempContext, this.placeLetterService.gridPosition);
+                this.gridService.cleanInsideSquare(this.squareContext, this.placeLetterService.gridPosition);
                 this.gridService.drawSymbol(this.letter, this.placeLetterService.gridPosition, this.tempContext);
                 if (this.isUpper) {
                     this.rackService.rack.splice(this.rackService.indexOf('*'), 1);
@@ -106,6 +111,7 @@ export class BoardComponent implements OnChanges, AfterViewInit {
                 }
 
                 this.placeLetterService.nextAvailableSquare(true);
+                this.gridService.cleanInsideSquare(this.squareContext, this.placeLetterService.gridPosition);
 
                 if (!lastSquare && !this.placeLetterService.isLastSquare) {
                     this.gridService.drawSelectionSquare(this.tempContext, this.placeLetterService.gridPosition);

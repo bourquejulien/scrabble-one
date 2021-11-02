@@ -4,7 +4,7 @@ import { GridService } from '@app/services/grid/grid.service';
 import { PlayerService } from '@app/services/player/player.service';
 import { RackService } from '@app/services/rack/rack.service';
 import { Direction, Vec2 } from '@common';
-
+// TODO add to constant file
 const MAX_SIZE = 15;
 const MIN_SIZE = 1;
 
@@ -29,25 +29,23 @@ export class PlaceLetterService {
         this.myRack = [];
     }
 
-    enterOperation(isHorizontal: boolean): void {
+    enterOperation(): void {
         let word = '';
         let direction: Direction;
-        if (isHorizontal) {
+        if (this.isHorizontal) {
             direction = Direction.Right;
         } else direction = Direction.Down;
         for (const letter of this.tempRack) {
             word += letter;
         }
-        console.log(word);
-        console.log(this.positionInit);
         this.playerService.placeLetters(word, this.positionInit, direction);
     }
 
     backSpaceOperation(tempContext: CanvasRenderingContext2D): void {
         this.gridService.clearSquare(tempContext, this.gridPosition);
         if (this.isHorizontal) {
-            this.gridService.cleanSquare(tempContext, { x: this.gridPosition.x - 1, y: this.gridPosition.y });
-        } else this.gridService.cleanSquare(tempContext, { x: this.gridPosition.x, y: this.gridPosition.y - 1 });
+            this.gridService.cleanInsideSquare(tempContext, { x: this.gridPosition.x - 1, y: this.gridPosition.y });
+        } else this.gridService.cleanInsideSquare(tempContext, { x: this.gridPosition.x, y: this.gridPosition.y - 1 });
 
         this.rackService.rack.push(this.myRack[this.myRack.length - 1]);
         this.tempRack.pop();
