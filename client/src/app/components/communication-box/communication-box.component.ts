@@ -1,43 +1,37 @@
-import { Component, ElementRef, ViewChild } from '@angular/core';
+import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { Constants } from '@app/constants/global.constants';
 import { CommandsService } from '@app/services/commands/commands.service';
 import { SessionService } from '@app/services/session/session.service';
-import { SocketClientService } from '@app/services/socket-client/socket-client.service';
 import { Message, MessageType } from '@common';
 import { MessagingService } from '@app/services/messaging/messaging.service';
+import { Subscription } from 'rxjs';
 
 @Component({
     selector: 'app-communication-box',
     templateUrl: './communication-box.component.html',
     styleUrls: ['./communication-box.component.scss'],
 })
-export class CommunicationBoxComponent {
+export class CommunicationBoxComponent implements OnInit, OnDestroy {
     @ViewChild('messageContainer') private messageContainer: ElementRef<HTMLDivElement>;
     messages: Message[];
     inputValue: string;
 
+    private messageSubscription: Subscription;
+
     constructor(
         private readonly commandsService: CommandsService,
         private readonly sessionService: SessionService,
-        private readonly socket: SocketClientService,
         private readonly messagingService: MessagingService,
     ) {
         this.messages = [];
-        this.socket.on('message', (message: Message) => {
-            this.messages.push(message);
-            this.scroll();
-        });
-        this.socket.socketClient.on('connect_error', (err) => {
-            // TODO: this is for debug
-            const socketErrorMsg: Message = {
-                title: 'Connection avec le serveur perdue',
-                body: `${err.message}`,
-                messageType: MessageType.Error,
-                fromId: this.sessionService.id,
-            };
-            this.messages.push(socketErrorMsg);
-            this.socket.socketClient.close();
-        });
+    }
+
+    ngOnInit() {
+        this.messageSubscription = this.messagingService.onMessage.subscribe((message: Message) => this.onMessage(message));
+    }
+
+    ngOnDestroy() {
+        this.messageSubscription.unsubscribe();
     }
 
     send(input: string): boolean {
@@ -84,8 +78,13 @@ export class CommunicationBoxComponent {
         }
     }
 
-    shouldDisplay(message: Message) {
-        return message.messageType !== MessageType.Log || this.messagingService.isDebug;
+    private onMessage(message: Message) {
+        if (!this.messagingService.isDebug && message.messageType === MessageType.Log) {
+            return;
+        }
+
+        this.messages.push(message);
+        this.scroll();
     }
 
     private scroll(): void {

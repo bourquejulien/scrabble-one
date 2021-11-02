@@ -60,14 +60,14 @@ export class PlayAction implements Action {
         const chosenPlay = Math.floor(Math.random() * filteredPlays.length);
         const play = filteredPlays[chosenPlay];
 
-        let alternatives = '';
-        for (let i = 0; i < Config.VIRTUAL_PLAYER.NB_ALTERNATIVES; i++) {
+        const alternatives = new Set<string>();
+        for (let i = 0; alternatives.size < Config.VIRTUAL_PLAYER.NB_ALTERNATIVES; i++) {
             const alternativeIndex = (chosenPlay + i) % filteredPlays.length;
-            alternatives += filteredPlays[alternativeIndex].word + ' ';
+            alternatives.add(filteredPlays[alternativeIndex].word);
         }
 
         this.socketHandler.sendMessage({ title: '', body: 'Mot placé : ' + play.word, messageType: MessageType.Message });
-        this.socketHandler.sendMessage({ title: '', body: 'Mot alternatifs : ' + alternatives, messageType: MessageType.Log });
+        this.socketHandler.sendMessage({ title: '', body: 'Mot alternatifs : ' + Array.from(alternatives).toString(), messageType: MessageType.Log });
 
         return new PlaceAction(this.boardHandler, play, this.playerData);
     }
