@@ -3,10 +3,10 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
 import { SocketClientService } from '@app/services/socket-client/socket-client.service';
-import { SocketMock } from '@common';
 import { GamePageComponent } from '@app/pages/game-page/game-page.component';
 import { WaitingRoomPageComponent } from './waiting-room-page.component';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { SocketMock } from '@app/classes/socket-test-helper';
 
 describe('WaitingRoomPageComponent', () => {
     let component: WaitingRoomPageComponent;
