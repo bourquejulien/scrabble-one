@@ -2,9 +2,8 @@ import { Player } from '@app/classes/player/player';
 import { PlayerInfo } from '@app/classes/player-info';
 import { PlayerData } from '@app/classes/player-data';
 import { Config } from '@app/config';
-import { Answer, MessageType, Placement } from '@common';
+import { Answer, MessageType, Placement, SystemMessages } from '@common';
 import * as logger from 'winston';
-import { SystemMessages } from '../../../../../client/src/app/constants/system-messages.constants';
 
 export class HumanPlayer extends Player {
     isTurn: boolean;
@@ -24,7 +23,7 @@ export class HumanPlayer extends Player {
 
     async placeLetters(placements: Placement[]): Promise<Answer> {
         if (!this.isTurn) {
-            return { isSuccess: false, body: 'Not your turn' };
+            return { isSuccess: false, body: '' };
         }
 
         const lettersToPlace: string[] = [];

@@ -1,12 +1,11 @@
 import { Injectable } from '@angular/core';
 import { PlayerType } from '@app/classes/player/player-type';
 import { Constants } from '@app/constants/global.constants';
-import { SystemMessages } from '@app/constants/system-messages.constants';
 import { GameService } from '@app/services/game/game.service';
 import { MessagingService } from '@app/services/messaging/messaging.service';
 import { PlayerService } from '@app/services/player/player.service';
 import { ReserveService } from '@app/services/reserve/reserve.service';
-import { Direction, LETTER_DEFINITIONS, MessageType, Vec2 } from '@common';
+import { Direction, LETTER_DEFINITIONS, MessageType, Vec2, SystemMessages } from '@common';
 
 @Injectable({
     providedIn: 'root',
