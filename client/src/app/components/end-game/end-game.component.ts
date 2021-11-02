@@ -15,7 +15,7 @@ export class EndGameComponent {
             return (
                 'Félicitation au gagnant ' +
                 this.sessionService.gameConfig.firstPlayerName +
-                ':' +
+                ' : ' +
                 this.gameService.stats.localStats.points +
                 ' points'
             );
@@ -24,18 +24,17 @@ export class EndGameComponent {
             return (
                 'Félicitation au gagnant ' +
                 this.sessionService.gameConfig.secondPlayerName +
-                ':' +
+                ' : ' +
                 this.gameService.stats.remoteStats.points +
                 ' points'
             );
-        } else {
-            return (
-                'Félicitation aux gagnants ' +
-                this.sessionService.gameConfig.firstPlayerName +
-                ' et ' +
-                this.sessionService.gameConfig.secondPlayerName +
-                ' égalité'
-            );
         }
+        return (
+            'Félicitation aux gagnants ' +
+            this.sessionService.gameConfig.firstPlayerName +
+            ' et ' +
+            this.sessionService.gameConfig.secondPlayerName +
+            ' égalité'
+        );
     }
 }

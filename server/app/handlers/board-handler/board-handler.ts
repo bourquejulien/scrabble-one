@@ -1,7 +1,7 @@
 import { Board, ImmutableBoard } from '@app/classes/board/board';
-import { Placement, ValidationResponse } from '@common';
 import { BoardValidator } from '@app/classes/validation/board-validator';
 import { BoardError } from '@app/errors/board-error';
+import { Placement, ValidationResponse } from '@common';
 
 export class BoardHandler {
     constructor(private board: Board, private boardValidator: BoardValidator) {}
@@ -13,7 +13,9 @@ export class BoardHandler {
     placeLetters(letters: Placement[]): ValidationResponse {
         const response = this.boardValidator.validate(letters);
 
-        if (!response.isSuccess) return response;
+        if (!response.isSuccess) {
+            return response;
+        }
 
         this.board.merge(letters);
 

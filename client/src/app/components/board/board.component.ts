@@ -1,9 +1,9 @@
 import { AfterViewInit, Component, ElementRef, Input, OnChanges, SimpleChanges, ViewChild } from '@angular/core';
+import { PlayerType } from '@app/classes/player/player-type';
 import { Constants } from '@app/constants/global.constants';
 import { GridService } from '@app/services/grid/grid.service';
 import { MouseHandlingService } from '@app/services/mouse-handling/mouse-handling.service';
 import FontFaceObserver from 'fontfaceobserver';
-import { PlayerType } from '@app/classes/player/player-type';
 
 @Component({
     selector: 'app-board',
@@ -40,6 +40,12 @@ export class BoardComponent implements OnChanges, AfterViewInit {
         }
     }
 
+    updateFontSize(size: number): void {
+        this.gridService.letterFontFace.size = size;
+        this.gridService.drawGrid(this.gridContext);
+        this.gridService.drawSquares(this.squareContext);
+    }
+
     get width(): number {
         return Constants.GRID.CANVAS_SIZE.x;
     }
@@ -48,7 +54,7 @@ export class BoardComponent implements OnChanges, AfterViewInit {
         return Constants.GRID.CANVAS_SIZE.y;
     }
 
-    scale(): void {
+    private scale(): void {
         const gridCanvas = this.gridCanvas.nativeElement;
         const squareCanvas = this.squareCanvas.nativeElement;
         const scaleFactor = window.devicePixelRatio;
@@ -57,11 +63,5 @@ export class BoardComponent implements OnChanges, AfterViewInit {
         squareCanvas.height = gridCanvas.height = Math.ceil(gridCanvas.height * scaleFactor);
         this.gridContext.scale(scaleFactor, scaleFactor);
         this.squareContext.scale(scaleFactor, scaleFactor);
-    }
-
-    updateFontSize(size: number): void {
-        this.gridService.letterFontFace.size = size;
-        this.gridService.drawGrid(this.gridContext);
-        this.gridService.drawSquares(this.squareContext);
     }
 }

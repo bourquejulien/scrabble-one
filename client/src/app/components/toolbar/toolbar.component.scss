@@ -1,0 +1,19 @@
+.local.mat-toolbar {
+    background: var(--game-green);
+    color: #fff;
+}
+
+.remote.mat-toolbar {
+    background: var(--game-blue);
+    color: #fff;
+}
+
+.virtual.mat-toolbar.mat-primary {
+    background: var(--game-red);
+    color: #fff;
+}
+
+.tool-bar {
+    justify-content: space-between;
+    z-index: 2;
+}

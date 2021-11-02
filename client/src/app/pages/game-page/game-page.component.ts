@@ -1,3 +1,4 @@
+import { LocationStrategy } from '@angular/common';
 import { Component, ElementRef, OnDestroy, ViewChild } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { MatDrawer } from '@angular/material/sidenav';
@@ -6,14 +7,13 @@ import { PlayerType } from '@app/classes/player/player-type';
 import { ConfirmQuitDialogComponent } from '@app/components/confirm-quit-dialog/confirm-quit-dialog.component';
 import { EndGameComponent } from '@app/components/end-game/end-game.component';
 import { GameService } from '@app/services/game/game.service';
+import { MessagingService } from '@app/services/messaging/messaging.service';
+import { PlayerService } from '@app/services/player/player.service';
 import { ReserveService } from '@app/services/reserve/reserve.service';
 import { SessionService } from '@app/services/session/session.service';
 import { TimerService } from '@app/services/timer/timer.service';
-import { Subscription } from 'rxjs';
-import { PlayerService } from '@app/services/player/player.service';
-import { LocationStrategy } from '@angular/common';
 import { MessageType } from '@common';
-import { MessagingService } from '@app/services/messaging/messaging.service';
+import { Subscription } from 'rxjs';
 
 export enum Icon {
     Logout = 'exit_to_app',
@@ -37,13 +37,12 @@ export class GamePageComponent implements OnDestroy {
     @ViewChild('drawer', { static: true }) drawer: MatDrawer;
 
     playerType: PlayerType;
-    buttonConfig: ButtonConfig[] = [];
+    buttonConfig: ButtonConfig[];
     iconList: string[];
-    isOpen: boolean = true;
+    isOpen: boolean;
 
     private onTurnSubscription: Subscription;
     private gameEndingSubscription: Subscription;
-
     constructor(
         readonly gameService: GameService,
         readonly playerService: PlayerService,
@@ -56,6 +55,7 @@ export class GamePageComponent implements OnDestroy {
         location: LocationStrategy,
         elementRef: ElementRef,
     ) {
+        this.isOpen = true;
         // Overrides back button behavior
         // Reference: https://stackoverflow.com/a/56354475
         history.pushState(null, '', window.location.href);
@@ -103,7 +103,17 @@ export class GamePageComponent implements OnDestroy {
         this.isOpen = !this.isOpen;
     }
 
-    confirmQuit(): void {
+    endGame() {
+        this.sendRackInCommunication();
+        const dialogRef = this.dialog.open(EndGameComponent);
+        dialogRef.afterClosed().subscribe((result) => {
+            if (result) {
+                this.gameService.reset();
+            }
+        });
+    }
+
+    private confirmQuit(): void {
         const dialogRef = this.dialog.open(ConfirmQuitDialogComponent);
 
         dialogRef.afterClosed().subscribe((result) => {
@@ -112,16 +122,6 @@ export class GamePageComponent implements OnDestroy {
             }
             this.gameService.reset();
             this.router.navigate(['home']);
-        });
-    }
-
-    endGame() {
-        this.sendRackInCommunication();
-        const dialogRef = this.dialog.open(EndGameComponent);
-        dialogRef.afterClosed().subscribe((result) => {
-            if (result === true) {
-                this.gameService.reset();
-            }
         });
     }
 

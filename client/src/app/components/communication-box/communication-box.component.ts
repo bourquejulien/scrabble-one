@@ -13,10 +13,12 @@ import { Message, MessageType } from '@common';
 })
 export class CommunicationBoxComponent implements AfterViewInit {
     @ViewChild('messageContainer') private messageContainer: ElementRef<HTMLDivElement>;
-    messages: Message[] = [];
+    messages: Message[];
     inputValue: string;
 
-    constructor(private commandsService: CommandsService, private sessionService: SessionService, private readonly socket: SocketClientService) {}
+    constructor(private commandsService: CommandsService, private sessionService: SessionService, private readonly socket: SocketClientService) {
+        this.messages = [];
+    }
 
     ngAfterViewInit(): void {
         this.socket.socketClient.on('message', (message: Message) => {
@@ -38,7 +40,9 @@ export class CommunicationBoxComponent implements AfterViewInit {
     }
 
     send(input: string): boolean {
-        if (input === '') return false;
+        if (input === '') {
+            return false;
+        }
         if (this.commandsService.parseInput(input)) {
             this.inputValue = '';
         }
@@ -56,22 +60,14 @@ export class CommunicationBoxComponent implements AfterViewInit {
             case MessageType.Error:
                 return Constants.SYSTEM_COLOR;
             case MessageType.Message:
-                if (message.userId === PlayerType.Local) return Constants.PLAYER_ONE_COLOR;
-                return Constants.PLAYER_TWO_COLOR;
+                return message.userId === PlayerType.Local ? Constants.PLAYER_ONE_COLOR : Constants.PLAYER_TWO_COLOR;
             default:
                 return Constants.SYSTEM_COLOR;
         }
     }
 
     getFontColor(message: Message): string {
-        switch (message.messageType) {
-            case MessageType.Message:
-            case MessageType.System:
-            case MessageType.Error:
-                return Constants.WHITE_FONT;
-            default:
-                return Constants.BLACK_FONT;
-        }
+        return message.messageType === MessageType.Message ? Constants.BLACK_FONT : Constants.WHITE_FONT;
     }
 
     getTitle(message: Message): string {

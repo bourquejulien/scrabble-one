@@ -1,11 +1,11 @@
+import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { MessageType, Vec2, Direction, Answer } from '@common';
 import { BoardService } from '@app/services/board/board.service';
 import { MessagingService } from '@app/services/messaging/messaging.service';
-import { ReserveService } from '@app/services/reserve/reserve.service';
 import { RackService } from '@app/services/rack/rack.service';
+import { ReserveService } from '@app/services/reserve/reserve.service';
 import { SessionService } from '@app/services/session/session.service';
-import { HttpClient } from '@angular/common/http';
+import { Answer, Direction, MessageType, Vec2 } from '@common';
 import { environmentExt } from '@environmentExt';
 
 const localUrl = (call: string, id: string) => `${environmentExt.apiUrl}player/${call}/${id}`;

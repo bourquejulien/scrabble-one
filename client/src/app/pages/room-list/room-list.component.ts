@@ -1,25 +1,22 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, AfterViewInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { SocketClientService } from '@app/services/socket-client/socket-client.service';
+import { RoomService } from '@app/services/room/room.service';
 
 @Component({
     selector: 'app-room-list',
     templateUrl: './room-list.component.html',
     styleUrls: ['./room-list.component.scss'],
 })
-export class RoomListComponent implements OnInit {
-    availableRooms: string[] = [];
-    constructor(private readonly socket: SocketClientService, private router: Router) {}
+export class RoomListComponent implements AfterViewInit {
+    constructor(readonly roomService: RoomService, private router: Router) {}
 
-    ngOnInit(): void {
-        this.socket.socketClient.on('availableRooms', (availableRooms: string[]) => {
-            this.availableRooms = availableRooms;
-        });
-        this.socket.socketClient.emit('getRooms');
+    ngAfterViewInit(): void {
+        this.roomService.init();
+        this.roomService.refresh();
     }
 
-    join(roomId?: string) {
-        this.socket.socketClient.emit('joinRoom', roomId);
-        this.router.navigate(['game']);
+    async join(roomId: string) {
+        await this.roomService.join(roomId);
+        await this.router.navigate(['game']);
     }
 }
