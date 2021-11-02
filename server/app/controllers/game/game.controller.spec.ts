@@ -36,7 +36,6 @@ describe('GameController', () => {
     beforeEach(async () => {
         gameService = createStubInstance(GameService);
         gameService.initMultiplayer.resolves(multiplayerConfig);
-        gameService.initSinglePlayer.resolves(serverConfig);
         gameService.joinMultiplayer.resolves(serverConfig);
         const app = Container.get(Application);
         Object.defineProperty(app['gameController'], 'gameService', { value: gameService, writable: true });
@@ -84,6 +83,7 @@ describe('GameController', () => {
     });
 
     it('PUT /init/single', async () => {
+        gameService.initSinglePlayer.resolves(serverConfig);
         return request(expressApp)
             .put('/api/game/init/single')
             .send(singlePlayerConfig)
@@ -92,16 +92,16 @@ describe('GameController', () => {
             });
     });
 
-    it('PUT /init/single should not work when having the wrong info', async () => {
+    /* TODO: it('PUT /init/single', async () => {
         gameService.initSinglePlayer.resolves({} as unknown as ServerConfig);
         return request(expressApp)
             .put('/api/game/init/single')
             .send(singlePlayerConfig)
             .then((response) => {
-                expect(response.status).to.be.equal(Constants.HTTP_STATUS.OK);
-                // TODO
+                expect(response.status).to.be.equal(Constants.HTTP_STATUS.BAD_REQUEST);
+                expect(response.body).to.deep.equal({});
             });
-    });
+    }); */
 
     it('PUT /init/multi succesfully', async () => {
         return request(expressApp)
@@ -114,13 +114,13 @@ describe('GameController', () => {
     });
 
     it('PUT /init/multi should work when there is no user', async () => {
-        gameService.initMultiplayer.resolves('');
+        gameService.initMultiplayer.resolves({} as unknown as string);
         return request(expressApp)
             .put('/api/game/init/multi')
             .send(singlePlayerConfig)
             .then((response) => {
-                expect(response.status).to.be.equal(Constants.HTTP_STATUS.OK);
-                expect(response.body).to.deep.equal('');
+                expect(response.status).to.be.equal(Constants.HTTP_STATUS.BAD_REQUEST);
+                expect(response.body).to.deep.equal({});
             });
     });
 
