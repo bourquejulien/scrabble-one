@@ -28,7 +28,6 @@ export class RoomController {
             });
 
             socket.on('message', (message: Message) => {
-                // TODO: when room are functional socket.broadcast.to('testroom').emit('message', message);
                 logger.debug(`Socket: ${socket.id} sent ${message.messageType}`);
 
                 if (message.messageType === MessageType.Message) {

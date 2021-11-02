@@ -18,18 +18,24 @@ describe('PlayerController', () => {
     let expressApp: Express.Application;
     const sessionStats: SessionStats = { localStats: { points: 100, rackSize: 5 }, remoteStats: { points: 200, rackSize: 1 } };
     const exchangeLettersResponse = 'ExchangeLetterResponse';
+    const rack = ['m', 'e', 't', 'a'];
     beforeEach(async () => {
         stubSessionHandlingService = createStubInstance(SessionHandlingService);
         const stubSessionHandler = createStubInstance(SessionHandler);
         stubSessionHandler.getStats.returns(sessionStats);
 
-        const player1: Player = { id: '1', isTurn: false, playerInfo: { id: '1', isHuman: true, name: 'Monique' } } as Player;
+        const player1: Player = {
+            id: '1',
+            isTurn: false,
+            playerInfo: { id: '1', isHuman: true, name: 'Monique' },
+            playerData: { rack },
+        } as Player;
         const player2: HumanPlayer = {
             id: '2',
             isTurn: false,
             playerInfo: { id: '2', isHuman: true, name: 'Claudette' },
             playerData: {
-                rack: ['m', 'e', 't', 'a'],
+                rack,
             },
             // eslint-disable-next-line @typescript-eslint/no-empty-function
             skipTurn: () => {},
@@ -99,25 +105,25 @@ describe('PlayerController', () => {
             });
     });
 
-    it('GET /api/player/rack/2 should return rack of humain player ', async () => {
+    it('GET /api/player/rack/2 should return rack of human player ', async () => {
+        return request(expressApp)
+            .get('/api/player/rack/2')
+            .then((response) => {
+                expect(response.status).to.be.equal(Constants.HTTP_STATUS.OK);
+                expect(response.body).to.deep.equal(rack);
+            });
+    });
+
+    it('GET /api/player/rack/1 should return the rack of a non-human player', async () => {
         return request(expressApp)
             .get('/api/player/rack/1')
             .then((response) => {
                 expect(response.status).to.be.equal(Constants.HTTP_STATUS.OK);
-                expect(response.body).to.deep.equal('');
+                expect(response.body).to.deep.equal(rack);
             });
     });
 
-    it('GET /api/player/rack/1  ', async () => {
-        return request(expressApp)
-            .get('/api/player/rack/1')
-            .then((response) => {
-                expect(response.status).to.be.equal(Constants.HTTP_STATUS.OK);
-                expect(response.body).to.deep.equal('');
-            });
-    });
-
-    it('GET /api/player/stats/2 should return the correct rack info of a humain player ', async () => {
+    it('GET /api/player/stats/2 should return the correct rack info of a human player ', async () => {
         return request(expressApp)
             .get('/api/player/stats/2')
             .then((response) => {

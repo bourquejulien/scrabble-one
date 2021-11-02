@@ -6,6 +6,7 @@ import { Application } from '@app/app';
 import { Constants } from '@app/constants';
 import { expect } from 'chai';
 import { createStubInstance, SinonStubbedInstance } from 'sinon';
+import { Board } from '@app/classes/board/board';
 import request from 'supertest';
 import { Container } from 'typedi';
 import { Answer, Placement } from '@common';
@@ -28,6 +29,7 @@ describe('BoardController', () => {
         stubSessionHandler = createStubInstance(SessionHandler);
         const stubBoardHandler = createStubInstance(BoardHandler);
         stubSessionHandler['boardHandler'] = stubBoardHandler as unknown as BoardHandler;
+        stubBoardHandler['board'] = { boardData: {} } as unknown as Board;
         const player1: Player = { id: '1', isTurn: false, playerInfo: { id: '1', isHuman: false, name: 'Monique' } } as Player;
         const player2: HumanPlayer = {
             id: '2',
@@ -103,9 +105,9 @@ describe('BoardController', () => {
             });
     });
 
-    it('POST /retrieve/1 successfully ', async () => {
+    it('POST /retrieve/2 from human player successfully ', async () => {
         return request(expressApp)
-            .get('/api/board/retrieve/1')
+            .get('/api/board/retrieve/2')
             .then((response) => {
                 expect(response.status).to.be.equal(Constants.HTTP_STATUS.OK);
             });

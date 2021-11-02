@@ -27,7 +27,7 @@ export class GameController {
 
         this.router.put('/init/single', async (req: Request, res: Response) => {
             const answer = await this.gameService.initSinglePlayer(req.body);
-            if (answer) {
+            if (answer !== undefined) {
                 res.json(answer);
                 return;
             }
@@ -36,7 +36,7 @@ export class GameController {
 
         this.router.put('/init/multi', async (req: Request, res: Response) => {
             const answer = await this.gameService.initMultiplayer(req.body);
-            if (answer) {
+            if (answer !== undefined) {
                 res.json(answer);
                 return;
             }
@@ -46,7 +46,7 @@ export class GameController {
         this.router.put('/join', async (req: Request, res: Response) => {
             const answer = await this.gameService.joinMultiplayer(req.body);
 
-            if (answer) {
+            if (answer !== undefined) {
                 res.json(answer);
                 return;
             }

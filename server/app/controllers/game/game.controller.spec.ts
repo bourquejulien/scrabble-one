@@ -99,6 +99,7 @@ describe('GameController', () => {
             .send(singlePlayerConfig)
             .then((response) => {
                 expect(response.status).to.be.equal(Constants.HTTP_STATUS.OK);
+                // TODO
             });
     });
 
@@ -112,23 +113,25 @@ describe('GameController', () => {
             });
     });
 
-    it('PUT /init/multi should not work when there is no user', async () => {
+    it('PUT /init/multi should work when there is no user', async () => {
         gameService.initMultiplayer.resolves('');
         return request(expressApp)
             .put('/api/game/init/multi')
             .send(singlePlayerConfig)
             .then((response) => {
-                expect(response.status).to.be.equal(Constants.HTTP_STATUS.BAD_REQUEST);
-                expect(response.text).to.deep.equal(serverConfig);
+                expect(response.status).to.be.equal(Constants.HTTP_STATUS.OK);
+                expect(response.body).to.deep.equal('');
             });
     });
 
     it('PUT /join successfully', async () => {
+        gameService.joinMultiplayer.resolves(serverConfig);
         return request(expressApp)
             .put('/api/game/join')
             .send(singlePlayerConfig)
             .then((response) => {
                 expect(response.status).to.be.equal(Constants.HTTP_STATUS.OK);
+                expect(response.body).to.deep.equal(serverConfig);
             });
     });
 
