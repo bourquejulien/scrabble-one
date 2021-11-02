@@ -9,6 +9,7 @@ import { FormsModule } from '@angular/forms';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { cleanStyles } from '@app/classes/helpers/cleanup.helper';
 import { PlayerType } from '@app/classes/player/player-type';
+import { SocketMock } from '@app/classes/socket-test-helper';
 import { TimeSpan } from '@app/classes/time/timespan';
 import { Constants } from '@app/constants/global.constants';
 import { AppMaterialModule } from '@app/modules/material.module';
@@ -16,7 +17,7 @@ import { CommandsService } from '@app/services/commands/commands.service';
 import { MessagingService } from '@app/services/messaging/messaging.service';
 import { SessionService } from '@app/services/session/session.service';
 import { SocketClientService } from '@app/services/socket-client/socket-client.service';
-import { GameType, Message, MessageType, SocketMock } from '@common';
+import { GameType, Message, MessageType } from '@common';
 import { CommunicationBoxComponent } from './communication-box.component';
 
 describe('CommunicationBoxComponent', () => {

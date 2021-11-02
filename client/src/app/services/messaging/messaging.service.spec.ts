@@ -1,10 +1,11 @@
 /* eslint-disable dot-notation */
 /* eslint-disable @typescript-eslint/no-magic-numbers */
 import { TestBed } from '@angular/core/testing';
-import { MessageType, SocketMock } from '@common';
+import { MessageType } from '@common';
 import { SocketClientService } from '@app/services/socket-client/socket-client.service';
 import { MessagingService } from './messaging.service';
 import { PlayerType } from '@app/classes/player/player-type';
+import { SocketMock } from '@app/classes/socket-test-helper';
 
 describe('MessagingService', () => {
     let service: MessagingService;

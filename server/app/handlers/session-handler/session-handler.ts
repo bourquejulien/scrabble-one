@@ -16,11 +16,11 @@ export class SessionHandler {
     private readonly playerSubscription: Subscription;
 
     constructor(
-        readonly sessionInfo: SessionInfo,
-        readonly boardHandler: BoardHandler,
-        readonly reserveHandler: ReserveHandler,
-        private readonly playerHandler: PlayerHandler,
-        private readonly socketHandler: SocketHandler,
+        public sessionInfo: SessionInfo,
+        public boardHandler: BoardHandler,
+        public reserveHandler: ReserveHandler,
+        public playerHandler: PlayerHandler, // TODO: change visibility from private to public to test
+        private socketHandler: SocketHandler,
     ) {
         socketHandler.sessionId = sessionInfo.id;
         this.sessionData = { isActive: false, isStarted: false, timeLimitEpoch: 0 };
