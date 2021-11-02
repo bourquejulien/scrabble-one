@@ -45,11 +45,11 @@ export class GameController {
         this.router.put('/convert', async (req: Request, res: Response) => {
             const answer = await this.gameService.convert(req.body);
 
-            if (answer == null) {
-                res.status(Constants.HTTP_STATUS.BAD_REQUEST);
+            if (answer) {
+                res.json(answer);
+                return;
             }
-
-            res.json(answer);
+            res.status(Constants.HTTP_STATUS.BAD_REQUEST);
         });
     }
 }
