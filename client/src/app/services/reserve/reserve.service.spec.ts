@@ -1,27 +1,31 @@
 /* eslint-disable dot-notation -- reserve is private and we need access for the test */
-/*
+
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { ReserveService } from '@app/services/reserve/reserve.service';
 
 describe('ReserveService', () => {
-    let letterToExchange: string;
+    //let letterToExchange: string;
     let service: ReserveService;
+    // const serviceSpy= jasmine.createSpyObj('ReserveService', ['property']);
+    // serviceSpy['']
+
 
     beforeEach(() => {
-        letterToExchange = 'a';
-        const mockReserve = ['a', 'a', 'a', 'b', 'b', 'c'];
+        //letterToExchange = 'a';
+        //const mockReserve = ['a', 'a', 'a', 'b', 'b', 'c'];
 
-        TestBed.configureTestingModule({ providers: [] });
+        TestBed.configureTestingModule({ providers: [], imports: [HttpClientTestingModule] });
         service = TestBed.inject(ReserveService);
 
-        service.setReserve(mockReserve);
+        //service['reserve'] = mock;
     });
 
     it('should be created', () => {
         expect(service).toBeTruthy();
     });
 
-    it('should have added letter in reserve at the correct index', () => {
+    /*it('should have added letter in reserve at the correct index', () => {
         service.putBackLetter(letterToExchange);
 
         expect(service['reserve'][3]).toBe('a');
@@ -80,24 +84,25 @@ describe('ReserveService', () => {
         const spy = spyOn(Math, 'random').and.returnValue(1);
         expect(service.drawLetter()).toBe('c');
         expect(spy).toHaveBeenCalled();
-    });
+    });*/
 
     it('should return letter quantity if valid letter', () => {
         const firstletterAndQuantity = 'A : 3';
         const secondLetterAndQuantity = 'B : 2';
+        const letterNotFound = 'Z : 0';
+        service['reserve'] = ['a', 'a', 'a', 'b', 'b', 'c'];
         expect(service.getLetterAndQuantity('a')).toBe(firstletterAndQuantity);
         expect(service.getLetterAndQuantity('b')).toBe(secondLetterAndQuantity);
+        expect(service.getLetterAndQuantity('z')).toBe(letterNotFound);
     });
 
     it('should return reserve length', () => {
         expect(service.length).toBe(service['reserve'].length);
     });
 
-    it('should reset reserve to original length when resetReserve is called', () => {
-        const reserveLength = 102;
+    it('should empty reserve when reset is called', () => {
+        service['reserve'] = ['a', 'a', 'a', 'b', 'b', 'c'];
         service.reset();
-        expect(service.length).toBe(reserveLength);
+        expect(service.length).toBe(0);
     });
 });
-
-*/
