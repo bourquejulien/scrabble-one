@@ -1,3 +1,6 @@
+$background-color: rgb(29, 119, 179, 0.3);
+$main-color: ivory;
+
 .background-img {
     display: flex;
     flex-direction: column;
@@ -11,7 +14,7 @@
     background-repeat: no-repeat;
     background-size: cover;
     font-size: x-large;
-    color: ivory;
+    color: $main-color;
     font-family: 'Press Start 2P', cursive;
 }
 
@@ -23,23 +26,48 @@ p {
 }
 
 .abandon,
-.convert {
+.convert,
+.conversion-field {
     display: flex;
-    margin: 1rem;
     font-size: small;
     text-align: center;
+    margin: 1rem;
 
-    background-color: rgb(29, 119, 179, 0.3);
+    background-color: $background-color;
     font-family: 'Press Start 2P', cursive;
-    color: ivory;
+    color: $main-color;
+}
+
+.convert {
+    margin-top: 0;
+}
+
+.level-selector * {
+    color: $main-color;
+    font-size: small;
+    font-family: 'Press Start 2P', cursive;
+}
+
+.level-selector mat-select {
+    color: $main-color !important;
+    font-size: xx-small;
+    font-family: 'Press Start 2P', cursive;
+}
+
+mat-option {
+    color: $main-color !important;
+    background: $background-color !important;
+    font-size: medium;
+    font-family: 'Press Start 2P', cursive;
+}
+
+.abandon, .conversion-field {
+    bottom: 2vh;
 }
 
 #buttons {
-    margin-top: 0vh;
     padding-top: 0;
     padding-bottom: 0;
-    margin-top: 25vh;
-    margin-bottom: 0rem;
 }
 
 #left {

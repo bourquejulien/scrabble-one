@@ -7,7 +7,7 @@ import * as logger from 'winston';
 
 export class HumanPlayer extends Player {
     isTurn: boolean;
-    readonly playerData: PlayerData;
+    playerData: PlayerData;
 
     constructor(readonly playerInfo: PlayerInfo) {
         super();

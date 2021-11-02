@@ -1,4 +1,4 @@
-import { JoinServerConfig, MultiplayerCreateConfig, MultiplayerJoinConfig, ServerConfig, SinglePlayerConfig } from '@common';
+import { GameType, MultiplayerCreateConfig, MultiplayerJoinConfig, ServerConfig, SinglePlayerConfig, ConvertConfig } from '@common';
 import { SessionHandlingService } from '@app/services/sessionHandling/session-handling.service';
 import { BoardGeneratorService } from '@app/services/board/board-generator.service';
 import { Service } from 'typedi';
@@ -53,8 +53,9 @@ export class GameService {
 
         const humanPlayer = this.addHumanPlayer(humanPlayerInfo, sessionHandler);
         this.addVirtualPlayer(virtualPlayerInfo, sessionHandler);
-
         this.sessionHandlingService.addHandler(sessionHandler);
+
+        sessionHandler.start();
 
         logger.info(`Single player game: ${sessionHandler.sessionInfo.id} initialised`);
 
@@ -92,8 +93,9 @@ export class GameService {
 
     async joinMultiplayer(gameConfig: MultiplayerJoinConfig): Promise<ServerConfig | null> {
         const sessionHandler = this.sessionHandlingService.getHandlerBySessionId(gameConfig.sessionId);
+        const waitingPlayer = sessionHandler?.players[0];
 
-        if (sessionHandler == null || sessionHandler.sessionData.isStarted) {
+        if (sessionHandler == null || waitingPlayer == null || sessionHandler.sessionData.isStarted) {
             return null;
         }
 
@@ -104,45 +106,39 @@ export class GameService {
         };
 
         const humanPlayer = this.addHumanPlayer(humanPlayerInfo, sessionHandler);
+        this.sessionHandlingService.updateEntries(sessionHandler);
+        sessionHandler.start();
 
-        this.sessionHandlingService.updateEntry(sessionHandler);
+        this.socketService.send('onJoin', sessionHandler.sessionInfo.id, sessionHandler.getServerConfig(waitingPlayer.id));
 
         logger.info(`Multiplayer game: ${sessionHandler.sessionInfo.id} joined by ${humanPlayerInfo.id}`);
 
         return sessionHandler.getServerConfig(humanPlayer.id);
     }
 
-    async start(id: string): Promise<string | null> {
-        const sessionHandler = this.sessionHandlingService.getHandlerByPlayerId(id);
-        const waitingPlayer = sessionHandler?.players.filter((p) => p.id !== id)[0];
+    async convert(convertConfig: ConvertConfig): Promise<ServerConfig | null> {
+        const handler = this.sessionHandlingService.getHandlerByPlayerId(convertConfig.id);
 
-        if (sessionHandler == null || waitingPlayer == null || sessionHandler.sessionData.isStarted) {
+        if (handler == null || handler.sessionData.isStarted || handler.sessionInfo.gameType !== GameType.Multiplayer) {
+            logger.warn(`Cannot convert game to single player mode - playerId: ${convertConfig.id}`);
             return null;
         }
 
-        const startId = sessionHandler.start();
+        const virtualPlayerInfo: PlayerInfo = {
+            id: generateId(),
+            name: convertConfig.virtualPlayerName,
+            isHuman: false,
+        };
 
-        const joinConfig: JoinServerConfig = { startId, serverConfig: sessionHandler.getServerConfig(waitingPlayer.id) };
-        this.socketService.send('onJoin', sessionHandler.sessionInfo.id, joinConfig);
+        handler.sessionInfo.gameType = GameType.SinglePlayer;
+        this.addVirtualPlayer(virtualPlayerInfo, handler);
+        this.sessionHandlingService.updateEntries(handler);
 
-        logger.info(`Game started: ${id}`);
+        handler.start();
 
-        return startId;
-    }
+        logger.info(`Game converted: ${handler.sessionInfo.id}`);
 
-    async stop(id: string): Promise<boolean> {
-        const handler = this.sessionHandlingService.removeHandler(id);
-
-        if (handler == null) {
-            logger.warn(`Failed to stop game: ${id}`);
-            return false;
-        }
-
-        handler.dispose();
-
-        logger.info(`Game stopped: ${id}`);
-
-        return true;
+        return handler.getServerConfig(convertConfig.id);
     }
 
     private addHumanPlayer(playerInfo: PlayerInfo, sessionHandler: SessionHandler): HumanPlayer {

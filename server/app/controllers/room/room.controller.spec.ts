@@ -9,8 +9,9 @@ import { assert, createStubInstance, spy } from 'sinon';
 import { SessionHandlingService } from '@app/services/sessionHandling/session-handling.service';
 import { SocketService } from '@app/services/socket/socket-service';
 import { Server, Socket } from 'socket.io';
-import { Message, MessageType, SocketMock } from '@common';
+import { Message, MessageType } from '@common';
 import { SessionHandler } from '@app/handlers/session-handler/session-handler';
+import { SocketMock } from '@app/classes/socket-test-helper';
 
 describe('RoomController', () => {
     let controller: RoomController;

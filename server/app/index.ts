@@ -19,6 +19,7 @@ logger.configure({
                 winston.format.timestamp({ format: 'HH:mm:ss' }),
                 logFormat,
             ),
+            silent: process.env.NODE_ENV === 'test',
         }),
     ],
 });
