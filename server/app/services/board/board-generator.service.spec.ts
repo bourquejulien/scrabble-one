@@ -18,6 +18,6 @@ describe('BoardHandlingService', () => {
     });
 
     it('should generate a board', () => {
-        expect(service.generateBoard()).to.be.ok;
+        expect(service.generateBoard(false)).to.be.ok;
     });
 });

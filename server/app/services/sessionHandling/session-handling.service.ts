@@ -12,17 +12,34 @@ export class SessionHandlingService {
     }
 
     addHandler(sessionHandler: SessionHandler): void {
-        sessionHandler.players.forEach((p) => this.playerIds.set(p.playerInfo.id, sessionHandler.sessionInfo.id));
+        this.updateEntry(sessionHandler);
         this.sessionHandlers.push(sessionHandler);
     }
 
     removeHandler(id: string): SessionHandler | null {
-        const sessionHandler = this.getHandlerByPlayerId(id);
-        if (sessionHandler == null) return null;
+        const sessionId = this.getSessionId(id);
 
-        sessionHandler.players.forEach((p) => this.playerIds.delete(p.playerInfo.id));
-        sessionHandler.destroy();
+        const index = this.sessionHandlers.findIndex((e) => e.sessionInfo.id === sessionId);
+        if (index === -1) return null;
+
+        const sessionHandler = this.sessionHandlers[index];
+
+        sessionHandler.players.forEach((p) => this.playerIds.delete(p.id));
+        this.sessionHandlers.splice(index, 1);
+
         return sessionHandler;
+    }
+
+    updateEntry(sessionHandler: SessionHandler): void {
+        const idsToRemove: string[] = [];
+        for (const [key, value] of this.playerIds) {
+            if (value === sessionHandler.sessionInfo.id) {
+                idsToRemove.push(key);
+            }
+        }
+
+        idsToRemove.forEach((id) => this.playerIds.delete(id));
+        sessionHandler.players.forEach((p) => this.playerIds.set(p.id, sessionHandler.sessionInfo.id));
     }
 
     getHandlerByPlayerId(id: string): SessionHandler | null {
@@ -39,6 +56,6 @@ export class SessionHandlingService {
     }
 
     get availableSessions(): SessionHandler[] {
-        return this.sessionHandlers.filter((e) => e.sessionData.isStarted);
+        return this.sessionHandlers.filter((e) => !e.sessionData.isStarted);
     }
 }

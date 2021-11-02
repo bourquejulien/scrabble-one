@@ -3,7 +3,6 @@ export enum MessageType {
     Log,
     Error,
     System,
-    Game,
 }
 
 export interface Message {

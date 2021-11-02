@@ -3,7 +3,6 @@
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { PlayerService } from '@app/services/player/player.service';
-import { VirtualPlayerService } from '@app/services/virtual-player/virtual-player.service';
 import { Subject } from 'rxjs';
 import { GameService } from './game.service';
 
@@ -14,7 +13,6 @@ describe('GameService', () => {
     let service: GameService;
     // let reserveService: ReserveService;
     let playerService: jasmine.SpyObj<PlayerService>;
-    let virtualPlayerServiceSpy: jasmine.SpyObj<VirtualPlayerService>;
     let mockRack: string[];
 
     beforeEach(() => {
@@ -28,19 +26,9 @@ describe('GameService', () => {
 
         playerService.reset.and.returnValue();
 
-        virtualPlayerServiceSpy = jasmine.createSpyObj('VirtualPlayerService', ['reset', 'fillRack', 'startTurn'], {
-            playerData: { score: 0, skippedTurns: 0, rack: mockRack },
-            turnComplete: new Subject(),
-        });
-
-        virtualPlayerServiceSpy.reset.and.returnValue();
-
         TestBed.configureTestingModule({
             imports: [HttpClientTestingModule],
-            providers: [
-                { provide: VirtualPlayerService, useValue: virtualPlayerServiceSpy },
-                { provide: PlayerService, useValue: playerService },
-            ],
+            providers: [{ provide: PlayerService, useValue: playerService }],
         });
 
         service = TestBed.inject(GameService);
@@ -127,13 +115,13 @@ describe('GameService', () => {
         });
 
         it('should not next turn', () => {
-            const spyNextTurn = spyOn(service, 'nextTurn');
+            const spyNextTurn = spyOn<any>(service, 'nextTurn');
             service['handleTurnCompletion'](PlayerType.Virtual);
             expect(spyNextTurn).not.toHaveBeenCalled();
         });
 
         it('should next turn', () => {
-            const spyNextTurn = spyOn(service, 'nextTurn');
+            const spyNextTurn = spyOn<any>(service, 'nextTurn');
             service['handleTurnCompletion'](PlayerType.Human);
             expect(spyNextTurn).toHaveBeenCalled();
         });

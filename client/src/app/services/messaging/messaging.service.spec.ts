@@ -49,7 +49,6 @@ describe('MessagingService', () => {
         service.send('title2', 'body2', MessageType.Log, PlayerType.Virtual);
         service.send('title3', 'body3', MessageType.Message, PlayerType.Virtual);
         service.send('title4', 'body4', MessageType.System, PlayerType.Virtual);
-        service.send('title4', 'body4', MessageType.Game, PlayerType.Virtual);
-        expect(spy).toHaveBeenCalledTimes(5);
+        expect(spy).toHaveBeenCalledTimes(4);
     });
 });

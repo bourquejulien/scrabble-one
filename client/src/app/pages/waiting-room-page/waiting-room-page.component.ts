@@ -1,25 +1,45 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, ElementRef, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { SocketClientService } from '@app/services/socket-client/socket-client.service';
+import { RoomService } from '@app/services/room/room.service';
+import { Subscription } from 'rxjs';
+import { LocationStrategy } from '@angular/common';
 
 @Component({
     selector: 'app-waiting-room-page',
     templateUrl: './waiting-room-page.component.html',
     styleUrls: ['./waiting-room-page.component.scss'],
 })
-export class WaitingRoomPageComponent implements OnInit {
-    availableRooms: string[] = [];
-    constructor(private readonly socket: SocketClientService, private router: Router) {}
+export class WaitingRoomPageComponent implements OnDestroy, OnInit {
+    private roomSubscription: Subscription;
 
-    ngOnInit(): void {
-        this.socket.socketClient.on('availableRooms', (availableRooms: string[]) => {
-            this.availableRooms = availableRooms;
+    constructor(readonly roomService: RoomService, private router: Router, location: LocationStrategy, elementRef: ElementRef) {
+        history.pushState(null, '', window.location.href);
+        location.onPopState(() => {
+            if (elementRef.nativeElement.offsetParent != null) {
+                this.abort();
+                history.pushState(null, '', window.location.href);
+            }
         });
-        this.socket.socketClient.emit('getRooms');
     }
 
-    join(roomId?: string) {
-        this.socket.socketClient.emit('joinRoom', roomId);
+    ngOnInit() {
+        this.roomSubscription = this.roomService.onGameFull.subscribe(() => this.nextPage());
+    }
+
+    ngOnDestroy() {
+        this.roomSubscription.unsubscribe();
+    }
+
+    async abort() {
+        await this.roomService.abort();
+        await this.router.navigate(['home']);
+    }
+
+    convertToSoloMode() {
+        // TODO
+    }
+
+    private nextPage() {
         this.router.navigate(['game']);
     }
 }

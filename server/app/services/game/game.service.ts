@@ -1,4 +1,4 @@
-import { Message, MultiplayerCreateConfig, MultiplayerJoinConfig, ServerConfig, SinglePlayerConfig } from '@common';
+import { JoinServerConfig, MultiplayerCreateConfig, MultiplayerJoinConfig, ServerConfig, SinglePlayerConfig } from '@common';
 import { SessionHandlingService } from '@app/services/sessionHandling/session-handling.service';
 import { BoardGeneratorService } from '@app/services/board/board-generator.service';
 import { Service } from 'typedi';
@@ -14,22 +14,19 @@ import { DictionaryService } from '@app/services/dictionary/dictionary.service';
 import { SocketService } from '@app/services/socket/socket-service';
 import { SocketHandler } from '@app/handlers/socket-handler/socket-handler';
 import * as logger from 'winston';
+import { PlayerHandler } from '@app/handlers/player-handler/player-handler';
 
 @Service()
 export class GameService {
-    clientMessages: Message[];
-
     constructor(
         private readonly boardGeneratorService: BoardGeneratorService,
         private readonly sessionHandlingService: SessionHandlingService,
         private readonly dictionnaryService: DictionaryService,
         private readonly socketService: SocketService,
-    ) {
-        this.clientMessages = [];
-    }
+    ) {}
 
     async initSinglePlayer(gameConfig: SinglePlayerConfig): Promise<ServerConfig> {
-        const board = this.boardGeneratorService.generateBoard();
+        const board = this.boardGeneratorService.generateBoard(gameConfig.isRandomBonus);
         const sessionInfo = {
             id: generateId(),
             playTimeMs: gameConfig.playTimeMs,
@@ -38,8 +35,9 @@ export class GameService {
 
         const boardHandler = new BoardHandler(board, this.boardGeneratorService.generateBoardValidator(board));
         const reserveHandler = new ReserveHandler();
+        const socketHandler = new SocketHandler(this.socketService);
 
-        const sessionHandler = new SessionHandler(sessionInfo, boardHandler, reserveHandler, new SocketHandler(this.socketService));
+        const sessionHandler = new SessionHandler(sessionInfo, boardHandler, reserveHandler, new PlayerHandler(), socketHandler);
 
         const humanPlayerInfo: PlayerInfo = {
             id: generateId(),
@@ -63,8 +61,8 @@ export class GameService {
         return sessionHandler.getServerConfig(humanPlayer.id);
     }
 
-    async initMultiplayer(gameConfig: MultiplayerCreateConfig): Promise<ServerConfig> {
-        const board = this.boardGeneratorService.generateBoard();
+    async initMultiplayer(gameConfig: MultiplayerCreateConfig): Promise<string> {
+        const board = this.boardGeneratorService.generateBoard(gameConfig.isRandomBonus);
         const sessionInfo = {
             id: generateId(),
             playTimeMs: gameConfig.playTimeMs,
@@ -73,8 +71,9 @@ export class GameService {
 
         const boardHandler = new BoardHandler(board, this.boardGeneratorService.generateBoardValidator(board));
         const reserveHandler = new ReserveHandler();
+        const socketHandler = new SocketHandler(this.socketService);
 
-        const sessionHandler = new SessionHandler(sessionInfo, boardHandler, reserveHandler, new SocketHandler(this.socketService));
+        const sessionHandler = new SessionHandler(sessionInfo, boardHandler, reserveHandler, new PlayerHandler(), socketHandler);
 
         const humanPlayerInfo: PlayerInfo = {
             id: generateId(),
@@ -88,7 +87,7 @@ export class GameService {
 
         logger.info(`Multiplayer game: ${sessionHandler.sessionInfo.id} initialised`);
 
-        return sessionHandler.getServerConfig(humanPlayer.id);
+        return humanPlayer.id;
     }
 
     async joinMultiplayer(gameConfig: MultiplayerJoinConfig): Promise<ServerConfig | null> {
@@ -106,6 +105,8 @@ export class GameService {
 
         const humanPlayer = this.addHumanPlayer(humanPlayerInfo, sessionHandler);
 
+        this.sessionHandlingService.updateEntry(sessionHandler);
+
         logger.info(`Multiplayer game: ${sessionHandler.sessionInfo.id} joined by ${humanPlayerInfo.id}`);
 
         return sessionHandler.getServerConfig(humanPlayer.id);
@@ -113,16 +114,20 @@ export class GameService {
 
     async start(id: string): Promise<string | null> {
         const sessionHandler = this.sessionHandlingService.getHandlerByPlayerId(id);
+        const waitingPlayer = sessionHandler?.players.filter((p) => p.id !== id)[0];
 
-        if (sessionHandler == null || sessionHandler.sessionData.isStarted) {
+        if (sessionHandler == null || waitingPlayer == null || sessionHandler.sessionData.isStarted) {
             return null;
         }
 
-        const firstPlayer = sessionHandler.start();
+        const startId = sessionHandler.start();
+
+        const joinConfig: JoinServerConfig = { startId, serverConfig: sessionHandler.getServerConfig(waitingPlayer.id) };
+        this.socketService.send('onJoin', sessionHandler.sessionInfo.id, joinConfig);
 
         logger.info(`Game started: ${id}`);
 
-        return firstPlayer;
+        return startId;
     }
 
     async stop(id: string): Promise<boolean> {
@@ -133,7 +138,7 @@ export class GameService {
             return false;
         }
 
-        handler.destroy();
+        handler.dispose();
 
         logger.info(`Game stopped: ${id}`);
 

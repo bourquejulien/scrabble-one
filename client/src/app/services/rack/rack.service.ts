@@ -1,4 +1,9 @@
 import { Injectable } from '@angular/core';
+import { environmentExt } from '@environmentExt';
+import { HttpClient } from '@angular/common/http';
+import { SessionService } from '@app/services/session/session.service';
+
+const localUrl = (call: string, id: string) => `${environmentExt.apiUrl}player/${call}/${id}`;
 
 @Injectable({
     providedIn: 'root',
@@ -6,27 +11,25 @@ import { Injectable } from '@angular/core';
 export class RackService {
     readonly rack: string[];
 
-    constructor() {
+    constructor(private readonly httpClient: HttpClient, private readonly sessionService: SessionService) {
         this.rack = [];
     }
 
     swapLeft(position: number): number {
         if (position > 0) {
             return this.swap(position, -1);
-        } else {
-            const exchange = this.rack.splice(0, 1);
-            return this.rack.push(exchange[0]) - 1;
         }
+        const exchange = this.rack.splice(0, 1);
+        return this.rack.push(exchange[0]) - 1;
     }
 
     swapRight(position: number): number {
         if (position < this.length - 1) {
             return this.swap(position, 1);
-        } else {
-            const exchange = this.rack.splice(0, this.length - 1);
-            this.rack.push(...exchange);
-            return 0;
         }
+        const exchange = this.rack.splice(0, this.length - 1);
+        this.rack.push(...exchange);
+        return 0;
     }
 
     indexOf(letter: string, fromIndex?: number): number {
@@ -44,7 +47,16 @@ export class RackService {
         this.rack.length = 0;
     }
 
-    update(rack: string[]): void {
+    mod(value: number): number {
+        return ((value % this.length) + this.length) % this.length;
+    }
+
+    async refresh(): Promise<void> {
+        const rack = await this.httpClient.get<string[]>(localUrl('rack', this.sessionService.id)).toPromise();
+        this.update(rack);
+    }
+
+    private update(rack: string[]): void {
         rack = rack.slice();
 
         for (let i = 0; i < rack.length - this.rack.length; ) {
@@ -71,12 +83,10 @@ export class RackService {
         }
     }
 
-    mod(value: number): number {
-        return ((value % this.length) + this.length) % this.length;
-    }
-
     private swap(position: number, delta: number): number {
-        if (this.length === 0) return -1;
+        if (this.length === 0) {
+            return -1;
+        }
 
         const newPosition = this.mod(position + delta);
         [this.rack[position], this.rack[newPosition]] = [this.rack[newPosition], this.rack[position]];
