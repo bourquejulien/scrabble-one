@@ -12,7 +12,6 @@ import { Action } from '@app/classes/player/virtual-player/actions/action';
 import { PlayerInfo } from '@app/classes/player-info';
 import { DictionaryService } from '@app/services/dictionary/dictionary.service';
 import { SocketService } from '@app/services/socket/socket-service';
-import { SocketHandler } from '@app/handlers/socket-handler/socket-handler';
 import * as logger from 'winston';
 import { PlayerHandler } from '@app/handlers/player-handler/player-handler';
 
@@ -35,9 +34,8 @@ export class GameService {
 
         const boardHandler = new BoardHandler(board, this.boardGeneratorService.generateBoardValidator(board));
         const reserveHandler = new ReserveHandler();
-        const socketHandler = new SocketHandler(this.socketService);
 
-        const sessionHandler = new SessionHandler(sessionInfo, boardHandler, reserveHandler, new PlayerHandler(), socketHandler);
+        const sessionHandler = new SessionHandler(sessionInfo, boardHandler, reserveHandler, new PlayerHandler(), this.socketService);
 
         const humanPlayerInfo: PlayerInfo = {
             id: generateId(),
@@ -72,9 +70,8 @@ export class GameService {
 
         const boardHandler = new BoardHandler(board, this.boardGeneratorService.generateBoardValidator(board));
         const reserveHandler = new ReserveHandler();
-        const socketHandler = new SocketHandler(this.socketService);
 
-        const sessionHandler = new SessionHandler(sessionInfo, boardHandler, reserveHandler, new PlayerHandler(), socketHandler);
+        const sessionHandler = new SessionHandler(sessionInfo, boardHandler, reserveHandler, new PlayerHandler(), this.socketService);
 
         const humanPlayerInfo: PlayerInfo = {
             id: generateId(),

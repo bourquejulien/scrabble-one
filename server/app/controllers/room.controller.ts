@@ -39,6 +39,9 @@ export class RoomController {
                     return;
                 }
 
+                socket.leave(this.sessionHandlingService.getSessionId(playerId));
+                socket.leave(playerId);
+
                 this.socketIdToPlayerId.delete(socket.id);
                 await this.stop(playerId);
 
@@ -68,7 +71,7 @@ export class RoomController {
 
                 if (sessionId !== '') {
                     if (!(await this.isRoomFull(socket, sessionId))) {
-                        socket.join(sessionId);
+                        socket.join([sessionId, playerId]);
                         this.socketIdToPlayerId.set(socket.id, playerId);
                         logger.info(`Joined room: ${sessionId}`);
                     }

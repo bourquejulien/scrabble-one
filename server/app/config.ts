@@ -15,6 +15,7 @@ export const Config = {
         SKIP_PERCENTAGE: 0.1,
         EXCHANGE_PERCENTAGE: 0.1,
         PLAY_PERCENTAGE: 0.8,
+        NB_ALTERNATIVES: 3,
         SCORE_RANGE: [
             { percentage: 0.4, range: { min: 0, max: 6 } },
             { percentage: 0.3, range: { min: 7, max: 12 } },

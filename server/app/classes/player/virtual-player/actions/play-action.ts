@@ -4,16 +4,19 @@ import { Action } from './action';
 import { PlaceAction } from './place-action';
 import { BoardHandler } from '@app/handlers/board-handler/board-handler';
 import { Config } from '@app/config';
+import { SocketHandler } from '@app/handlers/socket-handler/socket-handler';
+import { MessageType } from '@common';
 
+// TODO
 // const MAX_PLAYTIME_MILLISECONDS = 20000;
 // const INTERVAL_TIME = 100;
 
-// TODO add messaging over sockets
 export class PlayAction implements Action {
     constructor(
         private readonly boardHandler: BoardHandler,
         private readonly playGenerator: PlayGenerator,
-        private readonly playerData: PlayerData /* private readonly messaging: Messaging, */,
+        private readonly playerData: PlayerData,
+        private readonly socketHandler: SocketHandler,
     ) {}
 
     private static getScoreRange(): { min: number; max: number } {
@@ -57,15 +60,13 @@ export class PlayAction implements Action {
         const chosenPlay = Math.floor(Math.random() * filteredPlays.length);
         const play = filteredPlays[chosenPlay];
 
-        /*
         let alternatives = '';
-        for (let i = 0; i < Constants.NB_ALTERNATIVES; i++) {
+        for (let i = 0; i < Config.VIRTUAL_PLAYER.NB_ALTERNATIVES; i++) {
             const alternativeIndex = (chosenPlay + i) % filteredPlays.length;
             alternatives += filteredPlays[alternativeIndex].word + ' ';
         }
-        */
 
-        // this.messaging.send('', 'Mot alternatifs: ' + alternatives, MessageType.Log, PlayerType.Virtual);
+        this.socketHandler.sendMessage({ title: '', body: 'Mot alternatifs: ' + alternatives, messageType: MessageType.Debug });
 
         return new PlaceAction(this.boardHandler, play, this.playerData);
     }

@@ -27,12 +27,7 @@ describe('CommunicationBoxComponent', () => {
     let socketServiceSpyObj: jasmine.SpyObj<SocketClientService>;
     const socketClient: SocketMock = new SocketMock();
     const commandsServiceSpy = jasmine.createSpyObj('CommandsService', {
-        parseInput: (input: string) => {
-            if (input === '1') {
-                return false;
-            }
-            return true;
-        },
+        parseInput: (input: string) => input !== '1',
     });
 
     const sessionService = {
