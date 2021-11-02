@@ -27,3 +27,8 @@ export interface ServerConfig {
     firstPlayerName: string,
     secondPlayerName: string,
 }
+
+export interface JoinServerConfig {
+    startId: string,
+    serverConfig: ServerConfig,
+}

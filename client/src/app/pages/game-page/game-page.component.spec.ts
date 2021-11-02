@@ -9,7 +9,6 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { GameConfig } from '@app/classes/game-config';
 import { cleanStyles } from '@app/classes/helpers/cleanup.helper';
 import { PlayerType } from '@app/classes/player/player-type';
-import { TimePipe } from '@app/classes/time/time.pipe';
 import { TimeSpan } from '@app/classes/time/timespan';
 import { AppMaterialModule } from '@app/modules/material.module';
 import { GameService } from '@app/services/game/game.service';
@@ -65,7 +64,7 @@ describe('GamePageComponent', () => {
 
     beforeEach(async () => {
         await TestBed.configureTestingModule({
-            declarations: [GamePageComponent, PlayAreaStubComponent, MatToolbar, TimePipe, MatDialogClose],
+            declarations: [GamePageComponent, PlayAreaStubComponent, MatToolbar, MatDialogClose],
             providers: [{ provide: GameService, useClass: GameServiceStub }],
             imports: [AppMaterialModule, MatDialogModule, BrowserAnimationsModule, RouterTestingModule.withRoutes([]), HttpClientTestingModule],
             schemas: [CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA],

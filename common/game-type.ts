@@ -1,4 +1,4 @@
 export enum GameType {
-    SinglePlayer = 'single player',
+    SinglePlayer = 'singlePlayer',
     Multiplayer = 'multiplayer',
 }

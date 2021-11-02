@@ -53,6 +53,7 @@ export class BoardComponent implements OnChanges, AfterViewInit {
             } else {
                 this.placeLetterService.samePosition(this.mouseHandlingService.position);
                 this.gridService.resetCanvas(this.tempContext);
+                this.gridService.drawSquares(this.squareContext);
             }
             const squareValid: boolean =
                 this.placeLetterService.inGrid(this.placeLetterService.gridPosition) &&
@@ -90,8 +91,7 @@ export class BoardComponent implements OnChanges, AfterViewInit {
             this.gridService.drawSquares(this.squareContext);
             this.squareSelected = false;
         } else if (enterValid) {
-            this.placeLetterService.enterOperation();
-            this.gridService.resetCanvas(this.tempContext);
+            this.play();
         } else {
             this.handleKeyPress2(event.key);
             const validKey: boolean =
@@ -143,6 +143,18 @@ export class BoardComponent implements OnChanges, AfterViewInit {
         }
     }
 
+    updateFontSize(size: number): void {
+        this.gridService.letterFontFace.size = size;
+        this.gridService.drawGrid(this.gridContext);
+        this.gridService.drawSquares(this.squareContext);
+    }
+
+    play(): void {
+        this.placeLetterService.enterOperation();
+        console.log('clean');
+        this.gridService.resetCanvas(this.tempContext);
+    }
+
     get width(): number {
         return Constants.GRID.CANVAS_SIZE.x;
     }
@@ -151,7 +163,7 @@ export class BoardComponent implements OnChanges, AfterViewInit {
         return Constants.GRID.CANVAS_SIZE.y;
     }
 
-    scale(): void {
+    private scale(): void {
         const gridCanvas = this.gridCanvas.nativeElement;
         const squareCanvas = this.squareCanvas.nativeElement;
         const scaleFactor = window.devicePixelRatio;
@@ -160,12 +172,6 @@ export class BoardComponent implements OnChanges, AfterViewInit {
         squareCanvas.height = gridCanvas.height = Math.ceil(gridCanvas.height * scaleFactor);
         this.gridContext.scale(scaleFactor, scaleFactor);
         this.squareContext.scale(scaleFactor, scaleFactor);
-    }
-
-    updateFontSize(size: number): void {
-        this.gridService.letterFontFace.size = size;
-        this.gridService.drawGrid(this.gridContext);
-        this.gridService.drawSquares(this.squareContext);
     }
 
     private handleKeyPress2(key: string): void {

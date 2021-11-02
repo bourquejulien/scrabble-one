@@ -42,6 +42,7 @@ export class SessionHandler {
 
     start(): string {
         this.sessionData.isActive = true;
+        this.sessionData.isStarted = true;
         this.timer = setInterval(() => this.timerTick(), Config.SESSION.REFRESH_INTERVAL_MS);
         return this.playerHandler.start();
     }
@@ -85,7 +86,7 @@ export class SessionHandler {
             this.players.forEach((p) => (p.isTurn = false));
         }
 
-        this.socketHandler.sendData('timerTick', timeLeftMs);
+        this.socketHandler.sendData('timerTick', { ms: timeLeftMs });
     }
 
     private onTurn(id: string): void {

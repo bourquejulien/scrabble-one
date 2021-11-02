@@ -34,9 +34,7 @@
     </div>
     <div class="parent">
         <div id="play-button" class="inline-block-child">
-            <button mat-button mat-dialog-close *ngIf="placeLetterService.tempRack.length > 0" (click)="placeLetterService.enterOperation()">
-                jouer
-            </button>
+            <button mat-button mat-dialog-close *ngIf="placeLetterService.tempRack.length > 0" (click)="play()">jouer</button>
         </div>
         <app-size-selector
             id="size-selector"
