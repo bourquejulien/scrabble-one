@@ -5,7 +5,8 @@ import { Router } from '@angular/router';
 import { Error } from '@app/classes/error-name/error';
 import { TimeSpan } from '@app/classes/time/timespan';
 import { GameService } from '@app/services/game/game.service';
-import { GameType, SinglePlayerConfig } from '@common';
+import { GameType, MultiplayerCreateConfig, SinglePlayerConfig } from '@common';
+import { RoomService } from '@app/services/room/room.service';
 
 interface FormConfig {
     gameType: string;
@@ -66,6 +67,7 @@ export class InitGameComponent implements OnInit {
     constructor(
         readonly gameService: GameService,
         private readonly router: Router,
+        private readonly roomService: RoomService,
         readonly dialogRef: MatDialogRef<InitGameComponent>,
         @Inject(MAT_DIALOG_DATA) readonly data: { gameModeType: GameType },
     ) {
@@ -166,13 +168,14 @@ export class InitGameComponent implements OnInit {
     }
 
     private async initMultiplayer(): Promise<void> {
-        // const multiplayerConfig: MultiplayerCreateConfig = {
-        //     gameType: GameType.Multiplayer,
-        //     playTimeMs: this.gameConfig.playTime.totalMilliseconds,
-        //     playerName: this.gameConfig.firstPlayerName,
-        // };
+        const multiplayerConfig: MultiplayerCreateConfig = {
+            gameType: GameType.Multiplayer,
+            playTimeMs: this.formConfig.playTime.totalMilliseconds,
+            playerName: this.formConfig.firstPlayerName,
+            isRandomBonus: this.formConfig.isRandomBonus,
+        };
 
-        // TODO Pass config to waiting room
+        await this.roomService.create(multiplayerConfig);
         await this.router.navigate(['waiting-room']);
     }
 

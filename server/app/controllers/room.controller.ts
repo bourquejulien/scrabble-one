@@ -32,8 +32,8 @@ export class RoomController {
                 logger.debug(`Socket: ${socket.id} sent ${message.messageType}`);
 
                 if (message.messageType === MessageType.Message) {
-                    const room = socket.rooms.values().next().value;
-                    this.socketService.socketServer.in(room).emit('message', message);
+                    const room = Array.from(socket.rooms).pop();
+                    this.socketService.socketServer.in(room ?? '').emit('message', message);
                 } else {
                     this.socketService.socketServer.to(socket.id).emit('message', message);
                 }
@@ -42,7 +42,8 @@ export class RoomController {
             });
 
             socket.on('getRooms', () => {
-                socket.emit('availableRooms', this.sessionHandlingService.availableSessions);
+                const sessionInfo = this.sessionInfos;
+                socket.emit('availableRooms', sessionInfo);
             });
 
             socket.on('joinRoom', async (playerId: string) => {
@@ -53,12 +54,16 @@ export class RoomController {
                         socket.join(sessionId);
                         logger.info(`Joined room: ${sessionId}`);
                     }
-                    // TODO: Is it still relevant?
-                    this.socketService.socketServer.emit('availableRooms', this.sessionHandlingService.availableSessions);
+
+                    this.socketService.socketServer.emit('availableRooms', this.sessionInfos);
                 } else {
                     logger.info(`Invalid room ID provided: ${sessionId}`);
                 }
             });
         });
+    }
+
+    private get sessionInfos(): string[] {
+        return this.sessionHandlingService.availableSessions.map((s) => s.sessionInfo.id);
     }
 }

@@ -1,28 +1,17 @@
-.local.mat-toolbar {
-    background: #45cb85;
-    color: #fff;
-}
-
-.remote.mat-toolbar {
-    background: #57e2e5;
-    color: #fff;
-}
-
-.virtual.mat-toolbar.mat-primary {
-    background: #f44336;
-    color: #fff;
-}
-
 mat-drawer-container {
     height: 100%;
 }
-.scoreboard-player-one-open {
+
+.scoreboard {
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     position: absolute;
-    background-color: #45cb85;
+}
+
+.scoreboard.player-one-open {
+    background-color: var(--game-green);
     margin-left: 70rem;
     left: 0rem;
     top: 16.75rem;
@@ -30,46 +19,9 @@ mat-drawer-container {
     height: 5rem;
     transition: 0.45s;
 }
-.scoreboard-player-two-open {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    position: absolute;
-    background-color: #f44336;
-    margin-left: 70rem;
-    left: 0rem;
-    top: 32.75rem;
-    width: 7.5rem;
-    height: 5rem;
-    transition: 0.45s;
-}
 
-.reserve-length-open {
-    font-size: large;
-    color: #fff;
-    background-color: #3f51b5;
-    text-align: center;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    position: absolute;
-    margin-left: 70rem;
-    left: 0rem;
-    top: 24.775rem;
-    width: 7.5rem;
-    height: 5rem;
-    transition: 0.45s;
-}
-
-.scoreboard-player-one-closed {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    position: absolute;
-    background-color: #45cb85;
+.scoreboard.player-one-closed {
+    background-color: var(--game-green);
     margin-left: 92.5rem;
     left: 0rem;
     top: 16.75rem;
@@ -78,13 +30,42 @@ mat-drawer-container {
     transition: 0.45s;
 }
 
-.scoreboard-player-two-closed {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    position: absolute;
-    background-color: #f44336;
+.scoreboard.reserve-length-open {
+    font-size: large;
+    color: #fff;
+    background-color: #3f51b5;
+    text-align: center;
+    margin-left: 70rem;
+    left: 0rem;
+    top: 24.775rem;
+    width: 7.5rem;
+    height: 5rem;
+    transition: 0.45s;
+}
+
+.scoreboard.reserve-length-closed {
+    font-size: large;
+    color: #fff;
+    background-color: #3f51b5;
+    text-align: center;
+    margin-left: 92.5rem;
+    left: 0rem;
+    top: 24.775rem;
+    width: 7.5rem;
+    height: 5rem;
+    transition: 0.45s;
+}
+
+.scoreboard.player-two-open {
+    margin-left: 70rem;
+    left: 0rem;
+    top: 32.75rem;
+    width: 7.5rem;
+    height: 5rem;
+    transition: 0.45s;
+}
+
+.scoreboard.player-two-closed {
     margin-left: 92.5rem;
     left: 0rem;
     top: 32.75rem;
@@ -93,22 +74,17 @@ mat-drawer-container {
     transition: 0.45s;
 }
 
-.reserve-length-closed {
-    font-size: large;
-    color: #fff;
-    background-color: #3f51b5;
-    text-align: center;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    position: absolute;
-    margin-left: 92.5rem;
-    left: 0rem;
-    top: 24.775rem;
-    width: 7.5rem;
-    height: 5rem;
-    transition: 0.45s;
+.scoreboard {
+    &.player-two-open,
+    &.player-two-closed {
+        &.singlePlayer {
+            background-color: var(--game-red);
+        }
+
+        &.multiplayer {
+            background-color: var(--game-blue);
+        }
+    }
 }
 
 .vertical-flex-items {
@@ -166,11 +142,6 @@ mat-drawer-container {
 .fab-button {
     margin: 8px;
     min-width: inherit;
-}
-
-.tool-bar {
-    justify-content: space-between;
-    z-index: 2;
 }
 
 #tools-container {

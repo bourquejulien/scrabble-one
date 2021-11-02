@@ -34,26 +34,21 @@ export class GameService {
 
         this.onTurn = new BehaviorSubject<PlayerType>(PlayerType.Local);
         this.gameEnding = new Subject<void>();
+
+        this.socketService.on('onTurn', async (id: string) => this.onNextTurn(id));
+        this.socketService.on('endGame', async () => this.endGame());
     }
 
     async startSinglePlayer(config: SinglePlayerConfig): Promise<void> {
-        this.sessionService.serverConfig = await this.httpCLient.put<ServerConfig>(localUrl('game', 'init/single'), config).toPromise();
-        this.socketService.join();
+        const serverConfig = await this.httpCLient.put<ServerConfig>(localUrl('game', 'init/single'), config).toPromise();
+        this.socketService.join(serverConfig.id);
 
-        await this.start();
+        const startId = await this.httpCLient.get<string>(localUrl('game', 'start', serverConfig.id)).toPromise();
+        await this.start(serverConfig, startId);
     }
 
-    async start(): Promise<void> {
-        const startId = await this.httpCLient.get<string>(localUrl('game', 'start', this.sessionService.id)).toPromise();
-
-        this.socketService.on('onTurn', (id: string) => {
-            this.onNextTurn(id);
-        });
-
-        this.socketService.on('endGame', async () => {
-            await this.refresh();
-            this.gameEnding.next();
-        });
+    async start(serverConfig: ServerConfig, startId: string): Promise<void> {
+        this.sessionService.serverConfig = serverConfig;
 
         await this.refresh();
         this.gameRunning = true;
@@ -63,13 +58,9 @@ export class GameService {
     async reset() {
         this.gameRunning = false;
         this.playerService.reset();
+        this.socketService.reset();
 
         await this.httpCLient.delete(localUrl('game', 'stop', this.sessionService.id)).toPromise();
-    }
-
-    private async refresh(): Promise<void> {
-        this.stats = await this.httpCLient.get<SessionStats>(localUrl('player', 'stats', this.sessionService.id)).toPromise();
-        await this.playerService.refresh();
     }
 
     private async onNextTurn(id: string): Promise<void> {
@@ -91,5 +82,15 @@ export class GameService {
 
         this.currentTurn = playerType;
         this.onTurn.next(this.currentTurn);
+    }
+
+    private async endGame() {
+        await this.refresh();
+        this.gameEnding.next();
+    }
+
+    private async refresh(): Promise<void> {
+        this.stats = await this.httpCLient.get<SessionStats>(localUrl('player', 'stats', this.sessionService.id)).toPromise();
+        await this.playerService.refresh();
     }
 }

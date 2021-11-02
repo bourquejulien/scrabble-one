@@ -5,22 +5,24 @@ import { RoomListComponent } from './room-list.component';
 import { MatCard } from '@angular/material/card';
 import { MatIcon } from '@angular/material/icon';
 import { MatToolbar } from '@angular/material/toolbar';
-import { SocketClientService } from '@app/services/socket-client/socket-client.service';
-import { SocketMock } from '@common';
 import { GamePageComponent } from '@app/pages/game-page/game-page.component';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { RoomService } from '@app/services/room/room.service';
+import { MatList } from '@angular/material/list';
+
+const ROOMS = ['a', 'b', 'c'];
 
 describe('RoomListComponent', () => {
     let component: RoomListComponent;
     let fixture: ComponentFixture<RoomListComponent>;
-    let socketServiceSpyObj: jasmine.SpyObj<SocketClientService>;
-    const socketClient: SocketMock = new SocketMock();
+    let roomServiceSpy: jasmine.SpyObj<RoomService>;
 
     beforeEach(async () => {
-        socketServiceSpyObj = jasmine.createSpyObj('SocketClientService', [], { socketClient });
+        roomServiceSpy = jasmine.createSpyObj('RoomService', ['init', 'refresh', 'join'], { rooms: ROOMS });
         await TestBed.configureTestingModule({
-            declarations: [RoomListComponent, MatCard, MatIcon, MatToolbar],
-            imports: [RouterTestingModule.withRoutes([{ path: 'game', component: GamePageComponent }])],
-            providers: [{ provide: SocketClientService, useValue: socketServiceSpyObj }],
+            declarations: [RoomListComponent, MatCard, MatIcon, MatToolbar, MatList],
+            imports: [HttpClientTestingModule, RouterTestingModule.withRoutes([{ path: 'game', component: GamePageComponent }])],
+            providers: [{ provide: RoomService, useValue: roomServiceSpy }],
         }).compileComponents();
     });
 
@@ -34,17 +36,9 @@ describe('RoomListComponent', () => {
         expect(component).toBeTruthy();
     });
 
-    it('should update available rooms from server', () => {
-        component.ngOnInit();
-        const availableRooms: string[] = ['123', '456', '789'];
-        socketClient.triggerEndpoint('availableRooms', availableRooms);
-        expect(component['availableRooms']).toBe(availableRooms);
-    });
-
     it('should join room', () => {
-        const spyEmit = spyOn(socketServiceSpyObj['socketClient'], 'emit');
         const roomId = 'roomId';
         component.join(roomId);
-        expect(spyEmit).toHaveBeenCalledWith('joinRoom', roomId);
+        expect(roomServiceSpy['join']).toHaveBeenCalledWith(roomId);
     });
 });
