@@ -8,7 +8,9 @@ export class BroadcastOperator {
         this.isFull = isFull;
     }
     async fetchSockets() {
-        if (this.isFull) return ['socket3', 'socket2'];
+        if (this.isFull) {
+            return ['socket3', 'socket2'];
+        }
         return ['socket1'];
     }
     emit(event: string, message: any) {
