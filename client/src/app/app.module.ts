@@ -17,11 +17,10 @@ import { EndGameComponent } from './components/end-game/end-game.component';
 import { InitGameComponent } from './components/init-game/init-game.component';
 import { RackComponent } from './components/rack/rack.component';
 import { SizeSelectorComponent } from './components/size-selector/size-selector.component';
+import { ToolbarComponent } from './components/toolbar/toolbar.component';
 import { GameModePageComponent } from './pages/game-mode-page/game-mode-page.component';
 import { RoomListComponent } from './pages/room-list/room-list.component';
 import { WaitingRoomPageComponent } from './pages/waiting-room-page/waiting-room-page.component';
-import { BoardComponent } from './components/board/board/board.component';
-import { ToolbarComponent } from './components/toolbar/toolbar/toolbar.component';
 
 /**
  * Main module that is used in main.ts.

@@ -51,7 +51,8 @@ body {
     background-size: cover;
 }
 
-.button1, .button-group .button1 {
+.button1,
+.button-group .button1 {
     padding: 15px 25px;
     font-size: 24px;
     cursor: pointer;
@@ -87,7 +88,8 @@ p {
     display: inline-block;
 }
 
-.dropdown-content1, .dropdown-content2 {
+.dropdown-content1,
+.dropdown-content2 {
     display: none;
     position: absolute;
     background-color: #8e8d8a;
@@ -106,7 +108,8 @@ p {
     left: 200px;
 }
 
-.dropdown:hover .dropdown-content1, .dropdown:hover .dropdown-content2 {
+.dropdown:hover .dropdown-content1,
+.dropdown:hover .dropdown-content2 {
     display: block;
     border-color: #eae7dc;
     border-width: 3px;

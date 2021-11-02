@@ -74,8 +74,9 @@ mat-drawer-container {
     transition: 0.45s;
 }
 
-.scoreboard{
-    &.player-two-open, &.player-two-closed {
+.scoreboard {
+    &.player-two-open,
+    &.player-two-closed {
         &.singlePlayer {
             background-color: var(--game-red);
         }
