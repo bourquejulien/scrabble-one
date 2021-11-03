@@ -69,7 +69,7 @@ export class PlayerService {
     }
 
     async refresh(): Promise<void> {
-        await this.reserveService.refresh();
+        // await this.reserveService.refresh();
         await this.boardService.refresh();
         await this.rackService.refresh();
     }
