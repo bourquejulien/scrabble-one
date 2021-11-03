@@ -12,6 +12,7 @@ import { PlayerService } from '@app/services/player/player.service';
 import { ReserveService } from '@app/services/reserve/reserve.service';
 import { Direction, MessageType, Placement } from '@common';
 import { environmentExt } from '@environmentExt';
+import { RackService } from '../rack/rack.service';
 import { SessionService } from '../session/session.service';
 // import { TimerService } from '@app/services/timer/timer.service';
 // import { Subject } from 'rxjs';
@@ -22,8 +23,9 @@ import { SessionService } from '../session/session.service';
     providedIn: 'root',
 })
 class SessionServiceStub {
+    private _id: string = '1';
     get id(): string {
-        return '1';
+        return this._id;
     }
 }
 /*class TimerServiceMock {
@@ -44,40 +46,6 @@ class SessionServiceStub {
     }
 }*/
 
-@Injectable({
-    providedIn: 'root',
-})
-class ReserveServiceStub {
-    reserve: string[];
-
-    constructor() {
-        this.setReserve([]);
-    }
-
-    setReserve(mockReserve: string[]): void {
-        this.reserve = [];
-
-        for (const letter of mockReserve) {
-            this.reserve.push(letter);
-        }
-    }
-
-    drawLetter(): string {
-        const randomLetterIndex = this.reserve.indexOf('a');
-        return this.reserve.splice(randomLetterIndex, 1)[0];
-    }
-
-    putBackLetter(letterToExchange: string): void {
-        const letterIndex = this.reserve.indexOf(letterToExchange);
-        if (letterIndex !== -1) {
-            this.reserve.splice(letterIndex, 0, letterToExchange);
-        } else if (letterToExchange.match(/^[a-z]$/) || letterToExchange === '*') this.reserve.push(letterToExchange);
-    }
-
-    get length(): number {
-        return this.reserve.length;
-    }
-}
 
 fdescribe('PlayerService', () => {
     let service: PlayerService;
@@ -88,6 +56,8 @@ fdescribe('PlayerService', () => {
     let lettersToExchange: string;
     // let timerService: TimerService;
     let boardServiceSpy: jasmine.SpyObj<BoardService>;
+    let rackServiceSpy: jasmine.SpyObj<RackService>;
+    let reserveServiceSpy: jasmine.SpyObj<ReserveService>;
     let letterToPlace: Placement[];
     let httpMock: HttpTestingController;
     //let sessionServiceSpy: jasmine.SpyObj<SessionService>;
@@ -104,14 +74,18 @@ fdescribe('PlayerService', () => {
         lettersToExchange = 'kee';
         sessionId = '1';
         // const mockRack = ['k', 'e', 's', 'e', 'i', 'o', 'v'];
-        boardServiceSpy = jasmine.createSpyObj('BoardService', ['retrievePlacements', 'placeLetters', 'refreshBoard']);
+        boardServiceSpy = jasmine.createSpyObj('BoardService', ['retrievePlacements', 'placeLetters', 'refresh', 'reset']);
+        reserveServiceSpy = jasmine.createSpyObj('ReserveService', ['refresh', 'reset']);
+        rackServiceSpy = jasmine.createSpyObj('RackService', ['rack', 'refresh']);
+        rackServiceSpy['rack'] = ['k', 'e', 's', 'e', 'i', 'o', 'v'];
         //sessionServiceSpy = jasmine.createSpyObj('SessionService', {id: '1'});
 
         TestBed.configureTestingModule({
             providers: [
                 { provide: BoardService, useValue: boardServiceSpy },
+                { provide: RackService, useValue: rackServiceSpy },
+                { provide: ReserveService, useValue: reserveServiceSpy },
                 { provide: SessionService, useClass: SessionServiceStub },
-                { provide: ReserveService, useClass: ReserveServiceStub },
                 /*{ provide: HttpClient, useClass: TimerServiceMock },*/
             ],
             imports: [HttpClientTestingModule]
@@ -136,33 +110,39 @@ fdescribe('PlayerService', () => {
     it('should be created', () => {
         expect(service).toBeTruthy();
     });
-    it(
+
+    /*it(
         "search should return SearchItems",
         fakeAsync(() => {
-            let response = { isSuccess: false, body: 'Error' };
+            //let response = { isSuccess: true, body: 'Error' };
 
             // Perform a request (this is fakeAsync to the responce won't be called until tick() is called)
 
             // Expect a call to this URL
 
             service.exchangeLetters(lettersToExchange);
-            const request = httpMock.expectOne(localUrl('exchange', `${sessionId}`));
+            const request = httpMock.match(localUrl('exchange', `${sessionId}`));
+            //console.log(request.request.url);
 
             // Assert that the request is a GET.
 
-            expect(request.request.method).toEqual('POST');
+            expect(request[0].request.method).toEqual('POST');
+            // expect(request.request.params.get('id')).toBe('1');
             // Respond with this data when called
-            request.flush(response);
+            //request.flush(response);
+            //const req = httpMock.expectOne({ method: 'POST', url: 'http://localhost:3000/api/player/exchange/1' });
+            //expect(req.request.params.get('exchange')).toEqual(sessionId);
+
 
 
             // Call tick whic actually processes te response
             tick();
 
             // Run our tests
-            //const spy = spyOn(service['messagingService'], 'send');
-            //expect(spy).toHaveBeenCalledWith('', 'Error', MessageType.Error);
+            const spy = spyOn(service['messagingService'], 'send');
+            expect(spy).toHaveBeenCalledWith('', 'Error', MessageType.Error);
         })
-    );
+    );*/
 
     // it('should notify player if startTurn', (done) => {
     //     service.turnComplete.subscribe((playerType) => {
@@ -207,29 +187,133 @@ fdescribe('PlayerService', () => {
     });
 
     it('should refresh player data if letters successfully placed', async () => {
-        const answer = { isSuccess: false, body: 'Error' };
+        const answer = { isSuccess: true, body: 'Valid' };
+        const spy = spyOn(service, 'refresh');
         letterToPlace = [{ letter: 'k', position: { x: 11, y: 3 } }];
         boardServiceSpy['retrievePlacements'].and.returnValue(letterToPlace);
         boardServiceSpy['placeLetters'].and.returnValue(Promise.resolve(answer));
 
-        const spy = spyOn(service, 'refresh');
         await service.placeLetters('k', { x: 11, y: 3 }, Direction.Up);
         await service.refresh();
         expect(spy).toHaveBeenCalled();
     });
 
-    it('should pass. please God.', async () => {
-        const spyRack = spyOn<any>(service, 'rack').and.returnValue(['k', 'e', 's', 'e', 'i', 'o', 'v']);
+    it('should call POST request with http client when exchanging', fakeAsync(() => {
+        //const spyRack = spyOn<any>(service, 'rack').and.returnValue(['k', 'e', 's', 'e', 'i', 'o', 'v']);
         //await httpMock.post<any>;
-        const request = httpMock.expectOne(localUrl('exchange', `${sessionId}`));
+        /*const request = httpMock.expectOne(localUrl('exchange', `${sessionId}`));
         const spyMessage = spyOn(service['messagingService'], 'send');
         await service.exchangeLetters(lettersToExchange);
         expect(spyMessage).toHaveBeenCalledWith('', 'Error', MessageType.Error);
         expect(spyRack).toHaveBeenCalled();
-        expect(request.request.method).toBe('POST');
+        expect(request.request.method).toBe('POST');*/
+
+        //spyOnProperty(service, 'rack', 'get').and.returnValue(['k', 'e', 's', 'e', 'i', 'o', 'v']);
+
+
+        service.exchangeLetters(lettersToExchange);
+        const request = httpMock.match(localUrl('exchange', `${sessionId}`));
+        //console.log(request.request.url);
+
+        // Assert that the request is a GET.
+
+        expect(request[0].request.method).toEqual('POST');
+        // expect(request.request.params.get('id')).toBe('1');
+        // Respond with this data when called
+        request[0].flush([]);
+        //const req = httpMock.expectOne({ method: 'POST', url: 'http://localhost:3000/api/player/exchange/1' });
+        //expect(req.request.params.get('exchange')).toEqual(sessionId);
+        //const answer = httpMock.post<Answer>(localUrl('exchange', sessionId), letterArray);
+        //await service.exchangeLetters('z');
+
+        // Call tick whic actually processes te response
+        tick();
+
+        // Run our tests
+        //await service.exchangeLetters(lettersToExchange);
+
+
+    }));
+
+    it('should refresh player data if valid letters provided when exchanging', fakeAsync(() => {
+        const answer = { isSuccess: true, body: 'Valid' };
+        const spy = spyOn(service, 'refresh');
+        //spyOnProperty(service, 'rack', 'get').and.returnValue(['k', 'e', 's', 'e', 'i', 'o', 'v']);
+
+
+        service.exchangeLetters(lettersToExchange);
+        const request = httpMock.match(localUrl('exchange', `${sessionId}`));
+
+        request[0].flush(answer);
+        tick();
+
+        expect(spy).toHaveBeenCalled();
+    }));
+
+    it('should send error message when exchange called if invalid letters provided', fakeAsync(() => {
+        const answer = { isSuccess: false, body: 'Error' };
+        const spy = spyOn(service['messagingService'], 'send');
+
+        service.exchangeLetters('z');
+        const request = httpMock.expectOne(localUrl('exchange', `${sessionId}`));
+
+        request.flush(answer);
+        tick();
+
+        expect(spy).toHaveBeenCalledWith('', answer.body, MessageType.Error);
+    }));
+
+    it('should call POST request with http client when skipping', fakeAsync(() => {
+        service.skipTurn();
+        const request = httpMock.match(localUrl('skip', `${sessionId}`));
+
+        expect(request[0].request.method).toEqual('POST');
+    }));
+
+    it('should send error message when skipTurn fails', fakeAsync(() => {
+        const answer = { isSuccess: false, body: 'Error' };
+        const spy = spyOn(service['messagingService'], 'send');
+
+        service.skipTurn();
+        const request = httpMock.expectOne(localUrl('skip', `${sessionId}`));
+
+        request.flush(answer);
+        tick();
+
+        expect(spy).toHaveBeenCalledWith('', answer.body, MessageType.Error);
+    }));
+
+
+    it('should refresh payer data if turn skipped', fakeAsync(() => {
+        const answer = { isSuccess: true, body: 'Valid' };
+        const spy = spyOn(service, 'refresh');
+
+        service.skipTurn();
+        const request = httpMock.match(localUrl('skip', `${sessionId}`));
+
+        request[0].flush(answer);
+        tick();
+
+        expect(spy).toHaveBeenCalled();
+    }));
+
+    it('should refresh player data if refresh function called', async () => {
+        await service.refresh();
+        expect(reserveServiceSpy['refresh']).toHaveBeenCalled();
+        expect(boardServiceSpy['refresh']).toHaveBeenCalled();
+        expect(rackServiceSpy['refresh']).toHaveBeenCalled();
     });
 
+    it('should reset game data if reset function called', () => {
+        service.reset();
+        expect(reserveServiceSpy['reset']).toHaveBeenCalled();
+        expect(boardServiceSpy['reset']).toHaveBeenCalled();
+    });
 
+    it('should get rack', () => {
+        expect(service.rack).toBe(rackServiceSpy['rack']);
+        //expect(boardServiceSpy['reset']).toHaveBeenCalled();
+    });
 
     // it('should update rack if validation success and letters in rack', async () => {
     //     validationResponse = { isSuccess: false, points: 15, description: 'Error' };

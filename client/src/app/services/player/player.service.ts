@@ -43,10 +43,11 @@ export class PlayerService {
     }
 
     async exchangeLetters(lettersToExchange: string): Promise<void> {
-        console.log('session id: ' + this.sessionService.id);
+        //console.log('session id: ' + this.sessionService.id);
         const letterArray = lettersToExchange.split('');
-        console.log('response: ' + this.httpClient.post<Answer>(localUrl('exchange', this.sessionService.id), letterArray).toPromise());
+        //console.log('response: ' + this.httpClient.post<Answer>(localUrl('exchange', this.sessionService.id), letterArray).toPromise());
         const answer = await this.httpClient.post<Answer>(localUrl('exchange', this.sessionService.id), letterArray).toPromise();
+        //console.log('test: ' + this.httpClient);
 
         if (!answer.isSuccess) {
             this.messagingService.send('', answer.body, MessageType.Error);
