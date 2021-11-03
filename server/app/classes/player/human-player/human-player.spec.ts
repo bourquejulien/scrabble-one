@@ -35,7 +35,7 @@ const VALID_PLACEMENT: Placement[] = [
 // const ARBITRARY_SCORE = 40;
 // const ARBITRARY_SKIPPED_TURN = 40;
 export class SocketHandlerMock extends SocketHandler {
-    sendData<T>(event: string, data: T): void {
+    sendData<T>(event: string, data?: T): void {
         // Does nothing
     }
 
