@@ -30,7 +30,7 @@ describe('CommandsService', () => {
             ],
         });
         service = TestBed.inject(CommandsService);
-        service.messagingService.isDebug = true;
+        service['messagingService'].isDebug = true;
     });
 
     it('should be created', () => {
@@ -45,11 +45,11 @@ describe('CommandsService', () => {
     });
 
     it('#parseInput should toggle debugging mode', () => {
-        service.messagingService.isDebug = false;
+        service['messagingService'].isDebug = false;
         service.parseInput('!debug');
-        expect(service.messagingService.isDebug).toBeTrue();
+        expect(service['messagingService'].isDebug).toBeTrue();
         service.parseInput('!debug');
-        expect(service.messagingService.isDebug).toBeFalse();
+        expect(service['messagingService'].isDebug).toBeFalse();
     });
 
     it('#parseInput should send an error message when exchange letter command is invalid', () => {
@@ -114,7 +114,7 @@ describe('CommandsService', () => {
     });
 
     it("#parseInput should fail when it is not the user's turn", () => {
-        service.gameService.currentTurn = PlayerType.Virtual;
+        service['gameService'].currentTurn = PlayerType.Virtual;
         // service.messagingService.onMessage().subscribe((message) => {
         //     expect(message.messageType).toEqual(MessageType.Error);
         // });
