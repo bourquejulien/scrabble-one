@@ -53,4 +53,14 @@
 
 <button mat-raised-button color="primary" mat-button routerLink="/settings" (click)="reset()" class="exit-button">Retourner à la selection des modes de jeu</button>
 
+<ng-template #alertDialog>
+    <div class="error-dialog">
+        <div class="error">
+            La partie sélectionnée n'est plus disponible.
+            <br>
+            Veuillez en choisir une autre.
+        </div>
 
+        <button mat-raised-button mat-dialog-close color="primary">Confirmer</button>
+    </div>
+</ng-template>

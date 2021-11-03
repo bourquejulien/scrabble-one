@@ -46,11 +46,23 @@
 
 .error {
     font-size: 14px;
+    text-align: center;
     color: darkred;
+}
+
+.error-dialog {
+    text-align: center;
+    align-items: center;
+}
+
+.error-dialog button {
+    margin-top: 1rem;
 }
 
 .exit-button {
     position: relative;
     margin-left: 5vh;
     bottom: 10rem;
+    text-align: center;
+    align-items: center;
 }

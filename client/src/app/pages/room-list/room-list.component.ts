@@ -1,14 +1,16 @@
-import { Component, AfterViewInit, OnDestroy } from '@angular/core';
-import { Router } from '@angular/router';
+import { Component, AfterViewInit, OnDestroy, TemplateRef, ViewChild } from '@angular/core';
 import { RoomService } from '@app/services/room/room.service';
 import { Subscription } from 'rxjs';
-import { AvailableGameConfig } from '@common';
+import { AvailableGameConfig, MultiplayerJoinConfig } from '@common';
 import { trigger, style, animate, transition } from '@angular/animations';
 import { NameValidator } from '@app/classes/form-validation/name-validator';
+import { MatDialog } from '@angular/material/dialog';
+import { Router } from '@angular/router';
 
 @Component({
     selector: 'app-room-list',
     animations: [
+        // Reference: https://stackoverflow.com/a/36417971
         trigger('slideAnimation', [
             transition(':enter', [
                 style({ transform: 'translateX(100%)', opacity: 0 }),
@@ -24,6 +26,8 @@ import { NameValidator } from '@app/classes/form-validation/name-validator';
     styleUrls: ['./room-list.component.scss'],
 })
 export class RoomListComponent implements AfterViewInit, OnDestroy {
+    @ViewChild('alertDialog') alertDialog: TemplateRef<unknown>;
+
     availableGameConfigs: AvailableGameConfig[];
     selectedConfig: AvailableGameConfig | null;
     nameValidator: NameValidator;
@@ -31,7 +35,7 @@ export class RoomListComponent implements AfterViewInit, OnDestroy {
 
     private roomSubscription: Subscription;
 
-    constructor(readonly roomService: RoomService, private router: Router) {
+    constructor(readonly roomService: RoomService, private readonly router: Router, readonly dialog: MatDialog) {
         this.availableGameConfigs = [];
         this.selectedConfig = null;
         this.errorsList = [];
@@ -59,10 +63,20 @@ export class RoomListComponent implements AfterViewInit, OnDestroy {
             return;
         }
 
-        await this.roomService.join({ sessionId: this.selectedConfig.id, playerName: this.nameValidator.name });
+        const joinConfig: MultiplayerJoinConfig = { sessionId: this.selectedConfig.id, playerName: this.nameValidator.name };
+
+        this.reset();
+        await this.roomService.join(joinConfig);
         await this.router.navigate(['game']);
 
         this.reset();
+    }
+
+    private openErrorDialog() {
+        this.dialog
+            .open(this.alertDialog)
+            .afterClosed()
+            .subscribe(() => this.reset());
     }
 
     private validateForm(): boolean {
@@ -81,7 +95,7 @@ export class RoomListComponent implements AfterViewInit, OnDestroy {
         this.availableGameConfigs = availableGameConfigs;
 
         if (this.selectedConfig !== null && this.availableGameConfigs.findIndex((c) => c.id === this.selectedConfig?.id) === -1) {
-            this.selectedConfig = null;
+            this.openErrorDialog();
         }
     }
 }
