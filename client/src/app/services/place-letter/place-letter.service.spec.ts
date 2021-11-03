@@ -88,12 +88,21 @@ fdescribe('PlaceLetterService', () => {
         expect(playerServiceSpy.placeLetters).toHaveBeenCalledWith('est', { x: 7, y: 7 }, Direction.Down);
     });
 
-    // it('should called clearSquare when backSpaceOperation() is called', () => {
-    //     service.isHorizontal = true;
-    //     service.gridPosition = { x: 8, y: 8 };
-    //     service.backSpaceOperation(ctxStub);
-    //     expect(gridServiceSpy.clearSquare).toHaveBeenCalledWith(ctxStub, service.gridPosition);
-    // });
+    it('should called clearSquare when backSpaceOperation() is called', () => {
+        service.isHorizontal = true;
+        service.gridPosition = { x: 8, y: 8 };
+
+        service.backSpaceOperation(ctxStub);
+        expect(gridServiceSpy.clearSquare).toHaveBeenCalledWith(ctxStub, service.gridPosition);
+    });
+
+    it('should called clearSquare when backSpaceOperation() is called', () => {
+        service.isHorizontal = false;
+        service.gridPosition = { x: 8, y: 8 };
+
+        service.backSpaceOperation(ctxStub);
+        expect(gridServiceSpy.clearSquare).toHaveBeenCalledWith(ctxStub, service.gridPosition);
+    });
 
     it('should called resetCanvas and cancel when escapeOperation() is called', () => {
         service.positionInit = { x: 8, y: 8 };
