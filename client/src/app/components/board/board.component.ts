@@ -45,7 +45,6 @@ export class BoardComponent implements OnChanges, AfterViewInit {
 
     @HostListener('body:mousedown', ['$event'])
     onMouseDown(event: MouseEvent): void {
-        console.log(this.gameService.currentTurn);
         const canClick = this.isFocus && this.placeLetterService.myRack.length === 0 && this.gameService.currentTurn === PlayerType.Local;
         if (canClick) {
             this.mouseHandlingService.mouseHitDetect(event);

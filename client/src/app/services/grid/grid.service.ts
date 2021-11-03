@@ -11,8 +11,8 @@ const STROKE_STYLE_SELECTION = 'red';
 const FONT_FACE: FontFace = { font: 'BenchNine', size: 30 };
 const MIN_FONT_SIZE = 25;
 const MAX_FONT_SIZE = 35;
-const DIST_DIRECTION_15 = 15;
-const DIST_DIRECTION_20 = 20;
+const DIST_HORIZONTAL = 15;
+const DIST_VERTICAL = 20;
 const COORD_CLEAR_SQUARE = 6;
 const COORD_CLEAR_INSIDE = 5;
 const FONT_FACE_SCALE_FACTOR = 0.75;
@@ -150,24 +150,26 @@ export class GridService {
             tempContext.strokeStyle = STROKE_STYLE_SELECTION;
             tempContext.lineWidth = LINE_WIDTH;
             tempContext.moveTo(gridCoord.x, gridCoord.y);
-            tempContext.lineTo(gridCoord.x, gridCoord.y - DIST_DIRECTION_15);
-            tempContext.lineTo(gridCoord.x + DIST_DIRECTION_20, gridCoord.y);
-            tempContext.lineTo(gridCoord.x, gridCoord.y + DIST_DIRECTION_15);
+            tempContext.lineTo(gridCoord.x, gridCoord.y - DIST_HORIZONTAL);
+            tempContext.lineTo(gridCoord.x + DIST_VERTICAL, gridCoord.y);
+            tempContext.lineTo(gridCoord.x, gridCoord.y + DIST_HORIZONTAL);
             tempContext.fill();
         } else {
             tempContext.beginPath();
             tempContext.strokeStyle = STROKE_STYLE_SELECTION;
             tempContext.lineWidth = LINE_WIDTH;
             tempContext.moveTo(gridCoord.x, gridCoord.y);
-            tempContext.lineTo(gridCoord.x - DIST_DIRECTION_15, gridCoord.y);
-            tempContext.lineTo(gridCoord.x, gridCoord.y + DIST_DIRECTION_20);
-            tempContext.lineTo(gridCoord.x + DIST_DIRECTION_15, gridCoord.y);
+            tempContext.lineTo(gridCoord.x - DIST_HORIZONTAL, gridCoord.y);
+            tempContext.lineTo(gridCoord.x, gridCoord.y + DIST_VERTICAL);
+            tempContext.lineTo(gridCoord.x + DIST_HORIZONTAL, gridCoord.y);
             tempContext.fill();
         }
     }
 
     drawSymbol(letter: string, gridPosition: Vec2, context: CanvasRenderingContext2D) {
-        if (letter.length === 0) return;
+        if (letter.length === 0) {
+            return;
+        }
 
         const canvasPosition: Vec2 = this.computeCanvasCoord(gridPosition);
 

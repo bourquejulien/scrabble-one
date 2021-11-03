@@ -95,7 +95,9 @@ export class BoardService {
 
         if (letter === '') {
             return true;
-        } else return false;
+        } else {
+            return false;
+        }
     }
 
     getLetter(position: Vec2): string {

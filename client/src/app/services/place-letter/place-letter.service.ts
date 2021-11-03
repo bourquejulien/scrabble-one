@@ -16,7 +16,7 @@ export class PlaceLetterService {
     myRack: string[];
     gridPosition: Vec2;
     positionInit: Vec2;
-    isHorizontal: boolean = true;
+    isHorizontal: boolean;
     isLastSquare: boolean;
 
     constructor(
@@ -25,6 +25,7 @@ export class PlaceLetterService {
         readonly boardService: BoardService,
         readonly playerService: PlayerService,
     ) {
+        this.isHorizontal = true;
         this.tempRack = [];
         this.myRack = [];
     }
@@ -34,7 +35,9 @@ export class PlaceLetterService {
         let direction: Direction;
         if (this.isHorizontal) {
             direction = Direction.Right;
-        } else direction = Direction.Down;
+        } else {
+            direction = Direction.Down;
+        }
         for (const letter of this.tempRack) {
             word += letter;
         }
@@ -67,7 +70,9 @@ export class PlaceLetterService {
     isPositionInit(position: Vec2): boolean {
         if (position.x === this.positionInit.x && position.y === this.positionInit.y) {
             return true;
-        } else return false;
+        } else {
+            return false;
+        }
     }
 
     backSpaceEnable(key: string, squareSelected: boolean): boolean {
@@ -105,31 +110,40 @@ export class PlaceLetterService {
     nextAvailableSquare(isForward: boolean): void {
         if (isForward) {
             do {
-                if (!this.boardService.positionIsAvailable(this.gridPosition)) {
-                    this.tempRack.push(this.boardService.getLetter(this.gridPosition));
-                }
-                if (this.gridPosition.x === MAX_SIZE) {
-                    this.isLastSquare = true;
-                }
-                if (this.isHorizontal && this.gridPosition.x < MAX_SIZE) {
-                    this.gridPosition.x += 1;
-                } else if (!this.isHorizontal && this.gridPosition.y < MAX_SIZE) {
-                    this.gridPosition.y += 1;
-                }
+                this.getNextSquare();
             } while (!this.boardService.positionIsAvailable(this.gridPosition));
         } else {
             do {
-                if (!this.boardService.positionIsAvailable(this.gridPosition)) {
-                    this.tempRack.pop();
-                }
-                if (this.isHorizontal && this.gridPosition.x > MIN_SIZE) {
-                    this.gridPosition.x -= 1;
-                } else if (!this.isHorizontal && this.gridPosition.y > MIN_SIZE) {
-                    this.gridPosition.y -= 1;
-                }
+                this.getPastSquare();
             } while (!this.boardService.positionIsAvailable(this.gridPosition));
         }
     }
+
+    private getNextSquare(): void {
+        if (!this.boardService.positionIsAvailable(this.gridPosition)) {
+            this.tempRack.push(this.boardService.getLetter(this.gridPosition));
+        }
+        if (this.gridPosition.x === MAX_SIZE) {
+            this.isLastSquare = true;
+        }
+        if (this.isHorizontal && this.gridPosition.x < MAX_SIZE) {
+            this.gridPosition.x += 1;
+        } else if (!this.isHorizontal && this.gridPosition.y < MAX_SIZE) {
+            this.gridPosition.y += 1;
+        }
+    }
+
+    private getPastSquare(): void {
+        if (!this.boardService.positionIsAvailable(this.gridPosition)) {
+            this.tempRack.pop();
+        }
+        if (this.isHorizontal && this.gridPosition.x > MIN_SIZE) {
+            this.gridPosition.x -= 1;
+        } else if (!this.isHorizontal && this.gridPosition.y > MIN_SIZE) {
+            this.gridPosition.y -= 1;
+        }
+    }
+
     private cancel(): void {
         for (let i = this.myRack.length - 1; i >= 0; i--) {
             this.rackService.rack.push(this.myRack[i]);
