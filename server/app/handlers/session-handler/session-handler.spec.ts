@@ -82,6 +82,7 @@ describe('SessionHandler', () => {
             playTimeMs: TIME_MS,
             firstPlayerName: 'tester',
             secondPlayerName: 'tester',
+            startId: 'startId',
         };
         expect(returnValue).to.eql(expectedServerConfig);
     });

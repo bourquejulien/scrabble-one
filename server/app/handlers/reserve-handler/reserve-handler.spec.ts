@@ -3,29 +3,22 @@
 /* eslint-disable @typescript-eslint/no-unused-expressions -- Needed for chai library assertions */
 import { ReserveHandler } from '@app/handlers/reserve-handler/reserve-handler';
 import { expect } from 'chai';
-import * as sinon from 'sinon';
-import { SinonStub } from 'sinon';
+import { createSandbox, SinonSandbox } from 'sinon';
 
 describe('ReserveHandler', () => {
     let letterToExchange: string;
     let reserveHandler: ReserveHandler;
-    let mathStub: SinonStub<[], number>;
-
-    before(() => {
-        mathStub = sinon.stub(Math, 'random').returns(0);
-    });
+    let mathRandomSandbox: SinonSandbox;
 
     beforeEach(() => {
         letterToExchange = 'a';
-        const mockReserve = ['a', 'a', 'a', 'b', 'b', 'c'];
-
         reserveHandler = new ReserveHandler();
-        reserveHandler.reserve.length = 0;
-        reserveHandler.reserve.push(...mockReserve);
+        reserveHandler.reserve = ['a', 'a', 'a', 'b', 'b', 'c'];
+        mathRandomSandbox = createSandbox();
     });
 
     afterEach(() => {
-        mathStub.reset();
+        mathRandomSandbox.restore();
     });
 
     it('should be created', () => {
@@ -71,32 +64,26 @@ describe('ReserveHandler', () => {
     });
 
     it('should decrease length of reserve if letter successfully drawn', () => {
+        mathRandomSandbox.stub(Math, 'random').returns(0);
         const currentLength = reserveHandler.length;
         reserveHandler.drawLetter();
-
         expect(reserveHandler.length).to.equal(currentLength - 1);
     });
 
     it('should successfully return the drawn letter from reserve', () => {
         const RANDOM_STUB_VALUE = 0.7;
-        mathStub.returns(RANDOM_STUB_VALUE);
-
+        mathRandomSandbox.stub(Math, 'random').returns(RANDOM_STUB_VALUE);
         expect(reserveHandler.drawLetter()).to.equal('b');
-        sinon.assert.called(mathStub);
     });
 
     it('should return letter at first index in reserve', () => {
-        mathStub.returns(0);
-
+        mathRandomSandbox.stub(Math, 'random').returns(0);
         expect(reserveHandler.drawLetter()).to.equal('a');
-        sinon.assert.called(mathStub);
     });
 
     it('should return letter at last index in reserve', () => {
-        mathStub.returns(1);
-
+        mathRandomSandbox.stub(Math, 'random').returns(1);
         expect(reserveHandler.drawLetter()).to.equal('c');
-        sinon.assert.called(mathStub);
     });
 
     it('should return reserve length', () => {
