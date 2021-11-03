@@ -80,7 +80,7 @@ export class BoardComponent implements OnChanges, AfterViewInit {
     onKeyDown(event: KeyboardEvent): void {
         const backSpaceValid: boolean =
             this.placeLetterService.backSpaceEnable(event.key, this.squareSelected) &&
-            !this.isPositionInit() &&
+            !this.placeLetterService.isPositionInit(this.placeLetterService.gridPosition) &&
             this.placeLetterService.inGrid(this.placeLetterService.gridPosition);
 
         const enterValid: boolean = event.key === 'Enter' && this.placeLetterService.tempRack.length > 0;
@@ -220,13 +220,5 @@ export class BoardComponent implements OnChanges, AfterViewInit {
                 }
             }
         }
-    }
-    private isPositionInit(): boolean {
-        if (
-            this.placeLetterService.gridPosition.x === this.placeLetterService.positionInit.x &&
-            this.placeLetterService.gridPosition.y === this.placeLetterService.positionInit.y
-        ) {
-            return true;
-        } else return false;
     }
 }

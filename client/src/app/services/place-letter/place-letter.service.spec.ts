@@ -24,7 +24,7 @@ class BoardServiceMock {
     }
 }
 
-fdescribe('PlaceLetterService', () => {
+describe('PlaceLetterService', () => {
     let service: PlaceLetterService;
     let playerServiceSpy: jasmine.SpyObj<PlayerService>;
     let gridServiceSpy: jasmine.SpyObj<GridService>;
