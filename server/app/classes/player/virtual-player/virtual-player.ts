@@ -46,13 +46,13 @@ export class VirtualPlayer extends Player {
     private nextAction(): Action {
         let random = Math.random();
 
+        if (random < Config.VIRTUAL_PLAYER.EXCHANGE_PERCENTAGE && this.reserveHandler.length > 0) {
+            return new ExchangeAction(this.reserveHandler, this.socketHandler, this.playerData);
+        }
+        random -= Config.VIRTUAL_PLAYER.EXCHANGE_PERCENTAGE;
+
         if (random < Config.VIRTUAL_PLAYER.SKIP_PERCENTAGE) {
             return new SkipAction(this.playerData, this.socketHandler);
-        }
-        random -= Config.VIRTUAL_PLAYER.SKIP_PERCENTAGE;
-
-        if (random < Config.VIRTUAL_PLAYER.EXCHANGE_PERCENTAGE) {
-            return new ExchangeAction(this.reserveHandler, this.socketHandler, this.playerData);
         }
 
         const playGenerator = new PlayGenerator(this.dictionaryService, this.boardHandler, this.playerData.rack);

@@ -3,7 +3,7 @@ import { BoardData, Bonus, Direction, Placement, Square, Vec2, Answer } from '@c
 import { HttpClient } from '@angular/common/http';
 import { SessionService } from '@app/services/session/session.service';
 import { Constants } from '@app/constants/global.constants';
-import { environmentExt } from '@environmentExt';
+import { environmentExt } from '@environment-ext';
 
 const localUrl = (call: string, id: string) => `${environmentExt.apiUrl}board/${call}/${id}`;
 

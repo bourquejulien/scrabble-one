@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { SocketClientService } from '@app/services/socket-client/socket-client.service';
 import { MultiplayerCreateConfig, MultiplayerJoinConfig, ServerConfig, ConvertConfig, AvailableGameConfig } from '@common';
-import { environmentExt } from '@environmentExt';
+import { environmentExt } from '@environment-ext';
 import { HttpClient } from '@angular/common/http';
 import { GameService } from '@app/services/game/game.service';
 import { Observable, Subject } from 'rxjs';

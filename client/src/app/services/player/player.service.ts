@@ -5,7 +5,7 @@ import { RackService } from '@app/services/rack/rack.service';
 import { ReserveService } from '@app/services/reserve/reserve.service';
 import { SessionService } from '@app/services/session/session.service';
 import { Answer, Direction, Vec2 } from '@common';
-import { environmentExt } from '@environmentExt';
+import { environmentExt } from '@environment-ext';
 
 const localUrl = (call: string, id: string) => `${environmentExt.apiUrl}player/${call}/${id}`;
 
