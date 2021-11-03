@@ -1,9 +1,9 @@
 /* eslint-disable no-unused-vars */
 /* eslint-disable no-unused-expressions */
 /* eslint-disable @typescript-eslint/no-unused-expressions */
-import { Board } from '@app/classes/board/board';
+// import { Board } from '@app/classes/board/board';
 import { PlayerData } from '@app/classes/player-data';
-import { BoardValidator } from '@app/classes/validation/board-validator';
+// import { BoardValidator } from '@app/classes/validation/board-validator';
 import { BoardHandler } from '@app/handlers/board-handler/board-handler';
 import { Placement, ValidationResponse } from '@common';
 import { expect } from 'chai';
@@ -16,7 +16,6 @@ const VALID_PLACEMENT: Placement[] = [
     { letter: 'a', position: { x: 0, y: 1 } },
     { letter: 'c', position: { x: 0, y: 2 } },
 ];
-const SIZE = 9;
 
 export class BoardHandlerMock extends BoardHandler {
     lookupLetters(letters: Placement[]): ValidationResponse {
@@ -35,12 +34,13 @@ export class BoardHandlerMock extends BoardHandler {
 const LETTERS = ['a', 'b', 'c', 'd', 'e', 'f', 'g'];
 /* eslint-disable dot-notation */
 describe('Place Action', () => {
-    const board = new Board(SIZE);
-    const boardValidator = createStubInstance(BoardValidator) as unknown as BoardValidator;
-    const boardHandler = new BoardHandlerMock(board, boardValidator);
+    const boardHandler = createStubInstance(BoardHandler);
+    boardHandler.lookupLetters.returns({ isSuccess: true, points: 0, description: '' });
+    boardHandler.placeLetters.returns({ isSuccess: false, points: 0, description: '' });
+    boardHandler.retrieveNewLetters.returns(VALID_PLACEMENT);
     const play: Play = { score: 0, word: 'bac', letters: VALID_PLACEMENT };
     const playerData: PlayerData = { baseScore: 0, scoreAdjustment: 0, skippedTurns: 0, rack: [] };
-    const action = new PlaceAction(boardHandler, play, playerData);
+    const action = new PlaceAction(boardHandler as unknown as BoardHandler, play, playerData);
     beforeEach(() => {
         LETTERS.forEach((l) => playerData.rack.push(l));
     });
@@ -51,11 +51,9 @@ describe('Place Action', () => {
 
     it('should place letters', () => {
         const sandbox = createSandbox();
-        const stubPlaceLetters = sandbox.stub(action['boardHandler'], 'placeLetters');
         const stubSplice = sandbox.stub(action['playerData'].rack, 'splice');
         const returnValue = action.execute();
         sandbox.assert.calledThrice(stubSplice);
-        sandbox.assert.calledOnce(stubPlaceLetters);
         expect(returnValue).to.be.null;
     });
 });

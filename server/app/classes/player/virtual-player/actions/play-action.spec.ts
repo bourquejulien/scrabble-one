@@ -4,16 +4,13 @@
 /* eslint-disable no-unused-vars */
 /* eslint-disable no-unused-expressions */
 /* eslint-disable @typescript-eslint/no-unused-expressions */
-import { Board } from '@app/classes/board/board';
 import { PlayerData } from '@app/classes/player-data';
-import { BoardValidator } from '@app/classes/validation/board-validator';
 import { BoardHandler } from '@app/handlers/board-handler/board-handler';
 import { Placement, ValidationResponse } from '@common';
 import { expect } from 'chai';
-import { createStubInstance } from 'sinon';
+import { createStubInstance, stub } from 'sinon';
 import { PlayAction } from './play-action';
 import { PlayGenerator } from '@app/classes/virtual-player/play-generator';
-import { DictionaryService } from '@app/services/dictionary/dictionary.service';
 import { Play } from '@app/classes/virtual-player/play';
 
 const VALID_PLACEMENT: Placement[] = [
@@ -21,7 +18,6 @@ const VALID_PLACEMENT: Placement[] = [
     { letter: 'a', position: { x: 0, y: 1 } },
     { letter: 'c', position: { x: 0, y: 2 } },
 ];
-const SIZE = 9;
 const PLAY: Play[] = [{ score: 8, word: 'bac', letters: VALID_PLACEMENT }];
 
 export class BoardHandlerMock extends BoardHandler {
@@ -59,13 +55,19 @@ export class PlayGeneratorMockB extends PlayGenerator {
 const LETTERS = ['a', 'b', 'c', 'd', 'e', 'f', 'g'];
 /* eslint-disable dot-notation */
 describe('Play Action', () => {
-    const board = new Board(SIZE);
-    const boardValidator = createStubInstance(BoardValidator) as unknown as BoardValidator;
-    const boardHandler = new BoardHandlerMock(board, boardValidator);
-    const dictionary = new DictionaryService();
-    const playGenerator: PlayGenerator = new PlayGeneratorMockA(dictionary, boardHandler, LETTERS);
+    // const board = new Board(SIZE);
+    // const boardValidator = createStubInstance(BoardValidator) as unknown as BoardValidator;
+    const boardHandler = createStubInstance(BoardHandler);
+    boardHandler.lookupLetters.returns({ isSuccess: true, points: 0, description: '' });
+    boardHandler.placeLetters.returns({ isSuccess: false, points: 0, description: '' });
+    boardHandler.retrieveNewLetters.returns(VALID_PLACEMENT);
+    const playGeneratorA = createStubInstance(PlayGenerator);
+    playGeneratorA.generateNext.returns(false);
+    stub(playGeneratorA, 'orderedPlays').get(() => {
+        return PLAY;
+    });
     const playerData: PlayerData = { baseScore: 0, scoreAdjustment: 0, skippedTurns: 0, rack: [] };
-    let action = new PlayAction(boardHandler, playGenerator, playerData);
+    let action = new PlayAction(boardHandler as unknown as BoardHandler, playGeneratorA as unknown as PlayGenerator, playerData);
     beforeEach(() => {
         LETTERS.forEach((l) => playerData.rack.push(l));
     });
@@ -80,13 +82,15 @@ describe('Play Action', () => {
     });
 
     // This test will work when ill be able to stub random
-    /*
     it('should not generate plays', () => {
-        const playGeneratorMock = new PlayGeneratorMockB(dictionary, boardHandler, LETTERS);
-        action = new PlayAction(boardHandler, playGeneratorMock, playerData);
-        action['playGenerator']['plays'][0].score = Math.floor(Math.random() * action['() - min + 1) + min)
+        const playGeneratorMock = createStubInstance(PlayGenerator);
+        playGeneratorMock.generateNext.returns(false);
+        stub(playGeneratorMock, 'orderedPlays').get(() => {
+            return [];
+        });
+        action = new PlayAction(boardHandler as unknown as BoardHandler, playGeneratorMock as unknown as PlayGenerator, playerData);
+
         const returnValue = action.execute();
         expect(returnValue).to.be.null;
     });
-    */
 });

@@ -76,7 +76,8 @@ describe('SessionHandler', () => {
         handler.sessionInfo.id = 'myUserId';
         const returnValue = handler.getServerConfig('myUserId');
         const expectedServerConfig: ServerConfig = {
-            id: 'myUserId',
+            id: '0',
+            startId: 'myUserId',
             gameType: GameType.SinglePlayer,
             playTimeMs: TIME_MS,
             firstPlayerName: 'tester',
