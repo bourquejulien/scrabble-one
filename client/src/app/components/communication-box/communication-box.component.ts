@@ -51,8 +51,9 @@ export class CommunicationBoxComponent implements OnInit, OnDestroy {
     getMessageColor(message: Message): string {
         switch (message.messageType) {
             case MessageType.Message:
-            case MessageType.RemoteMessage:
                 return message.fromId === this.sessionService.id ? Constants.PLAYER_ONE_COLOR : Constants.PLAYER_TWO_COLOR;
+            case MessageType.RemoteMessage:
+                return Constants.PLAYER_TWO_COLOR;
             case MessageType.Command:
                 return Constants.PLAYER_ONE_COLOR;
             default:
@@ -71,8 +72,9 @@ export class CommunicationBoxComponent implements OnInit, OnDestroy {
                     ? this.sessionService.gameConfig.firstPlayerName
                     : this.sessionService.gameConfig.secondPlayerName;
             case MessageType.Command:
-            case MessageType.RemoteMessage:
                 return this.sessionService.gameConfig.firstPlayerName;
+            case MessageType.RemoteMessage:
+                return this.sessionService.gameConfig.secondPlayerName;
             default:
                 return message.title;
         }

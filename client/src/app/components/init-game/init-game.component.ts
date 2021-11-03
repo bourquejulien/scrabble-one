@@ -34,7 +34,7 @@ export class InitGameComponent implements OnInit {
     readonly minutesList;
     readonly secondsList;
     readonly gameType;
-    readonly errorsList: string[];
+    readonly nameValidator: NameValidator;
     minutes: number;
     seconds: number;
     formConfig: FormConfig;
@@ -51,7 +51,7 @@ export class InitGameComponent implements OnInit {
         this.minutesList = TURN_LENGTH_MINUTES;
         this.secondsList = TURN_LENGTH_SECONDS;
         this.gameType = GameType;
-        this.errorsList = [];
+        this.nameValidator = new NameValidator();
         this.minutes = DEFAULT_PLAY_TIME.totalMinutes;
         this.seconds = DEFAULT_PLAY_TIME.seconds;
         this.formConfig = {
@@ -145,17 +145,15 @@ export class InitGameComponent implements OnInit {
     }
 
     private confirmInitialization(): boolean {
-        const nameValidator = new NameValidator();
-        nameValidator.name = this.formConfig.firstPlayerName;
+        this.nameValidator.validate();
 
-        if (nameValidator.isValid) {
-            this.formConfig.playTime = TimeSpan.fromMinutesSeconds(this.minutes, this.seconds);
-            return true;
+        if (!this.nameValidator.isValid) {
+            return false;
         }
 
-        this.errorsList.length = 0;
-        this.errorsList.push(...nameValidator.errors);
+        this.formConfig.playTime = TimeSpan.fromMinutesSeconds(this.minutes, this.seconds);
+        this.formConfig.firstPlayerName = this.nameValidator.name;
 
-        return false;
+        return true;
     }
 }

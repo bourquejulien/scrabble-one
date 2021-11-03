@@ -17,7 +17,6 @@
         <div class="empty-list" *ngIf="availableGameConfigs.length === 0">
             <mat-icon matListIcon>groups</mat-icon>
             <h3 matLine>Aucune salle à rejoindre</h3>
-            <button mat-button routerLink="/settings">Retourner à la page d'accueil</button>
         </div>
     </mat-card>
 
@@ -47,7 +46,11 @@
             <div>
                 <button id="join-button" mat-raised-button (click)="this.join()" color="primary">Rejoindre</button>
             </div>
-            <div *ngFor="let error of this.nameValidator.errors" class="error">{{ error }}</div>
+            <div *ngFor="let error of this.errorsList" class="error">{{ error }}</div>
         </mat-card>
     </div>
 </div>
+
+<button mat-raised-button color="primary" mat-button routerLink="/settings" (click)="reset()" class="exit-button">Retourner à la selection des modes de jeu</button>
+
+

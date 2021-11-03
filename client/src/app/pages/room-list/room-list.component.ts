@@ -51,16 +51,30 @@ export class RoomListComponent implements AfterViewInit, OnDestroy {
     reset() {
         this.selectedConfig = null;
         this.errorsList.length = 0;
-        this.nameValidator.name = '';
+        this.nameValidator.reset();
     }
 
     async join() {
-        if (this.selectedConfig == null || !this.nameValidator.isValid) {
+        if (this.selectedConfig == null || !this.validateForm()) {
             return;
         }
 
         await this.roomService.join({ sessionId: this.selectedConfig.id, playerName: this.nameValidator.name });
         await this.router.navigate(['game']);
+
+        this.reset();
+    }
+
+    private validateForm(): boolean {
+        this.nameValidator.validate();
+        this.errorsList.length = 0;
+        this.errorsList.push(...this.nameValidator.errors);
+
+        if (this.nameValidator.name === this.selectedConfig?.waitingPlayerName ?? '') {
+            this.errorsList.push('*Nom des joueurs identique.');
+        }
+
+        return this.errorsList.length === 0;
     }
 
     private refreshConfig(availableGameConfigs: AvailableGameConfig[]) {

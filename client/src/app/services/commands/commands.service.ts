@@ -63,7 +63,7 @@ export class CommandsService {
             }
         }
         if (this.messageRegex.test(input)) {
-            this.messagingService.send('', input, isCommand ? MessageType.Command : MessageType.Message);
+            this.messagingService.send('', input, MessageType.Message);
         } else {
             this.messagingService.send(SystemMessages.InvalidFormat, SystemMessages.InvalidUserMessage, MessageType.Error);
             return false;
