@@ -14,11 +14,11 @@ const localUrl = (call: string, id: string) => `${environmentExt.apiUrl}player/$
 })
 export class PlayerService {
     constructor(
-        private readonly reserveService: ReserveService,
-        private readonly boardService: BoardService,
-        private readonly rackService: RackService,
-        private readonly sessionService: SessionService,
-        private readonly httpClient: HttpClient,
+        private reserveService: ReserveService,
+        private boardService: BoardService,
+        private rackService: RackService,
+        private sessionService: SessionService,
+        private httpClient: HttpClient,
     ) {}
 
     async placeLetters(word: string, position: Vec2, direction: Direction): Promise<boolean> {

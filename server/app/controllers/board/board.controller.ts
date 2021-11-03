@@ -10,7 +10,7 @@ import { HumanPlayer } from '@app/classes/player/human-player/human-player';
 export class BoardController {
     router: Router;
 
-    constructor(private readonly sessionHandlingService: SessionHandlingService) {
+    constructor(private sessionHandlingService: SessionHandlingService) {
         this.configureRouter();
     }
 
@@ -21,7 +21,7 @@ export class BoardController {
             const humanPlayer = this.getHumanPlayer(req.params.id);
             const placements: Placement[] = req.body;
 
-            if (humanPlayer === null || placements === undefined) {
+            if (humanPlayer === null) {
                 res.sendStatus(Constants.HTTP_STATUS.BAD_REQUEST);
                 return;
             }
@@ -31,14 +31,14 @@ export class BoardController {
             res.json(response);
         });
 
-        this.router.get('/retrieve/:id', async (req: Request, res: Response) => {
+        this.router.get('/retrieve/:id', (req: Request, res: Response) => {
             const boardHandler = this.getBoardHandler(req.params.id);
             if (boardHandler === null) {
                 res.sendStatus(Constants.HTTP_STATUS.BAD_REQUEST);
                 return;
             }
 
-            const boardData = boardHandler.immutableBoard.boardData;
+            const boardData = boardHandler.immutableBoard.boardData; // TODO
             res.status(Constants.HTTP_STATUS.OK);
             res.json(boardData);
         });

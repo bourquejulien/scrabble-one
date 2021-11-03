@@ -1,3 +1,6 @@
+/* eslint-disable @typescript-eslint/no-magic-numbers */
+/* eslint-disable no-unused-vars */
+/* eslint-disable max-classes-per-file */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 export class BroadcastOperator {
     private isFull = true;
@@ -5,7 +8,9 @@ export class BroadcastOperator {
         this.isFull = isFull;
     }
     async fetchSockets() {
-        if(this.isFull) return ['socket3', 'socket2'];
+        if (this.isFull) {
+            return ['socket3', 'socket2'];
+        }
         return ['socket1'];
     }
     emit(event: string, message: any) {
@@ -19,12 +24,12 @@ export class SocketMock {
             return {
                 next: () => {
                     return {
-                        value: "roomIdISuppose",
-                    }
-                }
-            }
+                        value: 'roomIdISuppose',
+                    };
+                },
+            };
         },
-    }
+    };
     // eslint-disable-next-line @typescript-eslint/ban-types
     callbacks: Map<string, (...args: any) => {}> = new Map();
     on(event: string, callback: any): void {

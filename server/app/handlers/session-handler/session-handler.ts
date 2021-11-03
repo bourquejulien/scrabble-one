@@ -19,10 +19,10 @@ export class SessionHandler {
     private readonly socketHandler: SocketHandler;
 
     constructor(
-        readonly sessionInfo: SessionInfo,
-        readonly boardHandler: BoardHandler,
-        readonly reserveHandler: ReserveHandler,
-        private readonly playerHandler: PlayerHandler,
+        public sessionInfo: SessionInfo,
+        public boardHandler: BoardHandler,
+        public reserveHandler: ReserveHandler,
+        public playerHandler: PlayerHandler, // TODO: change visibility from private to public to test
         socketService: SocketService,
     ) {
         this.socketHandler = socketService.generate(sessionInfo.id);
