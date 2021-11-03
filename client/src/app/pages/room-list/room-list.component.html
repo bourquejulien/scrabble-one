@@ -24,6 +24,8 @@
         <mat-card class="info-card">
             <div>
                 <mat-icon matListIcon>infos</mat-icon>
+                <br>
+                <mat-label>Partie classique</mat-label>
                 <h3 matLine>Nom : {{selectedConfig.waitingPlayerName}}</h3>
                 <h3 matLine>Durée des tours : {{selectedConfig.playTimeMs | date:'mm:ss'}}</h3>
                 <h3 matLine>Type de bonus : {{selectedConfig.isRandomBonus ? 'Aléatoires' : 'Standards'}}</h3>
