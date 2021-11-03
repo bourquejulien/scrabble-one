@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { BoardData, Bonus, Direction, Placement, Square, ValidationResponse, Vec2, Answer } from '@common';
+import { BoardData, Bonus, Direction, Placement, Square, Vec2, Answer } from '@common';
 import { HttpClient } from '@angular/common/http';
 import { SessionService } from '@app/services/session/session.service';
 import { Constants } from '@app/constants/global.constants';
@@ -19,19 +19,6 @@ export class BoardService {
 
     get gameBoard(): BoardData {
         return this.boardData;
-    }
-
-    async lookupLetters(letters: Placement[]): Promise<ValidationResponse> {
-        const response = await this.httpClient.post(localUrl('validate', this.sessionService.id), letters).toPromise();
-        let validationResponse: ValidationResponse;
-
-        try {
-            validationResponse = response as ValidationResponse;
-        } catch (e) {
-            return { isSuccess: false, description: '', points: 0 };
-        }
-
-        return validationResponse;
     }
 
     async placeLetters(letters: Placement[]): Promise<Answer> {

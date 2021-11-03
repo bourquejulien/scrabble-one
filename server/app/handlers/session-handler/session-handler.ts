@@ -9,20 +9,23 @@ import { Subscription } from 'rxjs';
 import { BoardHandler } from '@app/handlers/board-handler/board-handler';
 import { ReserveHandler } from '@app/handlers/reserve-handler/reserve-handler';
 import * as logger from 'winston';
+import { SocketService } from '@app/services/socket/socket-service';
 
 export class SessionHandler {
     sessionData: SessionData;
     private timer: NodeJS.Timer;
+
     private readonly playerSubscription: Subscription;
+    private readonly socketHandler: SocketHandler;
 
     constructor(
         public sessionInfo: SessionInfo,
         public boardHandler: BoardHandler,
         public reserveHandler: ReserveHandler,
         public playerHandler: PlayerHandler, // TODO: change visibility from private to public to test
-        private socketHandler: SocketHandler,
+        socketService: SocketService,
     ) {
-        socketHandler.sessionId = sessionInfo.id;
+        this.socketHandler = socketService.generate(sessionInfo.id);
         this.sessionData = { isActive: false, isStarted: false, timeLimitEpoch: 0 };
         this.playerSubscription = this.playerHandler.onTurn().subscribe((id) => this.onTurn(id));
     }
@@ -48,6 +51,14 @@ export class SessionHandler {
         this.playerHandler.start();
     }
 
+    dispose(): void {
+        this.sessionData.isActive = false;
+        this.sessionData.timeLimitEpoch = 0;
+        this.playerHandler.dispose();
+        this.playerSubscription.unsubscribe();
+        clearInterval(this.timer);
+    }
+
     addPlayer(player: Player): void {
         player.init(this.boardHandler, this.reserveHandler, this.socketHandler);
         this.playerHandler.addPlayer(player);
@@ -55,14 +66,6 @@ export class SessionHandler {
 
     removePlayer(id: string): Player | null {
         return this.playerHandler.removePlayer(id);
-    }
-
-    dispose(): void {
-        this.sessionData.isActive = false;
-        this.sessionData.timeLimitEpoch = 0;
-        this.playerHandler.dispose();
-        this.playerSubscription.unsubscribe();
-        clearInterval(this.timer);
     }
 
     getStats(id: string): SessionStats | null {

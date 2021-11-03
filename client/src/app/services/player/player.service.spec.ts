@@ -129,7 +129,7 @@ describe('PlayerService', () => {
         expect(spy).toHaveBeenCalledWith(SystemMessages.ImpossibleAction, SystemMessages.LetterPossessionError + 'z', MessageType.Error);
     });
 
-    it('should send error message if validation fail', async () => {
+    it('should send error message if form-validation fail', async () => {
         validationResponse = { isSuccess: false, points: 15, description: 'Error' };
         letterToPlace = [{ letter: 'k', position: { x: 11, y: 3 } }];
         boardServiceSpy['retrievePlacements'].and.returnValue(letterToPlace);
@@ -140,7 +140,7 @@ describe('PlayerService', () => {
         expect(spy).toHaveBeenCalledWith('', validationResponse.description, MessageType.Log);
     });
 
-    it('should update rack if validation success and letters in rack', async () => {
+    it('should update rack if form-validation success and letters in rack', async () => {
         validationResponse = { isSuccess: true, points: 15, description: 'Error' };
         letterToPlace = [{ letter: 'k', position: { x: 11, y: 3 } }];
         boardServiceSpy['retrievePlacements'].and.returnValue(letterToPlace);

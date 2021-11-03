@@ -49,7 +49,7 @@ export class BoardValidator {
 
     validate(letters: Placement[]): ValidationResponse {
         if (letters.length === 0) {
-            return { isSuccess: false, description: 'Empty placement', points: 0 };
+            return { isSuccess: false, description: 'Aucune lettre à valider', points: 0 };
         }
 
         const positions: Vec2[] = letters.map((e) => e.position);
@@ -68,7 +68,7 @@ export class BoardValidator {
         const direction: Direction = this.retrieveDirection(positions);
 
         if (direction === Direction.None) {
-            return { isSuccess: false, description: 'Letters needs to be placed on the same line', points: 0 };
+            return { isSuccess: false, description: 'Toutes les lettres doivent être placées sur la même ligne', points: 0 };
         }
 
         const sortedLetters = BoardValidator.sortLetters(letters, direction);
@@ -78,16 +78,16 @@ export class BoardValidator {
             if (!this.validateFirstPlacement(letters)) {
                 return {
                     isSuccess: false,
-                    description: 'Invalid first word',
+                    description: 'Premier mot invalide, est-il placé au bon endroit?',
                     points: 0,
                 };
             }
         } else if (!this.ensureAggregation(positions)) {
-            return { isSuccess: false, description: 'No aggregation', points: 0 };
+            return { isSuccess: false, description: "Le mot placé n'est pas lié au jeux", points: 0 };
         }
 
         if (!BoardValidator.ensureCoherence(clonedBoard, sortedPositions, direction)) {
-            return { isSuccess: false, description: 'Invalid coherence', points: 0 };
+            return { isSuccess: false, description: 'Mot incohérent', points: 0 };
         }
 
         return this.validateWords(clonedBoard, sortedPositions, direction);
@@ -220,7 +220,7 @@ export class BoardValidator {
         if (this.dictionary.lookup(word)) {
             return { isSuccess: true, description: '', points: totalPoint * multiplier };
         }
-        return { isSuccess: false, description: `Word: (${word}) cannot be found in dictionary`, points: 0 };
+        return { isSuccess: false, description: `Le mot : (${word}) n'existe pas dans le dictionnaire`, points: 0 };
     }
 
     private getBingoBonus(placementLength: number): number {

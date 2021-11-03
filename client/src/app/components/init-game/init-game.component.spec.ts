@@ -73,53 +73,6 @@ describe('InitGameComponent', () => {
         expect(component).toBeTruthy();
     });
 
-    it('should not contains any error', async () => {
-        component.formConfig.firstPlayerName = NAMES[0];
-        await component.init();
-        expect(component.errorsList).toEqual([]);
-    });
-
-    it('should not contains any error', async () => {
-        component.formConfig.firstPlayerName = NAMES[1];
-        await component.init();
-        expect(component.errorsList).toEqual([]);
-    });
-
-    it('should have error for lower letter', async () => {
-        component.formConfig.firstPlayerName = NAMES[2];
-        await component.init();
-        expect(component.errorsList).toEqual(['*Le nom doit débuter par une majuscule.\n']);
-    });
-
-    it('should have error for minimum length', async () => {
-        component.formConfig.firstPlayerName = NAMES[3];
-        await component.init();
-        expect(component.errorsList).toEqual(['*Le nom doit contenir au moins 3 caractères.\n']);
-    });
-
-    it('should have error for maximum length', async () => {
-        component.formConfig.firstPlayerName = NAMES[4];
-        await component.init();
-        expect(component.errorsList).toEqual(['*Le nom doit au maximum contenir 16 lettres.\n']);
-    });
-
-    it('should have error for not having name', async () => {
-        await component.init();
-        expect(component.errorsList).toEqual(['*Un nom doit être entré.\n']);
-    });
-
-    it('should have error for not containing only letters', async () => {
-        component.formConfig.firstPlayerName = NAMES[5];
-        await component.init();
-        expect(component.errorsList).toEqual(['*Le nom doit seulement être composé de lettres.\n']);
-    });
-
-    it('should have error for not containing only letters and minimum length', async () => {
-        component.formConfig.firstPlayerName = NAMES[6];
-        await component.init();
-        expect(component.errorsList).toEqual(['*Le nom doit seulement être composé de lettres.\n', '*Le nom doit contenir au moins 3 caractères.\n']);
-    });
-
     it('should change bot name', () => {
         const FIRST_PLAYER_NAME = 'Alphonse';
         component.formConfig.firstPlayerName = NAMES[7];

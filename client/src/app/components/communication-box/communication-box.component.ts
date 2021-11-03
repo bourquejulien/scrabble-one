@@ -1,42 +1,37 @@
-import { AfterViewInit, Component, ElementRef, ViewChild } from '@angular/core';
-import { PlayerType } from '@app/classes/player/player-type';
+import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { Constants } from '@app/constants/global.constants';
 import { CommandsService } from '@app/services/commands/commands.service';
 import { SessionService } from '@app/services/session/session.service';
-import { SocketClientService } from '@app/services/socket-client/socket-client.service';
 import { Message, MessageType } from '@common';
+import { MessagingService } from '@app/services/messaging/messaging.service';
+import { Subscription } from 'rxjs';
 
 @Component({
     selector: 'app-communication-box',
     templateUrl: './communication-box.component.html',
     styleUrls: ['./communication-box.component.scss'],
 })
-export class CommunicationBoxComponent implements AfterViewInit {
+export class CommunicationBoxComponent implements OnInit, OnDestroy {
     @ViewChild('messageContainer') private messageContainer: ElementRef<HTMLDivElement>;
     messages: Message[];
     inputValue: string;
 
-    constructor(private commandsService: CommandsService, private sessionService: SessionService, private readonly socket: SocketClientService) {
+    private messageSubscription: Subscription;
+
+    constructor(
+        private readonly commandsService: CommandsService,
+        private readonly sessionService: SessionService,
+        private readonly messagingService: MessagingService,
+    ) {
         this.messages = [];
     }
 
-    ngAfterViewInit(): void {
-        this.socket.socketClient.on('message', (message: Message) => {
-            this.messages.push(message);
-            this.scroll();
-        });
+    ngOnInit() {
+        this.messageSubscription = this.messagingService.onMessage.subscribe((message: Message) => this.onMessage(message));
+    }
 
-        this.socket.socketClient.on('connect_error', (err) => {
-            // TODO: this is for debug
-            const socketErrorMsg: Message = {
-                title: 'Socket Error: Closing Connection',
-                body: `${err.message}`,
-                messageType: MessageType.Error,
-                userId: PlayerType.Local,
-            };
-            this.messages.push(socketErrorMsg);
-            this.socket.socketClient.close();
-        });
+    ngOnDestroy() {
+        this.messageSubscription.unsubscribe();
     }
 
     send(input: string): boolean {
@@ -55,12 +50,12 @@ export class CommunicationBoxComponent implements AfterViewInit {
 
     getMessageColor(message: Message): string {
         switch (message.messageType) {
-            case MessageType.Log:
-            case MessageType.System:
-            case MessageType.Error:
-                return Constants.SYSTEM_COLOR;
             case MessageType.Message:
-                return message.userId === PlayerType.Local ? Constants.PLAYER_ONE_COLOR : Constants.PLAYER_TWO_COLOR;
+                return message.fromId === this.sessionService.id ? Constants.PLAYER_ONE_COLOR : Constants.PLAYER_TWO_COLOR;
+            case MessageType.RemoteMessage:
+                return Constants.PLAYER_TWO_COLOR;
+            case MessageType.Command:
+                return Constants.PLAYER_ONE_COLOR;
             default:
                 return Constants.SYSTEM_COLOR;
         }
@@ -73,16 +68,25 @@ export class CommunicationBoxComponent implements AfterViewInit {
     getTitle(message: Message): string {
         switch (message.messageType) {
             case MessageType.Message:
-                return message.userId === PlayerType.Local
+                return message.fromId === this.sessionService.id
                     ? this.sessionService.gameConfig.firstPlayerName
                     : this.sessionService.gameConfig.secondPlayerName;
+            case MessageType.Command:
+                return this.sessionService.gameConfig.firstPlayerName;
+            case MessageType.RemoteMessage:
+                return this.sessionService.gameConfig.secondPlayerName;
             default:
                 return message.title;
         }
     }
 
-    shouldDisplay(message: Message) {
-        return message.userId === PlayerType.Local || (message.userId === PlayerType.Virtual && message.messageType === MessageType.Message);
+    private onMessage(message: Message) {
+        if (!this.messagingService.isDebug && message.messageType === MessageType.Log) {
+            return;
+        }
+
+        this.messages.push(message);
+        this.scroll();
     }
 
     private scroll(): void {

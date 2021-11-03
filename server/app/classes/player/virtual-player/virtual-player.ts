@@ -47,16 +47,16 @@ export class VirtualPlayer extends Player {
         let random = Math.random();
 
         if (random < Config.VIRTUAL_PLAYER.SKIP_PERCENTAGE) {
-            return new SkipAction(this.playerData);
+            return new SkipAction(this.playerData, this.socketHandler);
         }
         random -= Config.VIRTUAL_PLAYER.SKIP_PERCENTAGE;
 
         if (random < Config.VIRTUAL_PLAYER.EXCHANGE_PERCENTAGE) {
-            return new ExchangeAction(this.reserveHandler, /* this.messaging ,*/ this.playerData);
+            return new ExchangeAction(this.reserveHandler, this.socketHandler, this.playerData);
         }
 
         const playGenerator = new PlayGenerator(this.dictionaryService, this.boardHandler, this.playerData.rack);
 
-        return new PlayAction(this.boardHandler, playGenerator, this.playerData /* , this.messaging*/);
+        return new PlayAction(this.boardHandler, playGenerator, this.playerData, this.socketHandler);
     }
 }
