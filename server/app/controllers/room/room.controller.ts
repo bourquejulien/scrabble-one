@@ -103,6 +103,7 @@ export class RoomController {
             id: s.sessionInfo.id,
             playTimeMs: s.sessionInfo.playTimeMs,
             waitingPlayerName: s.players[0].playerInfo.name,
+            isRandomBonus: s.boardHandler.isRandomBonus,
         }));
     }
 

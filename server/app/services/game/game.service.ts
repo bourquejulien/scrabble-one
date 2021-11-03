@@ -4,7 +4,6 @@ import { BoardGeneratorService } from '@app/services/board/board-generator.servi
 import { Service } from 'typedi';
 import { SessionHandler } from '@app/handlers/session-handler/session-handler';
 import { generateId } from '@app/classes/id';
-import { BoardHandler } from '@app/handlers/board-handler/board-handler';
 import { ReserveHandler } from '@app/handlers/reserve-handler/reserve-handler';
 import { VirtualPlayer } from '@app/classes/player/virtual-player/virtual-player';
 import { HumanPlayer } from '@app/classes/player/human-player/human-player';
@@ -25,14 +24,13 @@ export class GameService {
     ) {}
 
     async initSinglePlayer(gameConfig: SinglePlayerConfig): Promise<ServerConfig> {
-        const board = this.boardGeneratorService.generateBoard(gameConfig.isRandomBonus);
         const sessionInfo = {
             id: generateId(),
             playTimeMs: gameConfig.playTimeMs,
             gameType: gameConfig.gameType,
         };
 
-        const boardHandler = new BoardHandler(board, this.boardGeneratorService.generateBoardValidator(board));
+        const boardHandler = this.boardGeneratorService.generateBoardHandler(gameConfig.isRandomBonus);
         const reserveHandler = new ReserveHandler();
 
         const sessionHandler = new SessionHandler(sessionInfo, boardHandler, reserveHandler, new PlayerHandler(), this.socketService);
@@ -61,14 +59,13 @@ export class GameService {
     }
 
     async initMultiplayer(gameConfig: MultiplayerCreateConfig): Promise<string> {
-        const board = this.boardGeneratorService.generateBoard(gameConfig.isRandomBonus);
         const sessionInfo = {
             id: generateId(),
             playTimeMs: gameConfig.playTimeMs,
             gameType: gameConfig.gameType,
         };
 
-        const boardHandler = new BoardHandler(board, this.boardGeneratorService.generateBoardValidator(board));
+        const boardHandler = this.boardGeneratorService.generateBoardHandler(gameConfig.isRandomBonus);
         const reserveHandler = new ReserveHandler();
 
         const sessionHandler = new SessionHandler(sessionInfo, boardHandler, reserveHandler, new PlayerHandler(), this.socketService);

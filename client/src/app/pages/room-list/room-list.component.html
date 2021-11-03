@@ -26,6 +26,7 @@
                 <mat-icon matListIcon>infos</mat-icon>
                 <h3 matLine>Nom : {{selectedConfig.waitingPlayerName}}</h3>
                 <h3 matLine>Durée des tours : {{selectedConfig.playTimeMs | date:'mm:ss'}}</h3>
+                <h3 matLine>Type de bonus : {{selectedConfig.isRandomBonus ? 'Aléatoires' : 'Standards'}}</h3>
             </div>
         </mat-card>
 
