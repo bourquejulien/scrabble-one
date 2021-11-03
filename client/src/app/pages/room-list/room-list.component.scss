@@ -44,24 +44,7 @@
     display: inline-block;
 }
 
-.invisible {
-    visibility: hidden;
-    opacity: 0;
-}
-
-.exchange-command {
-    margin: 1rem;
-    width: 7rem;
-    height: 3rem;
-    font-size: 1rem;
-    text-align: center;
-    padding: 0;
-    display: inline-block;
-
-    transition: all 0.3s;
-}
-
-.alert {
+.error {
     font-size: 14px;
     color: darkred;
 }

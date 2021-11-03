@@ -4,6 +4,7 @@ import { RoomService } from '@app/services/room/room.service';
 import { Subscription } from 'rxjs';
 import { AvailableGameConfig } from '@common';
 import { trigger, style, animate, transition } from '@angular/animations';
+import { NameValidator } from '@app/classes/form-validation/name-validator';
 
 @Component({
     selector: 'app-room-list',
@@ -25,16 +26,16 @@ import { trigger, style, animate, transition } from '@angular/animations';
 export class RoomListComponent implements AfterViewInit, OnDestroy {
     availableGameConfigs: AvailableGameConfig[];
     selectedConfig: AvailableGameConfig | null;
-    playerName: string;
-    isNameValid: boolean;
-    areTilesOnFocus: boolean;
+    nameValidator: NameValidator;
+    readonly errorsList: string[];
 
     private roomSubscription: Subscription;
 
     constructor(readonly roomService: RoomService, private router: Router) {
         this.availableGameConfigs = [];
         this.selectedConfig = null;
-        this.isNameValid = true;
+        this.errorsList = [];
+        this.nameValidator = new NameValidator();
     }
 
     ngAfterViewInit(): void {
@@ -47,12 +48,18 @@ export class RoomListComponent implements AfterViewInit, OnDestroy {
         this.roomSubscription.unsubscribe();
     }
 
+    reset() {
+        this.selectedConfig = null;
+        this.errorsList.length = 0;
+        this.nameValidator.name = '';
+    }
+
     async join() {
-        if (this.selectedConfig == null) {
+        if (this.selectedConfig == null || !this.nameValidator.isValid) {
             return;
         }
 
-        await this.roomService.join({ sessionId: this.selectedConfig.id, playerName: this.playerName });
+        await this.roomService.join({ sessionId: this.selectedConfig.id, playerName: this.nameValidator.name });
         await this.router.navigate(['game']);
     }
 

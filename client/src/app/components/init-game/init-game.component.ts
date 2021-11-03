@@ -1,13 +1,12 @@
 import { Component, HostListener, Inject, OnInit } from '@angular/core';
-import { FormControl, FormGroup, ValidatorFn, Validators } from '@angular/forms';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { Router } from '@angular/router';
-import { Error } from '@app/classes/error-name/error';
 import { TimeSpan } from '@app/classes/time/timespan';
 import { GameService } from '@app/services/game/game.service';
 import { GameType, MultiplayerCreateConfig, SinglePlayerConfig } from '@common';
 import { RoomService } from '@app/services/room/room.service';
 import { Constants } from '@app/constants/global.constants';
+import { NameValidator } from '@app/classes/form-validation/name-validator';
 
 interface FormConfig {
     gameType: string;
@@ -23,29 +22,6 @@ const TURN_LENGTH_MINUTES = [0, 1, 2, 3, 4, 5] as const;
 const TURN_LENGTH_SECONDS = [0, 30] as const;
 // eslint-disable-next-line @typescript-eslint/no-magic-numbers -- Default play time is readable and immutable
 const DEFAULT_PLAY_TIME = TimeSpan.fromMinutesSeconds(1, 0);
-const MAX_SIZE_NAME = 16;
-const MIN_SIZE_NAME = 3;
-const MIN_LENGTH_ERROR: Error = {
-    validationRule: 'minlength',
-    validationMessage: '*Le nom doit contenir au moins 3 caractères.\n',
-};
-const MAX_LENGTH_ERROR: Error = {
-    validationRule: 'maxlength',
-    validationMessage: '*Le nom doit au maximum contenir 16 lettres.\n',
-};
-const REQUIRED_ERROR: Error = {
-    validationRule: 'required',
-    validationMessage: '*Un nom doit être entré.\n',
-};
-const CONTAINS_NOT_LETTERS_ERROR: Error = {
-    validationRule: 'containsOnlyLetters',
-    validationMessage: '*Le nom doit seulement être composé de lettres.\n',
-};
-const STARTS_LOWER_LETTER_ERROR: Error = {
-    validationRule: 'startsWithLowerLetter',
-    validationMessage: '*Le nom doit débuter par une majuscule.\n',
-};
-const POSSIBLE_ERRORS: Error[] = [STARTS_LOWER_LETTER_ERROR, CONTAINS_NOT_LETTERS_ERROR, REQUIRED_ERROR, MAX_LENGTH_ERROR, MIN_LENGTH_ERROR];
 
 @Component({
     selector: 'app-init-game',
@@ -62,7 +38,6 @@ export class InitGameComponent implements OnInit {
     minutes: number;
     seconds: number;
     formConfig: FormConfig;
-    private nameForm: FormGroup;
 
     constructor(
         readonly gameService: GameService,
@@ -88,31 +63,9 @@ export class InitGameComponent implements OnInit {
         };
     }
 
-    private static nameValidatorFunction(control: FormControl): { [key: string]: boolean } | null {
-        // We make sure that player name is considered as a string
-        const playerName = control.value as string;
-        if (playerName !== undefined && playerName !== null && playerName !== '') {
-            for (let index = 0; index < playerName.length; index++) {
-                if (!/[a-zA-ZÉéÎîÉéÇçÏï]/.test(playerName.charAt(index))) {
-                    return { ['containsOnlyLetters']: true };
-                }
-            }
-
-            const firstLetter = playerName[0];
-            if (firstLetter !== firstLetter.toUpperCase()) {
-                return { ['startsWithLowerLetter']: true };
-            }
-        }
-        return null;
-    }
-
     private static randomizeBotName(nameArr: string[]): string {
         const randomIndex = Math.floor(Math.random() * nameArr.length);
         return nameArr[randomIndex];
-    }
-
-    private static isNameValidator(): ValidatorFn {
-        return InitGameComponent.nameValidatorFunction as ValidatorFn;
     }
 
     @HostListener('keydown', ['$event'])
@@ -192,30 +145,17 @@ export class InitGameComponent implements OnInit {
     }
 
     private confirmInitialization(): boolean {
-        const nameForm = new FormGroup({
-            control: new FormControl(this.formConfig.firstPlayerName, [
-                Validators.required,
-                Validators.minLength(MIN_SIZE_NAME),
-                Validators.maxLength(MAX_SIZE_NAME),
-                InitGameComponent.isNameValidator(),
-            ]),
-        });
+        const nameValidator = new NameValidator();
+        nameValidator.name = this.formConfig.firstPlayerName;
 
-        this.nameForm = nameForm;
-
-        if (nameForm.valid) {
+        if (nameValidator.isValid) {
             this.formConfig.playTime = TimeSpan.fromMinutesSeconds(this.minutes, this.seconds);
-
             return true;
-        } else {
-            this.errorsList.length = 0;
-            for (const error of POSSIBLE_ERRORS) {
-                // nameForm.get('control') cannot be null since we initialize it in the constructor
-                if (this.nameForm.get('control')?.hasError(error.validationRule)) {
-                    this.errorsList.push(error.validationMessage);
-                }
-            }
         }
+
+        this.errorsList.length = 0;
+        this.errorsList.push(...nameValidator.errors);
+
         return false;
     }
 }
