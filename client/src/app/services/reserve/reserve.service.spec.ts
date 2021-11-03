@@ -10,7 +10,6 @@ describe('ReserveService', () => {
     // const serviceSpy= jasmine.createSpyObj('ReserveService', ['property']);
     // serviceSpy['']
 
-
     beforeEach(() => {
         //letterToExchange = 'a';
         //const mockReserve = ['a', 'a', 'a', 'b', 'b', 'c'];
