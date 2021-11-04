@@ -130,6 +130,7 @@ export class GridService {
         tempContext.rect(gridCoord.x - this.squareWidth / 2, gridCoord.y - this.squareHeight / 2, this.squareWidth, this.squareHeight);
         tempContext.stroke();
     }
+
     drawBonusOfPosition(squareContext: CanvasRenderingContext2D, position: Vec2): void {
         // const gridCoord = this.computeCanvasCoord(position);
         const boardData = this.boardService.gameBoard;
@@ -141,25 +142,20 @@ export class GridService {
 
     drawDirectionArrow(tempContext: CanvasRenderingContext2D, position: Vec2, direction: boolean): void {
         const gridCoord = this.computeCanvasCoord(position);
+        tempContext.beginPath();
+        tempContext.strokeStyle = STROKE_STYLE_SELECTION;
+        tempContext.lineWidth = LINE_WIDTH;
+        tempContext.moveTo(gridCoord.x, gridCoord.y);
         if (direction) {
-            tempContext.beginPath();
-            tempContext.strokeStyle = STROKE_STYLE_SELECTION;
-            tempContext.lineWidth = LINE_WIDTH;
-            tempContext.moveTo(gridCoord.x, gridCoord.y);
             tempContext.lineTo(gridCoord.x, gridCoord.y - DIST_HORIZONTAL);
             tempContext.lineTo(gridCoord.x + DIST_VERTICAL, gridCoord.y);
             tempContext.lineTo(gridCoord.x, gridCoord.y + DIST_HORIZONTAL);
-            tempContext.fill();
         } else {
-            tempContext.beginPath();
-            tempContext.strokeStyle = STROKE_STYLE_SELECTION;
-            tempContext.lineWidth = LINE_WIDTH;
-            tempContext.moveTo(gridCoord.x, gridCoord.y);
             tempContext.lineTo(gridCoord.x - DIST_HORIZONTAL, gridCoord.y);
             tempContext.lineTo(gridCoord.x, gridCoord.y + DIST_VERTICAL);
             tempContext.lineTo(gridCoord.x + DIST_HORIZONTAL, gridCoord.y);
-            tempContext.fill();
         }
+        tempContext.fill();
     }
 
     drawSymbol(letter: string, gridPosition: Vec2, context: CanvasRenderingContext2D) {

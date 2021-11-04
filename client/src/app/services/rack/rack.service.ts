@@ -9,7 +9,7 @@ const localUrl = (call: string, id: string) => `${environmentExt.apiUrl}player/$
     providedIn: 'root',
 })
 export class RackService {
-    readonly rack: string[];
+    rack: string[];
 
     constructor(private readonly httpClient: HttpClient, private readonly sessionService: SessionService) {
         this.rack = [];

@@ -41,7 +41,7 @@ class BoardServiceStub {
     }
 }
 
-fdescribe('GridService', () => {
+describe('GridService', () => {
     let service: GridService;
     let ctxStub: CanvasRenderingContext2D;
 

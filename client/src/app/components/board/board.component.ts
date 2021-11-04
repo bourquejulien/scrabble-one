@@ -48,6 +48,7 @@ export class BoardComponent implements OnChanges, AfterViewInit {
         const canClick = this.isFocus && this.placeLetterService.myRack.length === 0 && this.gameService.currentTurn === PlayerType.Local;
         if (canClick) {
             this.mouseHandlingService.mouseHitDetect(event);
+
             if (this.placeLetterService.gridPosition === undefined) {
                 this.placeLetterService.gridPosition = this.mouseHandlingService.position;
                 this.placeLetterService.positionInit = { x: this.placeLetterService.gridPosition.x, y: this.placeLetterService.gridPosition.y };
@@ -101,28 +102,7 @@ export class BoardComponent implements OnChanges, AfterViewInit {
             const validKey: boolean =
                 this.squareSelected === true && this.isLetter && this.placeLetterService.inGrid(this.placeLetterService.gridPosition);
             if (validKey && !this.placeLetterService.isLastSquare) {
-                this.gridService.cleanInsideSquare(this.tempContext, this.placeLetterService.gridPosition);
-                this.gridService.cleanInsideSquare(this.squareContext, this.placeLetterService.gridPosition);
-                this.gridService.drawSymbol(this.letter, this.placeLetterService.gridPosition, this.tempContext);
-                if (this.isUpper) {
-                    this.rackService.rack.splice(this.rackService.indexOf('*'), 1);
-                    this.placeLetterService.tempRack.push(this.letter);
-                    this.placeLetterService.myRack.push('*');
-                } else {
-                    this.rackService.rack.splice(this.rackService.indexOf(this.letter), 1);
-                    this.placeLetterService.tempRack.push(this.letter);
-                    this.placeLetterService.myRack.push(this.letter);
-                }
-
-                this.placeLetterService.nextAvailableSquare(true);
-                this.gridService.cleanInsideSquare(this.squareContext, this.placeLetterService.gridPosition);
-
-                if (!lastSquare && !this.placeLetterService.isLastSquare) {
-                    this.gridService.drawSelectionSquare(this.tempContext, this.placeLetterService.gridPosition);
-                    this.gridService.drawDirectionArrow(this.tempContext, this.placeLetterService.gridPosition, this.placeLetterService.isHorizontal);
-                } else {
-                    this.gridService.drawSelectionSquare(this.tempContext, this.placeLetterService.gridPosition);
-                }
+                this.handleKeyDown(lastSquare);
             }
         }
     }
@@ -202,23 +182,52 @@ export class BoardComponent implements OnChanges, AfterViewInit {
                 }
             }
         } else {
-            if (input === input.toUpperCase()) {
-                if (this.rackService.rack.includes(input)) {
-                    this.isLetter = true;
-                    this.letter = input;
-                    this.isUpper = true;
-                } else {
-                    this.isLetter = false;
-                }
+            this.specialCharKey(input);
+        }
+    }
+
+    private specialCharKey(input: string): void {
+        if (input === input.toUpperCase()) {
+            if (this.rackService.rack.includes('*')) {
+                this.isLetter = true;
+                this.letter = input;
+                this.isUpper = true;
             } else {
-                if (this.rackService.rack.includes(input)) {
-                    this.isLetter = true;
-                    this.letter = input;
-                    this.isUpper = false;
-                } else {
-                    this.isLetter = false;
-                }
+                this.isLetter = false;
             }
+        } else {
+            if (this.rackService.rack.includes(input)) {
+                this.isLetter = true;
+                this.letter = input;
+                this.isUpper = false;
+            } else {
+                this.isLetter = false;
+            }
+        }
+    }
+
+    private handleKeyDown(lastSquare: boolean): void {
+        this.gridService.cleanInsideSquare(this.tempContext, this.placeLetterService.gridPosition);
+        this.gridService.cleanInsideSquare(this.squareContext, this.placeLetterService.gridPosition);
+        this.gridService.drawSymbol(this.letter, this.placeLetterService.gridPosition, this.tempContext);
+        if (this.isUpper) {
+            this.rackService.rack.splice(this.rackService.indexOf('*'), 1);
+            this.placeLetterService.tempRack.push(this.letter);
+            this.placeLetterService.myRack.push('*');
+        } else {
+            this.rackService.rack.splice(this.rackService.indexOf(this.letter), 1);
+            this.placeLetterService.tempRack.push(this.letter);
+            this.placeLetterService.myRack.push(this.letter);
+        }
+
+        this.placeLetterService.nextAvailableSquare(true);
+        this.gridService.cleanInsideSquare(this.squareContext, this.placeLetterService.gridPosition);
+
+        if (!lastSquare && !this.placeLetterService.isLastSquare) {
+            this.gridService.drawSelectionSquare(this.tempContext, this.placeLetterService.gridPosition);
+            this.gridService.drawDirectionArrow(this.tempContext, this.placeLetterService.gridPosition, this.placeLetterService.isHorizontal);
+        } else {
+            this.gridService.drawSelectionSquare(this.tempContext, this.placeLetterService.gridPosition);
         }
     }
 }

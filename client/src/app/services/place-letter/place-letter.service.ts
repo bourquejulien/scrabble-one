@@ -83,7 +83,7 @@ export class PlaceLetterService {
         }
     }
 
-    samePosition(position: Vec2) {
+    samePosition(position: Vec2): void {
         if (this.gridPosition.x === position.x && this.gridPosition.y === position.y) {
             this.isHorizontal = false;
         } else {
