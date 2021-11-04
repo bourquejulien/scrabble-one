@@ -126,12 +126,31 @@ describe('CommandsService', () => {
         expect(reserveServiceSpy.getLetterAndQuantity).toHaveBeenCalled();
     });
 
-    // it("should fail when it is not the user's turn", () => {
-    //     service.gameService.currentTurn = PlayerType.Virtual;
-    //     expect(service['skipTurn']()).toBeFalsy();
-    //     expect(service['exchangeLetters']('wtv')).toBeFalsy();
-    //     expect(service['checkPlaceCommand']('h8h', 'test')).toBeFalsy();
-    // });
+    it("should fail when it is not the user's turn", () => {
+        spyOn<any>(service, 'isUsersTurn').and.returnValue(false);
+        expect(service['checkPlaceCommand']('h8h', 'test')).toBe(false);
+    });
+
+    it('should not excahnge letters if not users turn', () => {
+        spyOn<any>(service, 'isUsersTurn').and.returnValue(false);
+        expect(service['exchangeLetters']('z')).toBe(false);
+    });
+
+    it('should not skip turn if not users turn', () => {
+        spyOn<any>(service, 'isUsersTurn').and.returnValue(false);
+        expect(service['skipTurn']()).toBe(false);
+    });
+
+    it('should skip turn if users turn', () => {
+        spyOn<any>(service, 'isUsersTurn').and.returnValue(true);
+        //expect(playerServiceSpy.skipTurn).toHaveBeenCalled();
+        expect(service['skipTurn']()).toBe(true);
+    });
+
+    it('should send error message if trying to skip when not turn', () => {
+        service['gameService'].currentTurn = PlayerType.Virtual;
+        expect(service['isUsersTurn']()).toBe(false);
+    });
 
     it('should remove accents', () => {
         const accentedMessage = 'Ôde à la crème brûlée';

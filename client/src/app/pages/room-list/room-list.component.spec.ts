@@ -1,17 +1,17 @@
 /* eslint-disable dot-notation */
-import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { RouterTestingModule } from '@angular/router/testing';
-import { RoomListComponent } from './room-list.component';
-import { GamePageComponent } from '@app/pages/game-page/game-page.component';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
-import { RoomService } from '@app/services/room/room.service';
-import { MatDialogRef } from '@angular/material/dialog';
 import { CUSTOM_ELEMENTS_SCHEMA, Injectable, NO_ERRORS_SCHEMA } from '@angular/core';
-import { AppMaterialModule } from '@app/modules/material.module';
-import { Subject } from 'rxjs';
-import { AvailableGameConfig } from '@common';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { MatDialogRef } from '@angular/material/dialog';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { RouterTestingModule } from '@angular/router/testing';
 import { NameValidator } from '@app/classes/form-validation/name-validator';
+import { AppMaterialModule } from '@app/modules/material.module';
+import { GamePageComponent } from '@app/pages/game-page/game-page.component';
+import { RoomService } from '@app/services/room/room.service';
+import { AvailableGameConfig } from '@common';
+import { Subject } from 'rxjs';
+import { RoomListComponent } from './room-list.component';
 
 const ROOMS = ['a', 'b', 'c'];
 @Injectable({
@@ -29,7 +29,7 @@ class MatDialogStub {
         return;
     }
 }
-fdescribe('RoomListComponent', () => {
+describe('RoomListComponent', () => {
     let component: RoomListComponent;
     let fixture: ComponentFixture<RoomListComponent>;
     let roomServiceSpy: jasmine.SpyObj<RoomService>;
