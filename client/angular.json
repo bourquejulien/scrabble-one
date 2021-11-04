@@ -105,8 +105,7 @@
             ],
             "scripts": [],
             "codeCoverageExclude": [
-                "src/app/classes/socket-test-helper.ts",
-                "src/app/classes/canvas-test-helper.ts"
+                "src/app/classes/helpers/*"
             ]
           }
         },
