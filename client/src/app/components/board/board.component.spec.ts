@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable max-classes-per-file */
 import { CommonModule } from '@angular/common';
@@ -138,8 +139,8 @@ fdescribe('BoardComponent', () => {
     let placeLetter: jasmine.SpyObj<PlaceLetterService>;
 
     beforeEach(async () => {
-        const mockMyRack = ['e', 's', 't', '*', 'a', 'b', 'c'];
-        rackServiceSpy = jasmine.createSpyObj('RackService', ['indexOf'], { rack: mockMyRack });
+        // const mockMyRack = ['e', 's', 't', '*', 'a', 'b', 'c'];
+        rackServiceSpy = jasmine.createSpyObj('RackService', ['indexOf']);
         gameServiceSpy = jasmine.createSpyObj('GameService', [], { currentTurn: playerType });
         placeLetter = jasmine.createSpyObj('PlaceLetterService', [
             'enterOperation',
@@ -159,6 +160,7 @@ fdescribe('BoardComponent', () => {
         placeLetter.myRack = [];
         placeLetter.positionInit = { x: 7, y: 8 };
         placeLetter.isHorizontal = true;
+        rackServiceSpy.rack = ['e', 's', 't', '*', 'a', 'b', 'c'];
         await TestBed.configureTestingModule({
             declarations: [BoardComponent],
             providers: [
@@ -278,9 +280,11 @@ fdescribe('BoardComponent', () => {
         component.placeLetterService.isLastSquare = false;
         const LETTER = 'a';
 
-        const spy = spyOn<any>(component, 'handleKeyDown');
+        // const spy = spyOn<any>(component, 'handleKeyDown');
+        const spy2 = spyOn<any>(gridServiceStub, 'drawSymbol');
         component.onKeyDown(new KeyboardEvent('keydown', { key: LETTER }));
-        expect(spy).toHaveBeenCalled();
+
+        expect(spy2).toHaveBeenCalled();
     });
 
     it('put shift in myRack is disable when onKeyDown', () => {
@@ -307,7 +311,7 @@ fdescribe('BoardComponent', () => {
         expect(component.isLetter).toBeFalse();
     });
 
-    it('put A is disable in myRack when onKeyDown', () => {
+    it('put A put * in myRack when onKeyDown', () => {
         component.squareSelected = true;
         component.placeLetterService.positionInit = { x: 8, y: 9 };
         component.placeLetterService.gridPosition = { x: 8, y: 9 };
@@ -315,23 +319,77 @@ fdescribe('BoardComponent', () => {
         component.placeLetterService.isLastSquare = false;
         const LETTER = 'A';
 
+        const spy2 = spyOn<any>(gridServiceStub, 'drawSymbol');
+        component.onKeyDown(new KeyboardEvent('keydown', { key: LETTER }));
+
+        expect(spy2).toHaveBeenCalled();
+    });
+
+    it('put A is disable in myRack when onKeyDown', () => {
+        rackServiceSpy.rack = ['e', 's', 't', 'q', 'a', 'b', 'c'];
+        component.squareSelected = true;
+        component.placeLetterService.positionInit = { x: 8, y: 9 };
+        component.placeLetterService.gridPosition = { x: 8, y: 9 };
+        component.isLetter = true;
+        component.placeLetterService.isLastSquare = false;
+        const LETTER = 'A';
+
+        component.onKeyDown(new KeyboardEvent('keydown', { key: LETTER }));
+        expect(component.isLetter).toBeFalse();
+    });
+
+    it('put à is disable in myRack when onKeyDown', () => {
+        component.squareSelected = true;
+        component.placeLetterService.positionInit = { x: 8, y: 9 };
+        component.placeLetterService.gridPosition = { x: 14, y: 9 };
+        component.isLetter = true;
+        component.placeLetterService.isLastSquare = false;
+
+        const LETTER = 'à';
+
+        const spy = spyOn<any>(gridServiceStub, 'drawSelectionSquare');
+        component.onKeyDown(new KeyboardEvent('keydown', { key: LETTER }));
+        expect(spy).toHaveBeenCalled();
+        expect(component.placeLetterService.isLastSquare).toBeTrue();
+    });
+
+    it('put ï is disable in myRack when onKeyDown', () => {
+        component.squareSelected = true;
+        component.placeLetterService.positionInit = { x: 8, y: 9 };
+        component.placeLetterService.gridPosition = { x: 8, y: 9 };
+        component.isLetter = true;
+        component.placeLetterService.isLastSquare = false;
+        const LETTER = 'ï';
+
+        component.onKeyDown(new KeyboardEvent('keydown', { key: LETTER }));
+        expect(component.isLetter).toBeFalse();
+    });
+
+    it('put À is disable in myRack when onKeyDown', () => {
+        component.squareSelected = true;
+        component.placeLetterService.positionInit = { x: 8, y: 9 };
+        component.placeLetterService.gridPosition = { x: 8, y: 9 };
+        component.isLetter = true;
+        component.placeLetterService.isLastSquare = false;
+        const LETTER = 'À';
+
         const spy = spyOn<any>(component, 'handleKeyDown');
         component.onKeyDown(new KeyboardEvent('keydown', { key: LETTER }));
         expect(spy).toHaveBeenCalled();
     });
 
-    // it('put A is disable in myRack when onKeyDown', () => {
-    //     rackServiceSpy.rack = ['e', 's', 't', 'q', 'a', 'b', 'c'];
-    //     component.squareSelected = true;
-    //     component.placeLetterService.positionInit = { x: 8, y: 9 };
-    //     component.placeLetterService.gridPosition = { x: 8, y: 9 };
-    //     component.isLetter = true;
-    //     component.placeLetterService.isLastSquare = false;
-    //     const LETTER = 'A';
+    it('put Ï is disable in myRack when onKeyDown', () => {
+        rackServiceSpy.rack = ['e', 's', 't', 'q', 'a', 'b', 'c'];
+        component.squareSelected = true;
+        component.placeLetterService.positionInit = { x: 8, y: 9 };
+        component.placeLetterService.gridPosition = { x: 8, y: 9 };
+        component.isLetter = true;
+        component.placeLetterService.isLastSquare = false;
+        const LETTER = 'Ï';
 
-    //     component.onKeyDown(new KeyboardEvent('keydown', { key: LETTER }));
-    //     expect(component.isLetter).toBeFalse();
-    // });
+        component.onKeyDown(new KeyboardEvent('keydown', { key: LETTER }));
+        expect(component.isLetter).toBeFalse();
+    });
 
     // afterAll(() => cleanStyles());
 });

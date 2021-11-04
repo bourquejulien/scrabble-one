@@ -101,7 +101,7 @@ export class BoardComponent implements OnChanges, AfterViewInit {
             this.handleKeyPress2(event.key);
             const validKey: boolean =
                 this.squareSelected === true && this.isLetter && this.placeLetterService.inGrid(this.placeLetterService.gridPosition);
-            if (validKey && !this.placeLetterService.isLastSquare) {
+            if (validKey && !lastSquare) {
                 this.handleKeyDown(lastSquare);
             }
         }
@@ -219,10 +219,12 @@ export class BoardComponent implements OnChanges, AfterViewInit {
             this.placeLetterService.tempRack.push(this.letter);
             this.placeLetterService.myRack.push(this.letter);
         }
+        if (this.placeLetterService.gridPosition.x === MAX_SIZE - 1 || this.placeLetterService.gridPosition.y === MAX_SIZE - 1) {
+            this.placeLetterService.isLastSquare = true;
+        }
 
         this.placeLetterService.nextAvailableSquare(true);
         this.gridService.cleanInsideSquare(this.squareContext, this.placeLetterService.gridPosition);
-
         if (!lastSquare && !this.placeLetterService.isLastSquare) {
             this.gridService.drawSelectionSquare(this.tempContext, this.placeLetterService.gridPosition);
             this.gridService.drawDirectionArrow(this.tempContext, this.placeLetterService.gridPosition, this.placeLetterService.isHorizontal);

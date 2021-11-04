@@ -47,6 +47,12 @@ export class PlaceLetterService {
     }
 
     backSpaceOperation(tempContext: CanvasRenderingContext2D): void {
+        if (this.gridPosition.x > MAX_SIZE) {
+            this.gridPosition.x = 15;
+        }
+        if (this.gridPosition.y > MAX_SIZE) {
+            this.gridPosition.x = 15;
+        }
         this.gridService.clearSquare(tempContext, this.gridPosition);
         if (this.isHorizontal) {
             this.gridService.cleanInsideSquare(tempContext, { x: this.gridPosition.x - 1, y: this.gridPosition.y });
@@ -96,8 +102,8 @@ export class PlaceLetterService {
     }
 
     inGrid(position: Vec2): boolean {
-        if (position.x >= MIN_SIZE && position.x <= MAX_SIZE) {
-            if (position.y >= MIN_SIZE && position.y <= MAX_SIZE) {
+        if (position.x >= MIN_SIZE && position.x <= MAX_SIZE + 1) {
+            if (position.y >= MIN_SIZE && position.y <= MAX_SIZE + 1) {
                 return true;
             } else {
                 return false;
@@ -126,7 +132,7 @@ export class PlaceLetterService {
         if (this.gridPosition.x === MAX_SIZE) {
             this.isLastSquare = true;
         }
-        if (this.isHorizontal && this.gridPosition.x < MAX_SIZE) {
+        if (this.isHorizontal && this.gridPosition.x <= MAX_SIZE + 1) {
             this.gridPosition.x += 1;
         } else if (!this.isHorizontal && this.gridPosition.y < MAX_SIZE) {
             this.gridPosition.y += 1;
