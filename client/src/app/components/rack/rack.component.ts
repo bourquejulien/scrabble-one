@@ -122,7 +122,6 @@ export class RackComponent implements OnInit {
     }
 
     private handleKeyPress(key: string) {
-        // TODO isFocus a verifier avec un charge
         if (key.length !== 1 || !key.match('([a-z]|\\*)')) {
             return;
         }

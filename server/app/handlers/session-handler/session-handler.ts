@@ -22,7 +22,7 @@ export class SessionHandler {
         public sessionInfo: SessionInfo,
         public boardHandler: BoardHandler,
         public reserveHandler: ReserveHandler,
-        public playerHandler: PlayerHandler, // TODO: change visibility from private to public to test
+        private playerHandler: PlayerHandler,
         socketService: SocketService,
     ) {
         this.socketHandler = socketService.generate(sessionInfo.id);

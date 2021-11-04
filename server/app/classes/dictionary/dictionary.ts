@@ -1,4 +1,4 @@
-import { WordDefinition } from '@common';
+import { WordDefinition } from './word-definition';
 
 export interface Dictionary {
     lookup(word: string): boolean;

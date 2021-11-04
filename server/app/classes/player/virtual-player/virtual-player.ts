@@ -1,4 +1,3 @@
-import { PlayerData } from '@app/classes/player-data';
 import { Config } from '@app/config';
 import { SkipAction } from '@app/classes/player/virtual-player/actions/skip-action';
 import { ExchangeAction } from '@app/classes/player/virtual-player/actions/exchange-action';
@@ -14,10 +13,6 @@ import { Timer } from '@app/classes/delay';
 const MIN_PLAYTIME_MILLISECONDS = 3000;
 
 export class VirtualPlayer extends Player {
-    isTurn: boolean;
-
-    readonly playerData: PlayerData;
-
     constructor(
         readonly playerInfo: PlayerInfo,
         private readonly dictionaryService: DictionaryService,

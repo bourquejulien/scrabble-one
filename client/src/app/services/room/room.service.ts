@@ -67,8 +67,12 @@ export class RoomService {
     }
 
     async join(joinConfig: MultiplayerJoinConfig): Promise<boolean> {
-        const serverConfig = await this.httpCLient.put<ServerConfig>(localUrl('game', 'join'), joinConfig).toPromise();
-        await this.gameService.start(serverConfig);
+        try {
+            const serverConfig = await this.httpCLient.put<ServerConfig>(localUrl('game', 'join'), joinConfig).toPromise();
+            await this.gameService.start(serverConfig);
+        } catch (err) {
+            return false;
+        }
 
         return true;
     }
