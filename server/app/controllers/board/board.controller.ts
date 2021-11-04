@@ -27,20 +27,18 @@ export class BoardController {
             }
 
             const response = await humanPlayer.placeLetters(placements);
-            res.status(Constants.HTTP_STATUS.OK);
             res.json(response);
         });
 
         this.router.get('/retrieve/:id', (req: Request, res: Response) => {
             const boardHandler = this.getBoardHandler(req.params.id);
+
             if (boardHandler === null) {
                 res.sendStatus(Constants.HTTP_STATUS.BAD_REQUEST);
                 return;
             }
 
-            const boardData = boardHandler.immutableBoard.boardData; // TODO
-            res.status(Constants.HTTP_STATUS.OK);
-            res.json(boardData);
+            res.json(boardHandler.immutableBoard.boardData);
         });
     }
 

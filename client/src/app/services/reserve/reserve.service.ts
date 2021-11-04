@@ -16,8 +16,7 @@ export class ReserveService {
     }
 
     async refresh(): Promise<void> {
-        const response = await this.httpClient.get<string[]>(localUrl('retrieve', this.sessionService.id)).toPromise();
-        this.reserve = response;
+        this.reserve = await this.httpClient.get<string[]>(localUrl('retrieve', this.sessionService.id)).toPromise();
     }
 
     reset(): void {

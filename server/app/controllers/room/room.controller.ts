@@ -17,7 +17,7 @@ export class RoomController {
         this.socketIdToPlayerId = new Map<string, string>();
     }
 
-    async isRoomFull(socket: Socket, sessionId: string): Promise<boolean> {
+    private static async isRoomFull(socket: Socket, sessionId: string): Promise<boolean> {
         const maxPlayers = Config.MAX_PLAYERS;
         const roomSockets = await socket.in(sessionId).fetchSockets();
 
@@ -84,7 +84,7 @@ export class RoomController {
                 const sessionId = this.sessionHandlingService.getSessionId(playerId);
 
                 if (sessionId !== '') {
-                    if (!(await this.isRoomFull(socket, sessionId))) {
+                    if (!(await RoomController.isRoomFull(socket, sessionId))) {
                         socket.join([sessionId, playerId]);
                         this.socketIdToPlayerId.set(socket.id, playerId);
                         logger.info(`Joined room: ${sessionId}`);

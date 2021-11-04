@@ -7,10 +7,6 @@ import { Config } from '@app/config';
 import { SocketHandler } from '@app/handlers/socket-handler/socket-handler';
 import { MessageType } from '@common';
 
-// TODO
-// const MAX_PLAYTIME_MILLISECONDS = 20000;
-// const INTERVAL_TIME = 100;
-
 export class PlayAction implements Action {
     constructor(
         private readonly boardHandler: BoardHandler,
@@ -35,19 +31,6 @@ export class PlayAction implements Action {
 
     execute(): Action | null {
         const scoreRange = PlayAction.getScoreRange();
-
-        // TODO Re-add timer?
-        /*
-        let ranCounter = 0;
-        const timerInterval = setInterval(() => {
-            if (ranCounter * INTERVAL_TIME < MAX_PLAYTIME_MILLISECONDS && this.playGenerator.generateNext()) {
-                ranCounter++;
-            } else {
-                clearInterval(timerInterval);
-            }
-        }, INTERVAL_TIME);
-
-         */
 
         while (this.playGenerator.generateNext());
 

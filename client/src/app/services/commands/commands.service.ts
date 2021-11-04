@@ -147,7 +147,7 @@ export class CommandsService {
     }
 
     private isUsersTurn(): boolean {
-        if (this.gameService.currentTurn === PlayerType.Virtual) {
+        if (this.gameService.currentTurn !== PlayerType.Local) {
             this.messagingService.send('', SystemMessages.InvalidTurn, MessageType.System);
             return false;
         }

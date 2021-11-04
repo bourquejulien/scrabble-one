@@ -5,7 +5,7 @@ import { RackService } from '@app/services/rack/rack.service';
 import { ReserveService } from '@app/services/reserve/reserve.service';
 import { SessionService } from '@app/services/session/session.service';
 import { Answer, Direction, Vec2 } from '@common';
-import { environmentExt } from '@environmentExt';
+import { environmentExt } from '@environment-ext';
 
 const localUrl = (call: string, id: string) => `${environmentExt.apiUrl}player/${call}/${id}`;
 
@@ -23,9 +23,14 @@ export class PlayerService {
 
     async placeLetters(word: string, position: Vec2, direction: Direction): Promise<boolean> {
         const positionToPlace = this.boardService.retrievePlacements(word, position, direction);
-        const answer = await this.boardService.placeLetters(positionToPlace);
 
-        if (!answer.isSuccess) {
+        try {
+            const answer = await this.boardService.placeLetters(positionToPlace);
+
+            if (!answer.isSuccess) {
+                return false;
+            }
+        } catch (err) {
             return false;
         }
 
