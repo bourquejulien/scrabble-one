@@ -4,7 +4,7 @@ import { Config } from '@app/config';
 
 export class PlayerHandler {
     players: Player[];
-    private readonly nextTurn: Subject<string>;
+    private nextTurn: Subject<string>;
     private playerSubscriptions: Map<string, Subscription>;
 
     constructor() {

@@ -19,7 +19,7 @@ export class VirtualPlayer extends Player {
     playerData: PlayerData;
 
     constructor(
-        readonly playerInfo: PlayerInfo,
+        public playerInfo: PlayerInfo,
         private readonly dictionaryService: DictionaryService,
         private readonly runAction: (action: Action) => Action | null,
     ) {
@@ -45,9 +45,7 @@ export class VirtualPlayer extends Player {
 
     private nextAction(): Action {
         let random = Math.random();
-        console.log('In Next action', random);
         if (random < Config.VIRTUAL_PLAYER.SKIP_PERCENTAGE) {
-            console.log('Case 1');
             return new SkipAction(this.playerData);
         }
         random -= Config.VIRTUAL_PLAYER.SKIP_PERCENTAGE;

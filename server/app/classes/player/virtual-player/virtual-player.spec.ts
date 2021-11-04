@@ -1,3 +1,4 @@
+/* eslint-disable dot-notation */
 /* eslint-disable no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable no-unused-expressions */
@@ -9,123 +10,120 @@ import { BoardHandler } from '@app/handlers/board-handler/board-handler';
 import { ReserveHandler } from '@app/handlers/reserve-handler/reserve-handler';
 import { SocketHandler } from '@app/handlers/socket-handler/socket-handler';
 import { DictionaryService } from '@app/services/dictionary/dictionary.service';
-import { SocketService } from '@app/services/socket/socket-service';
-import { Message, Placement, ValidationResponse } from '@common';
 import { expect } from 'chai';
-import { createSandbox, createStubInstance, stub } from 'sinon';
-import http from 'http';
+import { createSandbox, createStubInstance, SinonSandbox, stub } from 'sinon';
 import { Action } from './actions/action';
-import { Board } from '@app/classes/board/board';
-import { BoardValidator } from '@app/classes/validation/board-validator';
 import { Observable } from 'rxjs';
+import { Timer } from '@app/classes/delay';
+import { LETTER_DEFINITIONS, Vec2 } from '@common';
+import { Board } from '@app/classes/board/board';
+import { PlayAction } from './actions/play-action';
+import { ExchangeAction } from './actions/exchange-action';
+import { SkipAction } from './actions/skip-action';
+import { PlaceAction } from './actions/place-action';
+
 /*
 const LETTERS = ['a', 'b', 'c', 'd', 'e', 'f', 'g'];
 const ARBITRARY_SCORE = 40;
 const ARBITRARY_SKIPPED_TURN = 40;
+*/
 
 const ARBITRARY_POSITIONS: Vec2[] = [
     { x: 0, y: 0 },
     { x: 0, y: 1 },
     { x: 0, y: 2 },
 ];
-*/
-export class SocketHandlerMock extends SocketHandler {
-    sendData<T>(event: string, data: T): void {
-        // Does nothing
-    }
-
-    sendMessage(message: Message): void {
-        // Does nothing
-    }
-}
-
-export class SocketServiceMock extends SocketService {
-    init(server: http.Server): void {
-        // Does nothing
-    }
-
-    send<T>(event: string, roomId: string, message?: T) {
-        // Does nothing
-    }
-}
-
-export class BoardHandlerMock extends BoardHandler {
-    lookupLetters(letters: Placement[]): ValidationResponse {
-        return { isSuccess: false, points: 0, description: '' };
-    }
-
-    placeLetters(letters: Placement[]): ValidationResponse {
-        return { isSuccess: false, points: 0, description: '' };
-    }
-
-    retrieveNewLetters(placements: Placement[]): Placement[] {
-        return [];
-    }
-}
 const RANDOM_RETURN_EXCHANGE = 0.12;
+const RANDOM_PLAY_ACTION = 0.7;
 const SIZE = 9;
+
 describe('VirtualPlayer', () => {
     let service: VirtualPlayer;
-    const reserveHandler = new ReserveHandler();
-    const dictionaryService = new DictionaryService();
-    const board = new Board(SIZE);
-    const boardValidator = createStubInstance(BoardValidator) as unknown as BoardValidator;
-    const boardHandler = new BoardHandlerMock(board, boardValidator);
-    const socketServiceMock = new SocketServiceMock();
-    const socketHandlerMock = new SocketHandlerMock(socketServiceMock);
+    const reserveHandler = createStubInstance(ReserveHandler);
+    const playAction = createStubInstance(PlayAction);
+    const exchangeAction = createStubInstance(ExchangeAction);
+    const skipAction = createStubInstance(SkipAction);
+    const placeAction = createStubInstance(PlaceAction);
+    const dictionaryService = createStubInstance(DictionaryService);
+    const socketHandler = createStubInstance(SocketHandler);
+    const boardHandler = createStubInstance(BoardHandler);
+    reserveHandler['reserve'] = [];
+    for (const [letter, letterData] of LETTER_DEFINITIONS) {
+        for (let i = 0; i < letterData.maxQuantity; i++) {
+            reserveHandler['reserve'].push(letter);
+        }
+    }
+    playAction.execute.returns(playAction as unknown as PlayAction);
+    exchangeAction.execute.returns(playAction as unknown as ExchangeAction);
+    skipAction.execute.returns(playAction as unknown as SkipAction);
+    placeAction.execute.returns(playAction as unknown as PlaceAction);
+    const board = createStubInstance(Board);
     const playerInfo: PlayerInfo = { id: 'test', name: 'mauricetest', isHuman: false };
     const runAction: (action: Action) => Action | null = () => null;
+    let sandboxRandom: SinonSandbox;
+    let sandboxTimer: SinonSandbox;
+    let sandboxNext: SinonSandbox;
 
     beforeEach(() => {
-        service = new VirtualPlayer(playerInfo, dictionaryService, runAction);
-        service.init(boardHandler, reserveHandler, socketHandlerMock);
+        service = new VirtualPlayer(playerInfo, dictionaryService as unknown as DictionaryService, runAction);
+        service.init(boardHandler as unknown as BoardHandler, reserveHandler, socketHandler as unknown as SocketHandler);
+        sandboxRandom = createSandbox();
+        sandboxTimer = createSandbox();
+        sandboxNext = createSandbox();
+        stub(board, 'positions').get(() => {
+            return ARBITRARY_POSITIONS;
+        });
+    });
+    afterEach(() => {
+        sandboxRandom.restore();
+        sandboxTimer.restore();
+        sandboxNext.restore();
     });
 
     it('should create virtual player', () => {
         expect(service).to.be.ok;
     });
-    // might want to merge the next two tests to avoid the 3 seconds delay being triggered 2 times
     it('starting turn should fill rack', async () => {
-        reserveHandler.reserve.length = SIZE;
         const sandbox = createSandbox();
         const stubFill = sandbox.stub(service, 'fillRack');
+        sandboxTimer.stub(Timer, 'delay').returns(Promise.resolve());
+        sandboxRandom.stub(Math, 'random').returns(RANDOM_RETURN_EXCHANGE);
         await service.startTurn();
         sandbox.assert.calledOnce(stubFill);
     });
 
     it('starting turn should eventually end turn', async () => {
         reserveHandler.reserve.length = SIZE;
+        sandboxTimer.stub(Timer, 'delay').returns(Promise.resolve());
+        sandboxRandom.stub(Math, 'random').returns(RANDOM_RETURN_EXCHANGE);
         await service.startTurn();
         expect(service.isTurn).to.be.false;
     });
 
-    it('starting turn should make next action return skip action sometimes', async () => {
-        // const sandbox = createSandbox();
-        // sandbox.stub(global.window.Math, 'random').returns(RANDOM_RETURN_EXCHANGE);
-        // console.log(global.window.Math.random());
-        // const stubNextAction = sandbox.stub(service, 'nextAction' as any);
-        // await service.startTurn();
-        // sandbox.assert.calledOnce(stubNextAction);
-        // stubRandom.restore();
+    it('starting turn should make next action return Exchange action sometimes', async () => {
+        const stubNext = sandboxNext.stub(service, 'nextAction' as any);
+        sandboxRandom.stub(Math, 'random').returns(RANDOM_RETURN_EXCHANGE);
+        sandboxTimer.stub(Timer, 'delay').returns(Promise.resolve());
+        await service.startTurn();
+        sandboxNext.assert.called(stubNext);
     });
 
-    // Julien where are you
-    it('starting turn should make next action return exchange action sometimes', async () => {
-        const sandbox = createSandbox();
-        const stubNextAction = sandbox.stub(service, 'nextAction' as any);
-        stub(Math, 'random').returns(RANDOM_RETURN_EXCHANGE);
-        // stubNextAction.callsFake(random);
+    it('starting turn should make next action return play action sometimes', async () => {
+        const stubNext = sandboxNext.stub(service, 'nextAction' as any);
+        sandboxRandom.stub(Math, 'random').returns(RANDOM_PLAY_ACTION);
+        sandboxTimer.stub(Timer, 'delay').returns(Promise.resolve());
         await service.startTurn();
-        sandbox.assert.calledOnce(stubNextAction);
+        sandboxNext.assert.called(stubNext);
     });
-    /*
-    it('ending turn should call next on behaviour subject', () => {
-        const sandbox = createSandbox();
-        const stubNext = sandbox.stub(service.turnEnded, 'next');
-        service.endTurn();
-        sandbox.assert.calledOnce(stubNext);
+
+    it('starting turn should make next action return skip action sometimes', async () => {
+        const stubNext = sandboxNext.stub(service, 'nextAction' as any);
+        sandboxRandom.stub(Math, 'random').returns(0);
+        sandboxTimer.stub(Timer, 'delay').returns(Promise.resolve());
+        await service.startTurn();
+        sandboxNext.assert.called(stubNext);
     });
-    */
+
     it('getting id should return id', () => {
         const returnValue = service.id;
         expect(returnValue).to.eql(service.playerInfo.id);

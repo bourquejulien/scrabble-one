@@ -8,8 +8,8 @@ import * as logger from 'winston';
 export class HumanPlayer extends Player {
     isTurn: boolean;
     playerData: PlayerData;
-
-    constructor(readonly playerInfo: PlayerInfo) {
+    // j'enleve readonly pour les tests et jobtiens une erreur?
+    constructor(public playerInfo: PlayerInfo) {
         super();
     }
 

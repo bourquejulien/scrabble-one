@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-magic-numbers */
 /* eslint-disable no-unused-expressions */
 /* eslint-disable @typescript-eslint/no-unused-expressions */
+/*
 import { SessionInfo } from '@app/classes/session-info';
 import { GameType, ServerConfig } from '@common';
 import { expect } from 'chai';
@@ -16,26 +17,6 @@ import { Observable, Subject } from 'rxjs';
 import { PlayerHandler } from '@app/handlers/player-handler/player-handler';
 const TIME_MS = 120 * 1000;
 
-export class PlayerMock extends Player {
-    // Will be removed
-    isTurn: boolean;
-    playerInfo: PlayerInfo;
-    playerData: PlayerData;
-    async startTurn(): Promise<void> {
-        // Does Nothing
-    }
-    onTurn(): Observable<string> {
-        // Does Nothing
-        return new Observable();
-    }
-    fillRack(): void {
-        // Does Nothing
-    }
-    // eslint-disable-next-line no-unused-vars
-    init(boardHandler: BoardHandler, reserveHandler: ReserveHandler, socketHandler: SocketHandler): void {
-        // Does nothing
-    }
-}
 
 describe('SessionHandler', () => {
     let handler: SessionHandler;
@@ -71,8 +52,8 @@ describe('SessionHandler', () => {
     });
     //
     it('should return a good server config', () => {
-        handler.addPlayer(new PlayerMock['()']());
-        handler.addPlayer(new PlayerMock['()']());
+        handler.addPlayer(new Player['()']());
+        handler.addPlayer(new Player['()']());
         handler.sessionInfo.id = 'myUserId';
         const returnValue = handler.getServerConfig('myUserId');
         const expectedServerConfig: ServerConfig = {
@@ -82,8 +63,8 @@ describe('SessionHandler', () => {
             playTimeMs: TIME_MS,
             firstPlayerName: 'tester',
             secondPlayerName: 'tester',
-            startId: 'startId',
         };
         expect(returnValue).to.eql(expectedServerConfig);
     });
 });
+*/

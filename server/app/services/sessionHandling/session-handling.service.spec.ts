@@ -16,21 +16,22 @@ const TIME_MS = 1000;
 
 describe('SessionHandlingService', () => {
     const service = new SessionHandlingService();
-
+    const stubSessionHandler = createStubInstance(SessionHandler) as unknown as SessionHandler;
+    const player = createStubInstance(Player);
+    stubSessionHandler.addPlayer(player as unknown as Player);
     it('should be created', () => {
         expect(service).to.be.ok;
     });
 
     it('should not remove handlers when theres none', () => {
-        service.removeHandler('0');
-        expect(service.removeHandler).to.be.null;
+        expect(service.removeHandler('0')).to.be.null;
     });
 
     it('should add handlers', () => {
         for (let id = 0; id < MAX_HANDLERS; id++) {
             const idAsString: string = id.toString();
             const sessionInfo: SessionInfo = { id: idAsString, playTimeMs: TIME_MS, gameType: GameType.Multiplayer };
-            const stubSessionHandler = createStubInstance(SessionHandler) as unknown as SessionHandler;
+
             stubSessionHandler['sessionInfo'] = sessionInfo;
             service.addHandler(stubSessionHandler);
             expect(service.getHandlerBySessionId(idAsString)).to.be.not.null;
