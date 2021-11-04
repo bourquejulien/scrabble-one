@@ -1,7 +1,7 @@
 /* eslint-disable dot-notation */
 /* eslint-disable @typescript-eslint/no-magic-numbers */
 import { TestBed } from '@angular/core/testing';
-import { SocketMock } from '@app/classes/socket-test-helper';
+import { SocketMock } from '@app/classes/helpers/socket-test-helper';
 import { SocketClientService } from '@app/services/socket-client/socket-client.service';
 import { MessageType } from '@common';
 import { MessagingService } from './messaging.service';

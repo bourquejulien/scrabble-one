@@ -59,7 +59,7 @@ export class RoomListComponent implements AfterViewInit, OnDestroy {
     }
 
     async join() {
-        if (this.selectedConfig == null || !this.validateForm()) {
+        if (!this.validateForm() || this.selectedConfig == null) {
             return;
         }
 
@@ -84,7 +84,7 @@ export class RoomListComponent implements AfterViewInit, OnDestroy {
         this.errorsList.length = 0;
         this.errorsList.push(...this.nameValidator.errors);
 
-        if (this.nameValidator.name === this.selectedConfig?.waitingPlayerName ?? '') {
+        if (this.nameValidator.name === this.selectedConfig?.waitingPlayerName) {
             this.errorsList.push('*Nom des joueurs identique.');
         }
 
@@ -94,7 +94,7 @@ export class RoomListComponent implements AfterViewInit, OnDestroy {
     private refreshConfig(availableGameConfigs: AvailableGameConfig[]) {
         this.availableGameConfigs = availableGameConfigs;
 
-        if (this.selectedConfig !== null && this.availableGameConfigs.findIndex((c) => c.id === this.selectedConfig?.id) === -1) {
+        if (this.availableGameConfigs.findIndex((c) => c.id === this.selectedConfig?.id) === -1) {
             this.reset();
             this.openErrorDialog();
         }
