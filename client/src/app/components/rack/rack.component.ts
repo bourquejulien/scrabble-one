@@ -3,6 +3,8 @@ import { CommandsService } from '@app/services/commands/commands.service';
 import { RackService } from '@app/services/rack/rack.service';
 import { ReserveService } from '@app/services/reserve/reserve.service';
 import { LETTER_DEFINITIONS } from '@common';
+import { GameService } from '@app/services/game/game.service';
+import { PlayerType } from '@app/classes/player/player-type';
 
 interface Selection {
     swap: {
@@ -19,11 +21,17 @@ interface Selection {
 })
 export class RackComponent implements OnInit {
     @Output() reserveSelectionChange = new EventEmitter<Set<number>>();
+    playerType = PlayerType;
 
     selection: Selection;
     isFocus: boolean;
 
-    constructor(readonly rackService: RackService, private readonly commandService: CommandsService, readonly reserveService: ReserveService) {
+    constructor(
+        readonly rackService: RackService,
+        private readonly commandService: CommandsService,
+        readonly reserveService: ReserveService,
+        readonly gameService: GameService,
+    ) {
         this.selection = {
             swap: {
                 index: -1,
