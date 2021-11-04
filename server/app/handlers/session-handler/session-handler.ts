@@ -28,8 +28,9 @@ export class SessionHandler {
     }
 
     getServerConfig(sessionId: string): ServerConfig {
-        const firstPlayer = this.players.find((p) => p.id === sessionId) ?? this.players[0];
-        const secondPlayer = this.players.find((p) => p.id !== firstPlayer.id) ?? this.players[1];
+        const index = this.players.findIndex((p) => p.id === sessionId);
+        const firstPlayer = this.players[index];
+        const secondPlayer = this.players[1 - index];
 
         return {
             id: firstPlayer.id,
@@ -96,7 +97,6 @@ export class SessionHandler {
 
     private timerTick(): void {
         const timeLeftMs = Math.max(0, this.sessionData.timeLimitEpoch - new Date().getTime());
-
         if (timeLeftMs === 0) {
             this.players.forEach((p) => (p.isTurn = false));
         }
