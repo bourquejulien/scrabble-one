@@ -7,6 +7,7 @@ import { SessionService } from '@app/services/session/session.service';
 import { PlayerType } from '@app/classes/player/player-type';
 import { environmentExt } from '@environment-ext';
 import { SocketClientService } from '@app/services/socket-client/socket-client.service';
+import { EndGameWinner } from '@app/classes/end-game-winner';
 
 const localUrl = (base: string, call: string, id?: string) => `${environmentExt.apiUrl}${base}/${call}${id ? '/' + id : ''}`;
 
@@ -17,7 +18,7 @@ export class GameService {
     stats: SessionStats;
     currentTurn: PlayerType = PlayerType.Local;
     onTurn: BehaviorSubject<PlayerType>;
-    gameEnding: Subject<void>;
+    gameEnding: Subject<EndGameWinner>;
 
     private gameRunning: boolean = false;
 
@@ -33,10 +34,10 @@ export class GameService {
         };
 
         this.onTurn = new BehaviorSubject<PlayerType>(PlayerType.Local);
-        this.gameEnding = new Subject<void>();
+        this.gameEnding = new Subject<EndGameWinner>();
 
         this.socketService.on('onTurn', async (id: string) => this.onNextTurn(id));
-        this.socketService.on('endGame', async () => this.endGame());
+        this.socketService.on('endGame', async (winnerId: string) => this.endGame(winnerId));
     }
 
     async startSinglePlayer(config: SinglePlayerConfig): Promise<void> {
@@ -80,9 +81,17 @@ export class GameService {
         this.onTurn.next(this.currentTurn);
     }
 
-    private async endGame() {
+    private async endGame(winnerId: string) {
+        let winner: EndGameWinner;
+
+        if (winnerId === '') {
+            winner = EndGameWinner.Draw;
+        } else {
+            winner = winnerId === this.sessionService.id ? EndGameWinner.Local : EndGameWinner.Remote;
+        }
+
         await this.refresh();
-        this.gameEnding.next();
+        this.gameEnding.next(winner);
     }
 
     private async refresh(): Promise<void> {

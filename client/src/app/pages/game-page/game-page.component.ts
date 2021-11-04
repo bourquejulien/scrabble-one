@@ -14,6 +14,7 @@ import { SessionService } from '@app/services/session/session.service';
 import { TimerService } from '@app/services/timer/timer.service';
 import { MessageType } from '@common';
 import { Subscription } from 'rxjs';
+import { EndGameWinner } from '@app/classes/end-game-winner';
 
 export enum Icon {
     Logout = 'exit_to_app',
@@ -89,7 +90,7 @@ export class GamePageComponent implements OnDestroy {
             },
         ];
 
-        this.gameEndingSubscription = gameService.gameEnding.subscribe(() => this.endGame());
+        this.gameEndingSubscription = gameService.gameEnding.subscribe((winner) => this.endGame(winner));
         this.onTurnSubscription = gameService.onTurn.subscribe((e) => (this.playerType = e));
     }
 
@@ -103,9 +104,9 @@ export class GamePageComponent implements OnDestroy {
         this.isOpen = !this.isOpen;
     }
 
-    endGame() {
+    endGame(winner: EndGameWinner) {
         this.sendRackInCommunication();
-        const dialogRef = this.dialog.open(EndGameComponent);
+        const dialogRef = this.dialog.open(EndGameComponent, { panelClass: 'end-game-dialog', data: { winner } });
         dialogRef.afterClosed().subscribe((result) => {
             if (result) {
                 this.gameService.reset();
@@ -126,14 +127,9 @@ export class GamePageComponent implements OnDestroy {
     }
 
     private sendRackInCommunication() {
-        // Todo Get other player rack?
         this.messagingService.send(
             'Fin de partie - lettres restantes',
             this.sessionService.gameConfig.firstPlayerName + ' : ' + this.playerService.rack,
-            // '\n' +
-            // this.sessionService.gameConfig.secondPlayerName +
-            // ' : ' +
-            // this.virtualPlayerService.playerData.rack,
             MessageType.System,
         );
     }
