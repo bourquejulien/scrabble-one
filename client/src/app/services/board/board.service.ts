@@ -3,7 +3,7 @@ import { BoardData, Bonus, Direction, Placement, Square, Vec2, Answer } from '@c
 import { HttpClient } from '@angular/common/http';
 import { SessionService } from '@app/services/session/session.service';
 import { Constants } from '@app/constants/global.constants';
-import { environmentExt } from '@environmentExt';
+import { environmentExt } from '@environment-ext';
 
 const localUrl = (call: string, id: string) => `${environmentExt.apiUrl}board/${call}/${id}`;
 
@@ -22,27 +22,11 @@ export class BoardService {
     }
 
     async placeLetters(letters: Placement[]): Promise<Answer> {
-        const response = await this.httpClient.post(localUrl('place', this.sessionService.id), letters).toPromise();
-        let answer: Answer;
-
-        try {
-            answer = response as Answer;
-        } catch (e) {
-            return { isSuccess: false, body: '' };
-        }
-
-        return answer;
+        return await this.httpClient.post<Answer>(localUrl('place', this.sessionService.id), letters).toPromise();
     }
 
     async refresh(): Promise<BoardData | null> {
-        const response = await this.httpClient.get(localUrl('retrieve', this.sessionService.id)).toPromise();
-
-        try {
-            this.boardData = response as BoardData;
-        } catch (e) {
-            return null;
-        }
-
+        this.boardData = await this.httpClient.get<BoardData>(localUrl('retrieve', this.sessionService.id)).toPromise();
         return this.boardData;
     }
 

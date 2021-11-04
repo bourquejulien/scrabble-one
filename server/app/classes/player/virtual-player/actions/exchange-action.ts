@@ -8,20 +8,18 @@ export class ExchangeAction implements Action {
     constructor(private readonly reserve: ReserveHandler, private readonly socketHandler: SocketHandler, private readonly playerData: PlayerData) {}
 
     execute(): Action | null {
-        const randomLetterCount = Math.floor(Math.random() * this.playerData.rack.length);
+        const exchangeCount = Math.min(this.reserve.length, Math.ceil(Math.random() * this.playerData.rack.length));
 
-        let exchangedLetters = '';
-        for (let i = 0; i < randomLetterCount && this.reserve.length > 0; i++) {
-            const letterToReplace = Math.floor(Math.random() * this.playerData.rack.length);
-            const letter = this.playerData.rack[letterToReplace];
+        for (let i = 0; i < exchangeCount; i++) {
+            const indexToReplace = Math.floor(Math.random() * this.playerData.rack.length);
+            const letter = this.playerData.rack[indexToReplace];
             const drawnLetter = this.reserve.drawLetter();
-            exchangedLetters += drawnLetter + ' ';
             this.reserve.putBackLetter(letter);
-            this.playerData.rack[letterToReplace] = drawnLetter;
+            this.playerData.rack[indexToReplace] = drawnLetter;
         }
 
         this.playerData.skippedTurns = 0;
-        this.socketHandler.sendMessage({ title: '', body: `${exchangedLetters.length} lettres échangées`, messageType: MessageType.Message });
+        this.socketHandler.sendMessage({ title: '', body: `${exchangeCount} lettres échangées`, messageType: MessageType.Message });
 
         return null;
     }

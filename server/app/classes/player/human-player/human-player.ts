@@ -1,14 +1,10 @@
 import { Player } from '@app/classes/player/player';
 import { PlayerInfo } from '@app/classes/player-info';
-import { PlayerData } from '@app/classes/player-data';
 import { Config } from '@app/config';
 import { Answer, MessageType, Placement, SystemMessages } from '@common';
 import * as logger from 'winston';
 
 export class HumanPlayer extends Player {
-    isTurn: boolean;
-    playerData: PlayerData;
-
     constructor(readonly playerInfo: PlayerInfo) {
         super();
     }

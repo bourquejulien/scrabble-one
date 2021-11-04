@@ -66,9 +66,13 @@ export class RoomListComponent implements AfterViewInit, OnDestroy {
         const joinConfig: MultiplayerJoinConfig = { sessionId: this.selectedConfig.id, playerName: this.nameValidator.name };
 
         this.reset();
-        await this.roomService.join(joinConfig);
-        await this.router.navigate(['game']);
+        const isJoined = await this.roomService.join(joinConfig);
 
+        if (!isJoined) {
+            this.openErrorDialog();
+        }
+
+        await this.router.navigate(['game']);
         this.reset();
     }
 

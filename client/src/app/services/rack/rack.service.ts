@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { environmentExt } from '@environmentExt';
+import { environmentExt } from '@environment-ext';
 import { HttpClient } from '@angular/common/http';
 import { SessionService } from '@app/services/session/session.service';
 

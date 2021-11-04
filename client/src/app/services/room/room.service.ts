@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { SocketClientService } from '@app/services/socket-client/socket-client.service';
 import { MultiplayerCreateConfig, MultiplayerJoinConfig, ServerConfig, ConvertConfig, AvailableGameConfig } from '@common';
-import { environmentExt } from '@environmentExt';
+import { environmentExt } from '@environment-ext';
 import { HttpClient } from '@angular/common/http';
 import { GameService } from '@app/services/game/game.service';
 import { Observable, Subject } from 'rxjs';
@@ -67,8 +67,12 @@ export class RoomService {
     }
 
     async join(joinConfig: MultiplayerJoinConfig): Promise<boolean> {
-        const serverConfig = await this.httpCLient.put<ServerConfig>(localUrl('game', 'join'), joinConfig).toPromise();
-        await this.gameService.start(serverConfig);
+        try {
+            const serverConfig = await this.httpCLient.put<ServerConfig>(localUrl('game', 'join'), joinConfig).toPromise();
+            await this.gameService.start(serverConfig);
+        } catch (err) {
+            return false;
+        }
 
         return true;
     }
