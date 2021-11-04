@@ -40,7 +40,7 @@ class BoardServiceStub {
     }
 }
 
-fdescribe('GridService', () => {
+describe('GridService', () => {
     let service: GridService;
     let ctxStub: CanvasRenderingContext2D;
 
@@ -168,13 +168,5 @@ fdescribe('GridService', () => {
         service['boardService']['boardData'].board[2][2].letter = 'b';
         service.drawSquares(ctxStub);
         expect(spy).not.toHaveBeenCalled();
-    });
-
-    it('should call draw image if image not complete', () => {
-        let img = new Image;
-        const spy = spyOn(ctxStub, 'drawImage');
-        service['drawImage'](img, { x: 0, y: 0 }, ctxStub);
-        service.drawSquares(ctxStub);
-        expect(spy).toHaveBeenCalled();
     });
 });
