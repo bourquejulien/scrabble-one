@@ -39,7 +39,7 @@ describe('BoardHandler', () => {
     beforeEach(() => {
         boardValidatorStub = new BoardValidatorStub();
 
-        handler = new BoardHandler(new Board(BOARD_SIZE), boardValidatorStub as unknown as BoardValidator);
+        handler = new BoardHandler(new Board(BOARD_SIZE), boardValidatorStub as unknown as BoardValidator, false);
         const halfBoardSize = Math.floor(handler.immutableBoard.size / 2);
         centerPosition = { x: halfBoardSize, y: halfBoardSize };
     });

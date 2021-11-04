@@ -39,6 +39,9 @@ export class RoomController {
                     return;
                 }
 
+                socket.leave(this.sessionHandlingService.getSessionId(playerId));
+                socket.leave(playerId);
+
                 this.socketIdToPlayerId.delete(socket.id);
                 await this.stop(playerId);
 
@@ -48,11 +51,25 @@ export class RoomController {
             socket.on('message', (message: Message) => {
                 logger.debug(`Socket: ${socket.id} sent ${message.messageType}`);
 
-                if (message.messageType === MessageType.Message) {
-                    const sessionId = this.sessionHandlingService.getSessionId(this.socketIdToPlayerId.get(socket.id) ?? '');
-                    this.socketService.socketServer.in(sessionId).emit('message', message);
-                } else {
-                    this.socketService.socketServer.to(socket.id).emit('message', message);
+                const playerId = this.socketIdToPlayerId.get(socket.id) ?? '';
+                const sessionHandler = this.sessionHandlingService.getHandlerByPlayerId(playerId);
+
+                if (playerId == null || sessionHandler == null) {
+                    logger.warn(`Invalid socket id: ${socket.id}`);
+                    return;
+                }
+
+                const otherPlayerId = sessionHandler.players.find((p) => p.id !== playerId)?.id ?? '';
+
+                switch (message.messageType) {
+                    case MessageType.Message:
+                        this.socketService.socketServer.in(sessionHandler.sessionInfo.id).emit('message', message);
+                        break;
+                    case MessageType.RemoteMessage:
+                        this.socketService.socketServer.in(otherPlayerId).emit('message', message);
+                        break;
+                    default:
+                        this.socketService.socketServer.to(socket.id).emit('message', message);
                 }
 
                 logger.info(`Message sent on behalf of ${socket.id}`);
@@ -68,7 +85,7 @@ export class RoomController {
 
                 if (sessionId !== '') {
                     if (!(await this.isRoomFull(socket, sessionId))) {
-                        socket.join(sessionId);
+                        socket.join([sessionId, playerId]);
                         this.socketIdToPlayerId.set(socket.id, playerId);
                         logger.info(`Joined room: ${sessionId}`);
                     }
@@ -86,6 +103,7 @@ export class RoomController {
             id: s.sessionInfo.id,
             playTimeMs: s.sessionInfo.playTimeMs,
             waitingPlayerName: s.players[0].playerInfo.name,
+            isRandomBonus: s.boardHandler.isRandomBonus,
         }));
     }
 
@@ -97,14 +115,14 @@ export class RoomController {
             return false;
         }
 
+        await Timer.delay(END_GAME_DELAY_MS);
+
         if (handler.sessionInfo.gameType === GameType.Multiplayer && handler.sessionData.isActive) {
-            await Timer.delay(END_GAME_DELAY_MS);
             handler.endGame();
             logger.info(`Game ended: ${id}`);
         } else {
             handler.dispose();
             this.sessionHandlingService.removeHandler(id);
-
             logger.info(`Game disposed: ${id}`);
         }
 
