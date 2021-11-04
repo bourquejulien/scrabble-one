@@ -20,14 +20,11 @@ export class TimerService {
         return this.timeSpan;
     }
 
-    onTicks(timeMs: number): void {
-        console.log('début');
+    private onTicks(timeMs: number): void {
         this.timeSpan = TimeSpan.fromSeconds(Math.round(timeMs / MS_TO_SEC_FACTOR));
 
         if (timeMs <= 0) {
-            console.log('dans le if');
             this.playerService.skipTurn();
         }
-        console.log('fin');
     }
 }
