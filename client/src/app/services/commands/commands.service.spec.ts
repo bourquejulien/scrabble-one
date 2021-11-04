@@ -59,7 +59,8 @@ describe('CommandsService', () => {
         service.parseInput('!échanger 12345678');
     });
 
-    it('#parseInput should call skip turn', () => {
+    it('#parseInput should call exchange', () => {
+        service['gameService'].currentTurn = PlayerType.Local;
         service.parseInput('!échanger abc');
         expect(playerServiceSpy.exchangeLetters).toHaveBeenCalled();
     });
@@ -80,6 +81,7 @@ describe('CommandsService', () => {
 
     it('#parseInput should call placeLetters when the input is valid', () => {
         const vecCoordinate: Vec2 = { x: 7, y: 7 };
+        service['gameService'].currentTurn = PlayerType.Local;
         service.parseInput('!placer h8v word');
         expect(playerServiceSpy.placeLetters).toHaveBeenCalledWith('word', vecCoordinate, Direction.Down);
         service.parseInput('!placer h8h word');
@@ -108,7 +110,8 @@ describe('CommandsService', () => {
         service.parseInput('!notavalidcommand');
     });
 
-    it('#parseInput should call skip turn', () => {
+    it('parseInput should call skip turn', () => {
+        service['gameService'].currentTurn = PlayerType.Local;
         service.parseInput('!passer');
         expect(playerServiceSpy.skipTurn).toHaveBeenCalled();
     });

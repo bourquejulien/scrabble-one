@@ -4,10 +4,11 @@
 import { expect } from 'chai';
 import { Board, ImmutableBoard } from '@app/classes/board/board';
 import { Dictionary } from '@app/classes/dictionary/dictionary';
-import { Placement, Vec2, Direction, ValidationResponse } from '@common';
+import { Placement, Vec2, Direction } from '@common';
 import { Config } from '@app/config';
 import { PlayGenerator } from './play-generator';
 import { BoardHandler } from '@app/handlers/board-handler/board-handler';
+import { ValidationResponse } from '../validation/validation-response';
 
 class StubDictionary implements Dictionary {
     words: string[] = [];
