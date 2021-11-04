@@ -1,10 +1,11 @@
 import { Board, ImmutableBoard } from '@app/classes/board/board';
 import { BoardValidator } from '@app/classes/validation/board-validator';
+import { ValidationResponse } from '@app/classes/validation/validation-response';
 import { BoardError } from '@app/errors/board-error';
-import { Placement, ValidationResponse } from '@common';
+import { Placement } from '@common';
 
 export class BoardHandler {
-    constructor(private readonly board: Board, private readonly boardValidator: BoardValidator) {}
+    constructor(private board: Board, private boardValidator: BoardValidator, readonly isRandomBonus: boolean) {}
 
     lookupLetters(letters: Placement[]): ValidationResponse {
         return this.boardValidator.validate(letters);

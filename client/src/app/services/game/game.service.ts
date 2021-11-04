@@ -5,7 +5,7 @@ import { BehaviorSubject, Subject } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 import { SessionService } from '@app/services/session/session.service';
 import { PlayerType } from '@app/classes/player/player-type';
-import { environmentExt } from '@environmentExt';
+import { environmentExt } from '@environment-ext';
 import { SocketClientService } from '@app/services/socket-client/socket-client.service';
 
 const localUrl = (base: string, call: string, id?: string) => `${environmentExt.apiUrl}${base}/${call}${id ? '/' + id : ''}`;
@@ -41,26 +41,22 @@ export class GameService {
 
     async startSinglePlayer(config: SinglePlayerConfig): Promise<void> {
         const serverConfig = await this.httpCLient.put<ServerConfig>(localUrl('game', 'init/single'), config).toPromise();
-        this.socketService.join(serverConfig.id);
-
-        const startId = await this.httpCLient.get<string>(localUrl('game', 'start', serverConfig.id)).toPromise();
-        await this.start(serverConfig, startId);
+        await this.start(serverConfig);
     }
 
-    async start(serverConfig: ServerConfig, startId: string): Promise<void> {
+    async start(serverConfig: ServerConfig): Promise<void> {
+        this.socketService.join(serverConfig.id);
         this.sessionService.serverConfig = serverConfig;
 
         await this.refresh();
         this.gameRunning = true;
-        this.onNextTurn(startId);
+        this.onNextTurn(serverConfig.startId);
     }
 
     async reset() {
         this.gameRunning = false;
         this.playerService.reset();
         this.socketService.reset();
-
-        await this.httpCLient.delete(localUrl('game', 'stop', this.sessionService.id)).toPromise();
     }
 
     private async onNextTurn(id: string): Promise<void> {
@@ -90,6 +86,7 @@ export class GameService {
     }
 
     private async refresh(): Promise<void> {
+        // TODO Add try catch ?
         this.stats = await this.httpCLient.get<SessionStats>(localUrl('player', 'stats', this.sessionService.id)).toPromise();
         await this.playerService.refresh();
     }

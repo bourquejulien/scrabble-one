@@ -8,7 +8,7 @@ import { ReserveHandler } from '@app/handlers/reserve-handler/reserve-handler';
 export class ReserveController {
     router: Router;
 
-    constructor(private readonly sessionHandlingService: SessionHandlingService) {
+    constructor(private sessionHandlingService: SessionHandlingService) {
         this.configureRouter();
     }
 
@@ -22,9 +22,7 @@ export class ReserveController {
                 return;
             }
 
-            const reserveData = reserveHandler.reserve;
-            res.status(Constants.HTTP_STATUS.OK);
-            res.json(reserveData);
+            res.json(reserveHandler.reserve);
         });
     }
 

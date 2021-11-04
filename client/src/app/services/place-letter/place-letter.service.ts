@@ -102,12 +102,8 @@ export class PlaceLetterService {
     }
 
     inGrid(position: Vec2): boolean {
-        if (position.x >= MIN_SIZE && position.x <= MAX_SIZE + 1) {
-            if (position.y >= MIN_SIZE && position.y <= MAX_SIZE + 1) {
-                return true;
-            } else {
-                return false;
-            }
+        if (position.x >= MIN_SIZE && position.x <= MAX_SIZE) {
+            return position.y >= MIN_SIZE && position.y <= MAX_SIZE;
         } else {
             return false;
         }

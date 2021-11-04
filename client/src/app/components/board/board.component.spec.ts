@@ -128,7 +128,7 @@ class BoardServiceMock {
     }
 }
 
-fdescribe('BoardComponent', () => {
+describe('BoardComponent', () => {
     const playerType = PlayerType.Local;
     let component: BoardComponent;
     let fixture: ComponentFixture<BoardComponent>;

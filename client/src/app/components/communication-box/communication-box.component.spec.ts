@@ -9,6 +9,7 @@ import { FormsModule } from '@angular/forms';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { cleanStyles } from '@app/classes/helpers/cleanup.helper';
 import { PlayerType } from '@app/classes/player/player-type';
+import { SocketMock } from '@app/classes/socket-test-helper';
 import { TimeSpan } from '@app/classes/time/timespan';
 import { Constants } from '@app/constants/global.constants';
 import { AppMaterialModule } from '@app/modules/material.module';
@@ -16,8 +17,9 @@ import { CommandsService } from '@app/services/commands/commands.service';
 import { MessagingService } from '@app/services/messaging/messaging.service';
 import { SessionService } from '@app/services/session/session.service';
 import { SocketClientService } from '@app/services/socket-client/socket-client.service';
-import { GameType, Message, MessageType, SocketMock } from '@common';
+import { GameType, Message, MessageType } from '@common';
 import { CommunicationBoxComponent } from './communication-box.component';
+import { Subject } from 'rxjs';
 
 describe('CommunicationBoxComponent', () => {
     let component: CommunicationBoxComponent;
@@ -25,17 +27,14 @@ describe('CommunicationBoxComponent', () => {
     let dummyMessage: Message;
     let messagingServiceSpy: jasmine.SpyObj<MessagingService>;
     let socketServiceSpyObj: jasmine.SpyObj<SocketClientService>;
+    let onMessage: Subject<Message>;
     const socketClient: SocketMock = new SocketMock();
     const commandsServiceSpy = jasmine.createSpyObj('CommandsService', {
-        parseInput: (input: string) => {
-            if (input === '1') {
-                return false;
-            }
-            return true;
-        },
+        parseInput: (input: string) => input !== '1',
     });
 
-    const sessionService = {
+    let sessionService = {
+        id: 'local',
         gameConfig: {
             gameType: GameType.SinglePlayer,
             playTime: TimeSpan.fromMinutesSeconds(1, 0),
@@ -45,7 +44,18 @@ describe('CommunicationBoxComponent', () => {
     };
 
     beforeEach(async () => {
-        messagingServiceSpy = jasmine.createSpyObj('MessagingService', ['onMessage']);
+        sessionService = {
+            id: 'local',
+            gameConfig: {
+                gameType: GameType.SinglePlayer,
+                playTime: TimeSpan.fromMinutesSeconds(1, 0),
+                firstPlayerName: 'Alphonse',
+                secondPlayerName: 'Lucienne',
+            },
+        };
+
+        onMessage = new Subject<Message>();
+        messagingServiceSpy = jasmine.createSpyObj('MessagingService', [], { onMessage: onMessage.asObservable() });
         socketServiceSpyObj = jasmine.createSpyObj('SocketClientService', [], { socketClient });
         await TestBed.configureTestingModule({
             declarations: [CommunicationBoxComponent],
@@ -70,7 +80,7 @@ describe('CommunicationBoxComponent', () => {
             title: 'Title',
             body: 'Body',
             messageType: MessageType.Error,
-            userId: PlayerType.Virtual,
+            fromId: PlayerType.Virtual,
         };
     });
 
@@ -105,14 +115,10 @@ describe('CommunicationBoxComponent', () => {
         component['sessionService']['gameConfig']['secondPlayerName'] = secondPlayerName;
         expect(component.getTitle(dummyMessage)).toBe(dummyMessage.title);
         dummyMessage.messageType = MessageType.Message;
-        dummyMessage.userId = PlayerType.Local;
+        dummyMessage.fromId = 'local';
         expect(component.getTitle(dummyMessage)).toEqual(firstPlayerName);
-        dummyMessage.userId = PlayerType.Virtual;
+        dummyMessage.fromId = 'remote';
         expect(component.getTitle(dummyMessage)).toEqual(secondPlayerName);
-    });
-
-    it("should not show the other user's system messages", () => {
-        expect(component.shouldDisplay(dummyMessage)).toBeFalsy();
     });
 
     it('should differentiate error messages', () => {
@@ -122,9 +128,9 @@ describe('CommunicationBoxComponent', () => {
     it('should return the correct CSS colors', () => {
         expect(component.getMessageColor(dummyMessage)).toBe(Constants.SYSTEM_COLOR);
         dummyMessage.messageType = MessageType.Message;
-        dummyMessage.userId = PlayerType.Virtual;
+        dummyMessage.fromId = 'remote';
         expect(component.getMessageColor(dummyMessage)).toBe(Constants.PLAYER_TWO_COLOR);
-        dummyMessage.userId = PlayerType.Local;
+        dummyMessage.fromId = 'local';
         expect(component.getMessageColor(dummyMessage)).toBe(Constants.PLAYER_ONE_COLOR);
         dummyMessage.messageType = MessageType.Log;
         expect(component.getMessageColor(dummyMessage)).toBe(Constants.SYSTEM_COLOR);
@@ -143,28 +149,22 @@ describe('CommunicationBoxComponent', () => {
     });
 
     it('should push new messages and call scroll', () => {
-        // Configure asynchronous event handling
-        component.ngAfterViewInit();
-
         const scrollSpy = spyOn<any>(component, 'scroll').and.callThrough();
         const pushSpy = spyOn(component.messages, 'push').and.callThrough();
 
-        socketClient.triggerEndpoint('message', dummyMessage);
+        onMessage.next(dummyMessage);
 
         expect(scrollSpy).toHaveBeenCalled();
         expect(pushSpy).toHaveBeenCalled();
     });
 
-    it('should push an error message when the socket server is not available', () => {
-        // Configure asynchronous event handling
-        component.ngAfterViewInit();
-
-        const pushSpy = spyOn(component.messages, 'push').and.callThrough();
-
-        socketClient.triggerEndpoint('connect_error', 'error');
-
-        expect(pushSpy).toHaveBeenCalled();
-    });
+    // it('should push an error message when the socket server is not available', () => {
+    //     const pushSpy = spyOn(component.messages, 'push').and.callThrough();
+    //
+    //     socketClient.triggerEndpoint('connect_error', 'error');
+    //
+    //     expect(pushSpy).toHaveBeenCalled();
+    // });
 
     afterAll(() => cleanStyles());
 });

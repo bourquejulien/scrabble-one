@@ -1,7 +1,7 @@
-import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { environmentExt } from '@environment-ext';
+import { HttpClient } from '@angular/common/http';
 import { SessionService } from '@app/services/session/session.service';
-import { environmentExt } from '@environmentExt';
 
 const localUrl = (call: string, id: string) => `${environmentExt.apiUrl}player/${call}/${id}`;
 

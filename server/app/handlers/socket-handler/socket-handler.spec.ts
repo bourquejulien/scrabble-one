@@ -10,7 +10,7 @@ describe('SocketHandler', () => {
 
     before(() => {
         const stubSocketService: SinonStubbedInstance<SocketService> = createStubInstance(SocketService);
-        handler = new SocketHandler(stubSocketService);
+        handler = new SocketHandler(stubSocketService, '');
     });
 
     it('should be created', () => {

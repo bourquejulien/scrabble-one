@@ -5,25 +5,39 @@
 /* eslint-disable max-classes-per-file */
 import { expect } from 'chai';
 import { RoomController } from './room.controller';
-import { assert, createStubInstance, spy } from 'sinon';
+import { assert, createStubInstance, SinonStubbedInstance, spy, stub } from 'sinon';
 import { SessionHandlingService } from '@app/services/sessionHandling/session-handling.service';
 import { SocketService } from '@app/services/socket/socket-service';
 import { Server, Socket } from 'socket.io';
-import { Message, MessageType, SocketMock } from '@common';
+import { GameType, Message, MessageType } from '@common';
 import { SessionHandler } from '@app/handlers/session-handler/session-handler';
+import { SocketMock } from '@app/classes/socket-test-helper';
+
+const IDS = {
+    player: '123',
+    socket: '123',
+    session: '123',
+};
 
 describe('RoomController', () => {
     let controller: RoomController;
     let socketServerMock: SocketMock;
-    let stubSessionHandlingService;
+    let stubSessionHandlingService: SessionHandlingService;
+    let sessionHandler: SinonStubbedInstance<SessionHandler>;
 
     beforeEach(() => {
         const stubSocketService = createStubInstance(SocketService);
         socketServerMock = new SocketMock();
         stubSocketService['socketServer'] = socketServerMock as unknown as Server;
 
+        sessionHandler = createStubInstance(SessionHandler, {});
+        sessionHandler.sessionInfo = { id: IDS.session, gameType: GameType.Multiplayer, playTimeMs: 0 };
+
+        stub(sessionHandler, 'players').get(() => []);
+
         stubSessionHandlingService = createStubInstance(SessionHandlingService, {
             getSessionId: 'sessionId',
+            getHandlerByPlayerId: sessionHandler as unknown as SessionHandler,
         }) as unknown as SessionHandlingService;
 
         controller = new RoomController(stubSocketService, stubSessionHandlingService);
@@ -38,8 +52,10 @@ describe('RoomController', () => {
             title: 'Title',
             body: 'body',
             messageType: MessageType.Message,
-            userId: 'user1',
+            fromId: 'user1',
         };
+
+        controller['socketIdToPlayerId'].set(IDS.socket, IDS.player);
 
         controller['handleSockets']();
 
@@ -172,6 +188,6 @@ describe('RoomController', () => {
 
     it('should tell when a room is full', async () => {
         const socket = new SocketMock() as unknown as Socket;
-        expect(await controller['isRoomFull'](socket, 'full')).to.be.equals(true);
+        expect(await RoomController['isRoomFull'](socket, 'full')).to.be.equals(true);
     });
 });

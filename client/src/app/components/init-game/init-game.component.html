@@ -2,9 +2,9 @@
     <p class="containerInput" id="title" *ngIf="data.gameModeType === gameType.SinglePlayer || data.gameModeType === gameType.Multiplayer">
         Paramètres de la partie
     </p>
-    <p class="inputPresentationText" *ngIf="data.gameModeType === gameType.SinglePlayer">Mode de jeu</p>
+    <p class="inputPresentationText" *ngIf="data.gameModeType === gameType.SinglePlayer">Profil du joueur virtuel</p>
     <mat-form-field class="inputs" appearance="fill" *ngIf="data.gameModeType === gameType.SinglePlayer">
-        <mat-label>Mode de jeu</mat-label>
+        <mat-label>Profil</mat-label>
         <mat-select name="gameTypes" appearance="fill" [(ngModel)]="formConfig.gameType">
             <mat-option *ngFor="let gameType of gameTypesList" [value]="gameType">{{ gameType }}</mat-option>
         </mat-select>
@@ -38,8 +38,8 @@
                 placeholder="Joueur 1"
                 name="name"
                 id="inputName"
-                [(ngModel)]="formConfig.firstPlayerName"
-                (input)="botNameChange(formConfig.firstPlayerName)"
+                [(ngModel)]="nameValidator.name"
+                (input)="botNameChange(nameValidator.name)"
             />
         </mat-form-field>
         <mat-form-field appearance="fill" *ngIf="data.gameModeType === gameType.SinglePlayer">
@@ -48,7 +48,7 @@
         </mat-form-field>
     </form>
     <mat-checkbox color="primary" class="inputPresentationText" [(ngModel)]="formConfig.isRandomBonus"> Bonus aléatoire </mat-checkbox>
-    <div *ngFor="let error of errorsList" class="alert">{{ error }}</div>
+    <div *ngFor="let error of this.nameValidator.errors" class="alert">{{ error }}</div>
 
     <button mat-raised-button (click)="this.init()" color="primary" id="confirm">Confirmer</button>
 </div>

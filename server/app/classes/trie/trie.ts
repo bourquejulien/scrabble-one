@@ -1,34 +1,28 @@
 /* eslint-disable max-classes-per-file -- TrieNode is for internal use only */
-import { WordDefinition } from '@common';
+import { WordDefinition } from '@app/classes/dictionary/word-definition';
 
 class TrieNode {
     readonly character: string;
     readonly isWord: boolean;
-    private readonly childrens: TrieNode[];
+    private readonly children: TrieNode[];
 
     constructor(character: string, isWord: boolean) {
-        this.childrens = [];
+        this.children = [];
         this.character = character;
         this.isWord = isWord;
     }
 
     addChildren(node: TrieNode): void {
-        this.childrens.push(node);
+        this.children.push(node);
     }
 
     getChildren(character: string): TrieNode | null {
-        return this.childrens.find((e) => e.character === character) ?? null;
+        return this.children.find((e) => e.character === character) ?? null;
     }
 
     get hasChildren(): boolean {
-        return this.childrens.length !== 0;
+        return this.children.length !== 0;
     }
-}
-
-export interface IReadOnlyTrie {
-    contains(word: string): boolean;
-    startsWith(word: string): WordDefinition;
-    get size(): number;
 }
 
 export interface ITrie {

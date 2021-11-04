@@ -7,10 +7,10 @@ import { expect } from 'chai';
 import { createStubInstance } from 'sinon';
 import { BoardHandler } from '@app/handlers/board-handler/board-handler';
 import { ReserveHandler } from '@app/handlers/reserve-handler/reserve-handler';
-import { SocketHandler } from '@app/handlers/socket-handler/socket-handler';
 import { SessionHandler } from './session-handler';
 import { PlayerHandler } from '@app/handlers/player-handler/player-handler';
 import { Subject } from 'rxjs';
+import { SocketService } from '@app/services/socket/socket-service';
 
 describe('SessionHandler', () => {
     let handler: SessionHandler;
@@ -27,7 +27,7 @@ describe('SessionHandler', () => {
 
         const stubBoardHandler = createStubInstance(BoardHandler);
         const stubReserveHandler = createStubInstance(ReserveHandler);
-        const stubSocketHandler = createStubInstance(SocketHandler);
+        const stubSocketService = createStubInstance(SocketService);
         const stubPlayerHandler = createStubInstance(PlayerHandler);
 
         stubPlayerHandler.onTurn.returns(turnSubject.asObservable());
@@ -37,7 +37,7 @@ describe('SessionHandler', () => {
             stubBoardHandler as unknown as BoardHandler,
             stubReserveHandler as unknown as ReserveHandler,
             stubPlayerHandler as unknown as PlayerHandler,
-            stubSocketHandler as unknown as SocketHandler,
+            stubSocketService as unknown as SocketService,
         ) as unknown as SessionHandler;
     });
 
