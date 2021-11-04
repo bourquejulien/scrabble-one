@@ -1,250 +1,262 @@
 /* eslint-disable dot-notation -- Need to access private properties for testing*/
 /* eslint-disable max-classes-per-file -- Needs many stubbed classes in order to test*/
-import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
-import { fakeAsync, TestBed, tick } from '@angular/core/testing';
+import { HttpClient } from '@angular/common/http';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { TestBed } from '@angular/core/testing';
 import { PlayerService } from '@app/services/player/player.service';
-import { GameType } from '@common';
-import { environmentExt } from '@environmentExt';
-import { Subject } from 'rxjs';
+import { ServerConfig, SessionStats } from '@common';
+import { BehaviorSubject, Observable, Subject } from 'rxjs';
 import { GameService } from './game.service';
-
-
-
-// const MAX_LENGTH_RACK = 7;
-// const PLAYER_POINTS = 100;
 
 describe('GameService', () => {
     let service: GameService;
-    // let reserveService: ReserveService;
-    let playerService: jasmine.SpyObj<PlayerService>;
+    let playerServiceSpyOBj: jasmine.SpyObj<PlayerService>;
+    let httpSpyObj: jasmine.SpyObj<HttpClient>;
     let mockRack: string[];
-    let httpMock: HttpTestingController;
-    const localUrl = (base: string, call: string, id?: string) => `${environmentExt.apiUrl}${base}/${call}${id ? '/' + id : ''}`;
 
-
-    beforeEach(() => {
+    let serverConfigObservable: BehaviorSubject<ServerConfig>;
+    let sessionStatsObservableSpyObj: jasmine.SpyObj<Observable<SessionStats>>;
+    beforeEach(async () => {
         mockRack = ['K', 'E', 'S', 'E', 'I', 'O', 'V'];
 
-        playerService = jasmine.createSpyObj('playerService', ['startTurn', 'turnComplete', 'fillRack', 'reset', 'emptyRack'], {
+        httpSpyObj = jasmine.createSpyObj('HttpModule', ['get', 'put']);
+        sessionStatsObservableSpyObj = jasmine.createSpyObj('Observable<SessionStats>', ['toPromise']);
+        httpSpyObj.put.and.returnValue(serverConfigObservable);
+        httpSpyObj.get.and.returnValue(sessionStatsObservableSpyObj);
+
+        playerServiceSpyOBj = jasmine.createSpyObj('playerService', ['startTurn', 'turnComplete', 'fillRack', 'reset', 'emptyRack', 'refresh'], {
             playerData: { score: 0, skippedTurns: 0, rack: [] },
             rack: mockRack,
             turnComplete: new Subject(),
         });
 
-        playerService.reset.and.returnValue();
+        playerServiceSpyOBj.reset.and.returnValue();
 
         TestBed.configureTestingModule({
             imports: [HttpClientTestingModule],
-            providers: [{ provide: PlayerService, useValue: playerService }],
+            providers: [
+                { provide: PlayerService, useValue: playerServiceSpyOBj },
+                { provide: HttpClient, useValue: httpSpyObj }
+            ],
         });
 
         service = TestBed.inject(GameService);
-        httpMock = TestBed.inject(HttpTestingController);
-
-        // reserveService = TestBed.inject(ReserveService);
-    });
-
-    afterEach(() => {
-        httpMock.verify();
     });
 
     it('should be created', () => {
         expect(service).toBeTruthy();
     });
 
+    it('should refresh', async () => {
+        service.stats = { localStats: { points: 10, rackSize: 7 }, remoteStats: { points: 10, rackSize: 7 } };
+        const expectedSessionStats = { localStats: { points: 15, rackSize: 7 }, remoteStats: { points: 15, rackSize: 7 } };
+        sessionStatsObservableSpyObj.toPromise.and.resolveTo(expectedSessionStats);
+        await service['refresh']();
+        expect(service.stats).toBe(expectedSessionStats);
+        expect(playerServiceSpyOBj.refresh).toHaveBeenCalled();
+    });
 
-    it('should call httpClient to set gameConfig if startSinglePlayer called', fakeAsync(async () => {
+    // it('should start single player', async () => {
+    //     service.stats = {} as SessionStats;
+    //     const expectedSessionStats = {} as SessionStats;
+    //     sessionStatsObservableSpyObj.toPromise.and.resolveTo(expectedSessionStats);
+    //     await service['refresh']();
+    //     expect(service.stats).toBe(expectedSessionStats);
+    //     expect(playerServiceSpyOBj.refresh).toHaveBeenCalled();
+    // });
 
-        let singlePlayerConfig = {
-            gameType: GameType.SinglePlayer,
-            playTimeMs: 5,
-            playerName: 'Claudette',
-            virtualPlayerName: 'Alphonse',
-            isRandomBonus: true,
-        };
+    // it('should call httpClient to set gameConfig if startSinglePlayer called', fakeAsync(async () => {
 
-        let serverConfig = {
-            id: '1',
-            startId: '2',
-            gameType: GameType.Multiplayer,
-            playTimeMs: 5,
-            firstPlayerName: 'Claudette',
-            secondPlayerName: 'Alphonse',
-        };
+    //     let singlePlayerConfig = {
+    //         gameType: GameType.SinglePlayer,
+    //         playTimeMs: 5,
+    //         playerName: 'Claudette',
+    //         virtualPlayerName: 'Alphonse',
+    //         isRandomBonus: true,
+    //     };
 
-        await service.startSinglePlayer(singlePlayerConfig);
-        const requestPut = httpMock.match(localUrl('game', 'init/single'));
-        expect(requestPut[0].request.method).toEqual('PUT');
-        requestPut[0].flush(serverConfig);
-        tick();
+    //     let serverConfig = {
+    //         id: '1',
+    //         startId: '2',
+    //         gameType: GameType.Multiplayer,
+    //         playTimeMs: 5,
+    //         firstPlayerName: 'Claudette',
+    //         secondPlayerName: 'Alphonse',
+    //     };
 
-        service['refresh'];
-        const requestGet = httpMock.match(localUrl('player', 'stats'));
-        expect(requestGet[0].request.method).toEqual('GET');
-        requestPut[0].flush([]);
-        tick();
+    //     await service.startSinglePlayer(singlePlayerConfig);
+    //     const requestPut = httpMock.match(localUrl('game', 'init/single'));
+    //     expect(requestPut[0].request.method).toEqual('PUT');
+    //     requestPut[0].flush(serverConfig);
+    //     tick();
 
-
-        //await service.start(serverConfig);
-    }));
-
-    /*it('should start game if startSinglePlayer called', fakeAsync(async () => {
-
-        let singlePlayerConfig = {
-            gameType: GameType.SinglePlayer,
-            playTimeMs: 5,
-            playerName: 'Claudette',
-            virtualPlayerName: 'Alphonse',
-            isRandomBonus: true,
-        };
+    //     service['refresh'];
+    //     const requestGet = httpMock.match(localUrl('player', 'stats'));
+    //     expect(requestGet[0].request.method).toEqual('GET');
+    //     requestPut[0].flush([]);
+    //     tick();
 
 
-        let serverConfig = {
-            id: '1',
-            startId: '2',
-            gameType: GameType.Multiplayer,
-            playTimeMs: 5,
-            firstPlayerName: 'Claudette',
-            secondPlayerName: 'Alphonse',
-        };
+    //     //await service.start(serverConfig);
+    // }));
 
-        const spy = spyOn(service, 'start').and.callThrough();
-        await service.startSinglePlayer(singlePlayerConfig);
-        await service.start(serverConfig);
-        const request = httpMock.match(localUrl('game', 'init/single'));
+    // /*it('should start game if startSinglePlayer called', fakeAsync(async () => {
 
-        expect(request[0].request.method).toEqual('PUT');
+    //     let singlePlayerConfig = {
+    //         gameType: GameType.SinglePlayer,
+    //         playTimeMs: 5,
+    //         playerName: 'Claudette',
+    //         virtualPlayerName: 'Alphonse',
+    //         isRandomBonus: true,
+    //     };
 
-        request[0].flush(serverConfig);
-        tick();
-        expect(spy).toHaveBeenCalled();
-    }));*/
 
-    //if('should join room if game started', async() => {
+    //     let serverConfig = {
+    //         id: '1',
+    //         startId: '2',
+    //         gameType: GameType.Multiplayer,
+    //         playTimeMs: 5,
+    //         firstPlayerName: 'Claudette',
+    //         secondPlayerName: 'Alphonse',
+    //     };
 
-    //});
-    /*
-        it('start should define currentTurn and swap Virtual to Local', async () => {
-            const spy = spyOn(Math, 'random').and.returnValue(1);
-            await service.startGame(service.gameConfig);
-            expect(spy).toHaveBeenCalled();
-            expect(service.currentTurn).toBe(PlayerType.Human);
-        });
+    //     const spy = spyOn(service, 'start').and.callThrough();
+    //     await service.startSinglePlayer(singlePlayerConfig);
+    //     await service.start(serverConfig);
+    //     const request = httpMock.match(localUrl('game', 'init/single'));
 
-        it('start should define currentTurn and swap from Local to Virtual', async () => {
-            const spy = spyOn(Math, 'random').and.returnValue(0);
-            await service.startGame(service.gameConfig);
-            expect(spy).toHaveBeenCalled();
-            expect(service.currentTurn).toBe(PlayerType.Virtual);
-        });
+    //     expect(request[0].request.method).toEqual('PUT');
 
-        it('should call EmptyRack, resetReserveNewGame, resetBoard from playerService and emptyrack from virtualPlayer when ResetGame', async () => {
-            await service.reset();
-            expect(playerService.reset).toHaveBeenCalled();
-            expect(virtualPlayerServiceSpy.reset).toHaveBeenCalled();
-        });
+    //     request[0].flush(serverConfig);
+    //     tick();
+    //     expect(spy).toHaveBeenCalled();
+    // }));*/
 
-        it('should have the right amount of point when playerRackPoint is called', () => {
-            const expectRackPoint = 19;
-            const rackPoint = service.playerRackPoint(virtualPlayerServiceSpy.playerData.rack);
-            expect(rackPoint).toBe(expectRackPoint);
-        });
+    // //if('should join room if game started', async() => {
 
-        it('should reset all player stats to 0 when resetGame is called', async () => {
-            await service.reset();
-            expect(playerService.playerData.score).toBe(0);
-            expect(playerService.playerData.skippedTurns).toBe(0);
-        });
+    // //});
+    // /*
+    //     it('start should define currentTurn and swap Virtual to Local', async () => {
+    //         const spy = spyOn(Math, 'random').and.returnValue(1);
+    //         await service.startGame(service.gameConfig);
+    //         expect(spy).toHaveBeenCalled();
+    //         expect(service.currentTurn).toBe(PlayerType.Human);
+    //     });
 
-        it('should reset all virtualPlayer stats to 0 when resetGame is called', async () => {
-            await service.reset();
-            expect(virtualPlayerServiceSpy.playerData.skippedTurns).toBe(0);
-            expect(virtualPlayerServiceSpy.playerData.score).toBe(0);
-        });
+    //     it('start should define currentTurn and swap from Local to Virtual', async () => {
+    //         const spy = spyOn(Math, 'random').and.returnValue(0);
+    //         await service.startGame(service.gameConfig);
+    //         expect(spy).toHaveBeenCalled();
+    //         expect(service.currentTurn).toBe(PlayerType.Virtual);
+    //     });
 
-        it('should reset skipTurnNb to 0 when resetGame is called', async () => {
-            await service.reset();
-            expect(service.skipTurnNb).toBe(0);
-        });
+    //     it('should call EmptyRack, resetReserveNewGame, resetBoard from playerService and emptyrack from virtualPlayer when ResetGame', async () => {
+    //         await service.reset();
+    //         expect(playerService.reset).toHaveBeenCalled();
+    //         expect(virtualPlayerServiceSpy.reset).toHaveBeenCalled();
+    //     });
 
-        it('should end game', () => {
-            const spy = spyOn(service, 'endGamePoint');
-            reserveService.setReserve([]);
-            mockRack.length = 0;
-            service.emptyRackAndReserve();
-            expect(spy).toHaveBeenCalled();
-        });
+    //     it('should have the right amount of point when playerRackPoint is called', () => {
+    //         const expectRackPoint = 19;
+    //         const rackPoint = service.playerRackPoint(virtualPlayerServiceSpy.playerData.rack);
+    //         expect(rackPoint).toBe(expectRackPoint);
+    //     });
 
-        it('should end game', () => {
-            const spy = spyOn(service, 'endGamePoint');
-            reserveService.setReserve([]);
-            mockRack.length = 0;
-            service.emptyRackAndReserve();
-            expect(spy).toHaveBeenCalled();
-        });
+    //     it('should reset all player stats to 0 when resetGame is called', async () => {
+    //         await service.reset();
+    //         expect(playerService.playerData.score).toBe(0);
+    //         expect(playerService.playerData.skippedTurns).toBe(0);
+    //     });
 
-        it('should set player points to 0', () => {
-            service.firstPlayerStats.points = 1;
-            playerService.fillRack(MAX_LENGTH_RACK);
-            service.endGamePoint();
-            expect(playerService.playerData.score).toEqual(0);
-        });
+    //     it('should reset all virtualPlayer stats to 0 when resetGame is called', async () => {
+    //         await service.reset();
+    //         expect(virtualPlayerServiceSpy.playerData.skippedTurns).toBe(0);
+    //         expect(virtualPlayerServiceSpy.playerData.score).toBe(0);
+    //     });
 
-        it('should subtracts rack value to ', () => {
-            service.firstPlayerStats.points = PLAYER_POINTS;
-            playerService.fillRack(MAX_LENGTH_RACK);
-            const rackValue = service.playerRackPoint(playerService.rack);
-            service.endGamePoint();
-            const finalScore = PLAYER_POINTS - rackValue;
-            expect(service.firstPlayerStats.points).toEqual(finalScore);
-        });
+    //     it('should reset skipTurnNb to 0 when resetGame is called', async () => {
+    //         await service.reset();
+    //         expect(service.skipTurnNb).toBe(0);
+    //     });
 
-        it('should not next turn', () => {
-            const spyNextTurn = spyOn<any>(service, 'nextTurn');
-            service['handleTurnCompletion'](PlayerType.Virtual);
-            expect(spyNextTurn).not.toHaveBeenCalled();
-        });
+    //     it('should end game', () => {
+    //         const spy = spyOn(service, 'endGamePoint');
+    //         reserveService.setReserve([]);
+    //         mockRack.length = 0;
+    //         service.emptyRackAndReserve();
+    //         expect(spy).toHaveBeenCalled();
+    //     });
 
-        it('should next turn', () => {
-            const spyNextTurn = spyOn<any>(service, 'nextTurn');
-            service['handleTurnCompletion'](PlayerType.Human);
-            expect(spyNextTurn).toHaveBeenCalled();
-        });
+    //     it('should end game', () => {
+    //         const spy = spyOn(service, 'endGamePoint');
+    //         reserveService.setReserve([]);
+    //         mockRack.length = 0;
+    //         service.emptyRackAndReserve();
+    //         expect(spy).toHaveBeenCalled();
+    //     });
 
-        it('should end game', () => {
-            const spy = spyOn(service, 'endGamePoint');
-            playerService.playerData.skippedTurns = Constants.MAX_SKIP_TURN + 1;
-            virtualPlayerServiceSpy.playerData.skippedTurns = Constants.MAX_SKIP_TURN + 1;
-            service.skipTurnLimit();
-            expect(spy).toHaveBeenCalled();
-        });
+    //     it('should set player points to 0', () => {
+    //         service.firstPlayerStats.points = 1;
+    //         playerService.fillRack(MAX_LENGTH_RACK);
+    //         service.endGamePoint();
+    //         expect(playerService.playerData.score).toEqual(0);
+    //     });
 
-        it('should increment skipTurnNb', () => {
-            playerService.playerData.skippedTurns = 0;
-            service.skipTurn();
-            expect(playerService.playerData.skippedTurns).not.toEqual(0);
-        });
+    //     it('should subtracts rack value to ', () => {
+    //         service.firstPlayerStats.points = PLAYER_POINTS;
+    //         playerService.fillRack(MAX_LENGTH_RACK);
+    //         const rackValue = service.playerRackPoint(playerService.rack);
+    //         service.endGamePoint();
+    //         const finalScore = PLAYER_POINTS - rackValue;
+    //         expect(service.firstPlayerStats.points).toEqual(finalScore);
+    //     });
 
-        it('should not increment skipTurnNb', () => {
-            playerService.playerData.skippedTurns = Constants.MAX_SKIP_TURN;
-            service.skipTurn();
-            expect(playerService.playerData.skippedTurns).toEqual(Constants.MAX_SKIP_TURN);
-        });
+    //     it('should not next turn', () => {
+    //         const spyNextTurn = spyOn<any>(service, 'nextTurn');
+    //         service['handleTurnCompletion'](PlayerType.Virtual);
+    //         expect(spyNextTurn).not.toHaveBeenCalled();
+    //     });
 
-        it('should send rack', () => {
-            const spy = spyOn(service['messaging'], 'send');
-            service.sendRackInCommunication();
-            expect(spy).toHaveBeenCalledWith(
-                'Fin de partie - lettres restantes',
-                service.gameConfig.firstPlayerName +
-                    ' : ' +
-                    service['playerService'].rack +
-                    '\n' +
-                    service.gameConfig.secondPlayerName +
-                    ' : ' +
-                    service['virtualPlayerService'].playerData.rack,
-                MessageType.System,
-            );
-        });*/
+    //     it('should next turn', () => {
+    //         const spyNextTurn = spyOn<any>(service, 'nextTurn');
+    //         service['handleTurnCompletion'](PlayerType.Human);
+    //         expect(spyNextTurn).toHaveBeenCalled();
+    //     });
+
+    //     it('should end game', () => {
+    //         const spy = spyOn(service, 'endGamePoint');
+    //         playerService.playerData.skippedTurns = Constants.MAX_SKIP_TURN + 1;
+    //         virtualPlayerServiceSpy.playerData.skippedTurns = Constants.MAX_SKIP_TURN + 1;
+    //         service.skipTurnLimit();
+    //         expect(spy).toHaveBeenCalled();
+    //     });
+
+    //     it('should increment skipTurnNb', () => {
+    //         playerService.playerData.skippedTurns = 0;
+    //         service.skipTurn();
+    //         expect(playerService.playerData.skippedTurns).not.toEqual(0);
+    //     });
+
+    //     it('should not increment skipTurnNb', () => {
+    //         playerService.playerData.skippedTurns = Constants.MAX_SKIP_TURN;
+    //         service.skipTurn();
+    //         expect(playerService.playerData.skippedTurns).toEqual(Constants.MAX_SKIP_TURN);
+    //     });
+
+    //     it('should send rack', () => {
+    //         const spy = spyOn(service['messaging'], 'send');
+    //         service.sendRackInCommunication();
+    //         expect(spy).toHaveBeenCalledWith(
+    //             'Fin de partie - lettres restantes',
+    //             service.gameConfig.firstPlayerName +
+    //                 ' : ' +
+    //                 service['playerService'].rack +
+    //                 '\n' +
+    //                 service.gameConfig.secondPlayerName +
+    //                 ' : ' +
+    //                 service['virtualPlayerService'].playerData.rack,
+    //             MessageType.System,
+    //         );
+    //     });*/
 
 });
