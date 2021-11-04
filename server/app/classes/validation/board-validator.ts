@@ -83,7 +83,7 @@ export class BoardValidator {
                 };
             }
         } else if (!this.ensureAggregation(positions)) {
-            return { isSuccess: false, description: "Le mot placé n'est pas lié au jeux", points: 0 };
+            return { isSuccess: false, description: "Le mot placé n'est pas lié au jeu", points: 0 };
         }
 
         if (!BoardValidator.ensureCoherence(clonedBoard, sortedPositions, direction)) {

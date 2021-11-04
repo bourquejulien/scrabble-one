@@ -3,12 +3,7 @@
     color: #fff;
 }
 
-.remote.mat-toolbar {
-    background: var(--game-blue);
-    color: #fff;
-}
-
-.virtual.mat-toolbar.mat-primary {
+.virtual.mat-toolbar.mat-primary, .remote.mat-toolbar {
     background: var(--game-red);
     color: #fff;
 }
