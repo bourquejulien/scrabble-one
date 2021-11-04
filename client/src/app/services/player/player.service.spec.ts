@@ -23,7 +23,7 @@ class SessionServiceStub {
     }
 }
 
-fdescribe('PlayerService', () => {
+describe('PlayerService', () => {
     let service: PlayerService;
     let lettersToExchange: string;
     let boardServiceSpy: jasmine.SpyObj<BoardService>;

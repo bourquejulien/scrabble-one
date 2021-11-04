@@ -76,7 +76,7 @@ describe('RackService', () => {
         expect(service.indexOf(LETTERS[OVERFLOW_POSITION])).toEqual(-1);
     });
 
-    it('should refresh payer data if turn skipped', fakeAsync(() => {
+    it('should refresh player data if turn skipped', fakeAsync(() => {
         const rack = ['a', 'a', 'b', 'c'];
         const spy = spyOn(service, 'refresh');
         const firstLetterInRack = service.rack[0];

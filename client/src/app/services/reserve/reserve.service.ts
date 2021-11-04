@@ -1,9 +1,9 @@
-//import { HttpClient } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-//import { SessionService } from '@app/services/session/session.service';
-//import { environmentExt } from '@environmentExt';
+import { SessionService } from '@app/services/session/session.service';
+import { environmentExt } from '@environmentExt';
 
-//const localUrl = (call: string, id: string) => `${environmentExt.apiUrl}reserve/${call}/${id}`;
+const localUrl = (call: string, id: string) => `${environmentExt.apiUrl}reserve/${call}/${id}`;
 
 @Injectable({
     providedIn: 'root',
@@ -11,21 +11,14 @@ import { Injectable } from '@angular/core';
 export class ReserveService {
     private reserve: string[];
 
-    constructor(/*private readonly httpClient: HttpClient, private readonly sessionService: SessionService*/) {
+    constructor(private readonly httpClient: HttpClient, private readonly sessionService: SessionService) {
         this.reset();
     }
 
-    // async refresh(): Promise<boolean> {
-    //     const response = await this.httpClient.get(localUrl('retrieve', this.sessionService.id)).toPromise();
-
-    //     try {
-    //         this.reserve = response as string[];
-    //     } catch (e) {
-    //         return false;
-    //     }
-
-    //     return true;
-    // }
+    async refresh(): Promise<void> {
+        const response = await this.httpClient.get<string[]>(localUrl('retrieve', this.sessionService.id)).toPromise();
+        this.reserve = response;
+    }
 
     reset(): void {
         this.reserve = [];
