@@ -7,9 +7,14 @@ import { Bonus, Vec2 } from '@common';
 const STAR_IMAGE_PATH = 'assets/img/star.svg';
 const LINE_WIDTH = 3;
 const STROKE_STYLE = 'black';
+const STROKE_STYLE_SELECTION = 'red';
 const FONT_FACE: FontFace = { font: 'BenchNine', size: 30 };
 const MIN_FONT_SIZE = 25;
 const MAX_FONT_SIZE = 35;
+const DIST_HORIZONTAL = 15;
+const DIST_VERTICAL = 20;
+const COORD_CLEAR_SQUARE = 6;
+const COORD_CLEAR_INSIDE = 5;
 const FONT_FACE_SCALE_FACTOR = 0.75;
 const TEXT_STYLE = 'black';
 const BONUS_COLORS = new Map([
@@ -117,7 +122,43 @@ export class GridService {
         }
     }
 
-    private drawSymbol(letter: string, gridPosition: Vec2, context: CanvasRenderingContext2D) {
+    drawSelectionSquare(tempContext: CanvasRenderingContext2D, position: Vec2): void {
+        const gridCoord = this.computeCanvasCoord(position);
+        tempContext.beginPath();
+        tempContext.lineWidth = LINE_WIDTH;
+        tempContext.strokeStyle = STROKE_STYLE_SELECTION;
+        tempContext.rect(gridCoord.x - this.squareWidth / 2, gridCoord.y - this.squareHeight / 2, this.squareWidth, this.squareHeight);
+        tempContext.stroke();
+    }
+
+    drawBonusOfPosition(squareContext: CanvasRenderingContext2D, position: Vec2): void {
+        // const gridCoord = this.computeCanvasCoord(position);
+        const boardData = this.boardService.gameBoard;
+        const square = boardData.board[position.x - 1][position.y - 1];
+        if (square.bonus !== Bonus.None) {
+            this.drawBonus(square.bonus, { x: position.x, y: position.y }, squareContext);
+        }
+    }
+
+    drawDirectionArrow(tempContext: CanvasRenderingContext2D, position: Vec2, direction: boolean): void {
+        const gridCoord = this.computeCanvasCoord(position);
+        tempContext.beginPath();
+        tempContext.strokeStyle = STROKE_STYLE_SELECTION;
+        tempContext.lineWidth = LINE_WIDTH;
+        tempContext.moveTo(gridCoord.x, gridCoord.y);
+        if (direction) {
+            tempContext.lineTo(gridCoord.x, gridCoord.y - DIST_HORIZONTAL);
+            tempContext.lineTo(gridCoord.x + DIST_VERTICAL, gridCoord.y);
+            tempContext.lineTo(gridCoord.x, gridCoord.y + DIST_HORIZONTAL);
+        } else {
+            tempContext.lineTo(gridCoord.x - DIST_HORIZONTAL, gridCoord.y);
+            tempContext.lineTo(gridCoord.x, gridCoord.y + DIST_VERTICAL);
+            tempContext.lineTo(gridCoord.x + DIST_HORIZONTAL, gridCoord.y);
+        }
+        tempContext.fill();
+    }
+
+    drawSymbol(letter: string, gridPosition: Vec2, context: CanvasRenderingContext2D) {
         if (letter.length === 0) {
             return;
         }
@@ -130,6 +171,29 @@ export class GridService {
         context.textBaseline = 'middle';
         context.textAlign = 'center';
         context.fillText(letter, canvasPosition.x, canvasPosition.y);
+    }
+
+    resetCanvas(context: CanvasRenderingContext2D): void {
+        context.clearRect(0, 0, this.canvasSize.x, this.canvasSize.y);
+    }
+
+    clearSquare(tempContext: CanvasRenderingContext2D, position: Vec2): void {
+        const gridCoord = this.computeCanvasCoord(position);
+        tempContext.clearRect(
+            gridCoord.x - this.squareWidth / 2 - 3,
+            gridCoord.y - this.squareHeight / 2 - 3,
+            this.squareWidth + COORD_CLEAR_SQUARE,
+            this.squareHeight + COORD_CLEAR_SQUARE,
+        );
+    }
+    cleanInsideSquare(tempContext: CanvasRenderingContext2D, position: Vec2): void {
+        const gridCoord = this.computeCanvasCoord(position);
+        tempContext.clearRect(
+            gridCoord.x - this.squareWidth / 2 + 3,
+            gridCoord.y - this.squareHeight / 2 + 3,
+            this.squareWidth - COORD_CLEAR_INSIDE,
+            this.squareHeight - COORD_CLEAR_INSIDE,
+        );
     }
 
     get width(): number {

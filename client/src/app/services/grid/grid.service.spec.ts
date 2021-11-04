@@ -1,12 +1,13 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable max-classes-per-file -- Class is implemented for testing purposes only relevant ro this service*/
 /* eslint-disable dot-notation -- Need access to private functions and properties*/
 import { Injectable } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
-import { BoardData, Bonus } from '@common';
 import { CanvasTestHelper } from '@app/classes/canvas-test-helper';
 import { Constants } from '@app/constants/global.constants';
 import { BoardService } from '@app/services/board/board.service';
 import { GridService } from '@app/services/grid/grid.service';
+import { BoardData, Bonus } from '@common';
 
 const BONUSES = [
     { bonus: Bonus.L2, position: { x: 0, y: 0 } },
@@ -124,5 +125,49 @@ describe('GridService', () => {
         const spy = spyOn<any>(service, 'drawBonus');
         service.drawSquares(ctxStub);
         expect(spy).toHaveBeenCalledTimes(TIMES_CALLED);
+    });
+
+    it(' clearRect should be called when clearSquare', () => {
+        const spy = spyOn<any>(ctxStub, 'clearRect');
+        service.clearSquare(ctxStub, { x: 8, y: 8 });
+        expect(spy).toHaveBeenCalled();
+    });
+
+    it(' clearRect should be called when cleanInsideSquare', () => {
+        const spy = spyOn<any>(ctxStub, 'clearRect');
+        service.cleanInsideSquare(ctxStub, { x: 8, y: 8 });
+        expect(spy).toHaveBeenCalled();
+    });
+
+    it(' Rect should be called when drawSelectionSquare', () => {
+        const spy = spyOn<any>(ctxStub, 'rect');
+        service.drawSelectionSquare(ctxStub, { x: 8, y: 8 });
+        expect(spy).toHaveBeenCalled();
+    });
+
+    it(' Rect should be called when drawDirectionArrow', () => {
+        const TIMES_CALLED = 3;
+        const spy = spyOn<any>(ctxStub, 'lineTo');
+        service.drawDirectionArrow(ctxStub, { x: 8, y: 8 }, true);
+        expect(spy).toHaveBeenCalledTimes(TIMES_CALLED);
+    });
+
+    it(' Rect should be called when drawDirectionArrow', () => {
+        const TIMES_CALLED = 3;
+        const spy = spyOn<any>(ctxStub, 'lineTo');
+        service.drawDirectionArrow(ctxStub, { x: 8, y: 8 }, false);
+        expect(spy).toHaveBeenCalledTimes(TIMES_CALLED);
+    });
+
+    it(' Rect should be called when drawBonusOfPosition', () => {
+        const spy = spyOn<any>(service, 'drawBonus');
+        service.drawBonusOfPosition(ctxStub, { x: 9, y: 8 });
+        expect(spy).toHaveBeenCalledTimes(0);
+    });
+
+    it(' clearRect should be called when resetCanvas', () => {
+        const spy = spyOn<any>(ctxStub, 'clearRect');
+        service.resetCanvas(ctxStub);
+        expect(spy).toHaveBeenCalled();
     });
 });
