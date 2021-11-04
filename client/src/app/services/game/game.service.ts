@@ -1,12 +1,12 @@
-import { Injectable } from '@angular/core';
-import { PlayerService } from '@app/services/player/player.service';
-import { GameType, ServerConfig, SessionStats, SinglePlayerConfig } from '@common';
-import { BehaviorSubject, Subject } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
-import { SessionService } from '@app/services/session/session.service';
+import { Injectable } from '@angular/core';
 import { PlayerType } from '@app/classes/player/player-type';
-import { environmentExt } from '@environment-ext';
+import { PlayerService } from '@app/services/player/player.service';
+import { SessionService } from '@app/services/session/session.service';
 import { SocketClientService } from '@app/services/socket-client/socket-client.service';
+import { GameType, ServerConfig, SessionStats, SinglePlayerConfig } from '@common';
+import { environmentExt } from '@environmentExt';
+import { BehaviorSubject, Subject } from 'rxjs';
 
 const localUrl = (base: string, call: string, id?: string) => `${environmentExt.apiUrl}${base}/${call}${id ? '/' + id : ''}`;
 
