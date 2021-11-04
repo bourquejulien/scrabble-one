@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/ban-types */
 /* eslint-disable @typescript-eslint/no-magic-numbers */
 /* eslint-disable no-unused-vars */
 /* eslint-disable max-classes-per-file */
@@ -30,9 +31,9 @@ export class SocketMock {
             };
         },
     };
-    // eslint-disable-next-line @typescript-eslint/ban-types
+
     callbacks: Map<string, (...args: any) => {}> = new Map();
-    on(event: string, callback: any): void {
+    on(event: string, callback: (...args: any) => {}): void {
         this.callbacks.set(event, callback);
     }
 
