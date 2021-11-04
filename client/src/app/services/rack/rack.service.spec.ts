@@ -76,19 +76,39 @@ describe('RackService', () => {
         expect(service.indexOf(LETTERS[OVERFLOW_POSITION])).toEqual(-1);
     });
 
-    it('should refresh player data if turn skipped', fakeAsync(() => {
+    it('should refresh rack if refresh function called', fakeAsync(() => {
         const rack = ['a', 'a', 'b', 'c'];
-        const spy = spyOn(service, 'refresh');
-        const firstLetterInRack = service.rack[0];
+        service['rack'] = ['z', 'y'];
+        let firstLetterInRack = service['rack'][0];
+
         service.refresh();
         const request = httpMock.match(localUrl('rack', `${sessionId}`));
-
         request[0].flush(rack);
         tick();
 
-        expect(spy).toHaveBeenCalled();
-        expect(firstLetterInRack).not.toBe(service.rack[0]);
+        expect(firstLetterInRack).not.toBe(service['rack'][0]);
+        expect(service.rack[0]).toBe('a');
     }));
+
+    it('should return error if trying to swap letters in empty rack', () => {
+        service['rack'] = [];
+        let value = service['swap'](2, 3);
+        expect(value).toBe(-1);
+    });
+
+    it('should return modulo of entered number', () => {
+        service['rack'] = ['a', 'b', 'c', 'd', 'e'];
+        expect(service.mod(10)).toBe(0);
+    });
+
+    it('should only keep valid letters in rack if invalid symbols pushed', () => {
+        service['rack'] = ['a', '', '', 'd', 'e'];
+        let initLength = service['rack'].length;
+        let newLength = 3;
+        service['update'](service['rack']);
+        expect(service['rack'].length).not.toBe(initLength);
+        expect(service['rack'].length).toBe(newLength);
+    });
 
     it('should empty', () => {
         service.empty();
