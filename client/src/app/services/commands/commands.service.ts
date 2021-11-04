@@ -82,17 +82,15 @@ export class CommandsService {
         return true;
     }
 
-    // TO DO return false... somewhere
     private displayReserve(): boolean {
         const body: string[] = [];
-        let reserveContent = '';
 
         for (const letter of LETTER_DEFINITIONS) {
             const currentLetterAndQuantity = this.reserveService.getLetterAndQuantity(letter[0]);
             body.push(`${currentLetterAndQuantity}\n`);
         }
 
-        reserveContent = body.join('');
+        const reserveContent = body.join('');
         this.messagingService.send(SystemMessages.ReserveContentTitle, reserveContent, MessageType.Log);
 
         return true;
