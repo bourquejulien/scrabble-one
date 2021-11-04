@@ -6,15 +6,22 @@
 import { PlayerData } from '@app/classes/player-data';
 import { PlayerInfo } from '@app/classes/player-info';
 import { HumanPlayer } from '@app/classes/player/human-player/human-player';
+import { Player } from '@app/classes/player/player';
 import { VirtualPlayer } from '@app/classes/player/virtual-player/virtual-player';
 import { expect } from 'chai';
-import { Observable, Subject, Subscription } from 'rxjs';
+import { BehaviorSubject, Observable, Subject, Subscription } from 'rxjs';
 import { createSandbox, createStubInstance } from 'sinon';
 import { PlayerHandler } from './player-handler';
 const PLAYER_INFO_A: PlayerInfo = { id: '0', name: 'tester1', isHuman: true };
 const PLAYER_INFO_B: PlayerInfo = { id: '1', name: 'tester2', isHuman: false };
 const PLAYER_DATA_DEFAULT: PlayerData = { baseScore: 0, scoreAdjustment: 0, skippedTurns: 4, rack: ['a', 'b', 'c', 'd', 'e', 'f', 'g'] };
 const EXPECTED_NB_PLAYERS = 2;
+
+class PlayerTest {
+    onTurn() {
+        return new BehaviorSubject(null).asObservable();
+    }
+}
 
 describe('PlayerHandler', () => {
     let handler = new PlayerHandler();
@@ -42,6 +49,7 @@ describe('PlayerHandler', () => {
     it('should be created', () => {
         expect(handler).to.be.ok;
     });
+
     it('onTurn should return turnEnded as observable', () => {
         const returnValue = handler.onTurn();
         expect(typeof returnValue).to.eql(typeof new Observable<string>());
@@ -49,6 +57,11 @@ describe('PlayerHandler', () => {
 
     it('add players should add players', () => {
         expect(handler.players.length).to.eql(EXPECTED_NB_PLAYERS);
+    });
+
+    it('add players should switchTurn', () => {
+        const player = new PlayerTest();
+        handler.addPlayer(player as unknown as Player);
     });
 
     it('remove player should remove specified player', () => {

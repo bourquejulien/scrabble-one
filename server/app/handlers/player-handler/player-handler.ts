@@ -34,7 +34,7 @@ export class PlayerHandler {
 
         const removedPlayer = this.players.splice(playerIndex, 1)[0];
 
-        this.playerSubscriptions.get(removedPlayer.id)?.unsubscribe();
+        (this.playerSubscriptions.get(removedPlayer.id) as Subscription).unsubscribe();
         this.playerSubscriptions.delete(removedPlayer.id);
 
         return removedPlayer;
