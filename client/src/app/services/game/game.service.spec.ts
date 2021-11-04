@@ -1,10 +1,14 @@
 /* eslint-disable dot-notation -- Need to access private properties for testing*/
 /* eslint-disable max-classes-per-file -- Needs many stubbed classes in order to test*/
-import { HttpClientTestingModule } from '@angular/common/http/testing';
-import { TestBed } from '@angular/core/testing';
+import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
+import { fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { PlayerService } from '@app/services/player/player.service';
+import { GameType } from '@common';
+import { environmentExt } from '@environmentExt';
 import { Subject } from 'rxjs';
 import { GameService } from './game.service';
+
+
 
 // const MAX_LENGTH_RACK = 7;
 // const PLAYER_POINTS = 100;
@@ -14,6 +18,9 @@ describe('GameService', () => {
     // let reserveService: ReserveService;
     let playerService: jasmine.SpyObj<PlayerService>;
     let mockRack: string[];
+    let httpMock: HttpTestingController;
+    const localUrl = (base: string, call: string, id?: string) => `${environmentExt.apiUrl}${base}/${call}${id ? '/' + id : ''}`;
+
 
     beforeEach(() => {
         mockRack = ['K', 'E', 'S', 'E', 'I', 'O', 'V'];
@@ -32,12 +39,90 @@ describe('GameService', () => {
         });
 
         service = TestBed.inject(GameService);
+        httpMock = TestBed.inject(HttpTestingController);
+
         // reserveService = TestBed.inject(ReserveService);
+    });
+
+    afterEach(() => {
+        httpMock.verify();
     });
 
     it('should be created', () => {
         expect(service).toBeTruthy();
     });
+
+
+    it('should call httpClient to set gameConfig if startSinglePlayer called', fakeAsync(async () => {
+
+        let singlePlayerConfig = {
+            gameType: GameType.SinglePlayer,
+            playTimeMs: 5,
+            playerName: 'Claudette',
+            virtualPlayerName: 'Alphonse',
+            isRandomBonus: true,
+        };
+
+        let serverConfig = {
+            id: '1',
+            startId: '2',
+            gameType: GameType.Multiplayer,
+            playTimeMs: 5,
+            firstPlayerName: 'Claudette',
+            secondPlayerName: 'Alphonse',
+        };
+
+        await service.startSinglePlayer(singlePlayerConfig);
+        const requestPut = httpMock.match(localUrl('game', 'init/single'));
+        expect(requestPut[0].request.method).toEqual('PUT');
+        requestPut[0].flush(serverConfig);
+        tick();
+
+        service['refresh'];
+        const requestGet = httpMock.match(localUrl('player', 'stats'));
+        expect(requestGet[0].request.method).toEqual('GET');
+        requestPut[0].flush([]);
+        tick();
+
+
+        //await service.start(serverConfig);
+    }));
+
+    /*it('should start game if startSinglePlayer called', fakeAsync(async () => {
+
+        let singlePlayerConfig = {
+            gameType: GameType.SinglePlayer,
+            playTimeMs: 5,
+            playerName: 'Claudette',
+            virtualPlayerName: 'Alphonse',
+            isRandomBonus: true,
+        };
+
+
+        let serverConfig = {
+            id: '1',
+            startId: '2',
+            gameType: GameType.Multiplayer,
+            playTimeMs: 5,
+            firstPlayerName: 'Claudette',
+            secondPlayerName: 'Alphonse',
+        };
+
+        const spy = spyOn(service, 'start').and.callThrough();
+        await service.startSinglePlayer(singlePlayerConfig);
+        await service.start(serverConfig);
+        const request = httpMock.match(localUrl('game', 'init/single'));
+
+        expect(request[0].request.method).toEqual('PUT');
+
+        request[0].flush(serverConfig);
+        tick();
+        expect(spy).toHaveBeenCalled();
+    }));*/
+
+    //if('should join room if game started', async() => {
+
+    //});
     /*
         it('start should define currentTurn and swap Virtual to Local', async () => {
             const spy = spyOn(Math, 'random').and.returnValue(1);
@@ -160,6 +245,6 @@ describe('GameService', () => {
                     service['virtualPlayerService'].playerData.rack,
                 MessageType.System,
             );
-        });
-        */
+        });*/
+
 });

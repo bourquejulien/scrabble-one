@@ -30,7 +30,7 @@ export class GridService {
     letterFontFace: FontFace;
 
     private readonly canvasSize: Vec2;
-    private readonly playGridSize: number;
+    private playGridSize: number;
     private readonly starImage: HTMLImageElement;
 
     constructor(private readonly boardService: BoardService) {
@@ -117,7 +117,7 @@ export class GridService {
         }
     }
 
-    private drawSymbol(letter: string, gridPosition: Vec2, context: CanvasRenderingContext2D) {
+    private drawSymbol(letter: string, gridPosition: Vec2, context: CanvasRenderingContext2D): void {
         if (letter.length === 0) {
             return;
         }
@@ -144,7 +144,7 @@ export class GridService {
         return this.playGridSize + 1;
     }
 
-    private drawBonus(bonus: Bonus, gridPosition: Vec2, context: CanvasRenderingContext2D) {
+    private drawBonus(bonus: Bonus, gridPosition: Vec2, context: CanvasRenderingContext2D): void {
         if (bonus === Bonus.None) {
             return;
         }
@@ -174,7 +174,7 @@ export class GridService {
         return fontFace;
     }
 
-    private drawImage(image: HTMLImageElement, gridPosition: Vec2, context: CanvasRenderingContext2D) {
+    private drawImage(image: HTMLImageElement, gridPosition: Vec2, context: CanvasRenderingContext2D): void {
         const canvasPosition = this.computeCanvasCoord(gridPosition);
         const halfLineWidth = LINE_WIDTH / 2;
         const centeredPosition = {
@@ -185,25 +185,22 @@ export class GridService {
         const drawImage = () =>
             context.drawImage(image, centeredPosition.x, centeredPosition.y, this.squareWidth - LINE_WIDTH, this.squareHeight - LINE_WIDTH);
 
-        if (image.complete) {
-            drawImage();
-        }
         image.onload = () => drawImage();
     }
 
-    private drawRow(pos: number, context: CanvasRenderingContext2D) {
+    private drawRow(pos: number, context: CanvasRenderingContext2D): void {
         const height: number = ((this.height - context.lineWidth) * pos) / this.boardGridSize + context.lineWidth / 2;
         context.moveTo(this.width / this.boardGridSize + context.lineWidth / 2, height);
         context.lineTo(this.width + context.lineWidth / 2, height);
     }
 
-    private drawColumn(pos: number, context: CanvasRenderingContext2D) {
+    private drawColumn(pos: number, context: CanvasRenderingContext2D): void {
         const width: number = ((this.width - context.lineWidth) * pos) / this.boardGridSize + context.lineWidth / 2;
         context.moveTo(width, this.height / this.boardGridSize);
         context.lineTo(width, this.height + context.lineWidth / 2);
     }
 
-    private fillSquare(color: string, initialPosition: Vec2, size: Vec2, context: CanvasRenderingContext2D) {
+    private fillSquare(color: string, initialPosition: Vec2, size: Vec2, context: CanvasRenderingContext2D): void {
         const canvasPosition = this.computeCanvasCoord(initialPosition);
         const squareWidth = this.squareWidth;
         const squareHeight = this.squareHeight;

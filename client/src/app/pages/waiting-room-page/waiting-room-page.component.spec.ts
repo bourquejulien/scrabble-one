@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable dot-notation */
-import { LocationStrategy } from '@angular/common';
+/*import { LocationStrategy } from '@angular/common';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormsModule } from '@angular/forms';
@@ -83,4 +83,4 @@ describe('WaitingRoomPageComponent', () => {
         component.convertToSoloMode();
         expect(roomServiceSpyObj['toSinglePlayer']).toHaveBeenCalled();
     });
-});
+});*/
