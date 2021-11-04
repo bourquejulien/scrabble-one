@@ -1,4 +1,4 @@
-<mat-card class="rack" (wheel)="onMousewheel($event)" (mouseenter)="isFocus = true" (mouseleave)="isFocus = false">
+<mat-card class="rack" (wheel)="onMousewheel($event)" tabindex="-1" (focusout)="isFocus = false; reset()" (focus)="isFocus = true">
     <mat-card
         class="tile"
         [ngClass]="{ 'swap-selected': selection.swap.index === i, 'border-selected': selection.reserve.has(i) }"

@@ -102,7 +102,6 @@ export class RoomController {
                         this.socketIdToPlayerId.set(socket.id, playerId);
                         logger.info(`Joined room: ${sessionId}`);
                     }
-
                     this.socketService.socketServer.emit('availableRooms', this.sessionInfos);
                 } else {
                     logger.info(`Invalid room ID provided: ${sessionId}`);

@@ -63,15 +63,6 @@ export class RackComponent implements OnInit {
         }
     }
 
-    @HostListener('document:click', ['$event'])
-    onDocumentClick(): void {
-        if (this.isFocus) {
-            return;
-        }
-
-        this.reset();
-    }
-
     ngOnInit(): void {
         this.reset();
         this.reserveSelectionChange.emit(this.selection.reserve);
