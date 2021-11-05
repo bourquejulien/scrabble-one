@@ -1,6 +1,6 @@
 export interface PlayerStats {
-    points: number;
-    rackSize: number;
+    points: number,
+    rackSize: number
 }
 
 export interface SessionStats {

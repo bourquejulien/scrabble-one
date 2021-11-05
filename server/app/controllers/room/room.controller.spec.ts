@@ -3,16 +3,16 @@
 /* eslint-disable dot-notation */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable max-classes-per-file */
-import { expect } from 'chai';
-import { RoomController } from './room.controller';
-import { assert, createStubInstance, SinonStubbedInstance, spy, stub } from 'sinon';
+import { SocketMock } from '@app/classes/helpers/socket-test-helper';
+import { SessionHandler } from '@app/handlers/session-handler/session-handler';
+import { GameService } from '@app/services/game/game.service';
 import { SessionHandlingService } from '@app/services/sessionHandling/session-handling.service';
 import { SocketService } from '@app/services/socket/socket-service';
-import { Server, Socket } from 'socket.io';
 import { GameType, Message, MessageType } from '@common';
-import { SessionHandler } from '@app/handlers/session-handler/session-handler';
-import { SocketMock } from '@app/classes/socket-test-helper';
-import { GameService } from '@app/services/game/game.service';
+import { expect } from 'chai';
+import { assert, createStubInstance, SinonStubbedInstance, spy, stub } from 'sinon';
+import { Server, Socket } from 'socket.io';
+import { RoomController } from './room.controller';
 
 const IDS = {
     player: '123',

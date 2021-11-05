@@ -6,6 +6,8 @@ import { BoardHandler } from '@app/handlers/board-handler/board-handler';
 import { Config } from '@app/config';
 import { SocketHandler } from '@app/handlers/socket-handler/socket-handler';
 import { MessageType } from '@common';
+import * as logger from 'winston';
+import { SkipAction } from '@app/classes/player/virtual-player/actions/skip-action';
 
 export class PlayAction implements Action {
     constructor(
@@ -32,19 +34,21 @@ export class PlayAction implements Action {
     execute(): Action | null {
         const scoreRange = PlayAction.getScoreRange();
 
+        logger.debug('Generating plays');
         while (this.playGenerator.generateNext());
 
         const filteredPlays = this.playGenerator.orderedPlays.filter((e) => e.score >= scoreRange.min && e.score <= scoreRange.max);
 
         if (filteredPlays.length === 0) {
-            return null;
+            logger.debug('No play generated - Skipping');
+            return new SkipAction(this.playerData, this.socketHandler);
         }
 
         const chosenPlay = Math.floor(Math.random() * filteredPlays.length);
         const play = filteredPlays[chosenPlay];
 
         const alternatives = new Set<string>();
-        for (let i = 0; alternatives.size < Config.VIRTUAL_PLAYER.NB_ALTERNATIVES; i++) {
+        for (let i = 0; alternatives.size < Config.VIRTUAL_PLAYER.NB_ALTERNATIVES && i < filteredPlays.length; i++) {
             const alternativeIndex = (chosenPlay + i) % filteredPlays.length;
             alternatives.add(filteredPlays[alternativeIndex].word);
         }

@@ -26,7 +26,8 @@
             "**/*.spec.ts",
             "app/index.ts",
             "app/server.ts",
-            "app/app.ts"
+            "app/app.ts",
+            "app/classes/helpers/*"
         ],
         "require": [
             "ts-node/register",

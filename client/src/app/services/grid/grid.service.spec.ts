@@ -3,7 +3,7 @@
 /* eslint-disable dot-notation -- Need access to private functions and properties*/
 import { Injectable } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
-import { CanvasTestHelper } from '@app/classes/canvas-test-helper';
+import { CanvasTestHelper } from '@app/classes/helpers/canvas-test-helper';
 import { Constants } from '@app/constants/global.constants';
 import { BoardService } from '@app/services/board/board.service';
 import { GridService } from '@app/services/grid/grid.service';
@@ -127,6 +127,42 @@ describe('GridService', () => {
         expect(spy).toHaveBeenCalledTimes(TIMES_CALLED);
     });
 
+    it('should call fillSquare with the correct arguments', () => {
+        const spy = spyOn<any>(service, 'fillSquare');
+        service.drawGrid(ctxStub);
+        expect(spy).toHaveBeenCalled();
+    });
+
+    it('should draw a bonus on grid if bonus provided', () => {
+        const spy = spyOn<any>(Map.prototype, 'get');
+        service.drawGrid(ctxStub);
+        expect(spy).toHaveBeenCalled();
+    });
+
+    it('should draw a symbol if bonus provided', () => {
+        service['boardService']['boardData'].board[0][0].letter = '';
+        service['boardService']['boardData'].board[0][0].bonus = Bonus.Star;
+        const spy = spyOn<any>(service, 'drawBonus');
+        service.drawSquares(ctxStub);
+        expect(spy).toHaveBeenCalled();
+    });
+
+    it('should draw image if image provided', () => {
+        service['playGridSize'] = 4;
+        const spy = spyOn<any>(service, 'drawImage');
+        service['boardService']['boardData'].board[2][2].letter = '';
+        service.drawSquares(ctxStub);
+        expect(spy).toHaveBeenCalled();
+    });
+
+    it('should not draw star image if center not empty', () => {
+        service['playGridSize'] = 4;
+        const spy = spyOn<any>(service, 'drawImage');
+        service['boardService']['boardData'].board[2][2].letter = 'b';
+        service.drawSquares(ctxStub);
+        expect(spy).not.toHaveBeenCalled();
+    });
+
     it(' clearRect should be called when clearSquare', () => {
         const spy = spyOn<any>(ctxStub, 'clearRect');
         service.clearSquare(ctxStub, { x: 8, y: 8 });
@@ -175,5 +211,13 @@ describe('GridService', () => {
         const spy = spyOn<any>(ctxStub, 'clearRect');
         service.resetCanvas(ctxStub);
         expect(spy).toHaveBeenCalled();
+    });
+
+    it(' drawBonusOfPosition should draw bonus if bonus provided', () => {
+        const spy = spyOn<any>(service, 'drawBonus');
+        const position = { x: 5, y: 8 };
+        service['boardService']['boardData'].board[position.x - 1][position.y - 1].bonus = Bonus.W2;
+        service.drawBonusOfPosition(ctxStub, position);
+        expect(spy).toHaveBeenCalledWith(Bonus.W2, { x: 5, y: position.y }, ctxStub);
     });
 });

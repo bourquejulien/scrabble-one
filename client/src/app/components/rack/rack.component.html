@@ -1,28 +1,34 @@
-    <mat-card class="rack" (wheel)="onMousewheel($event)" tabindex="0" (focusout)="isFocus = false" (focus)="isFocus = true">
-        <mat-card
-            class="tile"
-            [ngClass]="{ 'swap-selected': selection.swap.index === i, 'border-selected': selection.reserve.has(i) }"
-            (click)="onLeftClick(i)"
-            (contextmenu)="onRightClick(i)"
-            *ngFor="let letter of rackService.rack; let i = index"
-        >
-            <div *ngIf="letter !== '*'">
-                {{ letter | uppercase }}
-                <sub class="letter-point">
-                    {{ retrievePoints(letter) }}
-                </sub>
-            </div>
-        </mat-card>
+<mat-card class="rack" (wheel)="onMousewheel($event)" tabindex="0" (focusout)="isFocus = false" (focus)="isFocus = true">
+    <mat-card
+        class="tile"
+        [ngClass]="{ 'swap-selected': selection.swap.index === i, 'border-selected': selection.reserve.has(i) }"
+        (click)="onLeftClick(i)"
+        (contextmenu)="onRightClick(i)"
+        *ngFor="let letter of rackService.rack; let i = index"
+    >
+        <div *ngIf="letter !== '*'">
+            {{ letter | uppercase }}
+            <sub class="letter-point">
+                {{ retrievePoints(letter) }}
+            </sub>
+        </div>
     </mat-card>
-    <div id="buttons">
-        <button
-            mat-button
-            *ngIf="reserveService.length >= 7"
-            [ngClass]="{ invisible: selection.reserve.size === 0 || gameService.currentTurn !== playerType.Local }"
-            class="exchange-command"
-            (click)="exchangeLetters(); $event.stopPropagation()"
-        >
-            Échanger
-        </button>
-        <button mat-button (click)="clearExchange(); $event.stopPropagation()" [ngClass]=" { invisible: selection.reserve.size === 0 }" class="exchange-command">Annuler</button>
-    </div>
+</mat-card>
+<div id="buttons">
+    <button
+        mat-button
+        [ngClass]="{ invisible: reserveService.length < 7 || gameService.currentTurn !== playerType.Local || selection.reserve.size === 0}"
+        class="exchange-command"
+        (click)="exchangeLetters(); $event.stopPropagation()"
+    >
+        Échanger
+    </button>
+    <button
+        mat-button
+        (click)="clearExchange(); $event.stopPropagation()"
+        [ngClass]="{ invisible: selection.reserve.size === 0 }"
+        class="exchange-command"
+    >
+        Annuler
+    </button>
+</div>
