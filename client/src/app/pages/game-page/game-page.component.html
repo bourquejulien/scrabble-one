@@ -4,23 +4,23 @@
         <app-communication-box></app-communication-box>
     </mat-drawer>
     <div>
-    <mat-card [ngClass]="isOpen ? 'player-one-open' : 'player-one-closed'" class="scoreboard">
-        <span class="vertical-flex-items">{{ sessionService.gameConfig.firstPlayerName }}</span>
-        <span class="vertical-flex-items">Score: {{ gameService.stats.localStats.points }} </span>
-        <span class="vertical-flex-items" *ngIf="gameService.stats.localStats.rackSize < 7"
-            >Lettres: {{ gameService.stats.localStats.rackSize }}
-        </span>
-    </mat-card>
-    <mat-card [ngClass]="isOpen ? 'reserve-length-open' : 'reserve-length-closed'" class="scoreboard">
-        <span> Nombre de lettres dans la réserve : {{ reserveService.length }} </span>
-    </mat-card>
-    <mat-card [ngClass]="[isOpen ? 'player-two-open' : 'player-two-closed', sessionService.gameConfig.gameType]" class="scoreboard">
-        <span class="vertical-flex-items">{{ sessionService.gameConfig.secondPlayerName }}</span>
-        <span class="vertical-flex-items">Score: {{ gameService.stats.remoteStats.points }} </span>
-        <span class="vertical-flex-items" *ngIf="gameService.stats.remoteStats.rackSize < 7"
-            >Lettres: {{ gameService.stats.remoteStats.rackSize }}
-        </span>
-    </mat-card>
+        <mat-card [ngClass]="isOpen ? 'player-one-open' : 'player-one-closed'" class="scoreboard">
+            <span class="vertical-flex-items">{{ sessionService.gameConfig.firstPlayerName }}</span>
+            <span class="vertical-flex-items">Score: {{ gameService.stats.localStats.points }} </span>
+            <span class="vertical-flex-items" *ngIf="gameService.stats.localStats.rackSize < 7"
+                >Lettres: {{ gameService.stats.localStats.rackSize }}
+            </span>
+        </mat-card>
+        <mat-card [ngClass]="isOpen ? 'reserve-length-open' : 'reserve-length-closed'" class="scoreboard">
+            <span> Nombre de lettres dans la réserve : {{ reserveService.length }} </span>
+        </mat-card>
+        <mat-card [ngClass]="[isOpen ? 'player-two-open' : 'player-two-closed', sessionService.gameConfig.gameType]" class="scoreboard">
+            <span class="vertical-flex-items">{{ sessionService.gameConfig.secondPlayerName }}</span>
+            <span class="vertical-flex-items">Score: {{ gameService.stats.remoteStats.points }} </span>
+            <span class="vertical-flex-items" *ngIf="gameService.stats.remoteStats.rackSize < 7"
+                >Lettres: {{ gameService.stats.remoteStats.rackSize }}
+            </span>
+        </mat-card>
     </div>
     <div id="tools-container">
         <div class="comm-box-sidenav-content">

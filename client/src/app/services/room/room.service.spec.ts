@@ -1,7 +1,8 @@
-import { TestBed } from '@angular/core/testing';
+/* eslint-disable dot-notation -- Need access to private functions and properties*/
 
-import { RoomService } from './room.service';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { TestBed } from '@angular/core/testing';
+import { RoomService } from './room.service';
 
 describe('RoomService', () => {
     let service: RoomService;

@@ -24,8 +24,8 @@ export class ReserveService {
     }
 
     getLetterAndQuantity(letterToUpdate: string): string {
-        const firstIndex = this.reserve.indexOf(letterToUpdate); // -1
-        const lastIndex = this.reserve.lastIndexOf(letterToUpdate); // -1
+        const firstIndex = this.reserve.indexOf(letterToUpdate);
+        const lastIndex = this.reserve.lastIndexOf(letterToUpdate);
 
         if (lastIndex && firstIndex === -1) {
             return `${letterToUpdate.toUpperCase()} : 0`;
