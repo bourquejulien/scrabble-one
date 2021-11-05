@@ -14,6 +14,8 @@ import { RackService } from '@app/services/rack/rack.service';
 import { SessionService } from '@app/services/session/session.service';
 import { GameType, ServerConfig, SessionStats } from '@common';
 import { Observable, Subject } from 'rxjs';
+import { MessagingService } from '../messaging/messaging.service';
+import { SocketClientService } from '../socket-client/socket-client.service';
 
 class SessionServiceStub {
     private _id: string;
@@ -36,11 +38,21 @@ describe('GameService', () => {
     let rackServiceSpyObj: jasmine.SpyObj<RackService>;
     let serverConfigObservableSpyObj: jasmine.SpyObj<Observable<ServerConfig>>;
     let sessionStatsObservableSpyObj: jasmine.SpyObj<Observable<SessionStats>>;
+    let socketService: jasmine.SpyObj<SocketClientService>;
+    let messagingService: jasmine.SpyObj<MessagingService>;
+    let sessionService: jasmine.SpyObj<SessionService>;
 
     beforeEach(async () => {
+        socketService = jasmine.createSpyObj('SocketClientService', ['on', 'reset']);
+        const callback = (event: string, action: (Param: any) => void) => {
+            action({});
+        };
+        socketService.on.and.callFake(callback);
         mockRack = ['K', 'E', 'S', 'E', 'I', 'O', 'V'];
         rackServiceSpyObj = jasmine.createSpyObj('RackService', ['update', 'refresh']);
         httpSpyObj = jasmine.createSpyObj('HttpModule', ['get', 'put']);
+        messagingService = jasmine.createSpyObj('messagingService', ['send', 'onMessage']);
+        sessionService = jasmine.createSpyObj('sessionService', ['reset', 'serverConfig']);
         sessionStatsObservableSpyObj = jasmine.createSpyObj('Observable<SessionStats>', ['toPromise']);
         serverConfigObservableSpyObj = jasmine.createSpyObj('Observable<ServerConfig>', ['toPromise']);
         httpSpyObj.put.and.returnValue(serverConfigObservableSpyObj);
@@ -109,20 +121,6 @@ describe('GameService', () => {
         await service.reset();
         expect(playerServiceSpyObj.reset).toHaveBeenCalled();
     });
-
-    // it('should refresh and change current turn if player type is not equal to current player', async () => {
-    //     let sessionId = '2';
-    //     session['_id'] = '1';
-    //     let playerType = PlayerType.Local;
-    //     service['currentTurn'] = PlayerType.Remote;
-
-    //     const spy = spyOn<any>(service, 'refresh').and.callThrough();
-    //     await service['onNextTurn'](sessionId);
-
-    //     expect(spy).not.toHaveBeenCalled();
-    //     expect(service['currentTurn']).toBe(playerType);
-    //     // expect(service['onTurn'].next).toHaveBeenCalled();
-    // });
 
     it('should not refresh and not change current turn if player type is equal to current player', async () => {
         const sessionId = '1';
@@ -206,7 +204,7 @@ describe('GameService', () => {
         expect(spy).toHaveBeenCalledWith(winner);
     });
 
-    it('should not call onTurn.next with local player type if id is equal to sessionService id', async () => {
+    it('should not call onTurn.next if currentTurn is equal to playerType', async () => {
         const gameConfig = {
             gameType: GameType.SinglePlayer,
             playTime: TimeSpan.fromMinutesSeconds(1, 0),
@@ -236,17 +234,23 @@ describe('GameService', () => {
 
         const spy = spyOn<any>(service.gameEnding, 'next');
         await service['start'](serverConfig);
-
-        await service['refresh']();
-        spy.and.callThrough();
-
-        sessionStatsObservableSpyObj.toPromise.and.resolveTo(service.stats);
-        await playerServiceSpyObj.refresh();
-        await rackServiceSpyObj.refresh();
-
         spy.and.callThrough();
         await service['onNextTurn'](id);
+        spy.and.callThrough();
+        await service['refresh']();
+        spy.and.callThrough();
+        sessionStatsObservableSpyObj.toPromise.and.resolveTo(service.stats);
+        spy.and.callThrough();
+        await playerServiceSpyObj.refresh();
+        spy.and.callThrough();
+        await rackServiceSpyObj.refresh();
+        spy.and.callThrough();
 
         expect(spy).not.toHaveBeenCalledWith(playerType);
+    });
+
+    it('should call onNextTurn and endGame when game is created', () => {
+        new GameService(playerServiceSpyObj, httpSpyObj, sessionService, rackServiceSpyObj, socketService, messagingService);
+        expect(socketService['on']).toHaveBeenCalled();
     });
 });
