@@ -13,50 +13,58 @@ describe('NameValidator', () => {
         expect(validator).toBeTruthy();
     });
 
-    it('should not contains any error', async () => {
+    it('should not contains any error', () => {
         validator.name = NAMES[0];
-        await validator.validate();
+        validator.validate();
         expect(validator.errors).toEqual([]);
     });
 
-    it('should not contains any error', async () => {
+    it('should not contains any error', () => {
         validator.name = NAMES[1];
-        await validator.validate();
+        validator.validate();
         expect(validator.errors).toEqual([]);
     });
 
-    it('should have error for lower letter', async () => {
+    it('should have error for lower letter', () => {
         validator.name = NAMES[2];
-        await validator.validate();
+        validator.validate();
         expect(validator.errors).toEqual(['*Le nom doit débuter par une majuscule.\n']);
     });
 
-    it('should have error for minimum length', async () => {
+    it('should have error for minimum length', () => {
         validator.name = NAMES[3];
-        await validator.validate();
+        validator.validate();
         expect(validator.errors).toEqual(['*Le nom doit contenir au moins 3 caractères.\n']);
     });
 
-    it('should have error for maximum length', async () => {
+    it('should have error for maximum length', () => {
         validator.name = NAMES[4];
-        await validator.validate();
+        validator.validate();
         expect(validator.errors).toEqual(['*Le nom doit au maximum contenir 16 lettres.\n']);
     });
 
-    it('should have error for not having name', async () => {
-        await validator.validate();
+    it('should have error for not having name', () => {
+        validator.validate();
         expect(validator.errors).toEqual(['*Un nom doit être entré.\n']);
     });
 
-    it('should have error for not containing only letters', async () => {
+    it('should have error for not containing only letters', () => {
         validator.name = NAMES[5];
-        await validator.validate();
+        validator.validate();
         expect(validator.errors).toEqual(['*Le nom doit seulement être composé de lettres.\n']);
     });
 
-    it('should have error for not containing only letters and minimum length', async () => {
+    it('should have error for not containing only letters and minimum length', () => {
         validator.name = NAMES[6];
-        await validator.validate();
+        validator.validate();
         expect(validator.errors).toEqual(['*Le nom doit contenir au moins 3 caractères.\n', '*Le nom doit seulement être composé de lettres.\n']);
+    });
+
+    it('should reset form data when reset function called', () => {
+        validator.name = NAMES[6];
+        validator.errors.push('ERROR');
+        validator.reset();
+        expect(validator.errors.length).toBe(0);
+        expect(validator.name).toBe('');
     });
 });

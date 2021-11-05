@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
+import { SessionService } from '@app/services/session/session.service';
 import { SocketClientService } from '@app/services/socket-client/socket-client.service';
 import { Message, MessageType } from '@common';
-import { SessionService } from '@app/services/session/session.service';
 import { Observable, Subject } from 'rxjs';
 
 @Injectable({
@@ -10,7 +10,7 @@ import { Observable, Subject } from 'rxjs';
 export class MessagingService {
     isDebug: boolean;
 
-    private readonly onMessageSubject: Subject<Message>;
+    private onMessageSubject: Subject<Message>;
 
     constructor(private readonly socketService: SocketClientService, private readonly sessionService: SessionService) {
         this.isDebug = false;

@@ -1,10 +1,10 @@
 /* eslint-disable dot-notation */
 /* eslint-disable @typescript-eslint/no-magic-numbers */
 import { TestBed } from '@angular/core/testing';
-import { MessageType } from '@common';
+import { SocketMock } from '@app/classes/helpers/socket-test-helper';
 import { SocketClientService } from '@app/services/socket-client/socket-client.service';
+import { MessageType } from '@common';
 import { MessagingService } from './messaging.service';
-import { SocketMock } from '@app/classes/socket-test-helper';
 
 describe('MessagingService', () => {
     let service: MessagingService;
@@ -12,7 +12,7 @@ describe('MessagingService', () => {
     const socketClient: SocketMock = new SocketMock();
 
     beforeEach(() => {
-        socketServiceSpyObj = jasmine.createSpyObj('SocketClientService', ['on'], { socketClient });
+        socketServiceSpyObj = jasmine.createSpyObj('SocketClientService', ['on', 'reset'], { socketClient });
         TestBed.configureTestingModule({
             providers: [{ provide: SocketClientService, useValue: socketServiceSpyObj }],
         });
@@ -23,23 +23,12 @@ describe('MessagingService', () => {
         expect(service).toBeTruthy();
     });
 
-    it('send should send all messages when debugging is on', () => {
+    it('send should send messages when debugging is on', () => {
         service.isDebug = true;
 
-        service['socketService'].socketClient.on('message', (message) => {
-            expect(message.messageType).toBe(MessageType.Error);
-        });
+        const spyError = spyOn(service['socketService']['socketClient'], 'emit');
         service.send('title1', 'body1', MessageType.Error);
-
-        service['socketService'].socketClient.on('message', (message) => {
-            expect(message.messageType).toBe(MessageType.Log);
-        });
-        service.send('title2', 'body2', MessageType.Log);
-
-        service['socketService'].socketClient.on('message', (message) => {
-            expect(message.messageType).toBe(MessageType.Message);
-        });
-        service.send('title3', 'body3', MessageType.Message);
+        expect(spyError).toHaveBeenCalled();
     });
 
     it('send should not send all messages when debugging is off', () => {
@@ -50,5 +39,30 @@ describe('MessagingService', () => {
         service.send('title3', 'body3', MessageType.Message);
         service.send('title4', 'body4', MessageType.System);
         expect(spy).toHaveBeenCalledTimes(4);
+    });
+
+    it('should reset connection with server if it fails', () => {
+        const error: Error = { name: 'error', message: 'websocket error' };
+
+        service['handleConnectionError'](error);
+        expect(socketServiceSpyObj['reset']).toHaveBeenCalled();
+    });
+
+    it('should reset connection with server if it fails', () => {
+        const error: Error = { name: 'error', message: 'websocket error' };
+
+        let message = '';
+        service['onMessageSubject'].subscribe((msg) => {
+            message = msg.body;
+        });
+        service['handleConnectionError'](error);
+        expect(message).toBe('Erreur: ' + error.message);
+    });
+
+    it('should return message if onMessage is called', () => {
+        service['onMessageSubject'].next({ title: 'title1', body: 'body1', messageType: MessageType.Error });
+        const onMessagePropertyObs = service['onMessageSubject'].asObservable();
+        const messageObs = service.onMessage;
+        expect(messageObs).toEqual(onMessagePropertyObs);
     });
 });
