@@ -118,4 +118,3 @@ export class SessionHandler {
         return this.playerHandler.isOverSkipLimit || (this.reserveHandler.length === 0 && this.playerHandler.rackEmptied);
     }
 }
-

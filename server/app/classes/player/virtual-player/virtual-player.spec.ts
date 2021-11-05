@@ -107,7 +107,7 @@ describe('VirtualPlayer', () => {
         const returnValue = service['nextAction']();
         expect(returnValue instanceof ExchangeAction).to.be.true;
     });
-/*
+    /*
     it('starting turn should make next action return play action sometimes', () => {
         sandboxRandom.stub(Math, 'random').returns(RANDOM_PLAY_ACTION);
         sandboxTimer.stub(Timer, 'delay').returns(Promise.resolve());

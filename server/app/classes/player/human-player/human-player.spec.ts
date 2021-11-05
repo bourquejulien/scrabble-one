@@ -157,7 +157,7 @@ describe('HumanPlayer', () => {
     it('exchangeletters should fail if theres no more letters in reserve', () => {
         reserveHandler.reserve = [];
         const returnValue = service.exchangeLetters(LETTERS);
-        expect(returnValue).to.eql({ isSuccess: false, body: 'Letters not in rack' })
+        expect(returnValue).to.eql({ isSuccess: false, body: 'Letters not in rack' });
     });
 
     it('onTurn should return turnEnded as observable', () => {
