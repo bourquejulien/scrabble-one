@@ -151,7 +151,7 @@ export class BoardValidator {
                     return Direction.None;
                 }
             } else if (positions[i - 1].y === positions[i].y) {
-                if (direction !== Direction.Right) {
+                direction !== Direction.Right) {
                     return Direction.None;
                 }
             } else {
