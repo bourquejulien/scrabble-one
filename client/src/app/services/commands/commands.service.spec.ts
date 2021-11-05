@@ -59,6 +59,7 @@ describe('CommandsService', () => {
 
     it('#parseInput should send an error message when exchange letter command is invalid', () => {
         const spy = spyOn<any>(service['messagingService'], 'send');
+        spyOn<any>(service, 'isUsersTurn').and.returnValue(true);
         service.parseInput('!échanger 12345678');
         expect(spy).toHaveBeenCalledWith('', SystemMessages.InvalidLetters, MessageType.Error);
     });
@@ -71,12 +72,14 @@ describe('CommandsService', () => {
 
     it('#parseInput should send an error message when place command is passed an invalid word', () => {
         const spy = spyOn<any>(service['messagingService'], 'send');
+        spyOn<any>(service, 'isUsersTurn').and.returnValue(true);
         service.parseInput('!placer a9h w0rd');
         expect(spy).toHaveBeenCalledWith('', SystemMessages.InvalidWord, MessageType.Error);
     });
 
     it('#parseInput should send an error message when place command is passed invalid options', () => {
         const spy = spyOn<any>(service['messagingService'], 'send');
+        spyOn<any>(service, 'isUsersTurn').and.returnValue(true);
         service.parseInput('!placer a19h word');
         expect(spy).toHaveBeenCalledWith('', SystemMessages.InvalidOptions, MessageType.Error);
     });
@@ -134,9 +137,33 @@ describe('CommandsService', () => {
         expect(service['checkPlaceCommand']('h8h', 'test')).toBe(false);
     });
 
-    it('should not excahnge letters if not users turn', () => {
+    it('should fail when place command sytax invalid', () => {
+        spyOn<any>(service, 'isUsersTurn').and.returnValue(true);
+        const spy = spyOn<any>(service['messagingService'], 'send');
+        service['checkPlaceCommand']('h8s5sh', 'test');
+        //spyOn<any>(service, 'isUsersTurn').and.returnValue(false);
+        expect(spy).toHaveBeenCalledWith('', SystemMessages.InvalidOptions, MessageType.Error);
+    });
+
+    it("should fail if invalid word placed", () => {
+        spyOn<any>(service, 'isUsersTurn').and.returnValue(true);
+        const spy = spyOn<any>(service['messagingService'], 'send');
+        service['checkPlaceCommand']('h8h', '4');
+        expect(spy).toHaveBeenCalledWith('', SystemMessages.InvalidWord, MessageType.Error);
+        expect(service['checkPlaceCommand']('h8h', '4')).toBe(false);
+    });
+
+    it('should not exchange letters if not users turn', () => {
         spyOn<any>(service, 'isUsersTurn').and.returnValue(false);
         expect(service['exchangeLetters']('z')).toBe(false);
+    });
+
+    it('should not exchange letters if invalid letters provided', () => {
+        const spy = spyOn<any>(service['messagingService'], 'send');
+        spyOn<any>(service, 'isUsersTurn').and.returnValue(true);
+        service['exchangeLetters']('4');
+        expect(spy).toHaveBeenCalledWith('', SystemMessages.InvalidLetters, MessageType.Error);
+        expect(service['exchangeLetters']('4')).toBe(false);
     });
 
     it('should not skip turn if not users turn', () => {
