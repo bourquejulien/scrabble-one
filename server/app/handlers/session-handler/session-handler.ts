@@ -79,17 +79,25 @@ export class SessionHandler {
         return { localStats: firstPlayer.stats, remoteStats: secondPlayer.stats };
     }
 
-    endGame(): void {
-        logger.debug(`SessionHandler - EndGame - Id: ${this.sessionInfo.id}`);
-        this.players.forEach((p) => (p.playerData.scoreAdjustment -= p.rackPoints()));
+    abandon(playerId: string): void {
+        logger.debug(`SessionHandler - Abandon - PlayerId: ${playerId}`);
 
+        const winner = this.players.find((p) => p.id !== playerId)?.id ?? '';
+
+        this.socketHandler.sendData('endGame', winner);
+        this.dispose();
+    }
+
+    private endGame(): void {
+        logger.debug(`SessionHandler - EndGame - Id: ${this.sessionInfo.id}`);
+
+        this.players.forEach((p) => (p.playerData.scoreAdjustment -= p.rackPoints()));
         if (this.reserveHandler.length === 0 && this.playerHandler.rackEmptied) {
             this.players[0].playerData.scoreAdjustment += this.players[1].rackPoints();
             this.players[1].playerData.scoreAdjustment += this.players[0].rackPoints();
         }
 
-        this.socketHandler.sendData('endGame');
-
+        this.socketHandler.sendData('endGame', this.playerHandler.winner);
         this.dispose();
     }
 

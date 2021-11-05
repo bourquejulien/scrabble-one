@@ -13,8 +13,7 @@ export class SocketClientService {
     }
 
     reset(): void {
-        this.socketClient.disconnect();
-        this.socketClient.connect();
+        this.socketClient.emit('exit');
     }
 
     join(id: string): void {

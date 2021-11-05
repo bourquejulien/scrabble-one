@@ -184,6 +184,6 @@ describe('CommandsService', () => {
     it('should remove accents', () => {
         const accentedMessage = 'Ôde à la crème brûlée';
         const resultMessage = 'Ode a la creme brulee';
-        expect(service['removeAccents'](accentedMessage)).toEqual(resultMessage);
+        expect(CommandsService['removeAccents'](accentedMessage)).toEqual(resultMessage);
     });
 });

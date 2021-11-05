@@ -101,12 +101,6 @@ describe('RackComponent', () => {
         expect(spy).toHaveBeenCalledWith(POSITION);
     });
 
-    it('should initialise swapSelection on mouse wheel', () => {
-        component.onMousewheel(new WheelEvent('', { deltaY: 0 }));
-
-        expect(component.selection.swap.index).toEqual(0);
-    });
-
     it('should change swapSelection on mouse wheel', () => {
         const POSITION = 5;
         const spy = spyOn(rackService, 'mod').and.returnValue(0);
@@ -190,7 +184,7 @@ describe('RackComponent', () => {
     it('should clear selection on cancel exchange', () => {
         component.selection.reserve = new Set([1, 2, 3]);
 
-        component.cancelExchange();
+        component.clearExchange();
 
         expect(component.selection.reserve.size).toEqual(0);
     });

@@ -135,6 +135,26 @@ export class GameService {
         return handler.getServerConfig(convertConfig.id);
     }
 
+    async abandon(id: string): Promise<boolean> {
+        const handler = this.sessionHandlingService.getHandlerByPlayerId(id);
+
+        if (handler == null) {
+            logger.warn(`Failed to stop game: ${id}`);
+            return false;
+        }
+
+        if (handler.sessionInfo.gameType === GameType.Multiplayer && handler.sessionData.isActive) {
+            handler.abandon(id);
+            logger.info(`Game abandoned: ${id}`);
+        } else {
+            handler.dispose();
+            this.sessionHandlingService.removeHandler(id);
+            logger.info(`Game disposed: ${id}`);
+        }
+
+        return true;
+    }
+
     private addHumanPlayer(playerInfo: PlayerInfo, sessionHandler: SessionHandler): HumanPlayer {
         const humanPlayer = new HumanPlayer(playerInfo);
         sessionHandler.addPlayer(humanPlayer);

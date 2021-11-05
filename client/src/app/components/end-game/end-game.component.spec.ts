@@ -1,12 +1,14 @@
+/* eslint-disable dot-notation */
 import { NO_ERRORS_SCHEMA } from '@angular/compiler';
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { MatDialogClose, MatDialogModule } from '@angular/material/dialog';
+import { MAT_DIALOG_DATA, MatDialogClose, MatDialogModule } from '@angular/material/dialog';
 import { cleanStyles } from '@app/classes/helpers/cleanup.helper';
 import { TimeSpan } from '@app/classes/time/timespan';
 import { GameService } from '@app/services/game/game.service';
 import { SessionService } from '@app/services/session/session.service';
 import { EndGameComponent } from './end-game.component';
+import { EndGameWinner } from '@app/classes/end-game-winner';
 
 describe('EndGameComponent', () => {
     let component: EndGameComponent;
@@ -45,6 +47,7 @@ describe('EndGameComponent', () => {
             providers: [
                 { provide: GameService, useValue: gameService },
                 { provide: SessionService, useValue: sessionService },
+                { provide: MAT_DIALOG_DATA, useValue: { endGameWinner: EndGameWinner.Draw } },
             ],
         }).compileComponents();
 
@@ -62,6 +65,7 @@ describe('EndGameComponent', () => {
         gameService.stats.remoteStats.points = 0;
         sessionService.gameConfig.firstPlayerName = 'Michel';
         sessionService.gameConfig.secondPlayerName = 'Jean-Simon';
+        component['data'].winner = EndGameWinner.Local;
         const message = component.winner();
         expect(message).toBe(
             'Félicitation au gagnant ' + sessionService.gameConfig.firstPlayerName + ' : ' + gameService.stats.localStats.points + ' points',
@@ -73,6 +77,7 @@ describe('EndGameComponent', () => {
         gameService.stats.remoteStats.points = 10;
         sessionService.gameConfig.firstPlayerName = 'Michel';
         sessionService.gameConfig.secondPlayerName = 'Jean-Simon';
+        component['data'].winner = EndGameWinner.Remote;
         const message = component.winner();
         expect(message).toBe(
             'Félicitation au gagnant ' + sessionService.gameConfig.secondPlayerName + ' : ' + gameService.stats.remoteStats.points + ' points',
@@ -84,6 +89,7 @@ describe('EndGameComponent', () => {
         gameService.stats.remoteStats.points = 10;
         sessionService.gameConfig.firstPlayerName = 'Michel';
         sessionService.gameConfig.secondPlayerName = 'Jean-Simon';
+        component['data'].winner = EndGameWinner.Draw;
         const message = component.winner();
         expect(message).toBe(
             'Félicitation aux gagnants ' +

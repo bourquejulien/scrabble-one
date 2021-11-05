@@ -1,7 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { BoardService } from '@app/services/board/board.service';
-import { RackService } from '@app/services/rack/rack.service';
 import { ReserveService } from '@app/services/reserve/reserve.service';
 import { SessionService } from '@app/services/session/session.service';
 import { Answer, Direction, Vec2 } from '@common';
@@ -16,7 +15,6 @@ export class PlayerService {
     constructor(
         private reserveService: ReserveService,
         private boardService: BoardService,
-        private rackService: RackService,
         private sessionService: SessionService,
         private httpClient: HttpClient,
     ) {}
@@ -63,15 +61,10 @@ export class PlayerService {
 
     async refresh(): Promise<void> {
         await this.boardService.refresh();
-        await this.rackService.refresh();
     }
 
     reset(): void {
         this.boardService.reset();
         this.reserveService.reset();
-    }
-
-    get rack(): string[] {
-        return this.rackService.rack;
     }
 }
