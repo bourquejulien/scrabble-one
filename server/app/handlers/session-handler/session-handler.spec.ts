@@ -18,6 +18,7 @@ import { PlayerData } from '@app/classes/player-data';
 import { PlayerInfo } from '@app/classes/player-info';
 import { Subject } from 'rxjs';
 import { PlayerHandler } from '@app/handlers/player-handler/player-handler';
+import { Config } from '@app/config';
 const TIME_MS = 120 * 1000;
 const PLAYER_INFO_A: PlayerInfo = { id: '0', name: 'tester1', isHuman: true };
 const PLAYER_INFO_B: PlayerInfo = { id: '1', name: 'tester2', isHuman: false };
@@ -216,5 +217,11 @@ describe('SessionHandler', () => {
         const stubEndGame = sandbox.stub(handler, 'endGame');
         handler['onTurn']('0');
         sandbox.assert.calledOnce(stubEndGame);
+    });
+    it('timer from start should call timerTick', () => {
+        setTimeout(() => {
+            handler.start();
+            expect(handler.sessionData.isActive).to.be.true;
+        }, Config.SESSION.REFRESH_INTERVAL_MS);
     });
 });

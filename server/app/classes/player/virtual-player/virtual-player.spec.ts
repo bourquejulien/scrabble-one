@@ -65,6 +65,7 @@ describe('VirtualPlayer', () => {
     let sandboxNext: SinonSandbox;
 
     beforeEach(() => {
+        (board as unknown as Board)['filledPositions'] = ARBITRARY_POSITIONS;
         service = new VirtualPlayer(playerInfo, dictionaryService as unknown as DictionaryService, runAction);
         service.init(boardHandler as unknown as BoardHandler, reserveHandler, socketHandler as unknown as SocketHandler);
         sandboxRandom = createSandbox();
@@ -100,28 +101,25 @@ describe('VirtualPlayer', () => {
         expect(service.isTurn).to.be.false;
     });
 
-    it('starting turn should make next action return Exchange action sometimes', async () => {
-        const stubNext = sandboxNext.stub(service, 'nextAction' as any);
+    it('starting turn should make next action return Exchange action sometimes', () => {
         sandboxRandom.stub(Math, 'random').returns(RANDOM_RETURN_EXCHANGE);
         sandboxTimer.stub(Timer, 'delay').returns(Promise.resolve());
-        await service.startTurn();
-        sandboxNext.assert.called(stubNext);
+        const returnValue = service['nextAction']();
+        expect(returnValue instanceof ExchangeAction).to.be.true;
     });
 
-    it('starting turn should make next action return play action sometimes', async () => {
-        const stubNext = sandboxNext.stub(service, 'nextAction' as any);
+    it('starting turn should make next action return play action sometimes', () => {
         sandboxRandom.stub(Math, 'random').returns(RANDOM_PLAY_ACTION);
         sandboxTimer.stub(Timer, 'delay').returns(Promise.resolve());
-        await service.startTurn();
-        sandboxNext.assert.called(stubNext);
+        const returnValue = service['nextAction']();
+        expect(returnValue instanceof PlayAction).to.be.true;
     });
 
-    it('starting turn should make next action return skip action sometimes', async () => {
-        const stubNext = sandboxNext.stub(service, 'nextAction' as any);
+    it('starting turn should make next action return skip action sometimes', () => {
         sandboxRandom.stub(Math, 'random').returns(0);
         sandboxTimer.stub(Timer, 'delay').returns(Promise.resolve());
-        await service.startTurn();
-        sandboxNext.assert.called(stubNext);
+        const returnValue = service['nextAction']();
+        expect(returnValue instanceof SkipAction).to.be.true;
     });
 
     it('getting id should return id', () => {

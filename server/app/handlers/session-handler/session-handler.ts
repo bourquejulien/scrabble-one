@@ -28,9 +28,8 @@ export class SessionHandler {
     }
 
     getServerConfig(sessionId: string): ServerConfig {
-        const index = this.players.findIndex((p) => p.id === sessionId);
-        const firstPlayer = this.players[index];
-        const secondPlayer = this.players[1 - index];
+        const firstPlayer = this.players.find((p) => p.id === sessionId) ?? this.players[0];
+        const secondPlayer = this.players.find((p) => p.id !== firstPlayer.id) ?? this.players[1];
 
         return {
             id: firstPlayer.id,
@@ -67,8 +66,9 @@ export class SessionHandler {
     }
 
     getStats(id: string): SessionStats | null {
-        const firstPlayer = this.players.find((p) => p.id === id);
-        const secondPlayer = this.players.find((p) => p.id !== firstPlayer?.id ?? '');
+        const index = this.players.findIndex((p) => p.id === id);
+        const firstPlayer = this.players[index];
+        const secondPlayer = this.players[1 - index];
 
         if (firstPlayer == null || secondPlayer == null) {
             return null;
@@ -118,3 +118,4 @@ export class SessionHandler {
         return this.playerHandler.isOverSkipLimit || (this.reserveHandler.length === 0 && this.playerHandler.rackEmptied);
     }
 }
+

@@ -64,9 +64,15 @@ describe('SessionHandlingService', () => {
     it('should remove handlers when theres some', () => {
         handler['playerIds'].set('0', '0');
         handler.removeHandler('0');
-        expect(handler.getHandlerBySessionId('0')).to.be.null;
+        expect(handler.getHandlerByPlayerId('0')).to.be.null;
     });
     it('should update entries', () => {
+        handler['playerIds'].set('0', '0');
+        const beforeCallingUpdate = handler['playerIds'];
+        expect(beforeCallingUpdate).to.not.eql(handler.updateEntries(stubSessionHandler as unknown as SessionHandler));
+    });
+    it('should update entries', () => {
+        handler['playerIds'].set('0', 'badOne');
         const beforeCallingUpdate = handler['playerIds'];
         expect(beforeCallingUpdate).to.not.eql(handler.updateEntries(stubSessionHandler as unknown as SessionHandler));
     });
