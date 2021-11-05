@@ -19,7 +19,6 @@ const BONUSES = [
 
 const generateData = (size: number): BoardData => {
     const data: BoardData = { board: [], filledPositions: [] };
-
     for (let x = 0; x < size; x++) {
         data.board[x] = [];
         for (let y = 0; y < size; y++) {
@@ -123,6 +122,7 @@ describe('GridService', () => {
 
     it(' drawBonus should be called 4 times', () => {
         const TIMES_CALLED = 5;
+
         // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Needed for spyOn service
         const spy = spyOn<any>(service, 'drawBonus');
         service.drawSquares(ctxStub);
@@ -207,6 +207,12 @@ describe('GridService', () => {
         const spy = spyOn<any>(service, 'drawBonus');
         service.drawBonusOfPosition(ctxStub, { x: 9, y: 8 });
         expect(spy).toHaveBeenCalledTimes(0);
+    });
+
+    it(' Rect should be called when drawBonusOfPosition', () => {
+        const spy = spyOn<any>(service, 'drawBonus');
+        service.drawBonusOfPosition(ctxStub, { x: 8, y: 8 });
+        expect(spy).toHaveBeenCalledTimes(1);
     });
 
     it(' clearRect should be called when resetCanvas', () => {

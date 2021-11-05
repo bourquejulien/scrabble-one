@@ -208,11 +208,7 @@ export class GridService {
         return this.playGridSize + 1;
     }
 
-    private drawBonus(bonus: Bonus, gridPosition: Vec2, context: CanvasRenderingContext2D): void {
-        if (bonus === Bonus.None) {
-            return;
-        }
-
+    private drawBonus(bonus: Bonus, gridPosition: Vec2, context: CanvasRenderingContext2D) {
         const canvasPosition: Vec2 = this.computeCanvasCoord(gridPosition);
         const { kind, multiplier } = GridService.getBonusText(bonus);
 
