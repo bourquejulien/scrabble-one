@@ -61,14 +61,8 @@ export class BoardService {
         this.boardData = boardData;
     }
 
-    positionIsAvailable(position: Vec2): boolean {
-        const letter: string = this.boardData.board[position.x - 1][position.y - 1].letter;
-
-        if (letter === '') {
-            return true;
-        } else {
-            return false;
-        }
+    isPositionAvailable(position: Vec2): boolean {
+        return this.boardData.board[position.x - 1][position.y - 1].letter === '';
     }
 
     getLetter(position: Vec2): string {

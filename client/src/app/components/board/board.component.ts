@@ -1,6 +1,6 @@
 import { AfterViewInit, Component, ElementRef, HostListener, Input, OnChanges, SimpleChanges, ViewChild } from '@angular/core';
 import { PlayerType } from '@app/classes/player/player-type';
-import { specialCharacter } from '@app/classes/special-character';
+import { SPECIAL_CHARACTERS } from '@app/classes/special-character';
 import { Constants } from '@app/constants/global.constants';
 import { BoardService } from '@app/services/board/board.service';
 import { GameService } from '@app/services/game/game.service';
@@ -58,18 +58,23 @@ export class BoardComponent implements OnChanges, AfterViewInit {
                 this.gridService.resetCanvas(this.tempContext);
                 this.gridService.drawSquares(this.squareContext);
             }
+
             const squareValid: boolean =
                 this.placeLetterService.inGrid(this.placeLetterService.gridPosition) &&
-                this.boardService.positionIsAvailable(this.placeLetterService.gridPosition);
+                this.boardService.isPositionAvailable(this.placeLetterService.gridPosition);
+
             if (squareValid) {
                 this.gridService.cleanInsideSquare(this.squareContext, this.placeLetterService.gridPosition);
                 this.gridService.drawSelectionSquare(this.tempContext, this.placeLetterService.gridPosition);
+
                 const lastSquare =
                     (this.placeLetterService.gridPosition.x === MAX_SIZE && this.placeLetterService.isHorizontal) ||
                     (this.placeLetterService.gridPosition.y === MAX_SIZE && !this.placeLetterService.isHorizontal);
+
                 if (!lastSquare) {
                     this.gridService.drawDirectionArrow(this.tempContext, this.placeLetterService.gridPosition, this.placeLetterService.isHorizontal);
                 }
+
                 this.squareSelected = true;
             }
         } else {
@@ -79,6 +84,10 @@ export class BoardComponent implements OnChanges, AfterViewInit {
 
     @HostListener('body:keydown', ['$event'])
     onKeyDown(event: KeyboardEvent): void {
+        if (this.placeLetterService.gridPosition === undefined) {
+            return;
+        }
+
         const backSpaceValid: boolean =
             this.placeLetterService.backSpaceEnable(event.key, this.squareSelected) &&
             !this.placeLetterService.isPositionInit(this.placeLetterService.gridPosition) &&
@@ -86,6 +95,7 @@ export class BoardComponent implements OnChanges, AfterViewInit {
 
         const enterValid: boolean = event.key === 'Enter' && this.placeLetterService.tempRack.length > 0;
         const lastSquare = this.placeLetterService.gridPosition.x > MAX_SIZE || this.placeLetterService.gridPosition.y > MAX_SIZE;
+
         if (backSpaceValid) {
             this.placeLetterService.backSpaceOperation(this.tempContext);
             this.gridService.drawBonusOfPosition(this.squareContext, this.placeLetterService.gridPosition);
@@ -99,8 +109,8 @@ export class BoardComponent implements OnChanges, AfterViewInit {
             this.play();
         } else {
             this.handleKeyPress2(event.key);
-            const validKey: boolean =
-                this.squareSelected === true && this.isLetter && this.placeLetterService.inGrid(this.placeLetterService.gridPosition);
+            const validKey: boolean = this.squareSelected && this.isLetter && this.placeLetterService.inGrid(this.placeLetterService.gridPosition);
+
             if (validKey && !lastSquare) {
                 this.handleKeyDown(lastSquare);
             }
@@ -158,47 +168,32 @@ export class BoardComponent implements OnChanges, AfterViewInit {
     }
 
     private handleKeyPress2(key: string): void {
-        const input = specialCharacter.get(key);
+        const input = SPECIAL_CHARACTERS.get(key);
+
         if (input === undefined) {
             if (key.length !== 1 || !key.match('([a-zA-Z])')) {
                 this.isLetter = false;
             } else {
-                if (key === key.toUpperCase()) {
-                    if (this.rackService.rack.includes('*')) {
-                        this.isLetter = true;
-                        this.letter = key;
-                        this.isUpper = true;
-                    } else {
-                        this.isLetter = false;
-                    }
-                } else {
-                    if (this.rackService.rack.includes(key)) {
-                        this.isLetter = true;
-                        this.letter = key;
-                        this.isUpper = false;
-                    } else {
-                        this.isLetter = false;
-                    }
-                }
+                this.specialCharKey(key);
             }
         } else {
             this.specialCharKey(input);
         }
     }
 
-    private specialCharKey(input: string): void {
-        if (input === input.toUpperCase()) {
+    private specialCharKey(key: string): void {
+        if (key === key.toUpperCase()) {
             if (this.rackService.rack.includes('*')) {
                 this.isLetter = true;
-                this.letter = input;
+                this.letter = key;
                 this.isUpper = true;
             } else {
                 this.isLetter = false;
             }
         } else {
-            if (this.rackService.rack.includes(input)) {
+            if (this.rackService.rack.includes(key)) {
                 this.isLetter = true;
-                this.letter = input;
+                this.letter = key;
                 this.isUpper = false;
             } else {
                 this.isLetter = false;
@@ -209,7 +204,8 @@ export class BoardComponent implements OnChanges, AfterViewInit {
     private handleKeyDown(lastSquare: boolean): void {
         this.gridService.cleanInsideSquare(this.tempContext, this.placeLetterService.gridPosition);
         this.gridService.cleanInsideSquare(this.squareContext, this.placeLetterService.gridPosition);
-        this.gridService.drawSymbol(this.letter, this.placeLetterService.gridPosition, this.tempContext);
+        this.gridService.drawSymbol(this.letter.toUpperCase(), this.placeLetterService.gridPosition, this.tempContext);
+
         if (this.isUpper) {
             this.rackService.rack.splice(this.rackService.indexOf('*'), 1);
             this.placeLetterService.tempRack.push(this.letter);
@@ -219,12 +215,14 @@ export class BoardComponent implements OnChanges, AfterViewInit {
             this.placeLetterService.tempRack.push(this.letter);
             this.placeLetterService.myRack.push(this.letter);
         }
+
         if (this.placeLetterService.gridPosition.x === MAX_SIZE - 1 || this.placeLetterService.gridPosition.y === MAX_SIZE - 1) {
             this.placeLetterService.isLastSquare = true;
         }
 
         this.placeLetterService.nextAvailableSquare(true);
         this.gridService.cleanInsideSquare(this.squareContext, this.placeLetterService.gridPosition);
+
         if (!lastSquare && !this.placeLetterService.isLastSquare) {
             this.gridService.drawSelectionSquare(this.tempContext, this.placeLetterService.gridPosition);
             this.gridService.drawDirectionArrow(this.tempContext, this.placeLetterService.gridPosition, this.placeLetterService.isHorizontal);

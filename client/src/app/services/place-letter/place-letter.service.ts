@@ -74,24 +74,16 @@ export class PlaceLetterService {
     }
 
     isPositionInit(position: Vec2): boolean {
-        if (position.x === this.positionInit.x && position.y === this.positionInit.y) {
-            return true;
-        } else {
-            return false;
-        }
+        return position.x === this.positionInit.x && position.y === this.positionInit.y;
     }
 
     backSpaceEnable(key: string, squareSelected: boolean): boolean {
-        if (key === 'Backspace' && squareSelected) {
-            return true;
-        } else {
-            return false;
-        }
+        return key === 'Backspace' && squareSelected;
     }
 
     samePosition(position: Vec2): void {
         if (this.gridPosition.x === position.x && this.gridPosition.y === position.y) {
-            this.isHorizontal = false;
+            this.isHorizontal = !this.isHorizontal;
         } else {
             this.cancel();
             this.myRack = [];
@@ -113,21 +105,23 @@ export class PlaceLetterService {
         if (isForward) {
             do {
                 this.getNextSquare();
-            } while (!this.boardService.positionIsAvailable(this.gridPosition));
+            } while (!this.boardService.isPositionAvailable(this.gridPosition));
         } else {
             do {
                 this.getPastSquare();
-            } while (!this.boardService.positionIsAvailable(this.gridPosition));
+            } while (!this.boardService.isPositionAvailable(this.gridPosition));
         }
     }
 
     private getNextSquare(): void {
-        if (!this.boardService.positionIsAvailable(this.gridPosition)) {
+        if (!this.boardService.isPositionAvailable(this.gridPosition)) {
             this.tempRack.push(this.boardService.getLetter(this.gridPosition));
         }
+
         if (this.gridPosition.x === MAX_SIZE) {
             this.isLastSquare = true;
         }
+
         if (this.isHorizontal && this.gridPosition.x <= MAX_SIZE + 1) {
             this.gridPosition.x += 1;
         } else if (!this.isHorizontal && this.gridPosition.y < MAX_SIZE) {
@@ -136,7 +130,7 @@ export class PlaceLetterService {
     }
 
     private getPastSquare(): void {
-        if (!this.boardService.positionIsAvailable(this.gridPosition)) {
+        if (!this.boardService.isPositionAvailable(this.gridPosition)) {
             this.tempRack.pop();
         }
         if (this.isHorizontal && this.gridPosition.x > MIN_SIZE) {
