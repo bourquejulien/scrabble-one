@@ -7,13 +7,14 @@
 import { SessionHandler } from '@app/handlers/session-handler/session-handler';
 import { SessionInfo } from '@app/classes/session-info';
 import { expect } from 'chai';
-import { createStubInstance } from 'sinon';
+import Sinon, { createStubInstance } from 'sinon';
 import { Player } from '@app/classes/player/player';
 import { SessionHandlingService } from './session-handling.service';
 import { GameType } from '@common';
 import { PlayerHandler } from '@app/handlers/player-handler/player-handler';
 import { HumanPlayer } from '@app/classes/player/human-player/human-player';
 import { VirtualPlayer } from '@app/classes/player/virtual-player/virtual-player';
+import { PlayerInfo } from '@app/classes/player-info';
 
 const MAX_HANDLERS = 5;
 const TIME_MS = 1000;
@@ -22,14 +23,16 @@ describe('SessionHandlingService', () => {
     let stubSessionHandler = createStubInstance(SessionHandler) as unknown as SessionHandler;
     const player = createStubInstance(Player);
     stubSessionHandler.addPlayer(player as unknown as Player);
+    const playerInfo: PlayerInfo = { id: '0', name: 'tester1', isHuman: true };
     const id = '0';
+    let playerA: Sinon.SinonStubbedInstance<HumanPlayer>;
 
     beforeEach(() => {
         stubSessionHandler = createStubInstance(SessionHandler) as unknown as SessionHandler;
         const sessionInfo: SessionInfo = { id, playTimeMs: TIME_MS, gameType: GameType.Multiplayer };
         stubSessionHandler.sessionInfo = sessionInfo;
         const stubPlayerHandler = createStubInstance(PlayerHandler) as unknown as PlayerHandler;
-        const playerA = createStubInstance(HumanPlayer);
+        playerA = createStubInstance(HumanPlayer);
         const playerB = createStubInstance(VirtualPlayer);
         playerA.startTurn.returns(new Promise<void>(() => {}));
         playerB.startTurn.returns(new Promise<void>(() => {}));
@@ -66,12 +69,26 @@ describe('SessionHandlingService', () => {
         handler.removeHandler('0');
         expect(handler.getHandlerByPlayerId('0')).to.be.null;
     });
+    it('should remove handlers when theres some with players in handler', () => {
+        handler['playerIds'].set('0', '0');
+        playerA.playerInfo = playerInfo;
+        handler['sessionHandlers'][0].players.push(playerA as unknown as Player);
+        handler.removeHandler('0');
+        expect(handler.getHandlerByPlayerId('0')).to.be.null;
+    });
     it('should update entries', () => {
         handler['playerIds'].set('0', '0');
         const beforeCallingUpdate = handler['playerIds'];
         expect(beforeCallingUpdate).to.not.eql(handler.updateEntries(stubSessionHandler as unknown as SessionHandler));
     });
-    it('should update entries', () => {
+    it('should update entries with player in SessionHandler', () => {
+        handler['playerIds'].set('0', '0');
+        playerA.playerInfo = playerInfo;
+        handler['sessionHandlers'][0].players.push(playerA as unknown as Player);
+        const beforeCallingUpdate = handler['playerIds'];
+        expect(beforeCallingUpdate).to.not.eql(handler.updateEntries(stubSessionHandler as unknown as SessionHandler));
+    });
+    it('should update entries but with wrong sessionId', () => {
         handler['playerIds'].set('0', 'badOne');
         const beforeCallingUpdate = handler['playerIds'];
         expect(beforeCallingUpdate).to.not.eql(handler.updateEntries(stubSessionHandler as unknown as SessionHandler));
