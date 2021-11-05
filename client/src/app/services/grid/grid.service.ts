@@ -209,10 +209,6 @@ export class GridService {
     }
 
     private drawBonus(bonus: Bonus, gridPosition: Vec2, context: CanvasRenderingContext2D) {
-        if (bonus === Bonus.None) {
-            return;
-        }
-
         const canvasPosition: Vec2 = this.computeCanvasCoord(gridPosition);
         const { kind, multiplier } = GridService.getBonusText(bonus);
 
