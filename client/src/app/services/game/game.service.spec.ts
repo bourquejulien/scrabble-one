@@ -1,31 +1,28 @@
 /* eslint-disable dot-notation -- Need to access private properties for testing*/
 /* eslint-disable max-classes-per-file -- Needs many stubbed classes in order to test*/
 import { HttpClient } from '@angular/common/http';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { PlayerService } from '@app/services/player/player.service';
-import { ServerConfig, SessionStats } from '@common';
-import { BehaviorSubject, Observable, Subject } from 'rxjs';
-// import { SessionStats } from '@common';
-// import { GameType } from '@common';
-// import { environmentExt } from '@environment-ext';
+import { GameType, ServerConfig, SessionStats } from '@common';
+import { Observable, Subject } from 'rxjs';
 import { GameService } from './game.service';
 
 describe('GameService', () => {
     let service: GameService;
-    let playerServiceSpyOBj: jasmine.SpyObj<PlayerService>;
-    let httpSpyObj: jasmine.SpyObj<HttpClient>;
     let mockRack: string[];
 
-    let serverConfigObservable: BehaviorSubject<ServerConfig>;
+    let httpSpyObj: jasmine.SpyObj<HttpClient>;
+    let playerServiceSpyOBj: jasmine.SpyObj<PlayerService>;
+    let serverConfigObservableSpyObj: jasmine.SpyObj<Observable<ServerConfig>>;
     let sessionStatsObservableSpyObj: jasmine.SpyObj<Observable<SessionStats>>;
+    // const localUrl = (base: string, call: string, id?: string) => `${environmentExt.apiUrl}${base}/${call}${id ? '/' + id : ''}`;
+
     beforeEach(async () => {
         mockRack = ['K', 'E', 'S', 'E', 'I', 'O', 'V'];
-        //httpSpyObj = jasmine.createSpyObj('HttpClient', ['put', 'get', 'delete', 'post']);
-
         httpSpyObj = jasmine.createSpyObj('HttpModule', ['get', 'put']);
         sessionStatsObservableSpyObj = jasmine.createSpyObj('Observable<SessionStats>', ['toPromise']);
-        httpSpyObj.put.and.returnValue(serverConfigObservable);
+        serverConfigObservableSpyObj = jasmine.createSpyObj('Observable<ServerConfig>', ['toPromise']);
+        httpSpyObj.put.and.returnValue(serverConfigObservableSpyObj);
         httpSpyObj.get.and.returnValue(sessionStatsObservableSpyObj);
 
         playerServiceSpyOBj = jasmine.createSpyObj('playerService', ['startTurn', 'turnComplete', 'fillRack', 'reset', 'emptyRack', 'refresh'], {
@@ -37,7 +34,7 @@ describe('GameService', () => {
         playerServiceSpyOBj.reset.and.returnValue();
 
         TestBed.configureTestingModule({
-            imports: [HttpClientTestingModule],
+            imports: [],
             providers: [
                 { provide: PlayerService, useValue: playerServiceSpyOBj },
                 { provide: HttpClient, useValue: httpSpyObj }
@@ -52,22 +49,40 @@ describe('GameService', () => {
     });
 
     it('should refresh', async () => {
-        service.stats = { localStats: { points: 10, rackSize: 7 }, remoteStats: { points: 10, rackSize: 7 } };
-        const expectedSessionStats = { localStats: { points: 15, rackSize: 7 }, remoteStats: { points: 15, rackSize: 7 } };
+        let stats = {
+            localStats: { points: 10, rackSize: 7 },
+            remoteStats: { points: 10, rackSize: 7 }
+        };
+
+        let expectedStats = {
+            localStats: { points: 15, rackSize: 7 },
+            remoteStats: { points: 15, rackSize: 7 }
+        };
+
+        service.stats = stats;
+        const expectedSessionStats = expectedStats;
         sessionStatsObservableSpyObj.toPromise.and.resolveTo(expectedSessionStats);
         await service['refresh']();
         expect(service.stats).toBe(expectedSessionStats);
         expect(playerServiceSpyOBj.refresh).toHaveBeenCalled();
     });
 
-    // it('should start single player', async () => {
-    //     service.stats = {} as SessionStats;
-    //     const expectedSessionStats = {} as SessionStats;
-    //     sessionStatsObservableSpyObj.toPromise.and.resolveTo(expectedSessionStats);
-    //     await service['refresh']();
-    //     expect(service.stats).toBe(expectedSessionStats);
-    //     expect(playerServiceSpyOBj.refresh).toHaveBeenCalled();
-    // });
+    it('should start single player', async () => {
+        let config = {
+            id: '1',
+            startId: '2',
+            gameType: GameType.SinglePlayer,
+            playTimeMs: 1000,
+            firstPlayerName: 'Monique',
+            secondPlayerName: 'Alphonse',
+        };
+
+        const serverConfig = config;
+        serverConfigObservableSpyObj.toPromise.and.resolveTo(config);
+        await service.start(serverConfig);
+        expect(httpSpyObj.put).toHaveBeenCalled();
+        // expect(httpSpyObj.put).toHaveBeenCalledWith(localUrl('game', 'init/single'), config);
+    });
 
     // it('should call httpClient to set gameConfig if startSinglePlayer called', fakeAsync(async () => {
 
