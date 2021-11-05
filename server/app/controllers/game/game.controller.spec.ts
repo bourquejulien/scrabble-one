@@ -43,14 +43,12 @@ describe('GameController', () => {
 
     beforeEach(async () => {
         gameService = createStubInstance(GameService);
-        gameService.initMultiplayer.resolves(multiplayerConfig);
-        gameService.joinMultiplayer.resolves(serverConfig);
         const app = Container.get(Application);
         Object.defineProperty(app['gameController'], 'gameService', { value: gameService, writable: true });
         expressApp = app.app;
     });
 
-    it('PUT /init/single', async () => {
+    it('PUT /init/single should succeed', async () => {
         gameService.initSinglePlayer.resolves(serverConfig);
         return request(expressApp)
             .put('/api/game/init/single')
@@ -60,18 +58,18 @@ describe('GameController', () => {
             });
     });
 
-    it('PUT /init/single', async () => {
-        gameService.initSinglePlayer.resolves({} as unknown as ServerConfig);
+    it('PUT /init/single should fail', async () => {
+        gameService.initSinglePlayer.rejects('serverConfig');
         return request(expressApp)
             .put('/api/game/init/single')
             .send(singlePlayerConfig)
             .then((response) => {
-                expect(response.status).to.be.equal(Constants.HTTP_STATUS.OK);
-                expect(response.body).to.deep.equal({});
+                expect(response.status).to.be.equal(Constants.HTTP_STATUS.NOT_FOUND);
+                expect(response.body).to.deep.equal('');
             });
     });
 
-    it('PUT /convert', async () => {
+    it('PUT /convert should succeed', async () => {
         gameService.convert.resolves(serverConfig);
         return request(expressApp)
             .put('/api/game/convert')
@@ -82,7 +80,19 @@ describe('GameController', () => {
             });
     });
 
-    it('PUT /init/multi succesfully', async () => {
+    it('PUT /convert should fail', async () => {
+        gameService.convert.rejects(serverConfig);
+        return request(expressApp)
+            .put('/api/game/convert')
+            .send(singlePlayerConfig)
+            .then((response) => {
+                expect(response.status).to.be.equal(Constants.HTTP_STATUS.NOT_FOUND);
+                expect(response.body).to.deep.equal('');
+            });
+    });
+
+    it('PUT /init/multi should succeed', async () => {
+        gameService.initMultiplayer.resolves(multiplayerConfig);
         return request(expressApp)
             .put('/api/game/init/multi')
             .send(multiplayerCreateConfig)
@@ -92,18 +102,18 @@ describe('GameController', () => {
             });
     });
 
-    it('PUT /init/multi should work when there is no user', async () => {
-        gameService.initMultiplayer.resolves({} as unknown as string);
+    it('PUT /init/multi should fail', async () => {
+        gameService.initMultiplayer.rejects('');
         return request(expressApp)
             .put('/api/game/init/multi')
             .send(singlePlayerConfig)
             .then((response) => {
-                expect(response.status).to.be.equal(Constants.HTTP_STATUS.OK);
-                expect(response.body).to.deep.equal({});
+                expect(response.status).to.be.equal(Constants.HTTP_STATUS.NOT_FOUND);
+                expect(response.body).to.deep.equal('');
             });
     });
 
-    it('PUT /join successfully', async () => {
+    it('PUT /join should succeed', async () => {
         gameService.joinMultiplayer.resolves(serverConfig);
         return request(expressApp)
             .put('/api/game/join')
@@ -115,12 +125,13 @@ describe('GameController', () => {
     });
 
     it('PUT /join not join the game', async () => {
-        gameService.joinMultiplayer.resolves({} as unknown as ServerConfig);
+        gameService.joinMultiplayer.rejects(serverConfig);
         return request(expressApp)
             .put('/api/game/join')
             .send(singlePlayerConfig)
             .then((response) => {
-                expect(response.status).to.be.equal(Constants.HTTP_STATUS.OK);
+                expect(response.status).to.be.equal(Constants.HTTP_STATUS.NOT_FOUND);
+                expect(response.body).to.deep.equal('');
             });
     });
 });
