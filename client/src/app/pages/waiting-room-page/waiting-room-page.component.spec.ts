@@ -1,7 +1,7 @@
+/* eslint-disable no-undef */
 /* eslint-disable @typescript-eslint/ban-types */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable dot-notation */
-import { LocationStrategy, PathLocationStrategy } from '@angular/common';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormsModule } from '@angular/forms';
@@ -21,26 +21,19 @@ describe('WaitingRoomPageComponent', () => {
     const socketClient: SocketMock = new SocketMock();
     let routerSpy: jasmine.SpyObj<Router>;
     let roomServiceSpyObj: jasmine.SpyObj<RoomService>;
-    let locationStrategySpyObj: jasmine.SpyObj<PathLocationStrategy>;
 
     beforeEach(async () => {
         socketServiceSpyObj = jasmine.createSpyObj('SocketClientService', ['on'], { socketClient });
         roomServiceSpyObj = jasmine.createSpyObj('RoomService', ['toSinglePlayer', 'abort'], { onGameFull: new Subject<void>().asObservable() });
         routerSpy = jasmine.createSpyObj('Router', ['navigate']);
-        locationStrategySpyObj = jasmine.createSpyObj('PathLocationStrategy', ['onPopState', 'getBaseHref', 'replace'], {
-            _platformStrategy: {
-                getBaseHref: () => {
-                    return '/';
-                },
-            },
-        });
+        // locationStrategySpyObj = jasmine.createSpyObj('PathLocationStrategy', ['onPopState', 'getBaseHref']);
 
         await TestBed.configureTestingModule({
             declarations: [WaitingRoomPageComponent],
             imports: [HttpClientTestingModule, AppMaterialModule, BrowserAnimationsModule, FormsModule],
             providers: [
                 { provide: SocketClientService, useValue: socketServiceSpyObj },
-                { provide: LocationStrategy, useValue: locationStrategySpyObj },
+                // { provide: LocationStrategy, useValue: locationStrategySpyObj },
                 { provide: Router, useValue: routerSpy },
                 { provide: RoomService, useValue: roomServiceSpyObj },
             ],
@@ -61,12 +54,13 @@ describe('WaitingRoomPageComponent', () => {
         expect(component).toBeTruthy();
     });
 
-    it('should call abort and navigate back to settings page', async () => {
-        const abortSpy = spyOn(component, 'abort');
-        locationStrategySpyObj.onPopState.and.callFake((callback: (...args: any[]) => {}) => callback());
+    it('should abort and navigate back to settings page', async () => {
+        // locationStrategySpyObj.onPopState.and.callFake((callback: (...args: any[]) => {}) => callback());
+        routerSpy.navigate.and.callThrough();
+        roomServiceSpyObj.abort.and.callThrough();
         component.abort();
         expect(routerSpy.navigate).toHaveBeenCalledWith(['settings']);
-        expect(abortSpy).toHaveBeenCalled();
+        expect(roomServiceSpyObj.abort).toHaveBeenCalled();
     });
 
     it('should navigate to next page', async () => {

@@ -52,7 +52,7 @@ describe('MessagingService', () => {
         const error: Error = { name: 'error', message: 'websocket error' };
 
         let message: string = '';
-        service['onMessageSubject'].subscribe(mssg => { message = mssg.body });
+        service['onMessageSubject'].subscribe(msg => { message = msg.body });
         service['handleConnectionError'](error);
         expect(message).toBe('Erreur: ' + error.message);
     });

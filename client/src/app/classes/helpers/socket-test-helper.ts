@@ -64,4 +64,12 @@ export class SocketMock {
     join(roomId: string) {
         return;
     }
+
+    disconnect() {
+        return;
+    }
+
+    connect() {
+        return;
+    }
 }

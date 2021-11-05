@@ -16,7 +16,7 @@ class SessionServiceStub {
     }
 }
 
-fdescribe('GameService', () => {
+describe('GameService', () => {
     let service: GameService;
     let mockRack: string[];
     let session = new SessionService();
