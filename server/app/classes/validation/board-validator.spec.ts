@@ -1,3 +1,4 @@
+/* eslint-disable dot-notation */
 /* eslint-disable no-unused-expressions -- To be */
 /* eslint-disable @typescript-eslint/no-unused-expressions */
 import { Board } from '@app/classes/board/board';
@@ -202,5 +203,30 @@ describe('BoardValidator', () => {
 
     it('should fail if first placement as only one letter', () => {
         expect(boardValidator.validate(generatePlacement('a', centerPosition, Direction.Right)).isSuccess).to.be.false;
+    });
+    it('retrieve Direction should return Direction.None if weird placement', () => {
+        const BAD_PLACEMENT: Vec2[] = [
+            { x: 0, y: 0 },
+            { x: 1, y: 1 },
+            { x: 2, y: 2 },
+        ];
+        expect(boardValidator['retrieveDirection'](BAD_PLACEMENT)).to.eql(Direction.None);
+    });
+    it('retrieve Direction should return Direction.None if weird placement modified', () => {
+        const BAD_PLACEMENT_MODIFIED: Vec2[] = [
+            { x: 0, y: 0 },
+            { x: 0, y: 1 },
+            { x: 1, y: 1 },
+        ];
+        expect(boardValidator['retrieveDirection'](BAD_PLACEMENT_MODIFIED)).to.eql(Direction.None);
+    });
+
+    it('retrieve Direction should return Direction.None if weird placement modified again', () => {
+        const BAD_PLACEMENT_MODIFIED: Vec2[] = [
+            { x: 0, y: 0 },
+            { x: 1, y: 0 },
+            { x: 1, y: 0 },
+        ];
+        expect(boardValidator['retrieveDirection'](BAD_PLACEMENT_MODIFIED)).to.eql(Direction.None);
     });
 });
