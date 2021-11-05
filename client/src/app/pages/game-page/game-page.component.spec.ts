@@ -15,7 +15,6 @@ import { GameService } from '@app/services/game/game.service';
 import { BehaviorSubject, Subject } from 'rxjs';
 import { GamePageComponent } from './game-page.component';
 import { GameType, SessionStats } from '@common';
-import { EndGameWinner } from '@app/classes/end-game-winner';
 
 @Injectable({
     providedIn: 'root',
@@ -46,10 +45,6 @@ class GameServiceStub {
 
     skipTurn(): void {
         this.nextTurn();
-    }
-
-    sendRackInCommunication(): void {
-        // this function does nothing
     }
 }
 
@@ -86,14 +81,6 @@ describe('GamePageComponent', () => {
         const spy = spyOn(component.drawer, 'toggle');
 
         component.toggleDrawer();
-        expect(spy).toHaveBeenCalled();
-    });
-
-    it('should call sendRackInCommunication function if endGame called', () => {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Needed for spyOn service
-        const spy = spyOn<any>(component, 'sendRackInCommunication').and.callThrough();
-
-        component.endGame(EndGameWinner.Draw);
         expect(spy).toHaveBeenCalled();
     });
 

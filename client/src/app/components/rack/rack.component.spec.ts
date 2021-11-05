@@ -101,12 +101,6 @@ describe('RackComponent', () => {
         expect(spy).toHaveBeenCalledWith(POSITION);
     });
 
-    it('should initialise swapSelection on mouse wheel', () => {
-        component.onMousewheel(new WheelEvent('', { deltaY: 0 }));
-
-        expect(component.selection.swap.index).toEqual(0);
-    });
-
     it('should change swapSelection on mouse wheel', () => {
         const POSITION = 5;
         const spy = spyOn(rackService, 'mod').and.returnValue(0);
