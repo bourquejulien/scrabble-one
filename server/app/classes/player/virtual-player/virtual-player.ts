@@ -34,6 +34,8 @@ export class VirtualPlayer extends Player {
             action = this.runAction(action);
         }
 
+        logger.debug(`VirtualPlayer: ${this.id} - EndTurn`);
+
         this.fillRack();
         this.endTurn();
     }
@@ -42,11 +44,13 @@ export class VirtualPlayer extends Player {
         let random = Math.random();
 
         if (random < Config.VIRTUAL_PLAYER.EXCHANGE_PERCENTAGE && this.reserveHandler.length > 0) {
+            logger.debug(`VirtualPlayer: ${this.id} - ExchangeAction`);
             return new ExchangeAction(this.reserveHandler, this.socketHandler, this.playerData);
         }
         random -= Config.VIRTUAL_PLAYER.EXCHANGE_PERCENTAGE;
 
         if (random < Config.VIRTUAL_PLAYER.SKIP_PERCENTAGE) {
+            logger.debug(`VirtualPlayer: ${this.id} - SkipAction`);
             return new SkipAction(this.playerData, this.socketHandler);
         }
 
