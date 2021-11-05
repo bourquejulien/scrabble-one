@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable dot-notation -- Need access to private functions and properties*/
 /* eslint-disable @typescript-eslint/no-magic-numbers */
 import { TestBed } from '@angular/core/testing';
@@ -6,14 +7,18 @@ import { PlayerService } from '@app/services/player/player.service';
 import { SocketClientService } from '@app/services/socket-client/socket-client.service';
 import { TimerService } from './timer.service';
 
-describe('TimerService', () => {
+fdescribe('TimerService', () => {
     let service: TimerService;
     let playerService: jasmine.SpyObj<PlayerService>;
     let socketService: jasmine.SpyObj<SocketClientService>;
 
     beforeEach(() => {
         playerService = jasmine.createSpyObj('PlayerService', ['skipTurn']);
-        socketService = jasmine.createSpyObj('SocketClientService', ['on']);
+        socketService = jasmine.createSpyObj('SocketClientService', ['on', 'reset']);
+        const callback = (event: string, action: (Param: any) => void) => {
+            action({});
+        };
+        socketService.on.and.callFake(callback);
         TestBed.configureTestingModule({
             providers: [
                 { provide: SocketClientService, useValue: socketService },

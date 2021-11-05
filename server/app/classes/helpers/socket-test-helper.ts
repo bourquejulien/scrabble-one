@@ -18,7 +18,7 @@ export class BroadcastOperator {
     }
 }
 export class SocketMock {
-    id: number = 123;
+    id = '123';
     rooms = {
         values: () => {
             return {
@@ -61,6 +61,10 @@ export class SocketMock {
     }
 
     join(roomId: string) {
+        return;
+    }
+
+    leave() {
         return;
     }
 }

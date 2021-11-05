@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable dot-notation -- Need to access private properties for testing*/
 /* eslint-disable max-classes-per-file -- Needs many stubbed classes in order to test*/
 /* eslint-disable @typescript-eslint/no-explicit-any */
@@ -127,7 +128,6 @@ describe('GameService', () => {
         const sessionId = '1';
         session['_id'] = '1';
         const playerType = PlayerType.Local;
-
         service['currentTurn'] = PlayerType.Local;
         const spy = spyOn<any>(service, 'refresh');
 

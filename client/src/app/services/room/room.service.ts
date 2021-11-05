@@ -18,11 +18,7 @@ export class RoomService {
 
     private pendingRoomId: string;
 
-    constructor(
-        private readonly socketService: SocketClientService,
-        private readonly gameService: GameService,
-        private readonly httpCLient: HttpClient,
-    ) {
+    constructor(private socketService: SocketClientService, private readonly gameService: GameService, private readonly httpCLient: HttpClient) {
         this.joinedSubject = new Subject<ServerConfig>();
         this.roomSubject = new Subject<AvailableGameConfig[]>();
 
@@ -53,7 +49,7 @@ export class RoomService {
     }
 
     async toSinglePlayer(): Promise<void> {
-        if (this.pendingRoomId == null) {
+        if (this.pendingRoomId === '') {
             return;
         }
 
@@ -67,13 +63,8 @@ export class RoomService {
     }
 
     async join(joinConfig: MultiplayerJoinConfig): Promise<boolean> {
-        try {
-            const serverConfig = await this.httpCLient.put<ServerConfig>(localUrl('game', 'join'), joinConfig).toPromise();
-            await this.gameService.start(serverConfig);
-        } catch (err) {
-            return false;
-        }
-
+        const serverConfig = await this.httpCLient.put<ServerConfig>(localUrl('game', 'join'), joinConfig).toPromise();
+        await this.gameService.start(serverConfig);
         return true;
     }
 

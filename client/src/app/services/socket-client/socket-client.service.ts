@@ -6,7 +6,7 @@ import { io, Socket } from 'socket.io-client';
     providedIn: 'root',
 })
 export class SocketClientService {
-    socketClient: Socket;
+    private socketClient: Socket;
 
     constructor() {
         this.socketClient = io(environment.serverUrl, { transports: ['websocket'], upgrade: false });

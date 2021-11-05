@@ -22,6 +22,6 @@ export class GameModePageComponent {
 
     createOnlineGame(): void {
         this.openDialog(GameType.Multiplayer);
-        this.socket.socketClient.emit('newOnlineGame');
+        this.socket.send('newOnlineGame');
     }
 }
