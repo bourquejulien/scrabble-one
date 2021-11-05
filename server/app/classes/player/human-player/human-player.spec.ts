@@ -72,7 +72,7 @@ describe('HumanPlayer', () => {
     const board = new Board(SIZE);
     const boardValidator = createStubInstance(BoardValidator) as unknown as BoardValidator;
     const boardHandler = new BoardHandlerMock(board, boardValidator, false);
-    const reserveHandler = new ReserveHandler();
+    let reserveHandler = new ReserveHandler();
     const socketServiceMock = new SocketServiceMock();
     const socketHandlerMock = new SocketHandlerMock(socketServiceMock, '0');
 
@@ -83,6 +83,9 @@ describe('HumanPlayer', () => {
         service = new HumanPlayer(playerInfo);
         service.isTurn = true;
         service.init(boardHandler, reserveHandler, socketHandlerMock);
+    });
+    afterEach(() => {
+        reserveHandler = new ReserveHandler();
     });
     it('should be created', () => {
         expect(service).to.be.ok;
@@ -103,6 +106,12 @@ describe('HumanPlayer', () => {
         expect(returnValue).to.eql({ isSuccess: false, body: '' });
     });
 
+    it('exchangeLetters should fail if reserve is smaller than rack_size', () => {
+        service.playerData.rack = ['a', 'b', 'c', 'd', 'e', 'f', 'z'];
+        service['reserveHandler'].reserve = ['a'];
+        const returnValue = service.exchangeLetters(['a']);
+        expect(returnValue).to.eql({ isSuccess: false, body: '' });
+    });
     it('exchangeLetters should return letters not in rack if the letters are not all in rack', () => {
         service.playerData.rack = ['a', 'b', 'c', 'd', 'e', 'f', 'z'];
         const returnValue = service.exchangeLetters(LETTERS);
