@@ -34,7 +34,7 @@ const ARBITRARY_POSITIONS: Vec2[] = [
     { x: 0, y: 2 },
 ];
 const RANDOM_RETURN_EXCHANGE = 0.12;
-const RANDOM_PLAY_ACTION = 0.7;
+// const RANDOM_PLAY_ACTION = 0.7;
 const SIZE = 9;
 
 describe('VirtualPlayer', () => {
