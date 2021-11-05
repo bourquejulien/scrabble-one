@@ -17,7 +17,7 @@ export class MessagingService {
         this.onMessageSubject = new Subject<Message>();
 
         this.socketService.on('message', (message: Message) => this.onMessageSubject.next(message));
-        this.socketService.socketClient.on('connect_error', (error) => this.handleConnectionError(error));
+        this.socketService.on('connect_error', (error: Error) => this.handleConnectionError(error));
     }
 
     send(title: string, body: string, messageType: MessageType): void {
@@ -27,7 +27,7 @@ export class MessagingService {
             messageType,
             fromId: this.sessionService.id,
         };
-        this.socketService.socketClient.emit('message', message);
+        this.socketService.send('message', message);
     }
 
     private handleConnectionError(error: Error) {
