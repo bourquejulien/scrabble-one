@@ -110,9 +110,9 @@ export class BoardComponent implements OnChanges, AfterViewInit {
 
                 this.squareSelected = true;
             }
-        } else {
-            this.gridService.resetCanvas(this.tempContext);
+            return;
         }
+        this.gridService.resetCanvas(this.tempContext);
     }
 
     ngAfterViewInit(): void {
@@ -182,12 +182,12 @@ export class BoardComponent implements OnChanges, AfterViewInit {
         if (input === undefined) {
             if (key.length !== 1 || !key.match('([a-zA-Z])')) {
                 this.isLetter = false;
-            } else {
-                this.handleSpecialCharacter(key);
+                return;
             }
-        } else {
-            this.handleSpecialCharacter(input);
+            this.handleSpecialCharacter(key);
+            return;
         }
+        this.handleSpecialCharacter(input);
     }
 
     private handleSpecialCharacter(key: string): void {
@@ -196,18 +196,19 @@ export class BoardComponent implements OnChanges, AfterViewInit {
                 this.isLetter = true;
                 this.letter = key;
                 this.isUpper = true;
-            } else {
-                this.isLetter = false;
+                return;
             }
-        } else {
-            if (this.rackService.rack.includes(key)) {
-                this.isLetter = true;
-                this.letter = key;
-                this.isUpper = false;
-            } else {
-                this.isLetter = false;
-            }
+            this.isLetter = false;
+            return;
         }
+        if (this.rackService.rack.includes(key)) {
+            this.isLetter = true;
+            this.letter = key;
+            this.isUpper = false;
+            return;
+        }
+        this.isLetter = false;
+        return;
     }
 
     private resetPlaceSelection(): void {

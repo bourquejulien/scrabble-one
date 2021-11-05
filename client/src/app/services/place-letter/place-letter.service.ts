@@ -77,21 +77,23 @@ export class PlaceLetterService {
     samePosition(position: Vec2): void {
         if (this.gridPosition.x === position.x && this.gridPosition.y === position.y) {
             this.isHorizontal = !this.isHorizontal;
-        } else {
-            this.cancel();
-            this.myRack = [];
-            this.gridPosition = position;
-            this.positionInit = { x: position.x, y: position.y };
-            this.isHorizontal = true;
+
+            return;
         }
+
+        this.cancel();
+        this.myRack = [];
+        this.gridPosition = position;
+        this.positionInit = { x: position.x, y: position.y };
+        this.isHorizontal = true;
     }
 
     inGrid(position: Vec2): boolean {
         if (position.x >= 1 && position.x <= Constants.GRID.GRID_SIZE + 1) {
             return position.y >= 1 && position.y <= Constants.GRID.GRID_SIZE + 1;
-        } else {
-            return false;
         }
+
+        return false;
     }
 
     nextAvailableSquare(isForward: boolean): void {

@@ -245,6 +245,10 @@ export class GridService {
         const drawImage = () =>
             context.drawImage(image, centeredPosition.x, centeredPosition.y, this.squareWidth - LINE_WIDTH, this.squareHeight - LINE_WIDTH);
 
+        if (image.complete) {
+            drawImage();
+        }
+
         image.onload = () => drawImage();
     }
 

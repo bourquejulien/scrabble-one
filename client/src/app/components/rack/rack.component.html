@@ -17,8 +17,7 @@
 <div id="buttons">
     <button
         mat-button
-        *ngIf="reserveService.length >= 7"
-        [ngClass]="{ invisible: selection.reserve.size === 0 || gameService.currentTurn !== playerType.Local }"
+        [ngClass]="{ invisible: reserveService.length < 7 || gameService.currentTurn !== playerType.Local || selection.reserve.size === 0}"
         class="exchange-command"
         (click)="exchangeLetters(); $event.stopPropagation()"
     >
