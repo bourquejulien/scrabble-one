@@ -18,6 +18,8 @@ import { PlayerInfo } from '@app/classes/player-info';
 import { Subject } from 'rxjs';
 import { PlayerHandler } from '@app/handlers/player-handler/player-handler';
 import { Config } from '@app/config';
+import { SocketService } from '@app/services/socket/socket-service';
+import { SocketHandler } from '@app/handlers/socket-handler/socket-handler';
 const TIME_MS = 120 * 1000;
 const PLAYER_INFO_A: PlayerInfo = { id: '0', name: 'tester1', isHuman: true };
 const PLAYER_INFO_B: PlayerInfo = { id: '1', name: 'tester2', isHuman: false };
@@ -41,8 +43,10 @@ describe('SessionHandler', () => {
 
     const stubBoardHandler = createStubInstance(BoardHandler);
     const stubReserveHandler = createStubInstance(ReserveHandler);
-    const stubSocketHandler = createStubInstance(SocketHandler);
+    const stubSocketService = createStubInstance(SocketService);
     const stubPlayerHandler = createStubInstance(PlayerHandler);
+
+    const socketHandler = new SocketHandler(stubSocketService, '0');
     let playerA: PlayerTester;
     let playerB: PlayerTester;
     stubPlayerHandler.onTurn.returns(turnSubject.asObservable());
@@ -52,10 +56,12 @@ describe('SessionHandler', () => {
         stubBoardHandler as unknown as BoardHandler,
         stubReserveHandler as unknown as ReserveHandler,
         stubPlayerHandler as unknown as PlayerHandler,
-        stubSocketHandler as unknown as SocketHandler,
+        stubSocketService as unknown as SocketService,
     ) as unknown as SessionHandler;
-
+    handler['socketHandler'] = socketHandler;
     beforeEach(() => {
+        handler['socketHandler'] = socketHandler;
+
         stubPlayerHandler.players = [];
         playerA = new PlayerTester();
         playerB = new PlayerTester();
@@ -65,7 +71,7 @@ describe('SessionHandler', () => {
         playerB.isTurn = false;
         playerA.playerData = PLAYER_DATA_DEFAULT;
         playerB.playerData = PLAYER_DATA_DEFAULT;
-        handler.playerHandler.players = [playerA, playerB];
+        handler['playerHandler'].players = [playerA, playerB];
     });
 
     afterEach(() => {
@@ -103,7 +109,7 @@ describe('SessionHandler', () => {
     it('should not return a good server config with both player same id', () => {
         handler.sessionInfo.id = '0';
         playerB.playerInfo.id = '0';
-        handler.playerHandler.players = [playerA, playerB];
+        handler['playerHandler'].players = [playerA, playerB];
         const returnValue = handler.getServerConfig('2');
         const expectedServerConfig: ServerConfig = {
             id: '2',
@@ -118,8 +124,8 @@ describe('SessionHandler', () => {
     });
     it('should return a good server config while no player isturn', () => {
         handler.sessionInfo.id = '0';
-        handler.playerHandler.players[0].isTurn = false;
-        handler.playerHandler.players[1].isTurn = false;
+        handler['playerHandler'].players[0].isTurn = false;
+        handler['playerHandler'].players[1].isTurn = false;
         playerB.isTurn = false;
         const returnValue = handler.getServerConfig('0');
         const expectedServerConfig: ServerConfig = {
@@ -130,7 +136,7 @@ describe('SessionHandler', () => {
             firstPlayerName: 'tester1',
             secondPlayerName: 'tester2',
         };
-        handler.playerHandler.players[0].isTurn = true;
+        handler['playerHandler'].players[0].isTurn = true;
         expect(returnValue).to.eql(expectedServerConfig);
     });
 
@@ -148,9 +154,10 @@ describe('SessionHandler', () => {
         const sandbox = createSandbox();
         const stubDispose = sandbox.stub(handler, 'dispose');
         stubReserveHandler.reserve = [];
-        handler.playerHandler.players[0].playerData.rack.length = 0;
-        handler.endGame();
-        expect(handler.playerHandler.players[1].playerData.scoreAdjustment).to.not.eql(0);
+        handler['socketHandler'] = socketHandler;
+        handler['playerHandler'].players[0].playerData.rack.length = 0;
+        handler['endGame']();
+        expect(handler['playerHandler'].players[1].playerData.scoreAdjustment).to.not.eql(0);
         sandbox.assert.calledOnce(stubDispose);
     });
 
@@ -165,7 +172,7 @@ describe('SessionHandler', () => {
     });
 
     it('should return null if players are not found', () => {
-        handler.playerHandler.players = [playerA];
+        handler['playerHandler'].players = [playerA];
         const returnValue = handler.getStats('2');
         expect(returnValue).to.be.null;
     });
@@ -178,42 +185,42 @@ describe('SessionHandler', () => {
     it('timerTick should send message', () => {
         handler.sessionData.timeLimitEpoch = 0;
         handler['timerTick']();
-        expect(stubSocketHandler.sendData.calledOnce);
+        expect(handler.sessionData.timeLimitEpoch).to.eql(0);
     });
 
     it('onTurn should call endgame if game is ended', () => {
         stubReserveHandler.reserve = [];
         const sandbox = createSandbox();
-        const stubEndGame = sandbox.stub(handler, 'endGame');
+        const stubEndGame = sandbox.stub(handler, 'endGame' as any);
         handler['onTurn']('0');
         sandbox.assert.calledOnce(stubEndGame);
     });
     it('onTurn should not call endgame if game is not ended  but fails to find player', () => {
-        handler.playerHandler.players[0].playerData.skippedTurns = 0;
-        handler.playerHandler.players[1].playerData.skippedTurns = 0;
+        handler['playerHandler'].players[0].playerData.skippedTurns = 0;
+        handler['playerHandler'].players[1].playerData.skippedTurns = 0;
         handler.reserveHandler.reserve = ['a'];
         const sandbox = createSandbox();
-        const stubEndGame = sandbox.stub(handler, 'endGame');
+        const stubEndGame = sandbox.stub(handler, 'endGame' as any);
         handler['onTurn']('2');
         sandbox.assert.notCalled(stubEndGame);
     });
     it('onTurn should not call endgame if game is not ended', () => {
-        handler.playerHandler.players[0].playerData.skippedTurns = 0;
-        handler.playerHandler.players[1].playerData.skippedTurns = 0;
+        handler['playerHandler'].players[0].playerData.skippedTurns = 0;
+        handler['playerHandler'].players[1].playerData.skippedTurns = 0;
         handler.reserveHandler.reserve = ['a'];
         const sandbox = createSandbox();
-        const stubEndGame = sandbox.stub(handler, 'endGame');
+        const stubEndGame = sandbox.stub(handler, 'endGame' as any);
         handler['onTurn']('0');
         sandbox.assert.notCalled(stubEndGame);
     });
     it('onTurn call endgame if game is ended cause rackEmptied', () => {
-        handler.playerHandler.players[0].playerData.skippedTurns = 0;
-        handler.playerHandler.players[1].playerData.skippedTurns = 0;
+        handler['playerHandler'].players[0].playerData.skippedTurns = 0;
+        handler['playerHandler'].players[1].playerData.skippedTurns = 0;
         handler.reserveHandler.reserve = [];
-        handler.playerHandler.players[0].playerData.rack = [];
-        handler.playerHandler.players[1].playerData.rack = [];
+        handler['playerHandler'].players[0].playerData.rack = [];
+        handler['playerHandler'].players[1].playerData.rack = [];
         const sandbox = createSandbox();
-        const stubEndGame = sandbox.stub(handler, 'endGame');
+        const stubEndGame = sandbox.stub(handler, 'endGame' as any);
         handler['onTurn']('0');
         sandbox.assert.calledOnce(stubEndGame);
     });

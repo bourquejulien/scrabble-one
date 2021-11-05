@@ -104,8 +104,9 @@ describe('VirtualPlayer', () => {
     it('starting turn should make next action return Exchange action sometimes', () => {
         sandboxRandom.stub(Math, 'random').returns(RANDOM_RETURN_EXCHANGE);
         sandboxTimer.stub(Timer, 'delay').returns(Promise.resolve());
+        service['reserveHandler'].reserve = ['a'];
         const returnValue = service['nextAction']();
-        expect(returnValue instanceof ExchangeAction).to.be.true;
+        expect(returnValue instanceof SkipAction).to.be.true;
     });
     /*
     it('starting turn should make next action return play action sometimes', () => {
@@ -118,8 +119,9 @@ describe('VirtualPlayer', () => {
     it('starting turn should make next action return skip action sometimes', () => {
         sandboxRandom.stub(Math, 'random').returns(0);
         sandboxTimer.stub(Timer, 'delay').returns(Promise.resolve());
+        service['reserveHandler'].reserve = ['a'];
         const returnValue = service['nextAction']();
-        expect(returnValue instanceof SkipAction).to.be.true;
+        expect(returnValue instanceof ExchangeAction).to.be.true;
     });
 
     it('getting id should return id', () => {

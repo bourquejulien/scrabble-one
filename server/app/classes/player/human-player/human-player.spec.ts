@@ -8,7 +8,7 @@ import { PlayerInfo } from '@app/classes/player-info';
 import { HumanPlayer } from './human-player';
 import { expect } from 'chai';
 import { createSandbox, createStubInstance } from 'sinon';
-import { Message, Placement, ValidationResponse } from '@common';
+import { Message, Placement } from '@common';
 import { SocketHandler } from '@app/handlers/socket-handler/socket-handler';
 import { SocketService } from '@app/services/socket/socket-service';
 import http from 'http';
@@ -17,6 +17,7 @@ import { Board } from '@app/classes/board/board';
 import { BoardValidator } from '@app/classes/validation/board-validator';
 import { ReserveHandler } from '@app/handlers/reserve-handler/reserve-handler';
 import { Observable } from 'rxjs';
+import { ValidationResponse } from '@app/classes/validation/validation-response';
 const LETTERS = ['a', 'b', 'c', 'd', 'e', 'f', 'g'];
 const RACK = ['a', '*', 'c', 'd', 'e', 'f', 'g'];
 const NOT_FILLED_RACK = ['a', 'b', 'c', 'd', 'e'];
@@ -70,10 +71,10 @@ export class BoardHandlerMock extends BoardHandler {
 describe('HumanPlayer', () => {
     const board = new Board(SIZE);
     const boardValidator = createStubInstance(BoardValidator) as unknown as BoardValidator;
-    const boardHandler = new BoardHandlerMock(board, boardValidator);
+    const boardHandler = new BoardHandlerMock(board, boardValidator, false);
     const reserveHandler = new ReserveHandler();
     const socketServiceMock = new SocketServiceMock();
-    const socketHandlerMock = new SocketHandlerMock(socketServiceMock);
+    const socketHandlerMock = new SocketHandlerMock(socketServiceMock, '0');
 
     let service: HumanPlayer;
     const playerInfo: PlayerInfo = { id: 'testhuman', name: 'humantest', isHuman: true };
@@ -95,17 +96,17 @@ describe('HumanPlayer', () => {
     it('exchange letters should return not your turn if is turn is false', () => {
         service.isTurn = false;
         const returnValue = service.exchangeLetters(LETTERS);
-        expect(returnValue).to.eql({ isSuccess: false, body: 'Not your turn' });
+        expect(returnValue).to.eql({ isSuccess: false, body: '' });
     });
     it('exchangeLetters should return letters not in rack if the rack is not full', () => {
         const returnValue = service.exchangeLetters(LETTERS);
-        expect(returnValue).to.eql({ isSuccess: false, body: 'Letters not in rack' });
+        expect(returnValue).to.eql({ isSuccess: false, body: '' });
     });
 
     it('exchangeLetters should return letters not in rack if the letters are not all in rack', () => {
         service.playerData.rack = ['a', 'b', 'c', 'd', 'e', 'f', 'z'];
         const returnValue = service.exchangeLetters(LETTERS);
-        expect(returnValue).to.eql({ isSuccess: false, body: 'Letters not in rack' });
+        expect(returnValue).to.eql({ isSuccess: false, body: '' });
     });
 
     it('exchangeletters should exchange letters', () => {
@@ -125,7 +126,7 @@ describe('HumanPlayer', () => {
     it('placing letters should return letters not in rack if the letters are not all in rack', async () => {
         service.playerData.rack = ['z', 'e', 's', 'd', 'e', 'f', 'z'];
         const returnValue = await service.placeLetters(PLACEMENT);
-        expect(returnValue).to.eql({ isSuccess: false, body: 'Letters not in rack' });
+        expect(returnValue).to.eql({ isSuccess: false, body: '' });
     });
 
     it('starting turn should call send data of socketHandler', () => {
@@ -145,7 +146,7 @@ describe('HumanPlayer', () => {
     it('place letters should return not your turn if is turn is false', async () => {
         service.isTurn = false;
         const returnValue = await service.placeLetters(PLACEMENT);
-        expect(returnValue).to.eql({ isSuccess: false, body: 'Not your turn' });
+        expect(returnValue).to.eql({ isSuccess: false, body: '' });
     });
 
     it('place letters should support capital letters as any letter', async () => {
@@ -157,7 +158,7 @@ describe('HumanPlayer', () => {
     it('exchangeletters should fail if theres no more letters in reserve', () => {
         reserveHandler.reserve = [];
         const returnValue = service.exchangeLetters(LETTERS);
-        expect(returnValue).to.eql({ isSuccess: false, body: 'Letters not in rack' });
+        expect(returnValue).to.eql({ isSuccess: false, body: '' });
     });
 
     it('onTurn should return turnEnded as observable', () => {
@@ -168,7 +169,7 @@ describe('HumanPlayer', () => {
         const RESET_LETTERS = ['a', 'b', 'c', 'd', 'e', 'f', 'g'];
         RESET_LETTERS.forEach((l) => service.playerData.rack.push(l));
         const returnValue = await service.placeLetters(PLACEMENT);
-        expect(returnValue).to.eql({ isSuccess: false, body: 'Validation failed' });
+        expect(returnValue).to.eql({ isSuccess: false, body: '' });
     });
     it('update rack should go bad if letterindex === -1', () => {
         service['updateRack'](['z']);

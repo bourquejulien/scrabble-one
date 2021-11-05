@@ -5,11 +5,12 @@
 import { PlayerData } from '@app/classes/player-data';
 // import { BoardValidator } from '@app/classes/validation/board-validator';
 import { BoardHandler } from '@app/handlers/board-handler/board-handler';
-import { Placement, ValidationResponse } from '@common';
+import { Placement } from '@common';
 import { expect } from 'chai';
 import { createSandbox, createStubInstance } from 'sinon';
 import { PlaceAction } from './place-action';
 import { Play } from '@app/classes/virtual-player/play';
+import { ValidationResponse } from '@app/classes/validation/validation-response';
 
 const VALID_PLACEMENT: Placement[] = [
     { letter: 'B', position: { x: 0, y: 0 } },

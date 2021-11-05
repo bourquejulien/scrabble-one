@@ -5,7 +5,7 @@ import { Answer, MessageType, Placement, SystemMessages } from '@common';
 import * as logger from 'winston';
 
 export class HumanPlayer extends Player {
-    constructor(readonly playerInfo: PlayerInfo) {
+    constructor(public playerInfo: PlayerInfo) {
         super();
     }
 

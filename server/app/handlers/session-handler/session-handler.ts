@@ -16,7 +16,7 @@ export class SessionHandler {
     private timer: NodeJS.Timer;
 
     private readonly playerSubscription: Subscription;
-    private readonly socketHandler: SocketHandler;
+    private socketHandler: SocketHandler;
 
     constructor(
         public sessionInfo: SessionInfo,

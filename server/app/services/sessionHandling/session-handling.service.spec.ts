@@ -39,7 +39,7 @@ describe('SessionHandlingService', () => {
         stubPlayerHandler.addPlayer(playerA as unknown as Player);
         stubPlayerHandler.addPlayer(playerB as unknown as Player);
         stubPlayerHandler.players = [];
-        stubSessionHandler.playerHandler = stubPlayerHandler;
+        stubSessionHandler['playerHandler'] = stubPlayerHandler;
         handler = new SessionHandlingService();
         handler.addHandler(stubSessionHandler);
     });
