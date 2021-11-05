@@ -1,14 +1,14 @@
 /* eslint-disable max-classes-per-file -- Need to implements many stubs */
 /* eslint-disable no-unused-expressions -- To be */
 /* eslint-disable @typescript-eslint/no-unused-expressions */
-import { expect } from 'chai';
 import { Board, ImmutableBoard } from '@app/classes/board/board';
 import { Dictionary } from '@app/classes/dictionary/dictionary';
-import { Placement, Vec2, Direction } from '@common';
+import { ValidationResponse } from '@app/classes/validation/validation-response';
 import { Config } from '@app/config';
-import { PlayGenerator } from './play-generator';
 import { BoardHandler } from '@app/handlers/board-handler/board-handler';
-import { ValidationResponse } from '../validation/validation-response';
+import { Direction, Placement, Vec2 } from '@common';
+import { expect } from 'chai';
+import { PlayGenerator } from './play-generator';
 
 class StubDictionary implements Dictionary {
     words: string[] = [];

@@ -19,12 +19,30 @@
             [attr.width]="width"
             [attr.height]="height"
         ></canvas>
+        <canvas
+            class="board-display"
+            id="tempcanvas"
+            #tempCanvas
+            [style.width.px]="width"
+            [style.height.px]="height"
+            (click)="mouseHandlingService.mouseHitDetect($event)"
+            [attr.width]="width"
+            [attr.height]="height"
+            (mouseenter)="isFocus = true"
+            (mouseleave)="isFocus = false"
+        ></canvas>
     </div>
-    <app-size-selector
-        id="size-selector"
-        [minSize]="gridService.minFontSize"
-        [maxSize]="gridService.maxFontSize"
-        [size]="gridService.letterFontFace.size"
-        (sizeUpdated)="updateFontSize($event)"
-    ></app-size-selector>
+    <div class="parent">
+        <div id="play-button" class="inline-block-child">
+            <button mat-button mat-dialog-close *ngIf="placeLetterService.tempRack.length > 0" (click)="play()">jouer</button>
+        </div>
+        <app-size-selector
+            id="size-selector"
+            class="inline-block-child"
+            [minSize]="gridService.minFontSize"
+            [maxSize]="gridService.maxFontSize"
+            [size]="gridService.letterFontFace.size"
+            (sizeUpdated)="updateFontSize($event)"
+        ></app-size-selector>
+    </div>
 </div>

@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
 import { BoardData, Bonus, Direction, Placement, Square, Vec2, Answer } from '@common';
 import { HttpClient } from '@angular/common/http';
-import { SessionService } from '@app/services/session/session.service';
 import { Constants } from '@app/constants/global.constants';
+import { SessionService } from '@app/services/session/session.service';
 import { environmentExt } from '@environment-ext';
 
 const localUrl = (call: string, id: string) => `${environmentExt.apiUrl}board/${call}/${id}`;
@@ -59,5 +59,19 @@ export class BoardService {
         }
 
         this.boardData = boardData;
+    }
+
+    positionIsAvailable(position: Vec2): boolean {
+        const letter: string = this.boardData.board[position.x - 1][position.y - 1].letter;
+
+        if (letter === '') {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    getLetter(position: Vec2): string {
+        return this.boardData.board[position.x - 1][position.y - 1].letter;
     }
 }
