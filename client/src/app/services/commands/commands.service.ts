@@ -27,7 +27,7 @@ export class CommandsService {
         this.placeWordCommandRegex = /^([a-o]){1}([1-9]|1[0-5]){1}([hv]){1}$/;
         this.wordRegex = /^[A-zÀ-ú]{1,15}$/;
         this.rackRegex = /^[a-z*]{1,7}$/;
-        this.messageRegex = /^[A-zÀ-ú0-9 !.?'"]{1,512}$/;
+        this.messageRegex = /^[A-zÀ-ú0-9 !.?'"*]{1,512}$/;
     }
 
     // Source: https://stackoverflow.com/questions/990904/remove-accents-diacritics-in-a-string-in-javascript by Lewis Diamond on 05/29/16
@@ -111,14 +111,26 @@ export class CommandsService {
         }
 
         if (this.wordRegex.test(word)) {
-            const yCoordinate = Number(options.charCodeAt(0) - Constants.CHAR_OFFSET);
-            const xCoordinate = Number(options.charAt(1)) - 1;
-            const direction: Direction = options.charAt(2) === 'v' ? Direction.Down : Direction.Right;
-            const vecCoordinate: Vec2 = { x: xCoordinate, y: yCoordinate };
+            let parseIndex = 0;
+            const vecCoordinate: Vec2 = { x: 0, y: 0 };
+
+            vecCoordinate.y = Number(options.charCodeAt(parseIndex) - Constants.CHAR_OFFSET);
+            parseIndex++;
+
+            if (isNaN(+options.charAt(parseIndex + 1))) {
+                vecCoordinate.x = Number(options.charAt(parseIndex)) - 1;
+                parseIndex++;
+            } else {
+                vecCoordinate.x = Number(options.substr(parseIndex, 2)) - 1;
+                parseIndex += 2;
+            }
+
+            const direction: Direction = options.charAt(parseIndex) === 'v' ? Direction.Down : Direction.Right;
             this.playerService.placeLetters(word, vecCoordinate, direction);
 
             return true;
         }
+
         this.messagingService.send('', SystemMessages.InvalidWord, MessageType.Error);
         return false;
     }
