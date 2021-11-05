@@ -7,7 +7,7 @@ import { PlayerService } from '@app/services/player/player.service';
 import { SocketClientService } from '@app/services/socket-client/socket-client.service';
 import { TimerService } from './timer.service';
 
-fdescribe('TimerService', () => {
+describe('TimerService', () => {
     let service: TimerService;
     let playerService: jasmine.SpyObj<PlayerService>;
     let socketService: jasmine.SpyObj<SocketClientService>;
