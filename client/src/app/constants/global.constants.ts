@@ -8,7 +8,7 @@ export class Constants {
     static readonly GAME_TYPES_LIST = ['Joueur virtuel débutant'];
     static readonly CHAR_OFFSET = 97; // 'a' has ASCII value of 97
     static readonly PLAYER_ONE_COLOR = '#45cb85';
-    static readonly PLAYER_TWO_COLOR = '#57e2e5';
+    static readonly PLAYER_TWO_COLOR = '#f44336';
     static readonly SYSTEM_COLOR = '#3f51b5';
     static readonly BLACK_FONT = '#000000';
     static readonly WHITE_FONT = '#FFFFFF';

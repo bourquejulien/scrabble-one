@@ -30,7 +30,7 @@
             "@common": ["../common"],
             "@assets/*": ["./src/assets/*"],
             "@environment": ["./src/environments/environment.ts"],
-            "@environmentExt": ["./src/environments/environment-ext.ts"]
+            "@environment-ext": ["./src/environments/environment-ext.ts"]
         }
     },
     "references": [

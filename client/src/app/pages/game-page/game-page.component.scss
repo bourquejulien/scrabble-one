@@ -76,14 +76,8 @@ mat-drawer-container {
 
 .scoreboard {
     &.player-two-open,
-    &.player-two-closed {
-        &.singlePlayer {
-            background-color: var(--game-red);
-        }
-
-        &.multiplayer {
-            background-color: var(--game-blue);
-        }
+    &.player-two-closed.singlePlayer {
+        background-color: var(--game-red);
     }
 }
 

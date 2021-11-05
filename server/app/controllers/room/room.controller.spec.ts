@@ -188,6 +188,6 @@ describe('RoomController', () => {
 
     it('should tell when a room is full', async () => {
         const socket = new SocketMock() as unknown as Socket;
-        expect(await controller['isRoomFull'](socket, 'full')).to.be.equals(true);
+        expect(await RoomController['isRoomFull'](socket, 'full')).to.be.equals(true);
     });
 });

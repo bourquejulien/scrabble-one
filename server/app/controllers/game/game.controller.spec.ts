@@ -5,7 +5,7 @@
 import { Application } from '@app/app';
 import { Constants } from '@app/constants';
 import { GameService } from '@app/services/game/game.service';
-import { GameType, ServerConfig, SinglePlayerConfig } from '@common';
+import { GameType, MultiplayerCreateConfig, ServerConfig, SinglePlayerConfig } from '@common';
 import { expect } from 'chai';
 import { createStubInstance, SinonStubbedInstance } from 'sinon';
 import request from 'supertest';
@@ -22,6 +22,13 @@ describe('GameController', () => {
         playTimeMs: 120 * 1000,
         playerName: 'Claudette',
         virtualPlayerName: 'Alphonse',
+        isRandomBonus: true,
+    };
+
+    const multiplayerCreateConfig: MultiplayerCreateConfig = {
+        gameType: GameType.SinglePlayer,
+        playTimeMs: 120 * 1000,
+        playerName: 'Claudette',
         isRandomBonus: true,
     };
 
@@ -88,7 +95,7 @@ describe('GameController', () => {
         gameService.initMultiplayer.resolves(multiplayerConfig);
         return request(expressApp)
             .put('/api/game/init/multi')
-            .send(singlePlayerConfig)
+            .send(multiplayerCreateConfig)
             .then((response) => {
                 expect(response.status).to.be.equal(Constants.HTTP_STATUS.OK);
                 expect(response.body).to.deep.equal(multiplayerConfig);

@@ -16,8 +16,8 @@ export class GameController {
         this.router.put('/init/single', async (req: Request, res: Response) => {
             this.gameService
                 .initSinglePlayer(req.body)
-                .then((answer) => {
-                    res.json(answer);
+                .then((config) => {
+                    res.json(config);
                 })
                 .catch(() => {
                     res.sendStatus(Constants.HTTP_STATUS.NOT_FOUND);
@@ -27,8 +27,8 @@ export class GameController {
         this.router.put('/init/multi', async (req: Request, res: Response) => {
             this.gameService
                 .initMultiplayer(req.body)
-                .then((answer) => {
-                    res.json(answer);
+                .then((config) => {
+                    res.json(config);
                 })
                 .catch(() => {
                     res.sendStatus(Constants.HTTP_STATUS.NOT_FOUND);
@@ -38,8 +38,8 @@ export class GameController {
         this.router.put('/join', async (req: Request, res: Response) => {
             this.gameService
                 .joinMultiplayer(req.body)
-                .then((answer) => {
-                    res.json(answer);
+                .then((config) => {
+                    res.json(config);
                 })
                 .catch(() => {
                     res.sendStatus(Constants.HTTP_STATUS.NOT_FOUND);
@@ -49,8 +49,8 @@ export class GameController {
         this.router.put('/convert', async (req: Request, res: Response) => {
             this.gameService
                 .convert(req.body)
-                .then((answer) => {
-                    res.json(answer);
+                .then((config) => {
+                    res.json(config);
                 })
                 .catch(() => {
                     res.sendStatus(Constants.HTTP_STATUS.NOT_FOUND);
