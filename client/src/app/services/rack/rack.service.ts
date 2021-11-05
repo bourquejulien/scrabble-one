@@ -59,7 +59,7 @@ export class RackService {
     private update(rack: string[]): void {
         rack = rack.slice();
 
-        for (let i = 0; i < rack.length - this.rack.length;) {
+        for (let i = 0; i < rack.length - this.rack.length; ) {
             this.rack.push('');
         }
 

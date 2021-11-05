@@ -1,9 +1,11 @@
+/* eslint-disable dot-notation -- Need access to private functions and properties*/
+/* eslint-disable @typescript-eslint/no-magic-numbers */
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { Injectable } from '@angular/core';
 import { fakeAsync, TestBed, tick } from '@angular/core/testing';
+import { RackService } from '@app/services/rack/rack.service';
+import { SessionService } from '@app/services/session/session.service';
 import { environmentExt } from '@environment-ext';
-import { SessionService } from '../session/session.service';
-import { RackService } from './rack.service';
 
 @Injectable({
     providedIn: 'root',
@@ -79,7 +81,7 @@ describe('RackService', () => {
     it('should refresh rack if refresh function called', fakeAsync(() => {
         const rack = ['a', 'a', 'b', 'c'];
         service['rack'] = ['z', 'y'];
-        let firstLetterInRack = service['rack'][0];
+        const firstLetterInRack = service['rack'][0];
 
         service.refresh();
         const request = httpMock.match(localUrl('rack', `${sessionId}`));
@@ -92,7 +94,7 @@ describe('RackService', () => {
 
     it('should return error if trying to swap letters in empty rack', () => {
         service['rack'] = [];
-        let value = service['swap'](2, 3);
+        const value = service['swap'](2, 3);
         expect(value).toBe(-1);
     });
 
@@ -103,8 +105,8 @@ describe('RackService', () => {
 
     it('should only keep valid letters in rack if invalid symbols pushed', () => {
         service['rack'] = ['a', '', '', 'd', 'e'];
-        let initLength = service['rack'].length;
-        let newLength = 3;
+        const initLength = service['rack'].length;
+        const newLength = 3;
         service['update'](service['rack']);
         expect(service['rack'].length).not.toBe(initLength);
         expect(service['rack'].length).toBe(newLength);

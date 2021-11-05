@@ -1,9 +1,10 @@
+/* eslint-disable dot-notation -- Need access to private functions and properties*/
+/* eslint-disable @typescript-eslint/no-magic-numbers */
 import { TestBed } from '@angular/core/testing';
 import { TimeSpan } from '@app/classes/time/timespan';
 import { PlayerService } from '@app/services/player/player.service';
 import { SocketClientService } from '@app/services/socket-client/socket-client.service';
 import { TimerService } from './timer.service';
-
 
 describe('TimerService', () => {
     let service: TimerService;
@@ -55,8 +56,8 @@ describe('TimerService', () => {
     });
 
     it('should call on ticks when timer created', () => {
-        //const spy = spyOn(service['socketService'], 'on');
-        //const spy = spyOn<any>(service, 'onTicks');
+        // const spy = spyOn(service['socketService'], 'on');
+        // const spy = spyOn<any>(service, 'onTicks');
         new TimerService(socketService, playerService);
         expect(socketService['on']).toHaveBeenCalled();
     });

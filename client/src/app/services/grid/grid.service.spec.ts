@@ -49,9 +49,7 @@ describe('GridService', () => {
 
     beforeEach(() => {
         TestBed.configureTestingModule({
-            providers: [
-                { provide: BoardService, useValue: new BoardServiceStub(generateData(Constants.GRID.GRID_SIZE)) },
-            ],
+            providers: [{ provide: BoardService, useValue: new BoardServiceStub(generateData(Constants.GRID.GRID_SIZE)) }],
         });
         service = TestBed.inject(GridService);
         ctxStub = CanvasTestHelper.createCanvas(CANVAS_WIDTH, CANVAS_HEIGHT).getContext('2d') as CanvasRenderingContext2D;
@@ -127,12 +125,6 @@ describe('GridService', () => {
         const spy = spyOn<any>(service, 'drawBonus');
         service.drawSquares(ctxStub);
         expect(spy).toHaveBeenCalledTimes(TIMES_CALLED);
-    });
-
-    it('should not draw a bonus symbol if no bonus provided', () => {
-        const spy = spyOn<any>(service, 'fitTextSize');
-        service['drawBonus'](Bonus.None, { x: 0, y: 0 }, ctxStub);
-        expect(spy).not.toHaveBeenCalled();
     });
 
     it('should call fillSquare with the correct arguments', () => {
@@ -223,7 +215,7 @@ describe('GridService', () => {
 
     it(' drawBonusOfPosition should draw bonus if bonus provided', () => {
         const spy = spyOn<any>(service, 'drawBonus');
-        let position = { x: 5, y: 8 };
+        const position = { x: 5, y: 8 };
         service['boardService']['boardData'].board[position.x - 1][position.y - 1].bonus = Bonus.W2;
         service.drawBonusOfPosition(ctxStub, position);
         expect(spy).toHaveBeenCalledWith(Bonus.W2, { x: 5, y: position.y }, ctxStub);

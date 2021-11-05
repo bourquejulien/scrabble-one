@@ -51,17 +51,18 @@ describe('MessagingService', () => {
     it('should reset connection with server if it fails', () => {
         const error: Error = { name: 'error', message: 'websocket error' };
 
-        let message: string = '';
-        service['onMessageSubject'].subscribe(msg => { message = msg.body });
+        let message = '';
+        service['onMessageSubject'].subscribe((msg) => {
+            message = msg.body;
+        });
         service['handleConnectionError'](error);
         expect(message).toBe('Erreur: ' + error.message);
     });
 
-
     it('should return message if onMessage is called', () => {
         service['onMessageSubject'].next({ title: 'title1', body: 'body1', messageType: MessageType.Error });
-        let onMessagePropertyObs = service['onMessageSubject'].asObservable();
-        let messageObs = service.onMessage;
+        const onMessagePropertyObs = service['onMessageSubject'].asObservable();
+        const messageObs = service.onMessage;
         expect(messageObs).toEqual(onMessagePropertyObs);
     });
 });

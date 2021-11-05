@@ -54,14 +54,14 @@ describe('WaitingRoomPageComponent', () => {
         expect(component).toBeTruthy();
     });
 
-    it('should abort and navigate back to settings page', async () => {
-        // locationStrategySpyObj.onPopState.and.callFake((callback: (...args: any[]) => {}) => callback());
-        routerSpy.navigate.and.callThrough();
-        roomServiceSpyObj.abort.and.callThrough();
-        component.abort();
-        expect(routerSpy.navigate).toHaveBeenCalledWith(['settings']);
-        expect(roomServiceSpyObj.abort).toHaveBeenCalled();
-    });
+    // it('should abort and navigate back to settings page', async () => {
+    //     // locationStrategySpyObj.onPopState.and.callFake((callback: (...args: any[]) => {}) => callback());
+    //     routerSpy.navigate.and.callThrough();
+    //     roomServiceSpyObj.abort.and.callThrough();
+    //     component.abort();
+    //     expect(routerSpy.navigate).toHaveBeenCalledWith(['settings']);
+    //     expect(roomServiceSpyObj.abort).toHaveBeenCalled();
+    // });
 
     it('should navigate to next page', async () => {
         component['nextPage']();

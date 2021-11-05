@@ -37,9 +37,9 @@ describe('GameModePageComponent', () => {
     });
 
     it('should open dialog window when new online game created', () => {
-        let type = GameType.Multiplayer;
-        const spy = spyOn(component['dialog'], 'open').and.returnValue({
-            afterClosed: () => of(true)
+        const type = GameType.Multiplayer;
+        const spy = spyOn(component.dialog, 'open').and.returnValue({
+            afterClosed: () => of(true),
         } as MatDialogRef<typeof component>);
         component.openDialog(type);
 

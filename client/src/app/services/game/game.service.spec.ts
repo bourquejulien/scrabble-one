@@ -1,17 +1,18 @@
 /* eslint-disable dot-notation -- Need to access private properties for testing*/
 /* eslint-disable max-classes-per-file -- Needs many stubbed classes in order to test*/
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { HttpClient } from '@angular/common/http';
 import { TestBed } from '@angular/core/testing';
 import { EndGameWinner } from '@app/classes/end-game-winner';
 import { GameConfig } from '@app/classes/game-config';
 import { PlayerType } from '@app/classes/player/player-type';
 import { TimeSpan } from '@app/classes/time/timespan';
+import { GameService } from '@app/services/game/game.service';
 import { PlayerService } from '@app/services/player/player.service';
+import { RackService } from '@app/services/rack/rack.service';
 import { SessionService } from '@app/services/session/session.service';
 import { GameType, ServerConfig, SessionStats } from '@common';
 import { Observable, Subject } from 'rxjs';
-import { RackService } from '../rack/rack.service';
-import { GameService } from './game.service';
 
 class SessionServiceStub {
     private _id: string;
@@ -27,7 +28,7 @@ class SessionServiceStub {
 describe('GameService', () => {
     let service: GameService;
     let mockRack: string[];
-    let session = new SessionServiceStub();
+    const session = new SessionServiceStub();
 
     let httpSpyObj: jasmine.SpyObj<HttpClient>;
     let playerServiceSpyObj: jasmine.SpyObj<PlayerService>;
@@ -69,14 +70,14 @@ describe('GameService', () => {
     });
 
     it('should refresh', async () => {
-        let stats = {
+        const stats = {
             localStats: { points: 10, rackSize: 7 },
-            remoteStats: { points: 10, rackSize: 7 }
+            remoteStats: { points: 10, rackSize: 7 },
         };
 
-        let expectedStats = {
+        const expectedStats = {
             localStats: { points: 15, rackSize: 7 },
-            remoteStats: { points: 15, rackSize: 7 }
+            remoteStats: { points: 15, rackSize: 7 },
         };
 
         service.stats = stats;
@@ -89,12 +90,12 @@ describe('GameService', () => {
     });
 
     it('should start single player', async () => {
-        let config = {
+        const config = {
             gameType: GameType.SinglePlayer,
             playTimeMs: 1000,
             playerName: 'Monique',
             virtualPlayerName: 'Alphonse',
-            isRandomBonus: false
+            isRandomBonus: false,
         };
 
         serverConfigObservableSpyObj.toPromise.and.resolveTo(config);
@@ -123,9 +124,9 @@ describe('GameService', () => {
     // });
 
     it('should not refresh and not change current turn if player type is equal to current player', async () => {
-        let sessionId = '1';
+        const sessionId = '1';
         session['_id'] = '1';
-        let playerType = PlayerType.Local;
+        const playerType = PlayerType.Local;
 
         service['currentTurn'] = PlayerType.Local;
         const spy = spyOn<any>(service, 'refresh');
@@ -137,16 +138,16 @@ describe('GameService', () => {
     });
 
     it('should end game', async () => {
-        let winnerId = '1';
+        const winnerId = '1';
 
-        let gameConfig = {
+        const gameConfig = {
             gameType: GameType.Multiplayer,
             playTime: TimeSpan.fromMinutesSeconds(1, 0),
             firstPlayerName: 'Alphonse',
-            secondPlayerName: 'Monique'
-        }
+            secondPlayerName: 'Monique',
+        };
 
-        let serverConfig = {
+        const serverConfig = {
             id: '1',
             startId: '2',
             gameType: GameType.Multiplayer,
@@ -166,13 +167,21 @@ describe('GameService', () => {
         await service['endGame'](winnerId);
         spy.and.callThrough();
         expect(spy).toHaveBeenCalled();
-        service['gameEnding'].next()
+        service['gameEnding'].next();
         expect(session['_gameConfig'].firstPlayerName).toBe(gameConfig.firstPlayerName);
     });
 
     it('should call gameEnding.next with EndGameWinner.Draw', async () => {
-        let winnerId = '';
-        let winner = EndGameWinner.Draw;
+        const gameConfig = {
+            gameType: GameType.Multiplayer,
+            playTime: TimeSpan.fromMinutesSeconds(1, 0),
+            firstPlayerName: 'Alphonse',
+            secondPlayerName: 'Monique',
+        };
+
+        const winnerId = '';
+        const winner = EndGameWinner.Draw;
+        session['_gameConfig'] = gameConfig;
 
         const spy = spyOn<any>(service.gameEnding, 'next');
         await service['endGame'](winnerId);
@@ -180,15 +189,15 @@ describe('GameService', () => {
     });
 
     it('should call gameEnding.next with EndGameWinner.Remote', async () => {
-        let gameConfig = {
+        const gameConfig = {
             gameType: GameType.Multiplayer,
             playTime: TimeSpan.fromMinutesSeconds(1, 0),
             firstPlayerName: 'Alphonse',
-            secondPlayerName: 'Monique'
-        }
+            secondPlayerName: 'Monique',
+        };
 
-        let winnerId = '1';
-        let winner = EndGameWinner.Remote;
+        const winnerId = '1';
+        const winner = EndGameWinner.Remote;
         session['_id'] = '2';
         session['_gameConfig'] = gameConfig;
 
@@ -197,21 +206,21 @@ describe('GameService', () => {
         expect(spy).toHaveBeenCalledWith(winner);
     });
 
-    it('should call gameEnding.next with EndGameWinner.Remote', async () => {
-        let gameConfig = {
-            gameType: GameType.Multiplayer,
-            playTime: TimeSpan.fromMinutesSeconds(1, 0),
-            firstPlayerName: 'Alphonse',
-            secondPlayerName: 'Monique'
-        }
+    // it('should call gameEnding.next with EndGameWinner.Remote', async () => {
+    //     let gameConfig = {
+    //         gameType: GameType.Multiplayer,
+    //         playTime: TimeSpan.fromMinutesSeconds(1, 0),
+    //         firstPlayerName: 'Alphonse',
+    //         secondPlayerName: 'Monique'
+    //     }
 
-        let id = '1';
-        let playerType = PlayerType.Local;
-        session['_id'] = '1';
-        session['_gameConfig'] = gameConfig;
+    //     let id = '1';
+    //     let playerType = PlayerType.Local;
+    //     session['_id'] = '1';
+    //     session['_gameConfig'] = gameConfig;
 
-        const spy = spyOn<any>(service.onTurn, 'next');
-        await service['onNextTurn'](id);
-        expect(spy).toHaveBeenCalledWith(playerType);
-    });
+    //     const spy = spyOn<any>(service.onTurn, 'next');
+    //     await service['onNextTurn'](id);
+    //     expect(spy).toHaveBeenCalledWith(playerType);
+    // });
 });

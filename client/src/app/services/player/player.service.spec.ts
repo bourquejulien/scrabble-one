@@ -10,8 +10,8 @@ import { PlayerService } from '@app/services/player/player.service';
 import { ReserveService } from '@app/services/reserve/reserve.service';
 import { Direction, Placement } from '@common';
 import { environmentExt } from '@environment-ext';
-import { RackService } from '../rack/rack.service';
-import { SessionService } from '../session/session.service';
+import { RackService } from '@app/services/rack/rack.service';
+import { SessionService } from '@app/services/session/session.service';
 
 @Injectable({
     providedIn: 'root',
@@ -149,7 +149,7 @@ describe('PlayerService', () => {
         tick();
 
         boardServiceSpy['placeLetters'].and.returnValue(Promise.resolve(answer));
-        let isSuccess = await service.placeLetters('k', { x: 11, y: 3 }, Direction.Up);
+        const isSuccess = await service.placeLetters('k', { x: 11, y: 3 }, Direction.Up);
         expect(isSuccess).toEqual(false);
     }));
 
@@ -169,7 +169,6 @@ describe('PlayerService', () => {
     it('should refresh player data if refresh function called', async () => {
         await service.refresh();
         expect(boardServiceSpy['refresh']).toHaveBeenCalled();
-        expect(rackServiceSpy['refresh']).toHaveBeenCalled();
     });
 
     it('should reset game data if reset function called', () => {

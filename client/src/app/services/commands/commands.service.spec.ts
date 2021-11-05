@@ -2,6 +2,7 @@
 /* eslint-disable @typescript-eslint/no-magic-numbers -- Not necessary in tests*/
 /* eslint-disable max-classes-per-file -- Multiple mock needed for tests*/
 /* eslint-disable @typescript-eslint/naming-convention  -- Need SCREAMING_SNAKE_CASE for static property in mock class */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { TestBed } from '@angular/core/testing';
 import { PlayerType } from '@app/classes/player/player-type';
 import { CommandsService } from '@app/services/commands/commands.service';
@@ -101,7 +102,7 @@ describe('CommandsService', () => {
     });
 
     it('#parseInput send a message to the other user', () => {
-        let input = 'This is a message.';
+        const input = 'This is a message.';
         const spy = spyOn<any>(service['messagingService'], 'send');
         service.parseInput(input);
         expect(spy).toHaveBeenCalledWith('', input, MessageType.Message);
@@ -141,11 +142,11 @@ describe('CommandsService', () => {
         spyOn<any>(service, 'isUsersTurn').and.returnValue(true);
         const spy = spyOn<any>(service['messagingService'], 'send');
         service['checkPlaceCommand']('h8s5sh', 'test');
-        //spyOn<any>(service, 'isUsersTurn').and.returnValue(false);
+        // spyOn<any>(service, 'isUsersTurn').and.returnValue(false);
         expect(spy).toHaveBeenCalledWith('', SystemMessages.InvalidOptions, MessageType.Error);
     });
 
-    it("should fail if invalid word placed", () => {
+    it('should fail if invalid word placed', () => {
         spyOn<any>(service, 'isUsersTurn').and.returnValue(true);
         const spy = spyOn<any>(service['messagingService'], 'send');
         service['checkPlaceCommand']('h8h', '4');

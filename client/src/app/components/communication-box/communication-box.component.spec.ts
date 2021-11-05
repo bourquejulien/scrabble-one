@@ -8,8 +8,8 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormsModule } from '@angular/forms';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { cleanStyles } from '@app/classes/helpers/cleanup.helper';
-import { PlayerType } from '@app/classes/player/player-type';
 import { SocketMock } from '@app/classes/helpers/socket-test-helper';
+import { PlayerType } from '@app/classes/player/player-type';
 import { TimeSpan } from '@app/classes/time/timespan';
 import { Constants } from '@app/constants/global.constants';
 import { AppMaterialModule } from '@app/modules/material.module';
@@ -97,7 +97,7 @@ describe('CommunicationBoxComponent', () => {
     });
 
     it('should return the title of the message', () => {
-        let testMessage = {
+        const testMessage = {
             title: 'Title Message Local',
             body: 'Body',
             messageType: MessageType.Message,
@@ -114,14 +114,12 @@ describe('CommunicationBoxComponent', () => {
         testMessage.messageType = MessageType.RemoteMessage;
         expect(component.getTitle(testMessage)).toBe(sessionService.gameConfig.secondPlayerName);
 
-
         testMessage.messageType = MessageType.Log;
         expect(component.getTitle(testMessage)).toBe(testMessage.title);
-
     });
 
     it('should not show message if debug and debug mode off', () => {
-        let testMessage = {
+        const testMessage = {
             title: 'Title',
             body: 'Body',
             messageType: MessageType.Log,
@@ -136,7 +134,7 @@ describe('CommunicationBoxComponent', () => {
 
     it('should reset input value if parseInput successful', () => {
         commandsServiceSpy['parseInput'].and.returnValue(true);
-        component.inputValue = 'a'
+        component.inputValue = 'a';
         component.send('!échanger e');
         expect(commandsServiceSpy['parseInput']).toHaveBeenCalled();
         expect(component.inputValue).toBe('');
@@ -160,7 +158,7 @@ describe('CommunicationBoxComponent', () => {
     });
 
     it('should return the correct CSS colors', () => {
-        let testMessage = {
+        const testMessage = {
             title: 'Title',
             body: 'Body',
             messageType: MessageType.Message,
@@ -202,10 +200,10 @@ describe('CommunicationBoxComponent', () => {
     });
 
     it('should scroll down if new message pushed', () => {
-        //component['messageContainer']['nativeElement'] = new HTMLElement;
+        // component['messageContainer']['nativeElement'] = new HTMLElement;
         const spy = spyOn(component['messageContainer']['nativeElement'], 'scroll');
-        component['scroll'];
-        expect(spy).not.toHaveBeenCalled();
+        component['scroll']();
+        expect(spy).toHaveBeenCalled();
     });
 
     afterAll(() => cleanStyles());

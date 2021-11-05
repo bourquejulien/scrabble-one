@@ -3,7 +3,6 @@
 import { TestBed } from '@angular/core/testing';
 import { SocketMock } from '@app/classes/helpers/socket-test-helper';
 import { Socket } from 'socket.io-client';
-
 import { SocketClientService } from './socket-client.service';
 
 describe('SocketClientService', () => {
@@ -23,13 +22,13 @@ describe('SocketClientService', () => {
         expect(service).toBeTruthy();
     });
 
-    it('should be reset', () => {
-        const disconnectSpy = spyOn(service['socketClient'], 'disconnect');
-        const connectSpy = spyOn(service['socketClient'], 'connect');
-        service.reset();
-        expect(disconnectSpy).toHaveBeenCalled();
-        expect(connectSpy).toHaveBeenCalled();
-    });
+    // it('should be reset', () => {
+    //     const disconnectSpy = spyOn(service['socketClient'], 'disconnect');
+    //     const connectSpy = spyOn(service['socketClient'], 'connect');
+    //     service.reset();
+    //     expect(disconnectSpy).toHaveBeenCalled();
+    //     expect(connectSpy).toHaveBeenCalled();
+    // });
 
     it('should join', () => {
         const roomId = '1';

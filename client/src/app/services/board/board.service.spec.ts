@@ -1,12 +1,13 @@
 /* eslint-disable max-classes-per-file -- Need more than one stub class */
+/* eslint-disable dot-notation -- Need access to private functions and properties*/
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { Injectable } from '@angular/core';
 import { fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { Constants } from '@app/constants/global.constants';
 import { BoardService } from '@app/services/board/board.service';
+import { SessionService } from '@app/services/session/session.service';
 import { BoardData, Bonus, Direction, Placement, Vec2 } from '@common';
 import { environmentExt } from '@environment-ext';
-import { SessionService } from '../session/session.service';
 
 const BONUSES = [
     { bonus: Bonus.L2, position: { x: 0, y: 0 } },
@@ -52,9 +53,7 @@ describe('BoardService', () => {
 
     beforeEach(() => {
         TestBed.configureTestingModule({
-            providers: [
-                { provide: SessionService, useClass: SessionServiceStub },
-            ],
+            providers: [{ provide: SessionService, useClass: SessionServiceStub }],
             imports: [HttpClientTestingModule],
         });
 
@@ -66,7 +65,6 @@ describe('BoardService', () => {
         data = generateData(Constants.GRID.GRID_SIZE);
         service['boardData'] = data;
     });
-
 
     afterEach(() => {
         httpMock.verify();
@@ -96,43 +94,42 @@ describe('BoardService', () => {
         request[0].flush([]);
         tick();
 
-
         expect(request[0].request.method).toEqual('GET');
     }));
 
     it('should retrieve placements of letters to place in word', () => {
-        let word = 'Bofa';
-        let placement = service.retrievePlacements(word, { x: 0, y: 0 }, Direction.Down);
+        const word = 'Bofa';
+        const placement = service.retrievePlacements(word, { x: 0, y: 0 }, Direction.Down);
         expect(placement.length).toBe(word.length);
     });
 
     it('should not retrieve any placements if not word passed', () => {
-        let word = '';
-        let placement = service.retrievePlacements(word, { x: 0, y: 0 }, Direction.Down);
+        const word = '';
+        const placement = service.retrievePlacements(word, { x: 0, y: 0 }, Direction.Down);
         expect(placement.length).toBe(word.length);
     });
 
     it('should increase position of placements leftward if direction of placement is right', () => {
-        let word = 'Yeet';
-        let placement = service.retrievePlacements(word, { x: 0, y: 0 }, Direction.Right);
-        let expectedPlacement = [
+        const word = 'Yeet';
+        const placement = service.retrievePlacements(word, { x: 0, y: 0 }, Direction.Right);
+        const expectedPlacement = [
             { letter: 'Y', position: { x: 0, y: 0 } },
             { letter: 'e', position: { x: 1, y: 0 } },
             { letter: 'e', position: { x: 2, y: 0 } },
-            { letter: 't', position: { x: 3, y: 0 } }
+            { letter: 't', position: { x: 3, y: 0 } },
         ];
 
         expect(placement).toEqual(expectedPlacement);
     });
 
     it('should increase position of placements downward by default', () => {
-        let word = 'Tree';
-        let placement = service.retrievePlacements(word, { x: 0, y: 0 }, Direction.Down);
-        let expectedPlacement = [
+        const word = 'Tree';
+        const placement = service.retrievePlacements(word, { x: 0, y: 0 }, Direction.Down);
+        const expectedPlacement = [
             { letter: 'T', position: { x: 0, y: 0 } },
             { letter: 'r', position: { x: 0, y: 1 } },
             { letter: 'e', position: { x: 0, y: 2 } },
-            { letter: 'e', position: { x: 0, y: 3 } }
+            { letter: 'e', position: { x: 0, y: 3 } },
         ];
 
         expect(placement).toEqual(expectedPlacement);

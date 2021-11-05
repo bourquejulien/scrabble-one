@@ -1,10 +1,10 @@
 /* eslint-disable dot-notation -- reserve is private and we need access for the test */
-
+/* eslint-disable @typescript-eslint/no-magic-numbers */
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { ReserveService } from '@app/services/reserve/reserve.service';
+import { SessionService } from '@app/services/session/session.service';
 import { environmentExt } from '@environment-ext';
-import { SessionService } from '../session/session.service';
 
 class SessionServiceStub {
     private _id: string = '1';
@@ -23,9 +23,7 @@ describe('ReserveService', () => {
         sessionId = '1';
 
         TestBed.configureTestingModule({
-            providers: [
-                { provide: SessionService, useClass: SessionServiceStub },
-            ],
+            providers: [{ provide: SessionService, useClass: SessionServiceStub }],
             imports: [HttpClientTestingModule],
         });
         service = TestBed.inject(ReserveService);
@@ -43,7 +41,7 @@ describe('ReserveService', () => {
     it('should refresh reserve if refresh function called', fakeAsync(() => {
         const response = ['a', 'b', 'c'];
         service['reserve'] = ['z', 'y', 'x'];
-        let firstLetter = service['reserve'][0];
+        const firstLetter = service['reserve'][0];
 
         service.refresh();
         const request = httpMock.match(localUrl('retrieve', `${sessionId}`));
