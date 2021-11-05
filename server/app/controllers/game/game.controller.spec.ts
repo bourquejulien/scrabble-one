@@ -55,6 +55,7 @@ describe('GameController', () => {
             .send(singlePlayerConfig)
             .then((response) => {
                 expect(response.status).to.be.equal(Constants.HTTP_STATUS.OK);
+                expect(response.body).to.deep.equal(serverConfig);
             });
     });
 
@@ -65,7 +66,7 @@ describe('GameController', () => {
             .send(singlePlayerConfig)
             .then((response) => {
                 expect(response.status).to.be.equal(Constants.HTTP_STATUS.NOT_FOUND);
-                expect(response.body).to.deep.equal('');
+                expect(response.body).to.deep.equal({});
             });
     });
 
@@ -87,7 +88,7 @@ describe('GameController', () => {
             .send(singlePlayerConfig)
             .then((response) => {
                 expect(response.status).to.be.equal(Constants.HTTP_STATUS.NOT_FOUND);
-                expect(response.body).to.deep.equal('');
+                expect(response.body).to.deep.equal({});
             });
     });
 
@@ -109,7 +110,7 @@ describe('GameController', () => {
             .send(singlePlayerConfig)
             .then((response) => {
                 expect(response.status).to.be.equal(Constants.HTTP_STATUS.NOT_FOUND);
-                expect(response.body).to.deep.equal('');
+                expect(response.body).to.deep.equal({});
             });
     });
 
@@ -131,7 +132,7 @@ describe('GameController', () => {
             .send(singlePlayerConfig)
             .then((response) => {
                 expect(response.status).to.be.equal(Constants.HTTP_STATUS.NOT_FOUND);
-                expect(response.body).to.deep.equal('');
+                expect(response.body).to.deep.equal({});
             });
     });
 });

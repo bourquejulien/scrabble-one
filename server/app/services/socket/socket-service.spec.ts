@@ -6,6 +6,7 @@ import { expect } from 'chai';
 import { assert, spy } from 'sinon';
 import { SocketService } from './socket-service';
 import http from 'http';
+import { SocketHandler } from '@app/handlers/socket-handler/socket-handler';
 
 class HttpServer {}
 describe('SocketService', () => {
@@ -28,5 +29,10 @@ describe('SocketService', () => {
         const roomId = 'room1';
         service.send('eventType', roomId, 'objectPlaceholder');
         assert.calledWith(emitSpy, roomId);
+    });
+
+    it('should generate a socketHandler', () => {
+        const socketHandler = service.generate('id');
+        expect(socketHandler).to.be.instanceOf(SocketHandler);
     });
 });
