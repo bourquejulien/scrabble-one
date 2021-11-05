@@ -92,7 +92,6 @@ export class BoardComponent implements OnChanges, AfterViewInit {
             this.placeLetterService.backSpaceEnable(event.key, this.squareSelected) &&
             !this.placeLetterService.isPositionInit(this.placeLetterService.gridPosition) &&
             this.placeLetterService.inGrid(this.placeLetterService.gridPosition);
-
         const enterValid: boolean = event.key === 'Enter' && this.placeLetterService.tempRack.length > 0;
         const lastSquare = this.placeLetterService.gridPosition.x > MAX_SIZE || this.placeLetterService.gridPosition.y > MAX_SIZE;
 
@@ -133,7 +132,10 @@ export class BoardComponent implements OnChanges, AfterViewInit {
 
     ngOnChanges(changes: SimpleChanges): void {
         if (!changes.playerType.isFirstChange() && changes.playerType.currentValue !== changes.playerType.previousValue) {
+            this.gridService.resetCanvas(this.tempContext);
             this.gridService.drawSquares(this.squareContext);
+            this.placeLetterService.myRack = [];
+            this.placeLetterService.tempRack = [];
         }
     }
 
