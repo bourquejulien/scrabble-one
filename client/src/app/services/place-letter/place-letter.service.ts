@@ -126,7 +126,8 @@ export class PlaceLetterService {
         }
         if (this.isHorizontal && this.gridPosition.x <= MAX_SIZE + 1) {
             this.gridPosition.x += 1;
-        } else if (!this.isHorizontal && this.gridPosition.y < MAX_SIZE + 1) {
+        }
+        if (!this.isHorizontal && this.gridPosition.y < MAX_SIZE + 1) {
             this.gridPosition.y += 1;
         }
     }
@@ -137,7 +138,8 @@ export class PlaceLetterService {
         }
         if (this.isHorizontal && this.gridPosition.x > MIN_SIZE) {
             this.gridPosition.x -= 1;
-        } else if (!this.isHorizontal && this.gridPosition.y > MIN_SIZE) {
+        }
+        if (!this.isHorizontal && this.gridPosition.y > MIN_SIZE) {
             this.gridPosition.y -= 1;
         }
     }
