@@ -29,7 +29,7 @@ class MatDialogStub {
         return;
     }
 }
-fdescribe('RoomListComponent', () => {
+describe('RoomListComponent', () => {
     let component: RoomListComponent;
     let fixture: ComponentFixture<RoomListComponent>;
     let roomServiceSpy: jasmine.SpyObj<RoomService>;
