@@ -1,4 +1,4 @@
-import { AvailableGameConfig, GameType, Message, MessageType } from '@common';
+import { AvailableGameConfig, Message, MessageType } from '@common';
 import { Socket } from 'socket.io';
 import { Service } from 'typedi';
 import { SocketService } from '@app/services/socket/socket-service';
@@ -6,6 +6,7 @@ import { SessionHandlingService } from '@app/services/sessionHandling/session-ha
 import { Config } from '@app/config';
 import * as logger from 'winston';
 import { Timer } from '@app/classes/delay';
+import { GameService } from '@app/services/game/game.service';
 
 const END_GAME_DELAY_MS = 5000;
 
@@ -13,7 +14,11 @@ const END_GAME_DELAY_MS = 5000;
 export class RoomController {
     private readonly socketIdToPlayerId: Map<string, string>;
 
-    constructor(private readonly socketService: SocketService, private readonly sessionHandlingService: SessionHandlingService) {
+    constructor(
+        private readonly socketService: SocketService,
+        private readonly sessionHandlingService: SessionHandlingService,
+        private readonly gameService: GameService,
+    ) {
         this.socketIdToPlayerId = new Map<string, string>();
     }
 
@@ -32,6 +37,20 @@ export class RoomController {
 
             socket.on('disconnect', async (reason) => {
                 logger.info(`User disconnect: ${socket.id} - Reason: ${reason}`);
+                const playerId = this.socketIdToPlayerId.get(socket.id);
+
+                if (playerId === undefined) {
+                    return;
+                }
+
+                await Timer.delay(END_GAME_DELAY_MS);
+                await this.abandon(socket, playerId);
+
+                this.socketService.socketServer.emit('availableRooms', this.sessionInfos);
+            });
+
+            socket.on('exit', async () => {
+                logger.info(`User exited: ${socket.id}`);
 
                 const playerId = this.socketIdToPlayerId.get(socket.id);
 
@@ -39,13 +58,7 @@ export class RoomController {
                     return;
                 }
 
-                socket.leave(this.sessionHandlingService.getSessionId(playerId));
-                socket.leave(playerId);
-
-                this.socketIdToPlayerId.delete(socket.id);
-                await this.stop(playerId);
-
-                this.socketService.socketServer.emit('availableRooms', this.sessionInfos);
+                await this.abandon(socket, playerId);
             });
 
             socket.on('message', (message: Message) => {
@@ -89,7 +102,6 @@ export class RoomController {
                         this.socketIdToPlayerId.set(socket.id, playerId);
                         logger.info(`Joined room: ${sessionId}`);
                     }
-
                     this.socketService.socketServer.emit('availableRooms', this.sessionInfos);
                 } else {
                     logger.info(`Invalid room ID provided: ${sessionId}`);
@@ -107,25 +119,13 @@ export class RoomController {
         }));
     }
 
-    private async stop(id: string): Promise<boolean> {
-        const handler = this.sessionHandlingService.getHandlerByPlayerId(id);
+    private async abandon(socket: Socket, playerId: string) {
+        this.socketIdToPlayerId.delete(socket.id);
+        await this.gameService.abandon(playerId);
 
-        if (handler == null) {
-            logger.warn(`Failed to stop game: ${id}`);
-            return false;
-        }
+        socket.leave(this.sessionHandlingService.getSessionId(playerId));
+        socket.leave(playerId);
 
-        await Timer.delay(END_GAME_DELAY_MS);
-
-        if (handler.sessionInfo.gameType === GameType.Multiplayer && handler.sessionData.isActive) {
-            handler.endGame();
-            logger.info(`Game ended: ${id}`);
-        } else {
-            handler.dispose();
-            this.sessionHandlingService.removeHandler(id);
-            logger.info(`Game disposed: ${id}`);
-        }
-
-        return true;
+        this.socketService.socketServer.emit('availableRooms', this.sessionInfos);
     }
 }

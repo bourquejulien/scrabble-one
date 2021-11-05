@@ -12,6 +12,7 @@ import { Server, Socket } from 'socket.io';
 import { GameType, Message, MessageType } from '@common';
 import { SessionHandler } from '@app/handlers/session-handler/session-handler';
 import { SocketMock } from '@app/classes/socket-test-helper';
+import { GameService } from '@app/services/game/game.service';
 
 const IDS = {
     player: '123',
@@ -24,6 +25,7 @@ describe('RoomController', () => {
     let socketServerMock: SocketMock;
     let stubSessionHandlingService: SessionHandlingService;
     let sessionHandler: SinonStubbedInstance<SessionHandler>;
+    let gameService: SinonStubbedInstance<GameService>;
 
     beforeEach(() => {
         const stubSocketService = createStubInstance(SocketService);
@@ -40,7 +42,7 @@ describe('RoomController', () => {
             getHandlerByPlayerId: sessionHandler as unknown as SessionHandler,
         }) as unknown as SessionHandlingService;
 
-        controller = new RoomController(stubSocketService, stubSessionHandlingService);
+        controller = new RoomController(stubSocketService, stubSessionHandlingService, gameService as unknown as GameService);
     });
 
     it('should be created', () => {
@@ -122,7 +124,7 @@ describe('RoomController', () => {
             getSessionId: 'full',
         }) as unknown as SessionHandlingService;
 
-        controller = new RoomController(stubSocketService, stubSessionHandlingService);
+        controller = new RoomController(stubSocketService, stubSessionHandlingService, gameService as unknown as GameService);
         // End of copy-paste
 
         controller['handleSockets']();
@@ -144,7 +146,7 @@ describe('RoomController', () => {
             getSessionId: 'sessionId',
         }) as unknown as SessionHandlingService;
 
-        controller = new RoomController(stubSocketService, stubSessionHandlingService);
+        controller = new RoomController(stubSocketService, stubSessionHandlingService, gameService as unknown as GameService);
 
         const stubSessionHandler = createStubInstance(SessionHandler) as unknown as SessionHandler;
         stubSessionHandler['sessionData'] = {
@@ -174,7 +176,7 @@ describe('RoomController', () => {
             getSessionId: '',
         }) as unknown as SessionHandlingService;
 
-        controller = new RoomController(stubSocketService, stubSessionHandlingService);
+        controller = new RoomController(stubSocketService, stubSessionHandlingService, gameService as unknown as GameService);
         // End of copy-paste
 
         controller['handleSockets']();

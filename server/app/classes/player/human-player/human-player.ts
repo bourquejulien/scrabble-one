@@ -44,7 +44,10 @@ export class HumanPlayer extends Player {
 
         const validationData = await this.boardHandler.lookupLetters(placements);
         if (!validationData.isSuccess) {
-            this.socketHandler.sendMessage({ title: '', body: validationData.description, messageType: MessageType.Error }, this.id);
+            this.socketHandler.sendMessage(
+                { title: SystemMessages.ImpossibleCommand, body: validationData.description, messageType: MessageType.Error },
+                this.id,
+            );
             this.endTurn();
             return { isSuccess: false, body: '' };
         }
@@ -58,6 +61,15 @@ export class HumanPlayer extends Player {
 
         this.playerData.skippedTurns = 0;
         this.endTurn();
+
+        this.socketHandler.sendMessage(
+            {
+                title: SystemMessages.ValidCommand,
+                body: 'Lettres placées',
+                messageType: MessageType.System,
+            },
+            this.id,
+        );
 
         return { isSuccess: true, body: '' };
     }
@@ -75,7 +87,7 @@ export class HumanPlayer extends Player {
         if (this.reserveHandler.length < Config.RACK_SIZE) {
             this.socketHandler.sendMessage(
                 {
-                    title: SystemMessages.ImpossibleAction,
+                    title: SystemMessages.ImpossibleCommand,
                     body: SystemMessages.NotEnoughLetters,
                     messageType: MessageType.Error,
                 },
@@ -96,6 +108,15 @@ export class HumanPlayer extends Player {
         this.playerData.skippedTurns = 0;
         this.endTurn();
 
+        this.socketHandler.sendMessage(
+            {
+                title: SystemMessages.ValidCommand,
+                body: 'Lettres échangées',
+                messageType: MessageType.System,
+            },
+            this.id,
+        );
+
         return { isSuccess: true, body: '' };
     }
 
@@ -103,6 +124,14 @@ export class HumanPlayer extends Player {
         this.playerData.skippedTurns++;
         this.endTurn();
 
+        this.socketHandler.sendMessage(
+            {
+                title: SystemMessages.ValidCommand,
+                body: 'Tour sauté',
+                messageType: MessageType.System,
+            },
+            this.id,
+        );
         return { isSuccess: true, body: '' };
     }
 
@@ -121,7 +150,7 @@ export class HumanPlayer extends Player {
             if (this.playerData.rack.indexOf(letter) === -1) {
                 this.socketHandler.sendMessage(
                     {
-                        title: SystemMessages.ImpossibleAction,
+                        title: SystemMessages.ImpossibleCommand,
                         body: `${SystemMessages.LetterPossessionError} ${letter}`,
                         messageType: MessageType.Error,
                     },
