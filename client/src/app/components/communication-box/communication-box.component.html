@@ -1,11 +1,7 @@
 <div class="chat-container">
     <div #messageContainer class="message-container">
         <div class="messages" *ngFor="let message of messages">
-            <mat-card
-                class="message-card"
-                [style.background-color]="getMessageColor(message)"
-                [style.color]="getFontColor(message)"
-            >
+            <mat-card class="message-card" [style.background-color]="getMessageColor(message)" [style.color]="getFontColor(message)">
                 <mat-icon *ngIf="this.isError(message)" class="card-icon">warning</mat-icon>
                 <span
                     ><b>{{ getTitle(message) }}<br /></b

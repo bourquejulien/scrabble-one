@@ -1,15 +1,15 @@
-import { Injectable } from '@angular/core';
-import { PlayerService } from '@app/services/player/player.service';
-import { GameType, MessageType, ServerConfig, SessionStats, SinglePlayerConfig } from '@common';
-import { BehaviorSubject, Subject } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
-import { SessionService } from '@app/services/session/session.service';
-import { PlayerType } from '@app/classes/player/player-type';
-import { environmentExt } from '@environment-ext';
-import { SocketClientService } from '@app/services/socket-client/socket-client.service';
+import { Injectable } from '@angular/core';
 import { EndGameWinner } from '@app/classes/end-game-winner';
-import { RackService } from '@app/services/rack/rack.service';
+import { PlayerType } from '@app/classes/player/player-type';
 import { MessagingService } from '@app/services/messaging/messaging.service';
+import { PlayerService } from '@app/services/player/player.service';
+import { RackService } from '@app/services/rack/rack.service';
+import { SessionService } from '@app/services/session/session.service';
+import { SocketClientService } from '@app/services/socket-client/socket-client.service';
+import { GameType, MessageType, ServerConfig, SessionStats, SinglePlayerConfig } from '@common';
+import { environmentExt } from '@environment-ext';
+import { BehaviorSubject, Subject } from 'rxjs';
 
 const localUrl = (base: string, call: string, id?: string) => `${environmentExt.apiUrl}${base}/${call}${id ? '/' + id : ''}`;
 
@@ -26,7 +26,7 @@ export class GameService {
 
     constructor(
         private readonly playerService: PlayerService,
-        private readonly httpCLient: HttpClient,
+        private httpCLient: HttpClient,
         private readonly sessionService: SessionService,
         private readonly rackService: RackService,
         private readonly socketService: SocketClientService,

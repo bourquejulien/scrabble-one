@@ -1,6 +1,7 @@
-/* eslint-disable */
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable dot-notation -- Need access to private functions and properties*/
 import { TestBed } from '@angular/core/testing';
-import { CanvasTestHelper } from '@app/classes/canvas-test-helper';
+import { CanvasTestHelper } from '@app/classes/helpers/canvas-test-helper';
 import { BoardService } from '@app/services/board/board.service';
 import { GridService } from '@app/services/grid/grid.service';
 import { PlayerService } from '@app/services/player/player.service';
