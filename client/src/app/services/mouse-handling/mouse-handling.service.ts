@@ -10,7 +10,6 @@ export enum MouseButton {
     Forward = 4,
 }
 
-// TODO To be improved in Sprint 2
 @Injectable({
     providedIn: 'root',
 })

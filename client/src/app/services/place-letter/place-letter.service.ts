@@ -1,12 +1,10 @@
 import { Injectable } from '@angular/core';
 import { BoardService } from '@app/services/board/board.service';
 import { GridService } from '@app/services/grid/grid.service';
-import { PlayerService } from '@app/services/player/player.service';
 import { RackService } from '@app/services/rack/rack.service';
-import { Direction, Vec2 } from '@common';
-// TODO add to constant file
-const MAX_SIZE = 15;
-const MIN_SIZE = 1;
+import { Vec2 } from '@common';
+import { CommandsService } from '@app/services/commands/commands.service';
+import { Constants } from '@app/constants/global.constants';
 
 @Injectable({
     providedIn: 'root',
@@ -20,44 +18,43 @@ export class PlaceLetterService {
     isLastSquare: boolean;
 
     constructor(
-        readonly gridService: GridService,
-        readonly rackService: RackService,
-        readonly boardService: BoardService,
-        readonly playerService: PlayerService,
+        private readonly gridService: GridService,
+        private readonly rackService: RackService,
+        private readonly boardService: BoardService,
+        private readonly commandService: CommandsService,
     ) {
         this.isHorizontal = true;
         this.tempRack = [];
         this.myRack = [];
     }
 
-    enterOperation(): void {
-        let word = '';
-        let direction: Direction;
-        if (this.isHorizontal) {
-            direction = Direction.Right;
-        } else {
-            direction = Direction.Down;
-        }
-        for (const letter of this.tempRack) {
-            word += letter;
-        }
-        this.playerService.placeLetters(word, { x: this.positionInit.x - 1, y: this.positionInit.y - 1 }, direction);
+    placeLetters(): void {
+        const word = this.tempRack.join('');
+        const x = this.positionInit.x;
+        const y = String.fromCharCode(Constants.CHAR_OFFSET + this.positionInit.y - 1);
+
+        const command = `!placer ${y}${x}${this.isHorizontal ? 'h' : 'v'} ${word}`;
+        this.commandService.parseInput(command);
+
         this.myRack = [];
         this.tempRack = [];
     }
 
     backSpaceOperation(tempContext: CanvasRenderingContext2D): void {
         this.gridService.clearSquare(tempContext, this.gridPosition);
+
         if (this.isHorizontal) {
             this.gridService.cleanInsideSquare(tempContext, { x: this.gridPosition.x - 1, y: this.gridPosition.y });
-        } else this.gridService.cleanInsideSquare(tempContext, { x: this.gridPosition.x, y: this.gridPosition.y - 1 });
+        } else {
+            this.gridService.cleanInsideSquare(tempContext, { x: this.gridPosition.x, y: this.gridPosition.y - 1 });
+        }
 
         this.rackService.rack.push(this.myRack[this.myRack.length - 1]);
         this.tempRack.pop();
         this.myRack.pop();
         this.nextAvailableSquare(false);
         this.gridService.drawSelectionSquare(tempContext, this.gridPosition);
-        if (this.gridPosition.x < MAX_SIZE && this.gridPosition.y < MAX_SIZE) {
+        if (this.gridPosition.x < Constants.GRID.GRID_SIZE && this.gridPosition.y < Constants.GRID.GRID_SIZE) {
             this.gridService.drawDirectionArrow(tempContext, this.gridPosition, this.isHorizontal);
         }
     }
@@ -70,76 +67,72 @@ export class PlaceLetterService {
     }
 
     isPositionInit(position: Vec2): boolean {
-        if (position.x === this.positionInit.x && position.y === this.positionInit.y) {
-            return true;
-        } else {
-            return false;
-        }
+        return position.x === this.positionInit.x && position.y === this.positionInit.y;
     }
 
     backSpaceEnable(key: string, squareSelected: boolean): boolean {
-        if (key === 'Backspace' && squareSelected) {
-            return true;
-        } else {
-            return false;
-        }
+        return key === 'Backspace' && squareSelected;
     }
 
     samePosition(position: Vec2): void {
         if (this.gridPosition.x === position.x && this.gridPosition.y === position.y) {
-            this.isHorizontal = false;
-        } else {
-            this.cancel();
-            this.myRack = [];
-            this.gridPosition = position;
-            this.positionInit = { x: position.x, y: position.y };
-            this.isHorizontal = true;
+            this.isHorizontal = !this.isHorizontal;
+
+            return;
         }
+
+        this.cancel();
+        this.myRack = [];
+        this.gridPosition = position;
+        this.positionInit = { x: position.x, y: position.y };
+        this.isHorizontal = true;
     }
 
     inGrid(position: Vec2): boolean {
-        if (position.x >= MIN_SIZE && position.x <= MAX_SIZE + 1) {
-            return position.y >= MIN_SIZE && position.y <= MAX_SIZE + 1;
-        } else {
-            return false;
+        if (position.x >= 1 && position.x <= Constants.GRID.GRID_SIZE + 1) {
+            return position.y >= 1 && position.y <= Constants.GRID.GRID_SIZE + 1;
         }
+
+        return false;
     }
 
     nextAvailableSquare(isForward: boolean): void {
         if (isForward) {
             do {
                 this.getNextSquare();
-            } while (!this.boardService.positionIsAvailable(this.gridPosition));
+            } while (!this.boardService.isPositionAvailable(this.gridPosition));
         } else {
             do {
                 this.getPastSquare();
-            } while (!this.boardService.positionIsAvailable(this.gridPosition));
+            } while (!this.boardService.isPositionAvailable(this.gridPosition));
         }
     }
 
     private getNextSquare(): void {
-        if (!this.boardService.positionIsAvailable(this.gridPosition)) {
+        if (!this.boardService.isPositionAvailable(this.gridPosition)) {
             this.tempRack.push(this.boardService.getLetter(this.gridPosition));
         }
-        if (this.gridPosition.x === MAX_SIZE) {
+
+        if (this.gridPosition.x === Constants.GRID.GRID_SIZE) {
             this.isLastSquare = true;
         }
-        if (this.isHorizontal && this.gridPosition.x <= MAX_SIZE + 1) {
+
+        if (this.isHorizontal && this.gridPosition.x <= Constants.GRID.GRID_SIZE + 1) {
             this.gridPosition.x += 1;
         }
-        if (!this.isHorizontal && this.gridPosition.y < MAX_SIZE + 1) {
+        if (!this.isHorizontal && this.gridPosition.y < Constants.GRID.GRID_SIZE + 1) {
             this.gridPosition.y += 1;
         }
     }
 
     private getPastSquare(): void {
-        if (!this.boardService.positionIsAvailable(this.gridPosition)) {
+        if (!this.boardService.isPositionAvailable(this.gridPosition)) {
             this.tempRack.pop();
         }
-        if (this.isHorizontal && this.gridPosition.x > MIN_SIZE) {
+        if (this.isHorizontal && this.gridPosition.x > 1) {
             this.gridPosition.x -= 1;
         }
-        if (!this.isHorizontal && this.gridPosition.y > MIN_SIZE) {
+        if (!this.isHorizontal && this.gridPosition.y > 1) {
             this.gridPosition.y -= 1;
         }
     }

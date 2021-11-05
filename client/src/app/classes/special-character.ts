@@ -1,4 +1,4 @@
-export const specialCharacter = new Map<string, string>([
+export const SPECIAL_CHARACTERS = new Map<string, string>([
     ['à', 'a'],
     ['â', 'a'],
     ['ä', 'a'],
