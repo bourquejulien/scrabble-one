@@ -4,7 +4,7 @@ import { Injectable } from '@angular/core';
 import { fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { Constants } from '@app/constants/global.constants';
 import { BoardService } from '@app/services/board/board.service';
-import { BoardData, Bonus, Direction, Placement } from '@common';
+import { BoardData, Bonus, Direction, Placement, Vec2 } from '@common';
 import { environmentExt } from '@environment-ext';
 import { SessionService } from '../session/session.service';
 
@@ -45,11 +45,10 @@ const localUrl = (call: string, id: string) => `${environmentExt.apiUrl}board/${
 describe('BoardService', () => {
     let service: BoardService;
     let letters: Placement[];
-    // eslint-disable-next-line no-unused-vars
+    let position: Vec2;
+    let data: BoardData;
     let httpMock: HttpTestingController;
     const session = new SessionService();
-
-    //const localUrl = (call: string, id: string) => `${environmentExt.apiUrl}board/${call}/${id}`;
 
     beforeEach(() => {
         TestBed.configureTestingModule({
@@ -60,8 +59,12 @@ describe('BoardService', () => {
         });
 
         service = TestBed.inject(BoardService);
-        letters = [{ letter: 'a', position: { x: 1, y: 1 } }];
         httpMock = TestBed.inject(HttpTestingController);
+        session['_id'] = '1';
+        position = { x: 2, y: 2 };
+        letters = [{ letter: 'a', position: { x: 1, y: 1 } }];
+        data = generateData(Constants.GRID.GRID_SIZE);
+        service['boardData'] = data;
     });
 
 
@@ -74,13 +77,10 @@ describe('BoardService', () => {
     });
 
     it('should return board data', () => {
-        let data = generateData(Constants.GRID.GRID_SIZE);
-        service['boardData'] = data;
         expect(service.gameBoard).toEqual(data);
     });
 
     it('should call POST request with http client when trying to place letter', fakeAsync(() => {
-        session['_id'] = '1';
         service.placeLetters(letters);
 
         const request = httpMock.match(localUrl('place', `${session.id}`));
@@ -91,7 +91,6 @@ describe('BoardService', () => {
     }));
 
     it('should call GET request with http client refreshing board data', fakeAsync(() => {
-        session['_id'] = '1';
         service.refresh();
         const request = httpMock.match(localUrl('retrieve', `${session.id}`));
         request[0].flush([]);
@@ -101,28 +100,56 @@ describe('BoardService', () => {
         expect(request[0].request.method).toEqual('GET');
     }));
 
-    // it('should refresh board data with data received from server', fakeAsync(() => {
-    //     let dataBefore = generateData(Constants.GRID.GRID_SIZE);
-    //     let dataAfter = generateData(Constants.GRID.GRID_SIZE * 2);
-    //     let promisedDataAfter = Promise.resolve(dataAfter);
-    //     service['boardData'] = dataBefore;
-
-    //     let boardData = service.refresh();
-    //     const request = httpMock.match(localUrl('retrieve', `${session.id}`));
-
-    //     expect(request[0].request.method).toEqual('GET');
-
-    //     request[0].flush(promisedDataAfter);
-    //     tick();
-
-    //     expect(boardData).toEqual(promisedDataAfter);
-    // }));
-
     it('should retrieve placements of letters to place in word', () => {
-        //session['_id'] = '2';
         let word = 'Bofa';
-        //const spy = spyOn<any>(Array.prototype, 'push');
         let placement = service.retrievePlacements(word, { x: 0, y: 0 }, Direction.Down);
         expect(placement.length).toBe(word.length);
+    });
+
+    it('should not retrieve any placements if not word passed', () => {
+        let word = '';
+        let placement = service.retrievePlacements(word, { x: 0, y: 0 }, Direction.Down);
+        expect(placement.length).toBe(word.length);
+    });
+
+    it('should increase position of placements leftward if direction of placement is right', () => {
+        let word = 'Yeet';
+        let placement = service.retrievePlacements(word, { x: 0, y: 0 }, Direction.Right);
+        let expectedPlacement = [
+            { letter: 'Y', position: { x: 0, y: 0 } },
+            { letter: 'e', position: { x: 1, y: 0 } },
+            { letter: 'e', position: { x: 2, y: 0 } },
+            { letter: 't', position: { x: 3, y: 0 } }
+        ];
+
+        expect(placement).toEqual(expectedPlacement);
+    });
+
+    it('should increase position of placements downward by default', () => {
+        let word = 'Tree';
+        let placement = service.retrievePlacements(word, { x: 0, y: 0 }, Direction.Down);
+        let expectedPlacement = [
+            { letter: 'T', position: { x: 0, y: 0 } },
+            { letter: 'r', position: { x: 0, y: 1 } },
+            { letter: 'e', position: { x: 0, y: 2 } },
+            { letter: 'e', position: { x: 0, y: 3 } }
+        ];
+
+        expect(placement).toEqual(expectedPlacement);
+    });
+
+    it('should return true if position available', () => {
+        service['boardData'].board[position.x - 1][position.y - 1].letter = '';
+        expect(service.positionIsAvailable(position)).toBe(true);
+    });
+
+    it('should return false if position occupied', () => {
+        service['boardData'].board[position.x - 1][position.y - 1].letter = 'a';
+        expect(service.positionIsAvailable(position)).toBe(false);
+    });
+
+    it('should get correct letter on board at specified position', () => {
+        service['boardData'].board[position.x - 1][position.y - 1].letter = 'a';
+        expect(service.getLetter(position)).toBe('a');
     });
 });

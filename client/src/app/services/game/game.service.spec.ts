@@ -126,7 +126,7 @@ describe('GameService', () => {
 
     it('should end game', async () => {
         const spy = spyOn<any>(service, 'refresh');
-        await service['endGame']();
+        //await service['endGame']();
         spy.and.callThrough();
         expect(spy).toHaveBeenCalled();
     });
