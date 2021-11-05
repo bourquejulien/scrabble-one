@@ -119,7 +119,6 @@ class GridServiceStub {
 
 class BoardServiceMock {
     iteration = 0;
-
     isPositionAvailable() {
         return true;
     }
@@ -129,7 +128,7 @@ class BoardServiceMock {
     }
 }
 
-describe('BoardComponent', () => {
+fdescribe('BoardComponent', () => {
     const playerType = PlayerType.Local;
     let component: BoardComponent;
     let fixture: ComponentFixture<BoardComponent>;
@@ -144,7 +143,7 @@ describe('BoardComponent', () => {
         rackServiceSpy = jasmine.createSpyObj('RackService', ['indexOf']);
         gameServiceSpy = jasmine.createSpyObj('GameService', [], { currentTurn: playerType });
         placeLetter = jasmine.createSpyObj('PlaceLetterService', [
-            'placeLetters',
+            'enterOperation',
             'inGrid',
             'isPositionInit',
             'backSpaceEnable',
@@ -152,6 +151,7 @@ describe('BoardComponent', () => {
             'samePosition',
             'backSpaceOperation',
             'nextAvailableSquare',
+            'placeLetters',
         ]);
 
         placeLetter.inGrid.and.returnValue(true);
@@ -214,6 +214,7 @@ describe('BoardComponent', () => {
     });
 
     it('should resetCanvas when canClick in mouseDown is false', () => {
+        component.placeLetterService.myRack = ['a'];
         const spyReset = spyOn(gridServiceStub, 'resetCanvas');
         const mouseEvent = new MouseEvent('mousedown');
         component.isMouseOnBoard = false;
@@ -230,12 +231,21 @@ describe('BoardComponent', () => {
     });
 
     it('squareValid in onMouseDown', () => {
-        // component.placeLetterService.inGridResult = true;
         const spy = spyOn(gridServiceStub, 'drawSelectionSquare');
         const mouseEvent = new MouseEvent('mousedown');
         component.isMouseOnBoard = true;
         component.onMouseDown(mouseEvent);
         expect(spy).toHaveBeenCalled();
+    });
+
+    it('squareValid is false in onMouseDown', () => {
+        component.placeLetterService.gridPosition = { x: 17, y: 9 };
+        placeLetter.inGrid.and.returnValue(false);
+        const spy = spyOn(gridServiceStub, 'cleanInsideSquare');
+        const mouseEvent = new MouseEvent('mousedown');
+        component.isMouseOnBoard = true;
+        component.onMouseDown(mouseEvent);
+        expect(spy).not.toHaveBeenCalled();
     });
 
     it('squareValid and lastSquare in onMouseDown', () => {
@@ -390,6 +400,29 @@ describe('BoardComponent', () => {
 
         component.onKeyDown(new KeyboardEvent('keydown', { key: LETTER }));
         expect(component.isLetter).toBeFalse();
+    });
+
+    it('put a return nothing if gridposition undefined  onKeyDown', () => {
+        component.squareSelected = true;
+        const LETTER = 'a';
+
+        component.onKeyDown(new KeyboardEvent('keydown', { key: LETTER }));
+
+        expect(component.placeLetterService.backSpaceEnable).not.toHaveBeenCalled();
+    });
+
+    it('put a return nothing if gridposition undefined  onKeyDown', () => {
+        component.isMouseOnBoard = true;
+        const spy = spyOn<any>(component, 'resetPlaceSelection');
+        component.lostFocus();
+        expect(spy).not.toHaveBeenCalled();
+    });
+
+    it('put a return nothing if gridposition undefined  onKeyDown', () => {
+        component.isMouseOnBoard = false;
+        const spy = spyOn<any>(component, 'resetPlaceSelection');
+        component.lostFocus();
+        expect(spy).toHaveBeenCalled();
     });
 
     // afterAll(() => cleanStyles());
