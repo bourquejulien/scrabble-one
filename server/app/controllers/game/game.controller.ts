@@ -15,41 +15,45 @@ export class GameController {
         this.router = Router();
 
         this.router.put('/init/single', async (req: Request, res: Response) => {
-            const answer = await this.gameService.initSinglePlayer(req.body);
-            if (answer) {
-                res.json(answer);
+            const config = await this.gameService.initSinglePlayer(req.body);
+
+            if (config == null) {
+                res.sendStatus(Constants.HTTP_STATUS.BAD_REQUEST);
                 return;
             }
-            res.status(Constants.HTTP_STATUS.BAD_REQUEST);
+            res.json(config);
         });
 
         this.router.put('/init/multi', async (req: Request, res: Response) => {
-            const answer = await this.gameService.initMultiplayer(req.body);
-            if (answer) {
-                res.json(answer);
+            const config = await this.gameService.initMultiplayer(req.body);
+
+            if (config == null) {
+                res.sendStatus(Constants.HTTP_STATUS.BAD_REQUEST);
                 return;
             }
-            res.status(Constants.HTTP_STATUS.BAD_REQUEST);
+
+            res.json(config);
         });
 
         this.router.put('/join', async (req: Request, res: Response) => {
-            const answer = await this.gameService.joinMultiplayer(req.body);
+            const config = await this.gameService.joinMultiplayer(req.body);
 
-            if (answer) {
-                res.json(answer);
+            if (config == null) {
+                res.sendStatus(Constants.HTTP_STATUS.NOT_FOUND);
                 return;
             }
-            res.status(Constants.HTTP_STATUS.NOT_FOUND);
+
+            res.json(config);
         });
 
         this.router.put('/convert', async (req: Request, res: Response) => {
-            const answer = await this.gameService.convert(req.body);
+            const config = await this.gameService.convert(req.body);
 
-            if (answer) {
-                res.json(answer);
+            if (config == null) {
+                res.sendStatus(Constants.HTTP_STATUS.BAD_REQUEST);
                 return;
             }
-            res.status(Constants.HTTP_STATUS.BAD_REQUEST);
+            res.json(config);
         });
     }
 }

@@ -1,7 +1,7 @@
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { Injectable } from '@angular/core';
 import { fakeAsync, TestBed, tick } from '@angular/core/testing';
-import { environmentExt } from '@environmentExt';
+import { environmentExt } from '@environment-ext';
 import { SessionService } from '../session/session.service';
 import { RackService } from './rack.service';
 

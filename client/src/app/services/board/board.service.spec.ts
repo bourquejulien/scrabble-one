@@ -3,7 +3,7 @@
 // import { fakeAsync, TestBed, tick } from '@angular/core/testing';
 // import { BoardService } from '@app/services/board/board.service';
 // import { Bonus } from '@common';
-// import { environmentExt } from '@environmentExt';
+// import { environmentExt } from '@environment-ext';
 
 // describe('BoardService', () => {
 //     let service: BoardService;

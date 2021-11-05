@@ -4,8 +4,9 @@
 import { expect } from 'chai';
 import { Board } from '@app/classes/board/board';
 import { BoardValidator } from '@app/classes/validation/board-validator';
-import { Placement, Vec2, ValidationResponse } from '@common';
+import { Placement, Vec2 } from '@common';
 import { BoardHandler } from './board-handler';
+import { ValidationResponse } from '@app/classes/validation/validation-response';
 
 const BOARD_SIZE = 15;
 const COMBINED_WORD: Placement[] = [

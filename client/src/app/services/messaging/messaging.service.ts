@@ -16,7 +16,7 @@ export class MessagingService {
         this.isDebug = false;
         this.onMessageSubject = new Subject<Message>();
 
-        this.socketService.on('message', (message: Message) => this.onMessageSubject.next(message));
+        this.socketService.on(SocketEvent.Message, (message: Message) => this.onMessageSubject.next(message));
         this.socketService.socketClient.on('connect_error', (error) => this.handleConnectionError(error));
     }
 
@@ -45,4 +45,8 @@ export class MessagingService {
     get onMessage(): Observable<Message> {
         return this.onMessageSubject.asObservable();
     }
+}
+
+enum SocketEvent {
+    Message = 'Message',
 }

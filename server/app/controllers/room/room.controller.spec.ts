@@ -11,7 +11,7 @@ import { SocketService } from '@app/services/socket/socket-service';
 import { Server, Socket } from 'socket.io';
 import { GameType, Message, MessageType } from '@common';
 import { SessionHandler } from '@app/handlers/session-handler/session-handler';
-import { SocketMock } from '@app/classes/socket-test-helper';
+import { SocketMock } from '@app/classes/helpers/socket-test-helper';
 
 const IDS = {
     player: '123',
@@ -188,6 +188,6 @@ describe('RoomController', () => {
 
     it('should tell when a room is full', async () => {
         const socket = new SocketMock() as unknown as Socket;
-        expect(await controller['isRoomFull'](socket, 'full')).to.be.equals(true);
+        expect(await RoomController['isRoomFull'](socket, 'full')).to.be.equals(true);
     });
 });

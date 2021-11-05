@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { SessionService } from '@app/services/session/session.service';
-import { environmentExt } from '@environmentExt';
+import { environmentExt } from '@environment-ext';
 
 const localUrl = (call: string, id: string) => `${environmentExt.apiUrl}reserve/${call}/${id}`;
 
@@ -16,8 +16,7 @@ export class ReserveService {
     }
 
     async refresh(): Promise<void> {
-        const response = await this.httpClient.get<string[]>(localUrl('retrieve', this.sessionService.id)).toPromise();
-        this.reserve = response;
+        this.reserve = await this.httpClient.get<string[]>(localUrl('retrieve', this.sessionService.id)).toPromise();
     }
 
     reset(): void {

@@ -3,7 +3,7 @@
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { ReserveService } from '@app/services/reserve/reserve.service';
-import { environmentExt } from '@environmentExt';
+import { environmentExt } from '@environment-ext';
 import { SessionService } from '../session/session.service';
 
 class SessionServiceStub {

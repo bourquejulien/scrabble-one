@@ -9,7 +9,7 @@ import { BoardService } from '@app/services/board/board.service';
 import { PlayerService } from '@app/services/player/player.service';
 import { ReserveService } from '@app/services/reserve/reserve.service';
 import { Direction, Placement } from '@common';
-import { environmentExt } from '@environmentExt';
+import { environmentExt } from '@environment-ext';
 import { RackService } from '../rack/rack.service';
 import { SessionService } from '../session/session.service';
 

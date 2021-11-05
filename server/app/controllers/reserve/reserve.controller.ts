@@ -22,9 +22,7 @@ export class ReserveController {
                 return;
             }
 
-            const reserveData = reserveHandler.reserve;
-            res.status(Constants.HTTP_STATUS.OK);
-            res.json(reserveData);
+            res.json(reserveHandler.reserve);
         });
     }
 

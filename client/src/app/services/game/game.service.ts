@@ -5,7 +5,7 @@ import { PlayerService } from '@app/services/player/player.service';
 import { SessionService } from '@app/services/session/session.service';
 import { SocketClientService } from '@app/services/socket-client/socket-client.service';
 import { GameType, ServerConfig, SessionStats, SinglePlayerConfig } from '@common';
-import { environmentExt } from '@environmentExt';
+import { environmentExt } from '@environment-ext';
 import { BehaviorSubject, Subject } from 'rxjs';
 
 const localUrl = (base: string, call: string, id?: string) => `${environmentExt.apiUrl}${base}/${call}${id ? '/' + id : ''}`;
@@ -86,6 +86,7 @@ export class GameService {
     }
 
     private async refresh(): Promise<void> {
+        // TODO Add try catch ?
         this.stats = await this.httpCLient.get<SessionStats>(localUrl('player', 'stats', this.sessionService.id)).toPromise();
         await this.playerService.refresh();
     }
