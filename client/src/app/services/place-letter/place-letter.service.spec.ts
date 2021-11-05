@@ -28,7 +28,7 @@ describe('PlaceLetterService', () => {
     let service: PlaceLetterService;
     let playerServiceSpy: jasmine.SpyObj<PlayerService>;
     let gridServiceSpy: jasmine.SpyObj<GridService>;
-    // let boardServiceSpy: jasmine.SpyObj<BoardService>;
+
     let rackServiceSpy: jasmine.SpyObj<RackService>;
     let ctxStub: CanvasRenderingContext2D;
     const CANVAS_WIDTH = 500;
@@ -97,11 +97,12 @@ describe('PlaceLetterService', () => {
     });
 
     it('should called clearSquare when backSpaceOperation() is called', () => {
+        const expectedPosition = { x: 8, y: 15 };
         service.isHorizontal = false;
-        service.gridPosition = { x: 8, y: 8 };
+        service.gridPosition = { x: 8, y: 16 };
 
         service.backSpaceOperation(ctxStub);
-        expect(gridServiceSpy.clearSquare).toHaveBeenCalledWith(ctxStub, service.gridPosition);
+        expect(gridServiceSpy.drawSelectionSquare).toHaveBeenCalledWith(ctxStub, expectedPosition);
     });
 
     it('should called resetCanvas and cancel when escapeOperation() is called', () => {
@@ -167,7 +168,7 @@ describe('PlaceLetterService', () => {
     });
 
     it('should return false when inGrid is called', () => {
-        const position = { x: 16, y: 8 };
+        const position = { x: 17, y: 8 };
 
         expect(service.inGrid(position)).toBeFalse();
     });
@@ -199,12 +200,12 @@ describe('PlaceLetterService', () => {
 
     it('should call getPastSquare when nextAvailableSquare is called', () => {
         const isForward = false;
-        const expecterRack = ['e', 's'];
+        const expectedRack = ['e', 's'];
         const expectedPosition = { x: 7, y: 8 };
         service.gridPosition = { x: 8, y: 8 };
         service.nextAvailableSquare(isForward);
 
-        expect(service.tempRack).toEqual(expecterRack);
+        expect(service.tempRack).toEqual(expectedRack);
         expect(service.gridPosition).toEqual(expectedPosition);
     });
 
@@ -231,6 +232,28 @@ describe('PlaceLetterService', () => {
         service.isHorizontal = false;
         const expectedPosition = { x: 8, y: 7 };
         service.gridPosition = { x: 8, y: 8 };
+        service.nextAvailableSquare(isForward);
+
+        expect(service.gridPosition).toEqual(expectedPosition);
+    });
+
+    it('should call getNext horizontal when nextAvailableSquare true is called', () => {
+        spyOn<any>(service.boardService, 'positionIsAvailable').and.returnValue(true);
+        const isForward = true;
+        service.isHorizontal = true;
+        const expectedPosition = { x: 17, y: 8 };
+        service.gridPosition = { x: 16, y: 8 };
+        service.nextAvailableSquare(isForward);
+
+        expect(service.gridPosition).toEqual(expectedPosition);
+    });
+
+    it('should call getPastSquare horizontal when nextAvailableSquare false is called', () => {
+        spyOn<any>(service.boardService, 'positionIsAvailable').and.returnValue(true);
+        const isForward = false;
+        service.isHorizontal = true;
+        const expectedPosition = { x: 15, y: 8 };
+        service.gridPosition = { x: 16, y: 8 };
         service.nextAvailableSquare(isForward);
 
         expect(service.gridPosition).toEqual(expectedPosition);
