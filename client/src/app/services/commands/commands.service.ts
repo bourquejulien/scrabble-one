@@ -27,7 +27,7 @@ export class CommandsService {
         this.placeWordCommandRegex = /^([a-o]){1}([1-9]|1[0-5]){1}([hv]){1}$/;
         this.wordRegex = /^[A-zÀ-ú]{1,15}$/;
         this.rackRegex = /^[a-z*]{1,7}$/;
-        this.messageRegex = /^[A-zÀ-ú0-9 !.?'"]{1,512}$/;
+        this.messageRegex = /^[A-zÀ-ú0-9 !.?'"*]{1,512}$/;
     }
 
     // Source: https://stackoverflow.com/questions/990904/remove-accents-diacritics-in-a-string-in-javascript by Lewis Diamond on 05/29/16
