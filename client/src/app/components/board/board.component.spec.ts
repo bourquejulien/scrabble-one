@@ -215,7 +215,7 @@ describe('BoardComponent', () => {
     it('should resetCanvas when canClick in mouseDown is false', () => {
         const spyReset = spyOn(gridServiceStub, 'resetCanvas');
         const mouseEvent = new MouseEvent('mousedown');
-        component.isFocus = false;
+        component.isMouseOnBoard = false;
         component.onMouseDown(mouseEvent);
         expect(spyReset).toHaveBeenCalled();
     });
@@ -223,7 +223,7 @@ describe('BoardComponent', () => {
     it('gridPosition is undefined in onMouseDown', () => {
         const spy = spyOn(gridServiceStub, 'resetCanvas');
         const mouseEvent = new MouseEvent('mousedown');
-        component.isFocus = true;
+        component.isMouseOnBoard = true;
         component.onMouseDown(mouseEvent);
         expect(spy).toHaveBeenCalled();
     });
@@ -232,7 +232,7 @@ describe('BoardComponent', () => {
         // component.placeLetterService.inGridResult = true;
         const spy = spyOn(gridServiceStub, 'drawSelectionSquare');
         const mouseEvent = new MouseEvent('mousedown');
-        component.isFocus = true;
+        component.isMouseOnBoard = true;
         component.onMouseDown(mouseEvent);
         expect(spy).toHaveBeenCalled();
     });
@@ -241,7 +241,7 @@ describe('BoardComponent', () => {
         component.placeLetterService.gridPosition = { x: 15, y: 9 };
         const spy = spyOn(gridServiceStub, 'drawSelectionSquare');
         const mouseEvent = new MouseEvent('mousedown');
-        component.isFocus = true;
+        component.isMouseOnBoard = true;
         component.onMouseDown(mouseEvent);
         expect(spy).toHaveBeenCalled();
     });
@@ -269,7 +269,7 @@ describe('BoardComponent', () => {
         component.placeLetterService.tempRack = ['e', 's', 't', 'a'];
         component.placeLetterService.gridPosition = { x: 15, y: 9 };
         component.onKeyDown(new KeyboardEvent('keydown', { key: LETTER }));
-        expect(placeLetter.enterOperation).toHaveBeenCalled();
+        expect(placeLetter.placerLetters).toHaveBeenCalled();
     });
 
     it('put a in myRack when onKeyDown', () => {

@@ -1,10 +1,11 @@
 import { Injectable } from '@angular/core';
 import { BoardService } from '@app/services/board/board.service';
 import { GridService } from '@app/services/grid/grid.service';
-import { PlayerService } from '@app/services/player/player.service';
 import { RackService } from '@app/services/rack/rack.service';
-import { Direction, Vec2 } from '@common';
-// TODO add to constant file
+import { Vec2 } from '@common';
+import { CommandsService } from '@app/services/commands/commands.service';
+import { Constants } from '@app/constants/global.constants';
+
 const MAX_SIZE = 15;
 const MIN_SIZE = 1;
 
@@ -20,37 +21,36 @@ export class PlaceLetterService {
     isLastSquare: boolean;
 
     constructor(
-        readonly gridService: GridService,
-        readonly rackService: RackService,
-        readonly boardService: BoardService,
-        readonly playerService: PlayerService,
+        private readonly gridService: GridService,
+        private readonly rackService: RackService,
+        private readonly boardService: BoardService,
+        private readonly commandService: CommandsService,
     ) {
         this.isHorizontal = true;
         this.tempRack = [];
         this.myRack = [];
     }
 
-    enterOperation(): void {
-        let word = '';
-        let direction: Direction;
-        if (this.isHorizontal) {
-            direction = Direction.Right;
-        } else {
-            direction = Direction.Down;
-        }
-        for (const letter of this.tempRack) {
-            word += letter;
-        }
-        this.playerService.placeLetters(word, { x: this.positionInit.x - 1, y: this.positionInit.y - 1 }, direction);
+    placerLetters(): void {
+        const word = this.tempRack.join('');
+        const x = this.positionInit.x;
+        const y = String.fromCharCode(Constants.CHAR_OFFSET + this.positionInit.y - 1);
+
+        const command = `!placer ${y}${x}${this.isHorizontal ? 'h' : 'v'} ${word}`;
+        this.commandService.parseInput(command);
+
         this.myRack = [];
         this.tempRack = [];
     }
 
     backSpaceOperation(tempContext: CanvasRenderingContext2D): void {
         this.gridService.clearSquare(tempContext, this.gridPosition);
+
         if (this.isHorizontal) {
             this.gridService.cleanInsideSquare(tempContext, { x: this.gridPosition.x - 1, y: this.gridPosition.y });
-        } else this.gridService.cleanInsideSquare(tempContext, { x: this.gridPosition.x, y: this.gridPosition.y - 1 });
+        } else {
+            this.gridService.cleanInsideSquare(tempContext, { x: this.gridPosition.x, y: this.gridPosition.y - 1 });
+        }
 
         this.rackService.rack.push(this.myRack[this.myRack.length - 1]);
         this.tempRack.pop();

@@ -1,4 +1,4 @@
-<div id="grid-container">
+<div id="grid-container" (mouseenter)="isMouseOnBoard = true" (mouseleave)="isMouseOnBoard = false" tabindex='-1' (focusout)='lostFocus()'>
     <div id="board-canvas" [style.width.px]="width" [style.height.px]="height">
         <canvas
             class="board-display"
@@ -25,16 +25,14 @@
             #tempCanvas
             [style.width.px]="width"
             [style.height.px]="height"
-            (click)="mouseHandlingService.mouseHitDetect($event)"
+            (click)="onMouseDown($event)"
             [attr.width]="width"
             [attr.height]="height"
-            (mouseenter)="isFocus = true"
-            (mouseleave)="isFocus = false"
         ></canvas>
     </div>
     <div class="parent">
         <div id="play-button" class="inline-block-child">
-            <button mat-button mat-dialog-close *ngIf="placeLetterService.tempRack.length > 0" (click)="play()">Jouer</button>
+            <button mat-button *ngIf="placeLetterService.tempRack.length > 0" (click)="play(); $event.stopImmediatePropagation()">Jouer</button>
         </div>
         <app-size-selector
             id="size-selector"

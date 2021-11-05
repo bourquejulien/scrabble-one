@@ -104,7 +104,6 @@ export class GameService {
     }
 
     private async refresh(): Promise<void> {
-        // TODO Add try catch ?
         this.stats = await this.httpCLient.get<SessionStats>(localUrl('player', 'stats', this.sessionService.id)).toPromise();
         await this.playerService.refresh();
         await this.rackService.refresh();

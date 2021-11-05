@@ -66,7 +66,7 @@ describe('PlaceLetterService', () => {
     it('should clear myRack and tempRack when enterOperation() is called', () => {
         service.isHorizontal = true;
         service.positionInit = { x: 8, y: 8 };
-        service.enterOperation();
+        service.placerLetters();
 
         expect(service.myRack).toEqual([]);
         expect(service.tempRack).toEqual([]);
@@ -75,7 +75,7 @@ describe('PlaceLetterService', () => {
     it('should create the right word when enterOperation() is called', () => {
         service.isHorizontal = true;
         service.positionInit = { x: 8, y: 8 };
-        service.enterOperation();
+        service.placerLetters();
 
         expect(playerServiceSpy.placeLetters).toHaveBeenCalledWith('est', { x: 7, y: 7 }, Direction.Right);
     });
@@ -83,7 +83,7 @@ describe('PlaceLetterService', () => {
     it('should called placeletter in the right direction when enterOperation() is called', () => {
         service.isHorizontal = false;
         service.positionInit = { x: 8, y: 8 };
-        service.enterOperation();
+        service.placerLetters();
 
         expect(playerServiceSpy.placeLetters).toHaveBeenCalledWith('est', { x: 7, y: 7 }, Direction.Down);
     });
