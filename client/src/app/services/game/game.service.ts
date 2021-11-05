@@ -86,7 +86,7 @@ export class GameService {
     }
 
     private async endGame(winnerId: string) {
-        let winner: EndGameWinner;
+        let winner: EndGameWinner; winner = EndGameWinner.Draw;
 
         if (winnerId === '') {
             winner = EndGameWinner.Draw;

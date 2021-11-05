@@ -159,10 +159,14 @@ describe('GameService', () => {
         session['_gameConfig'] = gameConfig;
 
         const spy = spyOn<any>(service, 'refresh');
+        await service['start'](serverConfig);
+        spy.and.callThrough();
+        spyOn<any>(service, 'onNextTurn').and.callThrough();
         spy.and.callThrough();
         await service['endGame'](winnerId);
         spy.and.callThrough();
         expect(spy).toHaveBeenCalled();
         service['gameEnding'].next()
+        expect(session['_gameConfig'].firstPlayerName).toBe(gameConfig.firstPlayerName);
     });
 });
