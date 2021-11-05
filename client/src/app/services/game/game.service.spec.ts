@@ -206,21 +206,47 @@ describe('GameService', () => {
         expect(spy).toHaveBeenCalledWith(winner);
     });
 
-    // it('should call gameEnding.next with EndGameWinner.Remote', async () => {
-    //     let gameConfig = {
-    //         gameType: GameType.Multiplayer,
-    //         playTime: TimeSpan.fromMinutesSeconds(1, 0),
-    //         firstPlayerName: 'Alphonse',
-    //         secondPlayerName: 'Monique'
-    //     }
+    it('should not call onTurn.next with local player type if id is equal to sessionService id', async () => {
+        const gameConfig = {
+            gameType: GameType.SinglePlayer,
+            playTime: TimeSpan.fromMinutesSeconds(1, 0),
+            firstPlayerName: 'Alphonse',
+            secondPlayerName: 'Monique'
+        }
 
-    //     let id = '1';
-    //     let playerType = PlayerType.Local;
-    //     session['_id'] = '1';
-    //     session['_gameConfig'] = gameConfig;
+        const serverConfig = {
+            id: '1',
+            startId: '2',
+            gameType: GameType.Multiplayer,
+            playTimeMs: 1000,
+            firstPlayerName: 'Monique',
+            secondPlayerName: 'Alphonse',
+        };
 
-    //     const spy = spyOn<any>(service.onTurn, 'next');
-    //     await service['onNextTurn'](id);
-    //     expect(spy).toHaveBeenCalledWith(playerType);
-    // });
+        const stats = {
+            localStats: { points: 10, rackSize: 7 },
+            remoteStats: { points: 10, rackSize: 7 },
+        };
+        let id = '1';
+        let playerType = PlayerType.Local;
+        session['_id'] = '1';
+        session['_gameConfig'] = gameConfig;
+        service.stats = stats;
+        service['currentTurn'] = playerType;
+
+        const spy = spyOn<any>(service.gameEnding, 'next');
+        await service['start'](serverConfig);
+
+        await service['refresh']();
+        spy.and.callThrough();
+
+        sessionStatsObservableSpyObj.toPromise.and.resolveTo(service.stats);
+        await playerServiceSpyObj.refresh();
+        await rackServiceSpyObj.refresh();
+
+        spy.and.callThrough();
+        await service['onNextTurn'](id);
+
+        expect(spy).not.toHaveBeenCalledWith(playerType);
+    });
 });
