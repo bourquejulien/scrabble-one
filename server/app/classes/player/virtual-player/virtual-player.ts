@@ -54,6 +54,7 @@ export class VirtualPlayer extends Player {
             return new SkipAction(this.playerData, this.socketHandler);
         }
 
+        logger.debug(`VirtualPlayer: ${this.id} - PlayAction`);
         const playGenerator = new PlayGenerator(this.dictionaryService, this.boardHandler, this.playerData.rack);
 
         return new PlayAction(this.boardHandler, playGenerator, this.playerData, this.socketHandler);
