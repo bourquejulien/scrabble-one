@@ -24,7 +24,7 @@ class BoardServiceMock {
     }
 }
 
-fdescribe('PlaceLetterService', () => {
+describe('PlaceLetterService', () => {
     let service: PlaceLetterService;
     let playerServiceSpy: jasmine.SpyObj<PlayerService>;
     let gridServiceSpy: jasmine.SpyObj<GridService>;
@@ -237,7 +237,7 @@ fdescribe('PlaceLetterService', () => {
         expect(service.gridPosition).toEqual(expectedPosition);
     });
 
-    it('should call getPastSquare vertical when nextAvailableSquare is called', () => {
+    it('should call getNext horizontal when nextAvailableSquare true is called', () => {
         spyOn<any>(service.boardService, 'positionIsAvailable').and.returnValue(true);
         const isForward = true;
         service.isHorizontal = true;
@@ -248,11 +248,11 @@ fdescribe('PlaceLetterService', () => {
         expect(service.gridPosition).toEqual(expectedPosition);
     });
 
-    it('should call getPastSquare vertical when nextAvailableSquare is called', () => {
+    it('should call getPastSquare horizontal when nextAvailableSquare false is called', () => {
         spyOn<any>(service.boardService, 'positionIsAvailable').and.returnValue(true);
         const isForward = false;
         service.isHorizontal = true;
-        const expectedPosition = { x: 17, y: 8 };
+        const expectedPosition = { x: 15, y: 8 };
         service.gridPosition = { x: 16, y: 8 };
         service.nextAvailableSquare(isForward);
 
