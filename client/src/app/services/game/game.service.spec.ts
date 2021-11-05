@@ -2,15 +2,22 @@
 /* eslint-disable max-classes-per-file -- Needs many stubbed classes in order to test*/
 import { HttpClient } from '@angular/common/http';
 import { TestBed } from '@angular/core/testing';
+import { GameConfig } from '@app/classes/game-config';
 import { PlayerType } from '@app/classes/player/player-type';
+import { TimeSpan } from '@app/classes/time/timespan';
 import { PlayerService } from '@app/services/player/player.service';
 import { SessionService } from '@app/services/session/session.service';
 import { GameType, ServerConfig, SessionStats } from '@common';
 import { Observable, Subject } from 'rxjs';
+import { RackService } from '../rack/rack.service';
 import { GameService } from './game.service';
 
 class SessionServiceStub {
-    private _id: string = '1';
+    private _id: string;
+    private _gameConfig: GameConfig;
+    get gameConfig(): GameConfig {
+        return this._gameConfig;
+    }
     get id(): string {
         return this._id;
     }
@@ -19,15 +26,17 @@ class SessionServiceStub {
 describe('GameService', () => {
     let service: GameService;
     let mockRack: string[];
-    let session = new SessionService();
+    let session = new SessionServiceStub();
 
     let httpSpyObj: jasmine.SpyObj<HttpClient>;
     let playerServiceSpyObj: jasmine.SpyObj<PlayerService>;
+    let rackServiceSpyObj: jasmine.SpyObj<RackService>;
     let serverConfigObservableSpyObj: jasmine.SpyObj<Observable<ServerConfig>>;
     let sessionStatsObservableSpyObj: jasmine.SpyObj<Observable<SessionStats>>;
 
     beforeEach(async () => {
         mockRack = ['K', 'E', 'S', 'E', 'I', 'O', 'V'];
+        rackServiceSpyObj = jasmine.createSpyObj('RackService', ['update', 'refresh']);
         httpSpyObj = jasmine.createSpyObj('HttpModule', ['get', 'put']);
         sessionStatsObservableSpyObj = jasmine.createSpyObj('Observable<SessionStats>', ['toPromise']);
         serverConfigObservableSpyObj = jasmine.createSpyObj('Observable<ServerConfig>', ['toPromise']);
@@ -45,8 +54,9 @@ describe('GameService', () => {
             imports: [],
             providers: [
                 { provide: PlayerService, useValue: playerServiceSpyObj },
+                { provide: RackService, useValue: rackServiceSpyObj },
                 { provide: HttpClient, useValue: httpSpyObj },
-                { provide: SessionService, useClass: SessionServiceStub },
+                { provide: SessionService, useValue: session },
             ],
         });
 
@@ -74,6 +84,7 @@ describe('GameService', () => {
         await service['refresh']();
         expect(service.stats).toBe(expectedSessionStats);
         expect(playerServiceSpyObj.refresh).toHaveBeenCalled();
+        expect(rackServiceSpyObj.refresh).toHaveBeenCalled();
     });
 
     it('should start single player', async () => {
@@ -91,7 +102,7 @@ describe('GameService', () => {
         expect(spy).toHaveBeenCalled();
     });
 
-    it('should reset playerService and socketService', async () => {
+    it('should reset playerService', async () => {
         await service.reset();
         expect(playerServiceSpyObj.reset).toHaveBeenCalled();
     });
@@ -114,6 +125,7 @@ describe('GameService', () => {
         let sessionId = '1';
         session['_id'] = '1';
         let playerType = PlayerType.Local;
+
         service['currentTurn'] = PlayerType.Local;
         const spy = spyOn<any>(service, 'refresh');
 
@@ -125,9 +137,36 @@ describe('GameService', () => {
     });
 
     it('should end game', async () => {
+        let winnerId = '1';
+
+        let gameConfig = {
+            gameType: GameType.Multiplayer,
+            playTime: TimeSpan.fromMinutesSeconds(1, 0),
+            firstPlayerName: 'Alphonse',
+            secondPlayerName: 'Monique'
+        }
+
+        let serverConfig = {
+            id: '1',
+            startId: '2',
+            gameType: GameType.Multiplayer,
+            playTimeMs: 1000,
+            firstPlayerName: 'Monique',
+            secondPlayerName: 'Alphonse',
+        };
+
+        session['_id'] = '1';
+        session['_gameConfig'] = gameConfig;
+
         const spy = spyOn<any>(service, 'refresh');
-        await service['endGame']();
+        await service['start'](serverConfig);
+        spy.and.callThrough();
+        spyOn<any>(service, 'onNextTurn').and.callThrough();
+        spy.and.callThrough();
+        await service['endGame'](winnerId);
         spy.and.callThrough();
         expect(spy).toHaveBeenCalled();
+        service['gameEnding'].next()
+        expect(session['_gameConfig'].firstPlayerName).toBe(gameConfig.firstPlayerName);
     });
 });

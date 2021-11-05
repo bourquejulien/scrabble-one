@@ -177,8 +177,4 @@ describe('PlayerService', () => {
         expect(reserveServiceSpy['reset']).toHaveBeenCalled();
         expect(boardServiceSpy['reset']).toHaveBeenCalled();
     });
-
-    it('should get rack', () => {
-        expect(service.rack).toBe(rackServiceSpy['rack']);
-    });
 });
