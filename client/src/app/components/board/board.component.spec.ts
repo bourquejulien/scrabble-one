@@ -119,7 +119,8 @@ class GridServiceStub {
 
 class BoardServiceMock {
     iteration = 0;
-    positionIsAvailable() {
+
+    isPositionAvailable() {
         return true;
     }
 
@@ -143,7 +144,7 @@ describe('BoardComponent', () => {
         rackServiceSpy = jasmine.createSpyObj('RackService', ['indexOf']);
         gameServiceSpy = jasmine.createSpyObj('GameService', [], { currentTurn: playerType });
         placeLetter = jasmine.createSpyObj('PlaceLetterService', [
-            'enterOperation',
+            'placeLetters',
             'inGrid',
             'isPositionInit',
             'backSpaceEnable',
@@ -269,7 +270,7 @@ describe('BoardComponent', () => {
         component.placeLetterService.tempRack = ['e', 's', 't', 'a'];
         component.placeLetterService.gridPosition = { x: 15, y: 9 };
         component.onKeyDown(new KeyboardEvent('keydown', { key: LETTER }));
-        expect(placeLetter.placerLetters).toHaveBeenCalled();
+        expect(placeLetter.placeLetters).toHaveBeenCalled();
     });
 
     it('put a in myRack when onKeyDown', () => {

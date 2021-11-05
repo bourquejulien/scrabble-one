@@ -6,9 +6,6 @@ import { Vec2 } from '@common';
 import { CommandsService } from '@app/services/commands/commands.service';
 import { Constants } from '@app/constants/global.constants';
 
-const MAX_SIZE = 15;
-const MIN_SIZE = 1;
-
 @Injectable({
     providedIn: 'root',
 })
@@ -31,7 +28,7 @@ export class PlaceLetterService {
         this.myRack = [];
     }
 
-    placerLetters(): void {
+    placeLetters(): void {
         const word = this.tempRack.join('');
         const x = this.positionInit.x;
         const y = String.fromCharCode(Constants.CHAR_OFFSET + this.positionInit.y - 1);
@@ -57,7 +54,7 @@ export class PlaceLetterService {
         this.myRack.pop();
         this.nextAvailableSquare(false);
         this.gridService.drawSelectionSquare(tempContext, this.gridPosition);
-        if (this.gridPosition.x < MAX_SIZE && this.gridPosition.y < MAX_SIZE) {
+        if (this.gridPosition.x < Constants.GRID.GRID_SIZE && this.gridPosition.y < Constants.GRID.GRID_SIZE) {
             this.gridService.drawDirectionArrow(tempContext, this.gridPosition, this.isHorizontal);
         }
     }
@@ -90,8 +87,8 @@ export class PlaceLetterService {
     }
 
     inGrid(position: Vec2): boolean {
-        if (position.x >= MIN_SIZE && position.x <= MAX_SIZE + 1) {
-            return position.y >= MIN_SIZE && position.y <= MAX_SIZE + 1;
+        if (position.x >= 1 && position.x <= Constants.GRID.GRID_SIZE + 1) {
+            return position.y >= 1 && position.y <= Constants.GRID.GRID_SIZE + 1;
         } else {
             return false;
         }
@@ -114,14 +111,14 @@ export class PlaceLetterService {
             this.tempRack.push(this.boardService.getLetter(this.gridPosition));
         }
 
-        if (this.gridPosition.x === MAX_SIZE) {
+        if (this.gridPosition.x === Constants.GRID.GRID_SIZE) {
             this.isLastSquare = true;
         }
 
-        if (this.isHorizontal && this.gridPosition.x <= MAX_SIZE + 1) {
+        if (this.isHorizontal && this.gridPosition.x <= Constants.GRID.GRID_SIZE + 1) {
             this.gridPosition.x += 1;
         }
-        if (!this.isHorizontal && this.gridPosition.y < MAX_SIZE + 1) {
+        if (!this.isHorizontal && this.gridPosition.y < Constants.GRID.GRID_SIZE + 1) {
             this.gridPosition.y += 1;
         }
     }
@@ -130,10 +127,10 @@ export class PlaceLetterService {
         if (!this.boardService.isPositionAvailable(this.gridPosition)) {
             this.tempRack.pop();
         }
-        if (this.isHorizontal && this.gridPosition.x > MIN_SIZE) {
+        if (this.isHorizontal && this.gridPosition.x > 1) {
             this.gridPosition.x -= 1;
         }
-        if (!this.isHorizontal && this.gridPosition.y > MIN_SIZE) {
+        if (!this.isHorizontal && this.gridPosition.y > 1) {
             this.gridPosition.y -= 1;
         }
     }

@@ -52,7 +52,8 @@ export class BoardComponent implements OnChanges, AfterViewInit {
             !this.placeLetterService.isPositionInit(this.placeLetterService.gridPosition) &&
             this.placeLetterService.inGrid(this.placeLetterService.gridPosition);
         const enterValid: boolean = event.key === 'Enter' && this.placeLetterService.tempRack.length > 0;
-        const lastSquare = this.placeLetterService.gridPosition.x > this.boardSize || this.placeLetterService.gridPosition.y > this.boardSize;
+        const lastSquare =
+            this.placeLetterService.gridPosition.x > Constants.GRID.GRID_SIZE || this.placeLetterService.gridPosition.y > Constants.GRID.GRID_SIZE;
 
         if (backSpaceValid) {
             this.placeLetterService.backSpaceOperation(this.tempContext);
@@ -100,8 +101,8 @@ export class BoardComponent implements OnChanges, AfterViewInit {
                 this.gridService.drawSelectionSquare(this.tempContext, this.placeLetterService.gridPosition);
 
                 const lastSquare =
-                    (this.placeLetterService.gridPosition.x === this.boardSize && this.placeLetterService.isHorizontal) ||
-                    (this.placeLetterService.gridPosition.y === this.boardSize && !this.placeLetterService.isHorizontal);
+                    (this.placeLetterService.gridPosition.x === Constants.GRID.GRID_SIZE && this.placeLetterService.isHorizontal) ||
+                    (this.placeLetterService.gridPosition.y === Constants.GRID.GRID_SIZE && !this.placeLetterService.isHorizontal);
 
                 if (!lastSquare) {
                     this.gridService.drawDirectionArrow(this.tempContext, this.placeLetterService.gridPosition, this.placeLetterService.isHorizontal);
@@ -144,7 +145,7 @@ export class BoardComponent implements OnChanges, AfterViewInit {
     }
 
     play(): void {
-        this.placeLetterService.placerLetters();
+        this.placeLetterService.placeLetters();
         this.gridService.resetCanvas(this.tempContext);
     }
 
@@ -232,7 +233,10 @@ export class BoardComponent implements OnChanges, AfterViewInit {
             this.placeLetterService.myRack.push(this.letter);
         }
 
-        if (this.placeLetterService.gridPosition.x === this.boardSize - 1 || this.placeLetterService.gridPosition.y === this.boardSize - 1) {
+        if (
+            this.placeLetterService.gridPosition.x === Constants.GRID.GRID_SIZE - 1 ||
+            this.placeLetterService.gridPosition.y === Constants.GRID.GRID_SIZE - 1
+        ) {
             this.placeLetterService.isLastSquare = true;
         }
 
@@ -245,9 +249,5 @@ export class BoardComponent implements OnChanges, AfterViewInit {
         } else {
             this.gridService.drawSelectionSquare(this.tempContext, this.placeLetterService.gridPosition);
         }
-    }
-
-    private get boardSize() {
-        return this.boardService.gameBoard.board.length;
     }
 }
