@@ -15,6 +15,7 @@ import { GameService } from '@app/services/game/game.service';
 import { BehaviorSubject, Subject } from 'rxjs';
 import { GamePageComponent } from './game-page.component';
 import { GameType, SessionStats } from '@common';
+import { EndGameWinner } from '@app/classes/end-game-winner';
 
 @Injectable({
     providedIn: 'root',
@@ -92,7 +93,7 @@ describe('GamePageComponent', () => {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Needed for spyOn service
         const spy = spyOn<any>(component, 'sendRackInCommunication').and.callThrough();
 
-        component.endGame();
+        component.endGame(EndGameWinner.Draw);
         expect(spy).toHaveBeenCalled();
     });
 

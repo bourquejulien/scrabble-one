@@ -70,7 +70,7 @@ export class CommandsService {
                     return false;
             }
             if (successfulCommand) {
-                this.messagingService.send('Commande réussie', input, MessageType.System);
+                this.messagingService.send(SystemMessages.ValidSyntax, input, MessageType.System);
             }
         }
         if (this.messageRegex.test(input)) {

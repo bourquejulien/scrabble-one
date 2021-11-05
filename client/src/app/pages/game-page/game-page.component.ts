@@ -7,14 +7,11 @@ import { PlayerType } from '@app/classes/player/player-type';
 import { ConfirmQuitDialogComponent } from '@app/components/confirm-quit-dialog/confirm-quit-dialog.component';
 import { EndGameComponent } from '@app/components/end-game/end-game.component';
 import { GameService } from '@app/services/game/game.service';
-import { MessagingService } from '@app/services/messaging/messaging.service';
-import { PlayerService } from '@app/services/player/player.service';
 import { ReserveService } from '@app/services/reserve/reserve.service';
 import { SessionService } from '@app/services/session/session.service';
-import { TimerService } from '@app/services/timer/timer.service';
-import { MessageType } from '@common';
 import { Subscription } from 'rxjs';
 import { EndGameWinner } from '@app/classes/end-game-winner';
+import { CommandsService } from '@app/services/commands/commands.service';
 
 export enum Icon {
     Logout = 'exit_to_app',
@@ -46,13 +43,11 @@ export class GamePageComponent implements OnDestroy {
     private gameEndingSubscription: Subscription;
     constructor(
         readonly gameService: GameService,
-        readonly playerService: PlayerService,
         readonly sessionService: SessionService,
-        readonly timerService: TimerService,
-        readonly dialog: MatDialog,
-        readonly router: Router,
         readonly reserveService: ReserveService,
-        readonly messagingService: MessagingService,
+        readonly commandService: CommandsService,
+        private readonly dialog: MatDialog,
+        private readonly router: Router,
         location: LocationStrategy,
         elementRef: ElementRef,
     ) {
@@ -68,7 +63,6 @@ export class GamePageComponent implements OnDestroy {
         });
 
         this.playerType = gameService.onTurn.getValue();
-        this.timerService = timerService;
         this.buttonConfig = [
             {
                 color: 'warn',
@@ -86,7 +80,7 @@ export class GamePageComponent implements OnDestroy {
                 color: 'warn',
                 icon: Icon.Skip,
                 hover: 'Passer son tour',
-                action: async () => this.playerService.skipTurn(),
+                action: async () => this.commandService.parseInput('!passer'),
             },
         ];
 
@@ -105,7 +99,6 @@ export class GamePageComponent implements OnDestroy {
     }
 
     endGame(winner: EndGameWinner) {
-        this.sendRackInCommunication();
         const dialogRef = this.dialog.open(EndGameComponent, { panelClass: 'end-game-dialog', data: { winner } });
         dialogRef.afterClosed().subscribe((result) => {
             if (result) {
@@ -124,13 +117,5 @@ export class GamePageComponent implements OnDestroy {
             this.gameService.reset();
             this.router.navigate(['home']);
         });
-    }
-
-    private sendRackInCommunication() {
-        this.messagingService.send(
-            'Fin de partie - lettres restantes',
-            this.sessionService.gameConfig.firstPlayerName + ' : ' + this.playerService.rack,
-            MessageType.System,
-        );
     }
 }
