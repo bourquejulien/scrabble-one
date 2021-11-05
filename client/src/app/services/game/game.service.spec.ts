@@ -2,6 +2,7 @@
 /* eslint-disable max-classes-per-file -- Needs many stubbed classes in order to test*/
 import { HttpClient } from '@angular/common/http';
 import { TestBed } from '@angular/core/testing';
+import { EndGameWinner } from '@app/classes/end-game-winner';
 import { GameConfig } from '@app/classes/game-config';
 import { PlayerType } from '@app/classes/player/player-type';
 import { TimeSpan } from '@app/classes/time/timespan';
@@ -133,7 +134,6 @@ describe('GameService', () => {
         spy.and.callThrough();
         expect(spy).not.toHaveBeenCalled();
         expect(service['currentTurn']).toBe(playerType);
-        // expect(service['onTurn'].next).not.toHaveBeenCalled();
     });
 
     it('should end game', async () => {
@@ -168,5 +168,50 @@ describe('GameService', () => {
         expect(spy).toHaveBeenCalled();
         service['gameEnding'].next()
         expect(session['_gameConfig'].firstPlayerName).toBe(gameConfig.firstPlayerName);
+    });
+
+    it('should call gameEnding.next with EndGameWinner.Draw', async () => {
+        let winnerId = '';
+        let winner = EndGameWinner.Draw;
+
+        const spy = spyOn<any>(service.gameEnding, 'next');
+        await service['endGame'](winnerId);
+        expect(spy).toHaveBeenCalledWith(winner);
+    });
+
+    it('should call gameEnding.next with EndGameWinner.Remote', async () => {
+        let gameConfig = {
+            gameType: GameType.Multiplayer,
+            playTime: TimeSpan.fromMinutesSeconds(1, 0),
+            firstPlayerName: 'Alphonse',
+            secondPlayerName: 'Monique'
+        }
+
+        let winnerId = '1';
+        let winner = EndGameWinner.Remote;
+        session['_id'] = '2';
+        session['_gameConfig'] = gameConfig;
+
+        const spy = spyOn<any>(service.gameEnding, 'next');
+        await service['endGame'](winnerId);
+        expect(spy).toHaveBeenCalledWith(winner);
+    });
+
+    it('should call gameEnding.next with EndGameWinner.Remote', async () => {
+        let gameConfig = {
+            gameType: GameType.Multiplayer,
+            playTime: TimeSpan.fromMinutesSeconds(1, 0),
+            firstPlayerName: 'Alphonse',
+            secondPlayerName: 'Monique'
+        }
+
+        let id = '1';
+        let playerType = PlayerType.Local;
+        session['_id'] = '1';
+        session['_gameConfig'] = gameConfig;
+
+        const spy = spyOn<any>(service.onTurn, 'next');
+        await service['onNextTurn'](id);
+        expect(spy).toHaveBeenCalledWith(playerType);
     });
 });
