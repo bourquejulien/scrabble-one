@@ -91,3 +91,6 @@ body {
     flex-direction: column;
     justify-content: flex-end;
 }
+
+// Prevents black border on focus
+:focus { outline: none; }

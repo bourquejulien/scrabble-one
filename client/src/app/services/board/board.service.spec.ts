@@ -137,12 +137,12 @@ describe('BoardService', () => {
 
     it('should return true if position available', () => {
         service['boardData'].board[position.x - 1][position.y - 1].letter = '';
-        expect(service.positionIsAvailable(position)).toBe(true);
+        expect(service.isPositionAvailable(position)).toBe(true);
     });
 
     it('should return false if position occupied', () => {
         service['boardData'].board[position.x - 1][position.y - 1].letter = 'a';
-        expect(service.positionIsAvailable(position)).toBe(false);
+        expect(service.isPositionAvailable(position)).toBe(false);
     });
 
     it('should get correct letter on board at specified position', () => {

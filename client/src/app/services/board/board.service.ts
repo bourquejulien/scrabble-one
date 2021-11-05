@@ -6,7 +6,6 @@ import { Answer, BoardData, Bonus, Direction, Placement, Square, Vec2 } from '@c
 import { environmentExt } from '@environment-ext';
 
 const localUrl = (call: string, id: string) => `${environmentExt.apiUrl}board/${call}/${id}`;
-const MAX_POSITION = 16;
 @Injectable({
     providedIn: 'root',
 })
@@ -61,16 +60,12 @@ export class BoardService {
         this.boardData = boardData;
     }
 
-    positionIsAvailable(position: Vec2): boolean {
-        if (position.x === MAX_POSITION || position.y === MAX_POSITION) {
+    isPositionAvailable(position: Vec2): boolean {
+        if (position.x === this.boardData.board.length + 2 || position.y === this.boardData.board.length + 2) {
             return true;
         }
         const letter: string = this.boardData.board[position.x - 1][position.y - 1].letter;
-        if (letter === '') {
-            return true;
-        } else {
-            return false;
-        }
+        return letter === '';
     }
 
     getLetter(position: Vec2): string {

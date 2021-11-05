@@ -8,10 +8,11 @@ import { PlayerService } from '@app/services/player/player.service';
 import { RackService } from '@app/services/rack/rack.service';
 import { Direction } from '@common';
 import { PlaceLetterService } from './place-letter.service';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 
 class BoardServiceMock {
     iteration = 0;
-    positionIsAvailable() {
+    isPositionAvailable() {
         if (this.iteration < 1) {
             this.iteration++;
             return false;
@@ -53,6 +54,7 @@ describe('PlaceLetterService', () => {
                 { provide: RackService, useValue: rackServiceSpy },
                 { provide: BoardService, useClass: BoardServiceMock },
             ],
+            imports: [HttpClientTestingModule],
         });
         service = TestBed.inject(PlaceLetterService);
         service.myRack = mockMyRack;
@@ -67,7 +69,7 @@ describe('PlaceLetterService', () => {
     it('should clear myRack and tempRack when enterOperation() is called', () => {
         service.isHorizontal = true;
         service.positionInit = { x: 8, y: 8 };
-        service.enterOperation();
+        service.placeLetters();
 
         expect(service.myRack).toEqual([]);
         expect(service.tempRack).toEqual([]);
@@ -76,7 +78,7 @@ describe('PlaceLetterService', () => {
     it('should create the right word when enterOperation() is called', () => {
         service.isHorizontal = true;
         service.positionInit = { x: 8, y: 8 };
-        service.enterOperation();
+        service.placeLetters();
 
         expect(playerServiceSpy.placeLetters).toHaveBeenCalledWith('est', { x: 7, y: 7 }, Direction.Right);
     });
@@ -84,7 +86,7 @@ describe('PlaceLetterService', () => {
     it('should called placeletter in the right direction when enterOperation() is called', () => {
         service.isHorizontal = false;
         service.positionInit = { x: 8, y: 8 };
-        service.enterOperation();
+        service.placeLetters();
 
         expect(playerServiceSpy.placeLetters).toHaveBeenCalledWith('est', { x: 7, y: 7 }, Direction.Down);
     });
@@ -239,7 +241,7 @@ describe('PlaceLetterService', () => {
     });
 
     it('should call getNext horizontal when nextAvailableSquare true is called', () => {
-        spyOn<any>(service.boardService, 'positionIsAvailable').and.returnValue(true);
+        spyOn<any>(service['boardService'], 'isPositionAvailable').and.returnValue(true);
         const isForward = true;
         service.isHorizontal = true;
         const expectedPosition = { x: 17, y: 8 };
@@ -250,7 +252,7 @@ describe('PlaceLetterService', () => {
     });
 
     it('should call getPastSquare horizontal when nextAvailableSquare false is called', () => {
-        spyOn<any>(service.boardService, 'positionIsAvailable').and.returnValue(true);
+        spyOn<any>(service['boardService'], 'isPositionAvailable').and.returnValue(true);
         const isForward = false;
         service.isHorizontal = true;
         const expectedPosition = { x: 15, y: 8 };
