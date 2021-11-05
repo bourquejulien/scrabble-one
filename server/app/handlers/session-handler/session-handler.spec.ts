@@ -11,7 +11,6 @@ import { expect } from 'chai';
 import { createSandbox, createStubInstance } from 'sinon';
 import { BoardHandler } from '@app/handlers/board-handler/board-handler';
 import { ReserveHandler } from '@app/handlers/reserve-handler/reserve-handler';
-import { SocketHandler } from '@app/handlers/socket-handler/socket-handler';
 import { SessionHandler } from './session-handler';
 import { Player } from '@app/classes/player/player';
 import { PlayerData } from '@app/classes/player-data';
@@ -75,7 +74,7 @@ describe('SessionHandler', () => {
             stubBoardHandler as unknown as BoardHandler,
             stubReserveHandler as unknown as ReserveHandler,
             stubPlayerHandler as unknown as PlayerHandler,
-            stubSocketHandler as unknown as SocketHandler,
+            stubSocketService as unknown as SocketService,
         ) as unknown as SessionHandler;
     });
 

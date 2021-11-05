@@ -1,15 +1,11 @@
 import { Player } from '@app/classes/player/player';
 import { PlayerInfo } from '@app/classes/player-info';
-import { PlayerData } from '@app/classes/player-data';
 import { Config } from '@app/config';
-import { Answer, Placement } from '@common';
+import { Answer, MessageType, Placement, SystemMessages } from '@common';
 import * as logger from 'winston';
 
 export class HumanPlayer extends Player {
-    isTurn: boolean;
-    playerData: PlayerData;
-    // j'enleve readonly pour les tests et jobtiens une erreur?
-    constructor(public playerInfo: PlayerInfo) {
+    constructor(readonly playerInfo: PlayerInfo) {
         super();
     }
 
@@ -23,7 +19,7 @@ export class HumanPlayer extends Player {
 
     async placeLetters(placements: Placement[]): Promise<Answer> {
         if (!this.isTurn) {
-            return { isSuccess: false, body: 'Not your turn' };
+            return { isSuccess: false, body: '' };
         }
 
         const lettersToPlace: string[] = [];
@@ -43,14 +39,17 @@ export class HumanPlayer extends Player {
 
         if (!this.areLettersInRack(lettersToPlace)) {
             this.endTurn();
-            return { isSuccess: false, body: 'Letters not in rack' };
+            return { isSuccess: false, body: '' };
         }
 
         const validationData = await this.boardHandler.lookupLetters(placements);
         if (!validationData.isSuccess) {
-            /* this.messagingService.send('', validationData.description, MessageType.Log); */
+            this.socketHandler.sendMessage(
+                { title: SystemMessages.ImpossibleCommand, body: validationData.description, messageType: MessageType.Error },
+                this.id,
+            );
             this.endTurn();
-            return { isSuccess: false, body: 'Validation failed' };
+            return { isSuccess: false, body: '' };
         }
 
         this.playerData.baseScore += validationData.points;
@@ -63,16 +62,38 @@ export class HumanPlayer extends Player {
         this.playerData.skippedTurns = 0;
         this.endTurn();
 
+        this.socketHandler.sendMessage(
+            {
+                title: SystemMessages.ValidCommand,
+                body: 'Lettres placées',
+                messageType: MessageType.System,
+            },
+            this.id,
+        );
+
         return { isSuccess: true, body: '' };
     }
 
     exchangeLetters(lettersToExchange: string[]): Answer {
         if (!this.isTurn) {
-            return { isSuccess: false, body: 'Not your turn' };
+            return { isSuccess: false, body: '' };
         }
+
+        if (!this.areLettersInRack(lettersToExchange)) {
+            this.endTurn();
+            return { isSuccess: false, body: '' };
+        }
+
         if (this.reserveHandler.length < Config.RACK_SIZE) {
-            // this.socketService.send(SystemMessages.ImpossibleAction, SystemMessages.NotEnoughLetters, MessageType.Error);
-            return { isSuccess: false, body: 'Letters not in rack' };
+            this.socketHandler.sendMessage(
+                {
+                    title: SystemMessages.ImpossibleCommand,
+                    body: SystemMessages.NotEnoughLetters,
+                    messageType: MessageType.Error,
+                },
+                this.id,
+            );
+            return { isSuccess: false, body: '' };
         }
         if (!this.areLettersInRack(lettersToExchange)) return { isSuccess: false, body: 'Letters not in rack' };
 
@@ -88,6 +109,15 @@ export class HumanPlayer extends Player {
         this.playerData.skippedTurns = 0;
         this.endTurn();
 
+        this.socketHandler.sendMessage(
+            {
+                title: SystemMessages.ValidCommand,
+                body: 'Lettres échangées',
+                messageType: MessageType.System,
+            },
+            this.id,
+        );
+
         return { isSuccess: true, body: '' };
     }
 
@@ -95,6 +125,14 @@ export class HumanPlayer extends Player {
         this.playerData.skippedTurns++;
         this.endTurn();
 
+        this.socketHandler.sendMessage(
+            {
+                title: SystemMessages.ValidCommand,
+                body: 'Tour sauté',
+                messageType: MessageType.System,
+            },
+            this.id,
+        );
         return { isSuccess: true, body: '' };
     }
 
@@ -111,7 +149,14 @@ export class HumanPlayer extends Player {
     private areLettersInRack(lettersToPlace: string[]): boolean {
         for (const letter of lettersToPlace) {
             if (this.playerData.rack.indexOf(letter) === -1) {
-                /* this.messagingService.send(SystemMessages.ImpossibleAction, SystemMessages.LetterPossessionError + letter, MessageType.Error); */
+                this.socketHandler.sendMessage(
+                    {
+                        title: SystemMessages.ImpossibleCommand,
+                        body: `${SystemMessages.LetterPossessionError} ${letter}`,
+                        messageType: MessageType.Error,
+                    },
+                    this.id,
+                );
                 return false;
             }
         }

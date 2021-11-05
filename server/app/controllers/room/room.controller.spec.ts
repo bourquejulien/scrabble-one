@@ -5,29 +5,44 @@
 /* eslint-disable max-classes-per-file */
 import { expect } from 'chai';
 import { RoomController } from './room.controller';
-import { assert, createStubInstance, spy } from 'sinon';
+import { assert, createStubInstance, SinonStubbedInstance, spy, stub } from 'sinon';
 import { SessionHandlingService } from '@app/services/sessionHandling/session-handling.service';
 import { SocketService } from '@app/services/socket/socket-service';
 import { Server, Socket } from 'socket.io';
-import { Message, MessageType } from '@common';
+import { GameType, Message, MessageType } from '@common';
 import { SessionHandler } from '@app/handlers/session-handler/session-handler';
 import { SocketMock } from '@app/classes/socket-test-helper';
+import { GameService } from '@app/services/game/game.service';
+
+const IDS = {
+    player: '123',
+    socket: '123',
+    session: '123',
+};
 
 describe('RoomController', () => {
     let controller: RoomController;
     let socketServerMock: SocketMock;
-    let stubSessionHandlingService;
+    let stubSessionHandlingService: SessionHandlingService;
+    let sessionHandler: SinonStubbedInstance<SessionHandler>;
+    let gameService: SinonStubbedInstance<GameService>;
 
     beforeEach(() => {
         const stubSocketService = createStubInstance(SocketService);
         socketServerMock = new SocketMock();
         stubSocketService['socketServer'] = socketServerMock as unknown as Server;
 
+        sessionHandler = createStubInstance(SessionHandler, {});
+        sessionHandler.sessionInfo = { id: IDS.session, gameType: GameType.Multiplayer, playTimeMs: 0 };
+
+        stub(sessionHandler, 'players').get(() => []);
+
         stubSessionHandlingService = createStubInstance(SessionHandlingService, {
             getSessionId: 'sessionId',
+            getHandlerByPlayerId: sessionHandler as unknown as SessionHandler,
         }) as unknown as SessionHandlingService;
 
-        controller = new RoomController(stubSocketService, stubSessionHandlingService);
+        controller = new RoomController(stubSocketService, stubSessionHandlingService, gameService as unknown as GameService);
     });
 
     it('should be created', () => {
@@ -39,8 +54,10 @@ describe('RoomController', () => {
             title: 'Title',
             body: 'body',
             messageType: MessageType.Message,
-            userId: 'user1',
+            fromId: 'user1',
         };
+
+        controller['socketIdToPlayerId'].set(IDS.socket, IDS.player);
 
         controller['handleSockets']();
 
@@ -107,7 +124,7 @@ describe('RoomController', () => {
             getSessionId: 'full',
         }) as unknown as SessionHandlingService;
 
-        controller = new RoomController(stubSocketService, stubSessionHandlingService);
+        controller = new RoomController(stubSocketService, stubSessionHandlingService, gameService as unknown as GameService);
         // End of copy-paste
 
         controller['handleSockets']();
@@ -129,7 +146,7 @@ describe('RoomController', () => {
             getSessionId: 'sessionId',
         }) as unknown as SessionHandlingService;
 
-        controller = new RoomController(stubSocketService, stubSessionHandlingService);
+        controller = new RoomController(stubSocketService, stubSessionHandlingService, gameService as unknown as GameService);
 
         const stubSessionHandler = createStubInstance(SessionHandler) as unknown as SessionHandler;
         stubSessionHandler['sessionData'] = {
@@ -159,7 +176,7 @@ describe('RoomController', () => {
             getSessionId: '',
         }) as unknown as SessionHandlingService;
 
-        controller = new RoomController(stubSocketService, stubSessionHandlingService);
+        controller = new RoomController(stubSocketService, stubSessionHandlingService, gameService as unknown as GameService);
         // End of copy-paste
 
         controller['handleSockets']();
@@ -173,6 +190,6 @@ describe('RoomController', () => {
 
     it('should tell when a room is full', async () => {
         const socket = new SocketMock() as unknown as Socket;
-        expect(await controller['isRoomFull'](socket, 'full')).to.be.equals(true);
+        expect(await RoomController['isRoomFull'](socket, 'full')).to.be.equals(true);
     });
 });

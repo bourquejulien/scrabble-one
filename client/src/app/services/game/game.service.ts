@@ -1,12 +1,15 @@
 import { Injectable } from '@angular/core';
 import { PlayerService } from '@app/services/player/player.service';
-import { GameType, ServerConfig, SessionStats, SinglePlayerConfig } from '@common';
+import { GameType, MessageType, ServerConfig, SessionStats, SinglePlayerConfig } from '@common';
 import { BehaviorSubject, Subject } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 import { SessionService } from '@app/services/session/session.service';
 import { PlayerType } from '@app/classes/player/player-type';
-import { environmentExt } from '@environmentExt';
+import { environmentExt } from '@environment-ext';
 import { SocketClientService } from '@app/services/socket-client/socket-client.service';
+import { EndGameWinner } from '@app/classes/end-game-winner';
+import { RackService } from '@app/services/rack/rack.service';
+import { MessagingService } from '@app/services/messaging/messaging.service';
 
 const localUrl = (base: string, call: string, id?: string) => `${environmentExt.apiUrl}${base}/${call}${id ? '/' + id : ''}`;
 
@@ -17,7 +20,7 @@ export class GameService {
     stats: SessionStats;
     currentTurn: PlayerType = PlayerType.Local;
     onTurn: BehaviorSubject<PlayerType>;
-    gameEnding: Subject<void>;
+    gameEnding: Subject<EndGameWinner>;
 
     private gameRunning: boolean = false;
 
@@ -25,7 +28,9 @@ export class GameService {
         private readonly playerService: PlayerService,
         private readonly httpCLient: HttpClient,
         private readonly sessionService: SessionService,
+        private readonly rackService: RackService,
         private readonly socketService: SocketClientService,
+        private readonly messagingService: MessagingService,
     ) {
         this.stats = {
             localStats: { points: 0, rackSize: 0 },
@@ -33,10 +38,10 @@ export class GameService {
         };
 
         this.onTurn = new BehaviorSubject<PlayerType>(PlayerType.Local);
-        this.gameEnding = new Subject<void>();
+        this.gameEnding = new Subject<EndGameWinner>();
 
         this.socketService.on('onTurn', async (id: string) => this.onNextTurn(id));
-        this.socketService.on('endGame', async () => this.endGame());
+        this.socketService.on('endGame', async (winnerId: string) => this.endGame(winnerId));
     }
 
     async startSinglePlayer(config: SinglePlayerConfig): Promise<void> {
@@ -80,13 +85,28 @@ export class GameService {
         this.onTurn.next(this.currentTurn);
     }
 
-    private async endGame() {
+    private async endGame(winnerId: string) {
+        let winner: EndGameWinner;
+
+        if (winnerId === '') {
+            winner = EndGameWinner.Draw;
+        } else {
+            winner = winnerId === this.sessionService.id ? EndGameWinner.Local : EndGameWinner.Remote;
+        }
+
         await this.refresh();
-        this.gameEnding.next();
+        this.gameEnding.next(winner);
+        this.messagingService.send(
+            'Fin de partie - lettres restantes',
+            this.sessionService.gameConfig.firstPlayerName + ' : ' + this.rackService.rack,
+            MessageType.System,
+        );
     }
 
     private async refresh(): Promise<void> {
+        // TODO Add try catch ?
         this.stats = await this.httpCLient.get<SessionStats>(localUrl('player', 'stats', this.sessionService.id)).toPromise();
         await this.playerService.refresh();
+        await this.rackService.refresh();
     }
 }

@@ -5,12 +5,27 @@ import { DictionaryService } from '@app/services/dictionary/dictionary.service';
 import JsonBonuses from '@assets/bonus.json';
 import { Bonus, BonusInfos, LETTER_DEFINITIONS } from '@common';
 import { Service } from 'typedi';
+import { BoardHandler } from '@app/handlers/board-handler/board-handler';
 
 @Service()
 export class BoardGeneratorService {
-    static bonusNumber: Map<Bonus, number>;
+    private readonly bonusCounts: Map<Bonus, number>;
 
-    constructor(private readonly dictionaryService: DictionaryService) {}
+    constructor(private readonly dictionaryService: DictionaryService) {
+        this.bonusCounts = new Map<Bonus, number>([
+            [Bonus.L2, 0],
+            [Bonus.W2, 0],
+            [Bonus.L3, 0],
+            [Bonus.W3, 0],
+        ]);
+        for (const jsonBonus of JsonBonuses) {
+            const jsonStringToEnum = Bonus[jsonBonus.Bonus as keyof typeof Bonus];
+            const valueOfKey = this.bonusCounts.get(jsonStringToEnum);
+            if (valueOfKey !== undefined) {
+                this.bonusCounts.set(jsonStringToEnum, valueOfKey + 1);
+            }
+        }
+    }
 
     private static retrieveLetterValues(): { [key: string]: number } {
         const letterValues: { [key: string]: number } = {};
@@ -22,7 +37,14 @@ export class BoardGeneratorService {
         return letterValues;
     }
 
-    private static retrieveBonuses(isRandomBonus: boolean): BonusInfos[] {
+    generateBoardHandler(isRandomBonus: boolean): BoardHandler {
+        const board = new Board(Config.GRID.GRID_SIZE, this.retrieveBonuses(isRandomBonus));
+        const boardValidator = new BoardValidator(board, this.dictionaryService, BoardGeneratorService.retrieveLetterValues());
+
+        return new BoardHandler(board, boardValidator, isRandomBonus);
+    }
+
+    private retrieveBonuses(isRandomBonus: boolean): BonusInfos[] {
         let bonuses: BonusInfos[] = [];
 
         for (const jsonBonus of JsonBonuses) {
@@ -35,7 +57,7 @@ export class BoardGeneratorService {
         return bonuses;
     }
 
-    private static shuffleBonuses(bonusesArray: BonusInfos[]): BonusInfos[] {
+    private shuffleBonuses(bonusesArray: BonusInfos[]): BonusInfos[] {
         const bonusBank: Bonus[] = this.initializeBonusBank();
         for (const bonusInfo of bonusesArray) {
             if (bonusInfo.bonus !== Bonus.Star) {
@@ -50,28 +72,13 @@ export class BoardGeneratorService {
         return bonusesArray;
     }
 
-    private static initializeBonusBank() {
+    private initializeBonusBank() {
         const bonusBank: Bonus[] = [];
-        for (const jsonBonus of JsonBonuses) {
-            const jsonStringToEnum = Bonus[jsonBonus.Bonus as keyof typeof Bonus];
-            const valueOfKey = this.bonusNumber.get(jsonStringToEnum);
-            if (valueOfKey !== undefined) {
-                this.bonusNumber.set(jsonStringToEnum, valueOfKey + 1);
-            }
-        }
-        for (const [bonusType, maxQuantity] of this.bonusNumber) {
+        for (const [bonusType, maxQuantity] of this.bonusCounts) {
             for (let i = 0; i < maxQuantity; i++) {
                 bonusBank.push(bonusType);
             }
         }
         return bonusBank;
-    }
-
-    generateBoard(isRandomBonus: boolean): Board {
-        return new Board(Config.GRID.GRID_SIZE, BoardGeneratorService.retrieveBonuses(isRandomBonus));
-    }
-
-    generateBoardValidator(board: Board): BoardValidator {
-        return new BoardValidator(board, this.dictionaryService, BoardGeneratorService.retrieveLetterValues());
     }
 }

@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { SocketClientService } from '@app/services/socket-client/socket-client.service';
 import { MultiplayerCreateConfig, MultiplayerJoinConfig, ServerConfig, ConvertConfig, AvailableGameConfig } from '@common';
-import { environmentExt } from '@environmentExt';
+import { environmentExt } from '@environment-ext';
 import { HttpClient } from '@angular/common/http';
 import { GameService } from '@app/services/game/game.service';
 import { Observable, Subject } from 'rxjs';
@@ -13,8 +13,8 @@ const localUrl = (base: string, call: string, id?: string) => `${environmentExt.
     providedIn: 'root',
 })
 export class RoomService {
-    private availableRooms: AvailableGameConfig[];
-    private readonly hasJoined: Subject<ServerConfig>;
+    private readonly joinedSubject: Subject<ServerConfig>;
+    private readonly roomSubject: Subject<AvailableGameConfig[]>;
 
     private pendingRoomId: string;
 
@@ -23,11 +23,12 @@ export class RoomService {
         private readonly gameService: GameService,
         private readonly httpCLient: HttpClient,
     ) {
-        this.availableRooms = [];
-        this.hasJoined = new Subject<ServerConfig>();
+        this.joinedSubject = new Subject<ServerConfig>();
+        this.roomSubject = new Subject<AvailableGameConfig[]>();
+
         this.pendingRoomId = '';
 
-        this.socketService.on('availableRooms', (rooms: AvailableGameConfig[]) => (this.availableRooms = rooms));
+        this.socketService.on('availableRooms', (rooms: AvailableGameConfig[]) => this.roomSubject.next(rooms));
         this.socketService.on('onJoin', async (serverConfig: ServerConfig) => this.onTurn(serverConfig));
     }
 
@@ -65,27 +66,27 @@ export class RoomService {
         await this.onTurn(serverConfig);
     }
 
-    async join(id: string): Promise<void> {
-        const joinConfig: MultiplayerJoinConfig = {
-            sessionId: id,
-            playerName: 'test', // TODO
-        };
+    async join(joinConfig: MultiplayerJoinConfig): Promise<boolean> {
+        try {
+            const serverConfig = await this.httpCLient.put<ServerConfig>(localUrl('game', 'join'), joinConfig).toPromise();
+            await this.gameService.start(serverConfig);
+        } catch (err) {
+            return false;
+        }
 
-        const serverConfig = await this.httpCLient.put<ServerConfig>(localUrl('game', 'join'), joinConfig).toPromise();
-        this.socketService.join(serverConfig.id);
-        await this.gameService.start(serverConfig);
+        return true;
     }
 
     refresh(): void {
         this.socketService.send('getRooms');
     }
 
-    get rooms(): AvailableGameConfig[] {
-        return this.availableRooms;
+    get onAvailable(): Observable<AvailableGameConfig[]> {
+        return this.roomSubject.asObservable();
     }
 
     get onGameFull(): Observable<ServerConfig> {
-        return this.hasJoined.asObservable();
+        return this.joinedSubject.asObservable();
     }
 
     private async onTurn(serverConfig: ServerConfig): Promise<void> {
@@ -94,7 +95,7 @@ export class RoomService {
         }
 
         await this.gameService.start(serverConfig);
-        this.hasJoined.next(serverConfig);
+        this.joinedSubject.next(serverConfig);
         this.pendingRoomId = '';
     }
 }

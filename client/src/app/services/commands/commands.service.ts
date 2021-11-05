@@ -1,12 +1,14 @@
 import { Injectable } from '@angular/core';
 import { PlayerType } from '@app/classes/player/player-type';
 import { Constants } from '@app/constants/global.constants';
-import { SystemMessages } from '@app/constants/system-messages.constants';
 import { GameService } from '@app/services/game/game.service';
 import { MessagingService } from '@app/services/messaging/messaging.service';
 import { PlayerService } from '@app/services/player/player.service';
 import { ReserveService } from '@app/services/reserve/reserve.service';
-import { Direction, LETTER_DEFINITIONS, MessageType, Vec2 } from '@common';
+import { Direction, LETTER_DEFINITIONS, MessageType, Vec2, SystemMessages } from '@common';
+
+const MAX_PARAMETER_COUNT = 3;
+
 @Injectable({
     providedIn: 'root',
 })
@@ -17,10 +19,10 @@ export class CommandsService {
     private placeWordCommandRegex: RegExp;
 
     constructor(
-        public messagingService: MessagingService,
-        public playerService: PlayerService,
-        public gameService: GameService,
-        public reserveService: ReserveService,
+        private readonly messagingService: MessagingService,
+        private readonly playerService: PlayerService,
+        private readonly gameService: GameService,
+        private readonly reserveService: ReserveService,
     ) {
         this.placeWordCommandRegex = /^([a-o]){1}([1-9]|1[0-5]){1}([hv]){1}$/;
         this.wordRegex = /^[A-zÀ-ú]{1,15}$/;
@@ -28,11 +30,22 @@ export class CommandsService {
         this.messageRegex = /^[A-zÀ-ú0-9 !.?'"]{1,512}$/;
     }
 
+    // Source: https://stackoverflow.com/questions/990904/remove-accents-diacritics-in-a-string-in-javascript by Lewis Diamond on 05/29/16
+    private static removeAccents(word: string): string {
+        return word.normalize('NFD').replace(/\p{Diacritic}/gu, '');
+    }
+
     parseInput(input: string): boolean {
         let successfulCommand = false;
+        const isCommand = input.startsWith('!');
+
         // Arguments: [COMMAND, OPTIONS, WORD]
-        if (input.startsWith('!')) {
+        if (isCommand) {
             const args = input.split(' ');
+            const parameterCount = args.length;
+
+            args.length = MAX_PARAMETER_COUNT;
+            args.fill('', parameterCount);
             switch (args[0]) {
                 case '!aide':
                     this.showHelp();
@@ -41,13 +54,13 @@ export class CommandsService {
                     this.toggleDebug();
                     break;
                 case '!placer':
-                    successfulCommand = this.checkPlaceCommand(args[1], this.removeAccents(args[2]));
+                    successfulCommand = this.checkPlaceCommand(args[1], CommandsService.removeAccents(args[2]));
                     break;
                 case '!passer':
                     successfulCommand = this.skipTurn();
                     break;
                 case '!échanger':
-                    successfulCommand = this.exchangeLetters(this.removeAccents(args[1]));
+                    successfulCommand = this.exchangeLetters(CommandsService.removeAccents(args[1]));
                     break;
                 case '!réserve':
                     successfulCommand = this.displayReserve();
@@ -57,7 +70,7 @@ export class CommandsService {
                     return false;
             }
             if (successfulCommand) {
-                this.messagingService.send('Commande réussie', input, MessageType.System, this.gameService.currentTurn);
+                this.messagingService.send(SystemMessages.ValidSyntax, input, MessageType.System);
             }
         }
         if (this.messageRegex.test(input)) {
@@ -69,22 +82,15 @@ export class CommandsService {
         return true;
     }
 
-    // Source: https://stackoverflow.com/questions/990904/remove-accents-diacritics-in-a-string-in-javascript by Lewis Diamond on 05/29/16
-    private removeAccents(word: string): string {
-        return word.normalize('NFD').replace(/\p{Diacritic}/gu, '');
-    }
-
-    // TO DO return false... somewhere
     private displayReserve(): boolean {
         const body: string[] = [];
-        let reserveContent = '';
 
         for (const letter of LETTER_DEFINITIONS) {
             const currentLetterAndQuantity = this.reserveService.getLetterAndQuantity(letter[0]);
             body.push(`${currentLetterAndQuantity}\n`);
         }
 
-        reserveContent = body.join('');
+        const reserveContent = body.join('');
         this.messagingService.send(SystemMessages.ReserveContentTitle, reserveContent, MessageType.Log);
 
         return true;
@@ -140,13 +146,13 @@ export class CommandsService {
     }
 
     private toggleDebug(): void {
-        this.messagingService.debuggingMode = !this.messagingService.debuggingMode;
-        this.messagingService.send('', this.messagingService.debuggingMode ? SystemMessages.DebugOn : SystemMessages.DebugOff, MessageType.System);
+        this.messagingService.isDebug = !this.messagingService.isDebug;
+        this.messagingService.send('', this.messagingService.isDebug ? SystemMessages.DebugOn : SystemMessages.DebugOff, MessageType.System);
     }
 
     private isUsersTurn(): boolean {
-        if (this.gameService.currentTurn === PlayerType.Virtual) {
-            this.messagingService.send('', SystemMessages.InvalidTurn, MessageType.Log);
+        if (this.gameService.currentTurn !== PlayerType.Local) {
+            this.messagingService.send('', SystemMessages.InvalidTurn, MessageType.System);
             return false;
         }
         return true;

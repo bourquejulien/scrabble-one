@@ -29,8 +29,8 @@ export interface AvailableGameConfig {
     id: string;
     playTimeMs: number;
     waitingPlayerName: string,
+    isRandomBonus: boolean,
 }
-
 
 export interface ServerConfig {
     id: string,

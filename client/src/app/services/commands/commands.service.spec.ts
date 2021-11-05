@@ -30,7 +30,7 @@ describe('CommandsService', () => {
             ],
         });
         service = TestBed.inject(CommandsService);
-        service.messagingService.debuggingMode = true;
+        service['messagingService'].isDebug = true;
     });
 
     it('should be created', () => {
@@ -45,11 +45,11 @@ describe('CommandsService', () => {
     });
 
     it('#parseInput should toggle debugging mode', () => {
-        service.messagingService.debuggingMode = false;
+        service['messagingService'].isDebug = false;
         service.parseInput('!debug');
-        expect(service.messagingService.debuggingMode).toBeTrue();
+        expect(service['messagingService'].isDebug).toBeTrue();
         service.parseInput('!debug');
-        expect(service.messagingService.debuggingMode).toBeFalse();
+        expect(service['messagingService'].isDebug).toBeFalse();
     });
 
     it('#parseInput should send an error message when exchange letter command is invalid', () => {
@@ -59,7 +59,8 @@ describe('CommandsService', () => {
         service.parseInput('!échanger 12345678');
     });
 
-    it('#parseInput should call skip turn', () => {
+    it('#parseInput should call exchange', () => {
+        service['gameService'].currentTurn = PlayerType.Local;
         service.parseInput('!échanger abc');
         expect(playerServiceSpy.exchangeLetters).toHaveBeenCalled();
     });
@@ -80,6 +81,7 @@ describe('CommandsService', () => {
 
     it('#parseInput should call placeLetters when the input is valid', () => {
         const vecCoordinate: Vec2 = { x: 7, y: 7 };
+        service['gameService'].currentTurn = PlayerType.Local;
         service.parseInput('!placer h8v word');
         expect(playerServiceSpy.placeLetters).toHaveBeenCalledWith('word', vecCoordinate, Direction.Down);
         service.parseInput('!placer h8h word');
@@ -108,13 +110,14 @@ describe('CommandsService', () => {
         service.parseInput('!notavalidcommand');
     });
 
-    it('#parseInput should call skip turn', () => {
+    it('parseInput should call skip turn', () => {
+        service['gameService'].currentTurn = PlayerType.Local;
         service.parseInput('!passer');
         expect(playerServiceSpy.skipTurn).toHaveBeenCalled();
     });
 
     it("#parseInput should fail when it is not the user's turn", () => {
-        service.gameService.currentTurn = PlayerType.Virtual;
+        service['gameService'].currentTurn = PlayerType.Virtual;
         // service.messagingService.onMessage().subscribe((message) => {
         //     expect(message.messageType).toEqual(MessageType.Error);
         // });
@@ -136,6 +139,6 @@ describe('CommandsService', () => {
     it('should remove accents', () => {
         const accentedMessage = 'Ôde à la crème brûlée';
         const resultMessage = 'Ode a la creme brulee';
-        expect(service['removeAccents'](accentedMessage)).toEqual(resultMessage);
+        expect(CommandsService['removeAccents'](accentedMessage)).toEqual(resultMessage);
     });
 });

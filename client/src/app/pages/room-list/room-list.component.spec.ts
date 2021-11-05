@@ -2,13 +2,14 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
 import { RoomListComponent } from './room-list.component';
-import { MatCard } from '@angular/material/card';
-import { MatIcon } from '@angular/material/icon';
-import { MatToolbar } from '@angular/material/toolbar';
 import { GamePageComponent } from '@app/pages/game-page/game-page.component';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { RoomService } from '@app/services/room/room.service';
-import { MatList } from '@angular/material/list';
+import { MatDialogRef } from '@angular/material/dialog';
+import { CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA } from '@angular/core';
+import { AppMaterialModule } from '@app/modules/material.module';
+import { Subject } from 'rxjs';
+import { AvailableGameConfig } from '@common';
 
 const ROOMS = ['a', 'b', 'c'];
 
@@ -18,11 +19,18 @@ describe('RoomListComponent', () => {
     let roomServiceSpy: jasmine.SpyObj<RoomService>;
 
     beforeEach(async () => {
-        roomServiceSpy = jasmine.createSpyObj('RoomService', ['init', 'refresh', 'join'], { rooms: ROOMS });
+        roomServiceSpy = jasmine.createSpyObj('RoomService', ['init', 'refresh', 'join'], {
+            rooms: ROOMS,
+            onAvailable: new Subject<AvailableGameConfig[]>().asObservable(),
+        });
         await TestBed.configureTestingModule({
-            declarations: [RoomListComponent, MatCard, MatIcon, MatToolbar, MatList],
-            imports: [HttpClientTestingModule, RouterTestingModule.withRoutes([{ path: 'game', component: GamePageComponent }])],
-            providers: [{ provide: RoomService, useValue: roomServiceSpy }],
+            declarations: [RoomListComponent],
+            imports: [HttpClientTestingModule, AppMaterialModule, RouterTestingModule.withRoutes([{ path: 'game', component: GamePageComponent }])],
+            schemas: [CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA],
+            providers: [
+                { provide: RoomService, useValue: roomServiceSpy },
+                { provide: MatDialogRef, useValue: {} },
+            ],
         }).compileComponents();
     });
 
@@ -34,11 +42,5 @@ describe('RoomListComponent', () => {
 
     it('should create', () => {
         expect(component).toBeTruthy();
-    });
-
-    it('should join room', () => {
-        const roomId = 'roomId';
-        component.join(roomId);
-        expect(roomServiceSpy['join']).toHaveBeenCalledWith(roomId);
     });
 });

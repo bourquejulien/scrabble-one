@@ -75,27 +75,6 @@ describe('BoardController', () => {
             });
     });
 
-    it('POST /validate/123 when there is a placement array', async () => {
-        const placement: Placement[] = [{ letter: 'A', position: { x: 8, y: 8 } }];
-        return request(expressApp)
-            .post('/api/board/validate/123')
-            .send(placement)
-            .then((response) => {
-                expect(response.status).to.be.equal(Constants.HTTP_STATUS.OK);
-            });
-    });
-
-    it('POST /validate/1 when there is no boardHandler', async () => {
-        stubSessionHandlingService.getHandlerByPlayerId.returns(null);
-        const placement: Placement[] = [{ letter: 'A', position: { x: 8, y: 8 } }];
-        return request(expressApp)
-            .post('/api/board/validate/123')
-            .send(placement)
-            .then((response) => {
-                expect(response.status).to.be.equal(Constants.HTTP_STATUS.BAD_REQUEST);
-            });
-    });
-
     it('POST /retrieve/123 when there is no boardHandler', async () => {
         stubSessionHandlingService.getHandlerByPlayerId.returns(null);
         return request(expressApp)

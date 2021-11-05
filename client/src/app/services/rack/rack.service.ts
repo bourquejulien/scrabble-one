@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { environmentExt } from '@environmentExt';
+import { environmentExt } from '@environment-ext';
 import { HttpClient } from '@angular/common/http';
 import { SessionService } from '@app/services/session/session.service';
 
@@ -9,7 +9,7 @@ const localUrl = (call: string, id: string) => `${environmentExt.apiUrl}player/$
     providedIn: 'root',
 })
 export class RackService {
-    readonly rack: string[];
+    rack: string[];
 
     constructor(private readonly httpClient: HttpClient, private readonly sessionService: SessionService) {
         this.rack = [];

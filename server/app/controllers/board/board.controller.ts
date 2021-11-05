@@ -17,20 +17,6 @@ export class BoardController {
     private configureRouter(): void {
         this.router = Router();
 
-        this.router.post('/validate/:id', async (req: Request, res: Response) => {
-            const boardHandler = this.getBoardHandler(req.params.id);
-            const placement: Placement[] = req.body;
-
-            if (boardHandler === null || placement === undefined) {
-                res.sendStatus(Constants.HTTP_STATUS.BAD_REQUEST);
-                return;
-            }
-
-            const response = boardHandler.lookupLetters(boardHandler.retrieveNewLetters(placement));
-            res.status(Constants.HTTP_STATUS.OK);
-            res.json(response);
-        });
-
         this.router.post('/place/:id', async (req: Request, res: Response) => {
             const humanPlayer = this.getHumanPlayer(req.params.id);
             const placements: Placement[] = req.body;
@@ -41,20 +27,18 @@ export class BoardController {
             }
 
             const response = await humanPlayer.placeLetters(placements);
-            res.status(Constants.HTTP_STATUS.OK);
             res.json(response);
         });
 
         this.router.get('/retrieve/:id', (req: Request, res: Response) => {
             const boardHandler = this.getBoardHandler(req.params.id);
+
             if (boardHandler === null) {
                 res.sendStatus(Constants.HTTP_STATUS.BAD_REQUEST);
                 return;
             }
 
-            const boardData = boardHandler.immutableBoard.boardData; // TODO
-            res.status(Constants.HTTP_STATUS.OK);
-            res.json(boardData);
+            res.json(boardHandler.immutableBoard.boardData);
         });
     }
 

@@ -1,17 +1,34 @@
 import { Board, ImmutableBoard } from '@app/classes/board/board';
 import { BoardValidator } from '@app/classes/validation/board-validator';
+import { ValidationResponse } from '@app/classes/validation/validation-response';
 import { BoardError } from '@app/errors/board-error';
-import { Placement, ValidationResponse } from '@common';
+import { Placement } from '@common';
 
 export class BoardHandler {
-    constructor(private board: Board, private boardValidator: BoardValidator) {}
+    private readonly wordRegex: RegExp;
+
+    constructor(private board: Board, private boardValidator: BoardValidator, readonly isRandomBonus: boolean) {
+        this.wordRegex = /^[A-zÀ-ú]{1,15}$/;
+    }
+
+    // Source: https://stackoverflow.com/questions/990904/remove-accents-diacritics-in-a-string-in-javascript by Lewis Diamond on 05/29/16
+    private static removeAccents(word: string): string {
+        return word.normalize('NFD').replace(/\p{Diacritic}/gu, '');
+    }
 
     lookupLetters(letters: Placement[]): ValidationResponse {
+        for (const square of letters) {
+            square.letter = BoardHandler.removeAccents(square.letter);
+            if (!this.wordRegex.test(square.letter)) {
+                return { isSuccess: false, description: `Le caractère ${square.letter} n'est pas accepté`, points: 0 };
+            }
+        }
+
         return this.boardValidator.validate(letters);
     }
 
     placeLetters(letters: Placement[]): ValidationResponse {
-        const response = this.boardValidator.validate(letters);
+        const response = this.lookupLetters(letters);
 
         if (!response.isSuccess) {
             return response;

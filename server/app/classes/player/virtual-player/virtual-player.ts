@@ -1,4 +1,3 @@
-import { PlayerData } from '@app/classes/player-data';
 import { Config } from '@app/config';
 import { SkipAction } from '@app/classes/player/virtual-player/actions/skip-action';
 import { ExchangeAction } from '@app/classes/player/virtual-player/actions/exchange-action';
@@ -14,10 +13,6 @@ import { Timer } from '@app/classes/delay';
 const MIN_PLAYTIME_MILLISECONDS = 3000;
 
 export class VirtualPlayer extends Player {
-    isTurn: boolean;
-
-    playerData: PlayerData;
-
     constructor(
         public playerInfo: PlayerInfo,
         private readonly dictionaryService: DictionaryService,
@@ -45,17 +40,18 @@ export class VirtualPlayer extends Player {
 
     private nextAction(): Action {
         let random = Math.random();
-        if (random < Config.VIRTUAL_PLAYER.SKIP_PERCENTAGE) {
-            return new SkipAction(this.playerData);
-        }
-        random -= Config.VIRTUAL_PLAYER.SKIP_PERCENTAGE;
 
-        if (random < Config.VIRTUAL_PLAYER.EXCHANGE_PERCENTAGE) {
-            return new ExchangeAction(this.reserveHandler, /* this.messaging ,*/ this.playerData);
+        if (random < Config.VIRTUAL_PLAYER.EXCHANGE_PERCENTAGE && this.reserveHandler.length > 0) {
+            return new ExchangeAction(this.reserveHandler, this.socketHandler, this.playerData);
+        }
+        random -= Config.VIRTUAL_PLAYER.EXCHANGE_PERCENTAGE;
+
+        if (random < Config.VIRTUAL_PLAYER.SKIP_PERCENTAGE) {
+            return new SkipAction(this.playerData, this.socketHandler);
         }
 
         const playGenerator = new PlayGenerator(this.dictionaryService, this.boardHandler, this.playerData.rack);
 
-        return new PlayAction(this.boardHandler, playGenerator, this.playerData /* , this.messaging*/);
+        return new PlayAction(this.boardHandler, playGenerator, this.playerData, this.socketHandler);
     }
 }
