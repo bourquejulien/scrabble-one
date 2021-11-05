@@ -190,7 +190,7 @@ describe('RackComponent', () => {
     it('should clear selection on cancel exchange', () => {
         component.selection.reserve = new Set([1, 2, 3]);
 
-        component.cancelExchange();
+        component.clearExchange();
 
         expect(component.selection.reserve.size).toEqual(0);
     });

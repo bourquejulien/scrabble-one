@@ -63,6 +63,15 @@ export class RackComponent implements OnInit {
         }
     }
 
+    @HostListener('document:click', ['$event'])
+    onDocumentClick(): void {
+        if (this.isFocus) {
+            return;
+        }
+
+        this.reset();
+    }
+
     ngOnInit(): void {
         this.reset();
         this.reserveSelectionChange.emit(this.selection.reserve);
@@ -83,11 +92,6 @@ export class RackComponent implements OnInit {
     }
 
     onMousewheel(event: WheelEvent): void {
-        if (this.selection.swap.index < 0) {
-            this.selection.swap.index = 0;
-            return;
-        }
-
         this.swapSelectionIndex =
             event.deltaY < 0 ? this.rackService.mod(this.selection.swap.index + 1) : this.rackService.mod(this.selection.swap.index - 1);
     }
@@ -104,7 +108,7 @@ export class RackComponent implements OnInit {
         return currentLetterData ? currentLetterData.points : -1;
     }
 
-    cancelExchange() {
+    clearExchange() {
         this.selection.reserve.clear();
     }
 
@@ -118,6 +122,7 @@ export class RackComponent implements OnInit {
         const sendLettersToExchange = lettersToExchange.join('');
         const command = '!échanger ' + sendLettersToExchange;
         this.commandService.parseInput(command);
+        this.clearExchange();
     }
 
     private handleKeyPress(key: string) {
