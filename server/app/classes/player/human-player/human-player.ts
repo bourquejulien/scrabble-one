@@ -95,7 +95,6 @@ export class HumanPlayer extends Player {
             );
             return { isSuccess: false, body: '' };
         }
-        if (!this.areLettersInRack(lettersToExchange)) return { isSuccess: false, body: 'Letters not in rack' };
 
         lettersToExchange.forEach(() => {
             this.playerData.rack.push(this.reserveHandler.drawLetter());
