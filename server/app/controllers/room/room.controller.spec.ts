@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-magic-numbers */
+/* eslint-disable @typescript-eslint/no-magic-numbers,no-unused-vars */
 /* eslint-disable @typescript-eslint/no-empty-function */
 /* eslint-disable no-unused-expressions */
 /* eslint-disable @typescript-eslint/no-unused-expressions */
@@ -15,12 +15,23 @@ import { GameService } from '@app/services/game/game.service';
 import { SessionHandler } from '@app/handlers/session-handler/session-handler';
 import { SocketMock } from '@app/classes/helpers/socket-test-helper';
 import { Server, Socket } from 'socket.io';
+import { BoardHandler } from '@app/handlers/board-handler/board-handler';
+import { PlayerHandler } from '@app/handlers/player-handler/player-handler';
 
 const IDS = {
     player: '123',
     socket: '123',
     session: '123',
 };
+
+class SocketStub {
+    leaveCallCount: number = 0;
+    id: string = '';
+
+    leave(id: string) {
+        this.leaveCallCount++;
+    }
+}
 
 describe('RoomController', () => {
     let controller: RoomController;
@@ -52,6 +63,8 @@ describe('RoomController', () => {
             getSessionId: 'sessionId',
             getHandlerByPlayerId: sessionHandler as unknown as SessionHandler,
         });
+
+        gameService = createStubInstance(GameService);
 
         controller = new RoomController(
             stubSocketService,
@@ -241,22 +254,25 @@ describe('RoomController', () => {
     });
 
     it('should stop correctly', async () => {
-        stubSessionHandlingService.getHandlerByPlayerId.returns(null);
-        const playerId = 'id';
-        controller['stop'](playerId);
+        const stubSessionHandler = createStubInstance(SessionHandler) as unknown as SessionHandler;
+        stubSessionHandler['sessionInfo'] = {
+            id: '',
+            playTimeMs: 0,
+            gameType: GameType.SinglePlayer,
+        };
+        stubSessionHandler['boardHandler'] = {
+            isRandomBonus: false,
+        } as BoardHandler;
+        stubSessionHandler['playerHandler'] = {
+            players: [{ playerInfo: { name: '' } }],
+        } as PlayerHandler;
 
-        const handler = {
-            sessionHandler: {
-                gameType: GameType.Multiplayer,
-            },
-            sessionData: {
-                isActive: true,
-            },
-            endGame: () => {},
-            dispose: () => {},
-        } as unknown as SessionHandler;
-        stubSessionHandlingService.getHandlerByPlayerId.returns(handler);
-        controller['stop'](playerId);
-        clock.tick(6000);
+        stubSessionHandlingService.getSessionId.returns('');
+        stubSessionHandlingService.getAvailableSessions.returns([stubSessionHandler as unknown as SessionHandler]);
+        const playerId = 'id';
+        const socket = new SocketStub();
+
+        await controller['abandon'](socket as unknown as Socket, playerId);
+        expect(socket.leaveCallCount).to.equal(1);
     });
 });

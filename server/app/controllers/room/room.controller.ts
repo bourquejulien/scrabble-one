@@ -111,7 +111,7 @@ export class RoomController {
     }
 
     private get sessionInfos(): AvailableGameConfig[] {
-        return this.sessionHandlingService.availableSessions.map((s) => ({
+        return this.sessionHandlingService.getAvailableSessions().map((s) => ({
             id: s.sessionInfo.id,
             playTimeMs: s.sessionInfo.playTimeMs,
             waitingPlayerName: s.players[0].playerInfo.name,
