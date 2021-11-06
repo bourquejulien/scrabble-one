@@ -1,20 +1,23 @@
 /* eslint-disable max-classes-per-file -- Needs many stub implementations */
+//import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { Component, CUSTOM_ELEMENTS_SCHEMA, Injectable, NO_ERRORS_SCHEMA } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { MatDialogModule } from '@angular/material/dialog';
+import { MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { MatToolbar } from '@angular/material/toolbar';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
+import { EndGameWinner } from '@app/classes/end-game-winner';
 import { GameConfig } from '@app/classes/game-config';
 import { cleanStyles } from '@app/classes/helpers/cleanup.helper';
 import { PlayerType } from '@app/classes/player/player-type';
 import { TimeSpan } from '@app/classes/time/timespan';
 import { AppMaterialModule } from '@app/modules/material.module';
 import { GameService } from '@app/services/game/game.service';
-import { BehaviorSubject, Subject } from 'rxjs';
-import { GamePageComponent } from './game-page.component';
 import { GameType, SessionStats } from '@common';
+import { BehaviorSubject, of, Subject } from 'rxjs';
+import { GamePageComponent } from './game-page.component';
 
 @Injectable({
     providedIn: 'root',
@@ -46,6 +49,10 @@ class GameServiceStub {
     skipTurn(): void {
         this.nextTurn();
     }
+
+    reset(): void {
+        // This function does nothing
+    }
 }
 
 @Component({
@@ -57,11 +64,17 @@ class PlayAreaStubComponent {}
 describe('GamePageComponent', () => {
     let component: GamePageComponent;
     let fixture: ComponentFixture<GamePageComponent>;
+    const routerMock = {
+        navigate: jasmine.createSpy('navigate'),
+    };
 
     beforeEach(async () => {
         await TestBed.configureTestingModule({
             declarations: [GamePageComponent, PlayAreaStubComponent, MatToolbar],
-            providers: [{ provide: GameService, useClass: GameServiceStub }],
+            providers: [
+                { provide: Router, useValue: routerMock },
+                { provide: GameService, useClass: GameServiceStub },
+            ],
             imports: [AppMaterialModule, MatDialogModule, BrowserAnimationsModule, RouterTestingModule.withRoutes([]), HttpClientTestingModule],
             schemas: [CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA],
         }).compileComponents();
@@ -77,11 +90,97 @@ describe('GamePageComponent', () => {
         expect(component).toBeTruthy();
     });
 
+    it('should call confirmQuit if first button is clicked', () => {
+        const spy = spyOn<any>(component, 'confirmQuit');
+        component['buttonConfig'][0].action();
+        expect(spy).toHaveBeenCalled();
+    });
+
+    it('should call toggleDrawer if second button is clicked', () => {
+        const spy = spyOn<any>(component, 'toggleDrawer');
+        component['buttonConfig'][1].action();
+        expect(spy).toHaveBeenCalled();
+    });
+
+    it('should call parseInput if third button is clicked', async () => {
+        const spy = spyOn<any>(component['commandService'], 'parseInput');
+        component['buttonConfig'][2].action();
+        spy.and.callThrough();
+        expect(spy).toHaveBeenCalled();
+    });
+
     it('should call toggle function if toggleDrawer called', () => {
         const spy = spyOn(component.drawer, 'toggle');
 
         component.toggleDrawer();
         expect(spy).toHaveBeenCalled();
+    });
+
+    it('should call dialogRef if trying to quit game', () => {
+        const spy = spyOn(component['dialog'], 'open')
+            .and
+            .returnValue({
+                afterClosed: () => of(true)
+            } as MatDialogRef<typeof component>);
+        component['confirmQuit']();
+        expect(spy).toHaveBeenCalled();
+    });
+
+    it('should stay on page if result is false', () => {
+        spyOn(component['dialog'], 'open')
+            .and
+            .returnValue({
+                afterClosed: () => of(false)
+            } as MatDialogRef<typeof component>);
+        const spy = spyOn<any>(component.gameService, 'reset');
+        component['confirmQuit']();
+        expect(spy).not.toHaveBeenCalled();
+    });
+
+    it('should reroute to home', () => {
+        spyOn(component['dialog'], 'open')
+            .and
+            .returnValue({
+                afterClosed: () => of(true)
+            } as MatDialogRef<typeof component>);
+        const spy = spyOn<any>(component.gameService, 'reset');
+        component['confirmQuit']();
+        expect(spy).toHaveBeenCalled();
+    });
+
+    it('should call dialogRef if trying to endGame', () => {
+        const winner = EndGameWinner.Local;
+        const spy = spyOn(component['dialog'], 'open')
+            .and
+            .returnValue({
+                afterClosed: () => of(true)
+            } as MatDialogRef<typeof component>);
+        component.endGame(winner);
+        expect(spy).toHaveBeenCalled();
+    });
+
+    it('should reset game data if game ended', () => {
+        const winner = EndGameWinner.Local;
+        spyOn(component['dialog'], 'open')
+            .and
+            .returnValue({
+                afterClosed: () => of(true)
+            } as MatDialogRef<typeof component>);
+        const spy = spyOn<any>(component.gameService, 'reset');
+        component.endGame(winner);
+        expect(spy).toHaveBeenCalled();
+    });
+
+    it('should not reset game data if game not ended', () => {
+        const winner = EndGameWinner.Local;
+        spyOn(component['dialog'], 'open')
+            .and
+            .returnValue({
+                afterClosed: () => of(false)
+            } as MatDialogRef<typeof component>);
+        const spy = spyOn<any>(component.gameService, 'reset');
+        component.endGame(winner);
+        expect(spy).not.toHaveBeenCalled();
     });
 
     afterAll(() => cleanStyles());

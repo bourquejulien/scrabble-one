@@ -97,7 +97,7 @@ describe('CommunicationBoxComponent', () => {
     });
 
     it('should return the title of the message', () => {
-        const testMessage = {
+        let testMessage = {
             title: 'Title Message Local',
             body: 'Body',
             messageType: MessageType.Message,
@@ -114,12 +114,14 @@ describe('CommunicationBoxComponent', () => {
         testMessage.messageType = MessageType.RemoteMessage;
         expect(component.getTitle(testMessage)).toBe(sessionService.gameConfig.secondPlayerName);
 
+
         testMessage.messageType = MessageType.Log;
         expect(component.getTitle(testMessage)).toBe(testMessage.title);
+
     });
 
     it('should not show message if debug and debug mode off', () => {
-        const testMessage = {
+        let testMessage = {
             title: 'Title',
             body: 'Body',
             messageType: MessageType.Log,
@@ -134,7 +136,7 @@ describe('CommunicationBoxComponent', () => {
 
     it('should reset input value if parseInput successful', () => {
         commandsServiceSpy['parseInput'].and.returnValue(true);
-        component.inputValue = 'a';
+        component.inputValue = 'a'
         component.send('!échanger e');
         expect(commandsServiceSpy['parseInput']).toHaveBeenCalled();
         expect(component.inputValue).toBe('');
@@ -158,7 +160,7 @@ describe('CommunicationBoxComponent', () => {
     });
 
     it('should return the correct CSS colors', () => {
-        const testMessage = {
+        let testMessage = {
             title: 'Title',
             body: 'Body',
             messageType: MessageType.Message,
@@ -200,7 +202,6 @@ describe('CommunicationBoxComponent', () => {
     });
 
     it('should scroll down if new message pushed', () => {
-        // component['messageContainer']['nativeElement'] = new HTMLElement;
         const spy = spyOn(component['messageContainer']['nativeElement'], 'scroll');
         component['scroll']();
         expect(spy).toHaveBeenCalled();

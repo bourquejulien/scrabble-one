@@ -61,8 +61,6 @@ describe('TimerService', () => {
     });
 
     it('should call on ticks when timer created', () => {
-        // const spy = spyOn(service['socketService'], 'on');
-        // const spy = spyOn<any>(service, 'onTicks');
         new TimerService(socketService, playerService);
         expect(socketService['on']).toHaveBeenCalled();
     });

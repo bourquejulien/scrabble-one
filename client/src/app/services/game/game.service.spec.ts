@@ -3,6 +3,7 @@
 /* eslint-disable max-classes-per-file -- Needs many stubbed classes in order to test*/
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { HttpClient } from '@angular/common/http';
+import { Injectable } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { EndGameWinner } from '@app/classes/end-game-winner';
 import { GameConfig } from '@app/classes/game-config';
@@ -17,6 +18,9 @@ import { Observable, Subject } from 'rxjs';
 import { MessagingService } from '../messaging/messaging.service';
 import { SocketClientService } from '../socket-client/socket-client.service';
 
+@Injectable({
+    providedIn: 'root',
+})
 class SessionServiceStub {
     private _id: string;
     private _gameConfig: GameConfig;
