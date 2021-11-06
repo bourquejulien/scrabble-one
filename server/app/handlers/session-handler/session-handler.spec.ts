@@ -189,10 +189,10 @@ describe('SessionHandler', () => {
         expect(handler.sessionData.timeLimitEpoch).to.eql(0);
     });
     it('timerTick should send message but when remaining time', () => {
-        const TIME_MS = 10000
-        handler.sessionData.timeLimitEpoch = TIME_MS;
+        const TIME_MS_EPOCH = 10000;
+        handler.sessionData.timeLimitEpoch = TIME_MS_EPOCH;
         handler['timerTick']();
-        expect(handler.sessionData.timeLimitEpoch).to.eql(TIME_MS);
+        expect(handler.sessionData.timeLimitEpoch).to.eql(TIME_MS_EPOCH);
     });
 
     it('onTurn should call endgame if game is ended', () => {
