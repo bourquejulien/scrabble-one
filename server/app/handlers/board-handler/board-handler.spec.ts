@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable dot-notation */
 /* eslint-disable max-classes-per-file -- Need more than one stub class */
 /* eslint-disable no-unused-expressions -- Needed for chai library assertions */
 /* eslint-disable @typescript-eslint/no-unused-expressions -- Needed for chai library assertions*/
@@ -7,6 +9,7 @@ import { BoardValidator } from '@app/classes/validation/board-validator';
 import { Placement, Vec2 } from '@common';
 import { BoardHandler } from './board-handler';
 import { ValidationResponse } from '@app/classes/validation/validation-response';
+import { createSandbox } from 'sinon';
 
 const BOARD_SIZE = 15;
 const COMBINED_WORD: Placement[] = [
@@ -97,5 +100,24 @@ describe('BoardHandler', () => {
 
         const newLetters = handler.retrieveNewLetters([placement]);
         expect(newLetters).to.eql([]);
+    });
+
+    it('should return nothing if letter is square does not fit with desired placement', () => {
+        const PLACEMENT: Placement[] = [
+            { letter: 'z', position: { x: 11, y: 7 } },
+            { letter: 'e', position: { x: 12, y: 7 } },
+        ];
+        createSandbox().stub(boardValidatorStub, 'validate').returns({ isSuccess: true, points: 0, description: '' });
+        handler.placeLetters(COMBINED_WORD);
+        expect(handler.retrieveNewLetters(PLACEMENT)).to.eql([]);
+    });
+
+    it('should return false if the letter on square is not part of regex', () => {
+        handler['wordRegex'] = /^[A-B]{1,15}$/;
+        expect(handler.lookupLetters(COMBINED_WORD)).to.eql({
+            isSuccess: false,
+            description: "Le caractère p n'est pas accepté",
+            points: 0,
+        });
     });
 });

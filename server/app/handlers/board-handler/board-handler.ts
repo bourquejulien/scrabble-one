@@ -5,7 +5,7 @@ import { BoardError } from '@app/errors/board-error';
 import { Placement } from '@common';
 
 export class BoardHandler {
-    private readonly wordRegex: RegExp;
+    private wordRegex: RegExp;
 
     constructor(private board: Board, private boardValidator: BoardValidator, readonly isRandomBonus: boolean) {
         this.wordRegex = /^[A-zÀ-ú]{1,15}$/;

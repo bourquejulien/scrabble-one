@@ -8,7 +8,7 @@
 import { SessionInfo } from '@app/classes/session-info';
 import { GameType, ServerConfig } from '@common';
 import { expect } from 'chai';
-import { createSandbox, createStubInstance } from 'sinon';
+import { createSandbox, createStubInstance, useFakeTimers } from 'sinon';
 import { BoardHandler } from '@app/handlers/board-handler/board-handler';
 import { ReserveHandler } from '@app/handlers/reserve-handler/reserve-handler';
 import { SessionHandler } from './session-handler';
@@ -34,6 +34,7 @@ class PlayerTester extends Player {
     }
 }
 describe('SessionHandler', () => {
+    const clock = useFakeTimers();
     const sessionInfo: SessionInfo = {
         id: '0',
         playTimeMs: 120 * 1000,
@@ -187,6 +188,12 @@ describe('SessionHandler', () => {
         handler['timerTick']();
         expect(handler.sessionData.timeLimitEpoch).to.eql(0);
     });
+    it('timerTick should send message but when remaining time', () => {
+        const TIME_MS = 10000
+        handler.sessionData.timeLimitEpoch = TIME_MS;
+        handler['timerTick']();
+        expect(handler.sessionData.timeLimitEpoch).to.eql(TIME_MS);
+    });
 
     it('onTurn should call endgame if game is ended', () => {
         stubReserveHandler.reserve = [];
@@ -229,5 +236,33 @@ describe('SessionHandler', () => {
             handler.start();
             expect(handler.sessionData.isActive).to.be.true;
         }, Config.SESSION.REFRESH_INTERVAL_MS);
+    });
+
+    it('abandon should call dispose', () => {
+        const stubDispose = createSandbox().stub(handler, 'dispose' as any);
+        handler.abandon('0');
+        expect(stubDispose.called).to.be.true;
+    });
+    it('abandon should call dispose but with unavailable player', () => {
+        const stubDispose = createSandbox().stub(handler, 'dispose' as any);
+        handler['playerHandler'].players = [playerA];
+        handler.abandon('0');
+        expect(stubDispose.called).to.be.true;
+    });
+    it('callback in timer should be called', () => {
+        const timerTickStub = createSandbox().stub(handler, 'timerTick' as any);
+        handler.start();
+        clock.tick(Config.SESSION.REFRESH_INTERVAL_MS);
+        expect(timerTickStub.called).to.be.true;
+    });
+    it('endgame should call dispose and add rack to score adjustement', () => {
+        const LETTERS = ['a', 'b', 'c', 'd', 'e', 'f', 'g'];
+        const sandbox = createSandbox();
+        const stubDispose = sandbox.stub(handler, 'dispose');
+        stubReserveHandler.reserve = LETTERS;
+        handler['socketHandler'] = socketHandler;
+        handler['playerHandler'].players[0].playerData.rack.length = 0;
+        handler['endGame']();
+        expect(stubDispose.calledOnce).to.be.true;
     });
 });
