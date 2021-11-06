@@ -49,7 +49,7 @@ export class RoomController {
                 this.socketService.socketServer.emit('availableRooms', this.sessionInfos);
             });
 
-            socket.on('exit', async () => {
+            socket.on('exit', () => {
                 logger.info(`User exited: ${socket.id}`);
 
                 const playerId = this.socketIdToPlayerId.get(socket.id);
@@ -58,7 +58,7 @@ export class RoomController {
                     return;
                 }
 
-                await this.abandon(socket, playerId);
+                this.abandon(socket, playerId);
             });
 
             socket.on('message', (message: Message) => {

@@ -128,22 +128,31 @@ describe('RoomController', () => {
         controller['socketIdToPlayerId'].set('123', '123');
         socketServerMock.triggerEndpoint('connection', clientSocket2);
         clientSocket.triggerEndpoint('disconnect');
-        clock.tick(5000); // TODO: confirmation if fakeAsync is required
+        clock.tick(5000);
     });
 
     it('should send rooms', async () => {
+        const stubSessionHandler = createStubInstance(SessionHandler) as unknown as SessionHandler;
         controller['handleSockets']();
 
         const clientSocket = new SocketMock();
-
         const emitSpy = spy(clientSocket, 'emit');
 
-        const stubSessionHandler = createStubInstance(SessionHandler) as unknown as SessionHandler;
-        stubSessionHandler['sessionData'] = {
-            isActive: true,
-            isStarted: true,
-            timeLimitEpoch: 123456789,
+        stubSessionHandler['sessionInfo'] = {
+            id: '',
+            playTimeMs: 0,
+            gameType: GameType.SinglePlayer,
         };
+        stubSessionHandler['boardHandler'] = {
+            isRandomBonus: false,
+        } as BoardHandler;
+        stubSessionHandler['playerHandler'] = {
+            players: [{ playerInfo: { name: '' } }],
+        } as PlayerHandler;
+
+        stubSessionHandlingService.getSessionId.returns('');
+        stubSessionHandlingService.getAvailableSessions.returns([stubSessionHandler as unknown as SessionHandler]);
+
         controller['sessionHandlingService']['sessionHandlers'] = [stubSessionHandler];
 
         socketServerMock.triggerEndpoint('connection', clientSocket);
@@ -161,6 +170,17 @@ describe('RoomController', () => {
 
         socketServerMock.triggerEndpoint('connection', clientSocket);
         clientSocket.triggerEndpoint('joinRoom', 'sessionId');
+
+        assert.called(stubSessionHandlingService.getSessionId);
+    });
+
+    it('should exit room', async () => {
+        controller['handleSockets']();
+
+        const stubSessionHandler = createStubInstance(SessionHandler) as unknown as SessionHandler;
+        controller['sessionHandlingService']['sessionHandlers'] = [stubSessionHandler];
+
+        socketServerMock.triggerEndpoint('exit');
     });
 
     it('should not join if the room is full', async () => {
@@ -219,7 +239,7 @@ describe('RoomController', () => {
         const joinSpy = spy(clientSocket, 'join');
         socketServerMock.triggerEndpoint('connection', clientSocket);
         clientSocket.triggerEndpoint('joinRoom', 'playerId');
-        assert.notCalled(joinSpy); // TODO: won't be called since it is in a promise
+        assert.notCalled(joinSpy);
     });
 
     it('should not join a room if the playerId is not in it', async () => {
@@ -273,6 +293,6 @@ describe('RoomController', () => {
         const socket = new SocketStub();
 
         await controller['abandon'](socket as unknown as Socket, playerId);
-        expect(socket.leaveCallCount).to.equal(1);
+        expect(socket.leaveCallCount).to.equal(2);
     });
 });
