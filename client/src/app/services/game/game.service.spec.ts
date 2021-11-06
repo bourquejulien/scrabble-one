@@ -13,10 +13,9 @@ import { GameService } from '@app/services/game/game.service';
 import { PlayerService } from '@app/services/player/player.service';
 import { RackService } from '@app/services/rack/rack.service';
 import { SessionService } from '@app/services/session/session.service';
+import { SocketClientService } from '@app/services/socket-client/socket-client.service';
 import { GameType, ServerConfig, SessionStats } from '@common';
 import { Observable, Subject } from 'rxjs';
-import { MessagingService } from '@app/services/messaging/messaging.service';
-import { SocketClientService } from '@app/services/socket-client/socket-client.service';
 
 @Injectable({
     providedIn: 'root',
@@ -43,8 +42,6 @@ describe('GameService', () => {
     let serverConfigObservableSpyObj: jasmine.SpyObj<Observable<ServerConfig>>;
     let sessionStatsObservableSpyObj: jasmine.SpyObj<Observable<SessionStats>>;
     let socketService: jasmine.SpyObj<SocketClientService>;
-    let messagingService: jasmine.SpyObj<MessagingService>;
-    let sessionService: jasmine.SpyObj<SessionService>;
 
     beforeEach(async () => {
         socketService = jasmine.createSpyObj('SocketClientService', ['on', 'reset']);
@@ -55,8 +52,6 @@ describe('GameService', () => {
         mockRack = ['K', 'E', 'S', 'E', 'I', 'O', 'V'];
         rackServiceSpyObj = jasmine.createSpyObj('RackService', ['update', 'refresh']);
         httpSpyObj = jasmine.createSpyObj('HttpModule', ['get', 'put']);
-        messagingService = jasmine.createSpyObj('messagingService', ['send', 'onMessage']);
-        sessionService = jasmine.createSpyObj('sessionService', ['reset', 'serverConfig']);
         sessionStatsObservableSpyObj = jasmine.createSpyObj('Observable<SessionStats>', ['toPromise']);
         serverConfigObservableSpyObj = jasmine.createSpyObj('Observable<ServerConfig>', ['toPromise']);
         httpSpyObj.put.and.returnValue(serverConfigObservableSpyObj);
@@ -251,10 +246,5 @@ describe('GameService', () => {
         spy.and.callThrough();
 
         expect(spy).not.toHaveBeenCalledWith(playerType);
-    });
-
-    it('should call onNextTurn and endGame when game is created', () => {
-        new GameService(playerServiceSpyObj, httpSpyObj, sessionService, rackServiceSpyObj, socketService, messagingService);
-        expect(socketService['on']).toHaveBeenCalled();
     });
 });

@@ -2,6 +2,7 @@
 /* eslint-disable dot-notation */
 /* eslint-disable no-unused-vars */
 /* eslint-disable max-classes-per-file -- Multiple stub implementation needed */
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { CUSTOM_ELEMENTS_SCHEMA, Injectable, NO_ERRORS_SCHEMA } from '@angular/core';
 import { ComponentFixture, fakeAsync, TestBed } from '@angular/core/testing';
 import { FormsModule } from '@angular/forms';
@@ -9,13 +10,12 @@ import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { Router } from '@angular/router';
 import { cleanStyles } from '@app/classes/helpers/cleanup.helper';
+import { PlayerType } from '@app/classes/player/player-type';
 import { AppMaterialModule } from '@app/modules/material.module';
 import { GameService } from '@app/services/game/game.service';
-import { InitGameComponent } from './init-game.component';
-import { PlayerType } from '@app/classes/player/player-type';
-import { GameType } from '@common';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { RoomService } from '@app/services/room/room.service';
+import { GameType } from '@common';
+import { InitGameComponent } from './init-game.component';
 
 @Injectable({
     providedIn: 'root',
@@ -132,34 +132,12 @@ describe('InitGameComponent', () => {
         expect(component.seconds).not.toEqual(THIRTY_SECONDS);
     }));
 
-    it('should init when pressing enter ', fakeAsync(() => {
-        const keyEvent = new KeyboardEvent('keypress', { key: 'Enter', cancelable: true });
-        const spy = spyOn(component, 'init').and.callThrough();
-        component.buttonDetect(keyEvent);
-        expect(spy).toHaveBeenCalled();
-    }));
-
     it('should not init when pressing something else than enter ', fakeAsync(() => {
         const keyEvent = new KeyboardEvent('keypress', { key: 'y', cancelable: true });
         const spy = spyOn(component, 'init').and.callThrough();
         component.buttonDetect(keyEvent);
         expect(spy).not.toHaveBeenCalled();
     }));
-
-    it('should init appropriate games', async () => {
-        roomServiceSpyObj.create.and.returnValue(Promise.resolve());
-        spyOnProperty(component['nameValidator'], 'isValid', 'get').and.returnValue(true);
-        component['initMultiplayer']();
-        component['initSinglePlayer']();
-        expect(routerMock.navigate).toHaveBeenCalledTimes(2);
-    });
-
-    it('should init correct game type', async () => {
-        roomServiceSpyObj.create.and.returnValue(Promise.resolve());
-        spyOnProperty(component['nameValidator'], 'isValid', 'get').and.returnValue(true);
-        component['init']();
-        expect(routerMock.navigate).toHaveBeenCalled();
-    });
 
     afterAll(() => cleanStyles());
 });

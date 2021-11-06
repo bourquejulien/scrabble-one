@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/ban-types */
 /* eslint-disable dot-notation */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { HttpClient } from '@angular/common/http';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
@@ -115,4 +116,3 @@ describe('RoomService', () => {
         expect(socketClientSpyObj['on']).toHaveBeenCalled();
     });
 });
-

@@ -1,4 +1,4 @@
-<div id="grid-container" (mouseenter)="isMouseOnBoard = true" (mouseleave)="isMouseOnBoard = false" tabindex='-1' (focusout)='lostFocus()'>
+<div id="grid-container" (mouseenter)="isMouseOnBoard = true" (mouseleave)="isMouseOnBoard = false" tabindex="-1" (focusout)="lostFocus()">
     <div id="board-canvas" [style.width.px]="width" [style.height.px]="height">
         <canvas
             class="board-display"
