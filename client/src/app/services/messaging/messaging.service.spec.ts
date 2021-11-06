@@ -73,7 +73,7 @@ describe('MessagingService', () => {
         const error: Error = { name: 'error', message: 'websocket error' };
 
         let message = '';
-        service['onMessageSubject'].subscribe((msg: { body: string; }) => {
+        service['onMessageSubject'].subscribe((msg: { body: string }) => {
             message = msg.body;
         });
         service['handleConnectionError'](error);

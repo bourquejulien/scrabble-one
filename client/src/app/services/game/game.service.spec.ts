@@ -15,8 +15,8 @@ import { RackService } from '@app/services/rack/rack.service';
 import { SessionService } from '@app/services/session/session.service';
 import { GameType, ServerConfig, SessionStats } from '@common';
 import { Observable, Subject } from 'rxjs';
-import { MessagingService } from '../messaging/messaging.service';
-import { SocketClientService } from '../socket-client/socket-client.service';
+import { MessagingService } from '@app/services/messaging/messaging.service';
+import { SocketClientService } from '@app/services/socket-client/socket-client.service';
 
 @Injectable({
     providedIn: 'root',
@@ -213,8 +213,8 @@ describe('GameService', () => {
             gameType: GameType.SinglePlayer,
             playTime: TimeSpan.fromMinutesSeconds(1, 0),
             firstPlayerName: 'Alphonse',
-            secondPlayerName: 'Monique'
-        }
+            secondPlayerName: 'Monique',
+        };
 
         const serverConfig = {
             id: '1',
@@ -229,8 +229,8 @@ describe('GameService', () => {
             localStats: { points: 10, rackSize: 7 },
             remoteStats: { points: 10, rackSize: 7 },
         };
-        let id = '1';
-        let playerType = PlayerType.Local;
+        const id = '1';
+        const playerType = PlayerType.Local;
         session['_id'] = '1';
         session['_gameConfig'] = gameConfig;
         service.stats = stats;
