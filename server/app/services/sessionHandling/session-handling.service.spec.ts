@@ -15,6 +15,7 @@ import { PlayerHandler } from '@app/handlers/player-handler/player-handler';
 import { HumanPlayer } from '@app/classes/player/human-player/human-player';
 import { VirtualPlayer } from '@app/classes/player/virtual-player/virtual-player';
 import { PlayerInfo } from '@app/classes/player-info';
+import { SessionData } from '@app/classes/session-data';
 
 const MAX_HANDLERS = 5;
 const TIME_MS = 1000;
@@ -31,6 +32,8 @@ describe('SessionHandlingService', () => {
         stubSessionHandler = createStubInstance(SessionHandler) as unknown as SessionHandler;
         const sessionInfo: SessionInfo = { id, playTimeMs: TIME_MS, gameType: GameType.Multiplayer };
         stubSessionHandler.sessionInfo = sessionInfo;
+        const sessionData: SessionData = { isActive: true, isStarted: false, timeLimitEpoch: 50 };
+        stubSessionHandler.sessionData = sessionData;
         const stubPlayerHandler = createStubInstance(PlayerHandler) as unknown as PlayerHandler;
         playerA = createStubInstance(HumanPlayer);
         const playerB = createStubInstance(VirtualPlayer);
@@ -92,5 +95,8 @@ describe('SessionHandlingService', () => {
         handler['playerIds'].set('0', 'badOne');
         const beforeCallingUpdate = handler['playerIds'];
         expect(beforeCallingUpdate).to.not.eql(handler.updateEntries(stubSessionHandler as unknown as SessionHandler));
+    });
+    it('should get session that are started', () => {
+        expect(handler.getAvailableSessions().length).to.eql(1);
     });
 });
