@@ -22,11 +22,17 @@ import { ExchangeAction } from './actions/exchange-action';
 import { SkipAction } from './actions/skip-action';
 import { PlaceAction } from './actions/place-action';
 
-/*
-const LETTERS = ['a', 'b', 'c', 'd', 'e', 'f', 'g'];
-const ARBITRARY_SCORE = 40;
-const ARBITRARY_SKIPPED_TURN = 40;
-*/
+class TestAction implements Action {
+    maxCallCount = 3;
+    callCount = 0;
+    execute(): Action | null {
+        this.callCount++;
+        if (this.callCount >= this.maxCallCount) {
+            return null;
+        }
+        return this;
+    }
+}
 
 const ARBITRARY_POSITIONS: Vec2[] = [
     { x: 0, y: 0 },
@@ -34,7 +40,6 @@ const ARBITRARY_POSITIONS: Vec2[] = [
     { x: 0, y: 2 },
 ];
 const RANDOM_RETURN_EXCHANGE = 0.12;
-// const RANDOM_PLAY_ACTION = 0.7;
 const SIZE = 9;
 
 describe('VirtualPlayer', () => {
@@ -84,6 +89,7 @@ describe('VirtualPlayer', () => {
     it('should create virtual player', () => {
         expect(service).to.be.ok;
     });
+
     it('starting turn should fill rack', async () => {
         const sandbox = createSandbox();
         const stubFill = sandbox.stub(service, 'fillRack');
@@ -108,14 +114,33 @@ describe('VirtualPlayer', () => {
         const returnValue = service['nextAction']();
         expect(returnValue instanceof SkipAction).to.be.true;
     });
-    /*
-    it('starting turn should make next action return play action sometimes', () => {
-        sandboxRandom.stub(Math, 'random').returns(RANDOM_PLAY_ACTION);
+
+    it('startTurn should execute many actions', async () => {
+        const SKIP_PERCENTAGE = 0.1;
+        const testAction = new TestAction();
+        let callCount = 0;
+        const actionRunner = (action: Action): null | Action => {
+            callCount++;
+            return testAction.execute();
+        };
+        sandboxRandom.stub(Math, 'random').returns(SKIP_PERCENTAGE);
+
+        service = new VirtualPlayer(playerInfo, dictionaryService as unknown as DictionaryService, actionRunner);
+        service.init(boardHandler as unknown as BoardHandler, reserveHandler, socketHandler as unknown as SocketHandler);
         sandboxTimer.stub(Timer, 'delay').returns(Promise.resolve());
-        const returnValue = service['nextAction']();
-        expect(returnValue instanceof PlayAction).to.be.true;
+        await service['startTurn']();
+        expect(callCount).to.be.equal(testAction.maxCallCount);
     });
-*/
+
+    it('starting turn should make next action return play action sometimes', () => {
+        const boardSize = 15;
+        sandboxRandom.stub(Math, 'random').returns(1);
+        sandboxTimer.stub(Timer, 'delay').returns(Promise.resolve());
+        boardHandler['board'] = new Board(boardSize);
+        const returnValue = service['nextAction']();
+        expect(returnValue).to.be.instanceof(PlayAction);
+    });
+
     it('starting turn should make next action return skip action sometimes', () => {
         sandboxRandom.stub(Math, 'random').returns(0);
         sandboxTimer.stub(Timer, 'delay').returns(Promise.resolve());
