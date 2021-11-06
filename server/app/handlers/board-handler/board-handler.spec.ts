@@ -6,7 +6,7 @@
 import { expect } from 'chai';
 import { Board } from '@app/classes/board/board';
 import { BoardValidator } from '@app/classes/validation/board-validator';
-import { Placement, Vec2 } from '@common';
+import { Bonus, Placement, Vec2 } from '@common';
 import { BoardHandler } from './board-handler';
 import { ValidationResponse } from '@app/classes/validation/validation-response';
 import { createSandbox } from 'sinon';
@@ -121,7 +121,9 @@ describe('BoardHandler', () => {
     });
     it('retrieve new Letters should support errors', () => {
         const stubbedBoard = new Board(BOARD_SIZE);
-        createSandbox().stub(stubbedBoard, 'getSquare').throws;
+        createSandbox()
+            .stub(stubbedBoard, 'getSquare')
+            .returns({ letter: 'p', bonus: Bonus.L2, position: { x: 7, y: 7 } }).throws;
         handler = new BoardHandler(stubbedBoard, boardValidatorStub as unknown as BoardValidator, false);
         expect(handler.retrieveNewLetters(COMBINED_WORD)).to.throw;
     });
