@@ -16,6 +16,7 @@ import { Play } from '@app/classes/virtual-player/play';
 import { Config } from '@app/config';
 import { SocketHandler } from '@app/handlers/socket-handler/socket-handler';
 import { PlaceAction } from '@app/classes/player/virtual-player/actions/place-action';
+import { SkipAction } from '@app/classes/player/virtual-player/actions/skip-action';
 
 const VALID_PLACEMENT: Placement[] = [
     { letter: 'B', position: { x: 0, y: 0 } },
@@ -42,9 +43,14 @@ describe('Play Action', () => {
     boardHandler.retrieveNewLetters.returns(VALID_PLACEMENT);
     const playGeneratorA = createStubInstance(PlayGenerator);
     playGeneratorA.generateNext.returns(false);
+    const playGeneratorB = createStubInstance(PlayGenerator);
+    playGeneratorB.generateNext.returns(false);
     let sandboxRandom: SinonSandbox;
     stub(playGeneratorA, 'orderedPlays').get(() => {
         return PLAY;
+    });
+    stub(playGeneratorB, 'orderedPlays').get(() => {
+        return [];
     });
 
     const playerData: PlayerData = { baseScore: 0, scoreAdjustment: 0, skippedTurns: 0, rack: [] };
@@ -73,6 +79,17 @@ describe('Play Action', () => {
         sandboxRandom.stub(Math, 'random').returns(0);
         const returnValue = action.execute();
         expect(returnValue).to.be.not.null;
+    });
+
+    it('should not generate play', () => {
+        action = new PlayAction(
+            boardHandler as unknown as BoardHandler,
+            playGeneratorB as unknown as PlayGenerator,
+            playerData,
+            socketHandler as unknown as SocketHandler,
+        );
+        const returnValue = action.execute();
+        expect(returnValue).to.be.instanceof(SkipAction);
     });
 
     it('should not generate plays', () => {
