@@ -60,8 +60,9 @@ describe('WaitingRoomPageComponent', () => {
     });
 
     it('should abort and navigate back to settings page', async () => {
-        component.abort();
-        expect(routerSpy.navigate).toHaveBeenCalledWith(['settings']);
+        await component.abort();
+        routerSpy['navigate'].and.callThrough();
+        expect(routerSpy['navigate']).toHaveBeenCalledWith(['settings']);
         expect(roomServiceSpyObj.abort).toHaveBeenCalled();
     });
 

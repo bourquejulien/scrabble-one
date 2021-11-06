@@ -7,11 +7,11 @@ import { Injectable } from '@angular/core';
 import { fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { BoardService } from '@app/services/board/board.service';
 import { PlayerService } from '@app/services/player/player.service';
+import { RackService } from '@app/services/rack/rack.service';
 import { ReserveService } from '@app/services/reserve/reserve.service';
+import { SessionService } from '@app/services/session/session.service';
 import { Direction, Placement } from '@common';
 import { environmentExt } from '@environment-ext';
-import { RackService } from '@app/services/rack/rack.service';
-import { SessionService } from '@app/services/session/session.service';
 
 @Injectable({
     providedIn: 'root',
@@ -96,6 +96,7 @@ describe('PlayerService', () => {
     });
 
     it('should call POST request with http client when exchanging', fakeAsync(() => {
+        // Inspiration: https://www.syntaxsuccess.com/viewarticle/mocking-http-request-with-httpclient-in-angular
         service.exchangeLetters(lettersToExchange);
         const request = httpMock.match(localUrl('exchange', `${sessionId}`));
 

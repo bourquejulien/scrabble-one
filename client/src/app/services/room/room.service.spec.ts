@@ -1,31 +1,34 @@
 /* eslint-disable @typescript-eslint/ban-types */
 /* eslint-disable dot-notation */
-import { TestBed } from '@angular/core/testing';
-
-import { RoomService } from './room.service';
-import { SocketClientService } from '@app/services/socket-client/socket-client.service';
-import { GameService } from '@app/services/game/game.service';
-import { GameType, MultiplayerCreateConfig, MultiplayerJoinConfig, ServerConfig } from '@common';
 import { HttpClient } from '@angular/common/http';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { TestBed } from '@angular/core/testing';
+import { GameService } from '@app/services/game/game.service';
+import { SocketClientService } from '@app/services/socket-client/socket-client.service';
+import { GameType, MultiplayerJoinConfig, ServerConfig } from '@common';
 import { Observable } from 'rxjs';
+import { RoomService } from './room.service';
 
 describe('RoomService', () => {
     let service: RoomService;
     let socketClientSpyObj: jasmine.SpyObj<SocketClientService>;
     let gameServiceSpyObj: jasmine.SpyObj<GameService>;
-    let httpSpyObj: jasmine.SpyObj<HttpClient>;
     let serverConfigObservableSpyObj: jasmine.SpyObj<Observable<ServerConfig>>;
+    let httpSpyObj: jasmine.SpyObj<HttpClient>;
 
     beforeEach(() => {
         socketClientSpyObj = jasmine.createSpyObj(SocketClientService, ['on', 'send', 'reset', 'join']);
-
+        const callback = (event: string, action: (Param: any) => void) => {
+            action({});
+        };
+        socketClientSpyObj.on.and.callFake(callback);
         gameServiceSpyObj = jasmine.createSpyObj(GameService, ['start']);
         serverConfigObservableSpyObj = jasmine.createSpyObj('Observable<ServerConfig>', ['toPromise']);
         httpSpyObj = jasmine.createSpyObj('HttpModule', ['get', 'put']);
         httpSpyObj.put.and.returnValue(serverConfigObservableSpyObj);
 
         TestBed.configureTestingModule({
-            imports: [],
+            imports: [HttpClientTestingModule],
             providers: [
                 { provide: HttpClient, useValue: httpSpyObj },
                 { provide: SocketClientService, useValue: socketClientSpyObj },
@@ -44,7 +47,9 @@ describe('RoomService', () => {
             playerName: 'Claudette',
             sessionId: '1',
         };
+        gameServiceSpyObj.start.and.callThrough();
         await service.join(config);
+        expect(gameServiceSpyObj.start).toHaveBeenCalled();
     });
 
     it('should init correctly', async () => {
@@ -60,7 +65,7 @@ describe('RoomService', () => {
 
         service['pendingRoomId'] = 'pendingRoomId';
         service['abort']();
-        expect(gameServiceSpyObj.start).toHaveBeenCalled();
+        expect(gameServiceSpyObj.start).not.toHaveBeenCalled();
         expect(service['pendingRoomId']).toBe('');
     });
 
@@ -71,19 +76,7 @@ describe('RoomService', () => {
 
         service['pendingRoomId'] = 'pendingRoomId';
         await service['onTurn']({} as unknown as ServerConfig);
-        expect(socketClientSpyObj.reset).toHaveBeenCalled();
-        expect(service['pendingRoomId']).toBe('');
-    });
-
-    it('should create rooms', async () => {
-        service['pendingRoomId'] = '';
-        await service['create']({} as unknown as MultiplayerCreateConfig);
-        expect(socketClientSpyObj.reset).not.toHaveBeenCalled();
-
-        service['pendingRoomId'] = 'pendingRoomId';
-        await service['create']({} as unknown as MultiplayerCreateConfig);
         expect(gameServiceSpyObj.start).toHaveBeenCalled();
-        expect(service['pendingRoomId']).toBe('');
     });
 
     it('should convert room to single player', async () => {
@@ -116,4 +109,10 @@ describe('RoomService', () => {
         service.refresh();
         expect(socketClientSpyObj.send).toHaveBeenCalledOnceWith('getRooms');
     });
+
+    it('should call roomSubject and onTurn when room is created', () => {
+        new RoomService(socketClientSpyObj, gameServiceSpyObj, httpSpyObj);
+        expect(socketClientSpyObj['on']).toHaveBeenCalled();
+    });
 });
+

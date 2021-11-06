@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable dot-notation */
 /* eslint-disable @typescript-eslint/no-magic-numbers */
+import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { SocketMock } from '@app/classes/helpers/socket-test-helper';
 import { SocketClientService } from '@app/services/socket-client/socket-client.service';
@@ -10,47 +11,55 @@ import { MessagingService } from './messaging.service';
 describe('MessagingService', () => {
     let service: MessagingService;
     let socketServiceSpyObj: jasmine.SpyObj<SocketClientService>;
-    const socketClient: SocketMock = new SocketMock();
+    let socketClient: SocketMock;
+    let httpMock: HttpTestingController;
 
     beforeEach(() => {
-        socketServiceSpyObj = jasmine.createSpyObj('SocketClientService', ['on', 'reset'], { socketClient });
+        socketClient = new SocketMock();
+        socketServiceSpyObj = jasmine.createSpyObj('SocketClientService', ['on', 'reset', 'send'], { socketClient });
         const callback = (event: string, action: (Param: any) => void) => {
             action({});
         };
         socketServiceSpyObj.on.and.callFake(callback);
         TestBed.configureTestingModule({
             providers: [{ provide: SocketClientService, useValue: socketServiceSpyObj }],
+            imports: [HttpClientTestingModule],
         });
         service = TestBed.inject(MessagingService);
+        httpMock = TestBed.inject(HttpTestingController);
+    });
+
+    afterEach(() => {
+        httpMock.verify();
     });
 
     it('should be created', () => {
         expect(service).toBeTruthy();
     });
 
-    it('should trigger callbacks', () => {
+    it('should trigger callback on message reception', () => {
         socketClient.triggerEndpoint('message', {} as unknown as Message);
-        expect(socketServiceSpyObj.on).toHaveBeenCalledWith('message', {} as unknown as Message);
-        socketClient.triggerEndpoint('connect_error', {});
-        expect(socketServiceSpyObj.on).toHaveBeenCalledWith('connect_error', {});
+        expect(socketServiceSpyObj['on']).toHaveBeenCalled();
+    });
+
+    it('should trigger callback on error thrown', () => {
+        socketClient.triggerEndpoint('connect_error', () => {});
+        expect(socketServiceSpyObj['on']).toHaveBeenCalled();
     });
 
     it('send should send messages when debugging is on', () => {
         service.isDebug = true;
-
-        const spyError = spyOn(service['socketService']['socketClient'], 'emit');
         service.send('title1', 'body1', MessageType.Error);
-        expect(spyError).toHaveBeenCalled();
+        expect(socketServiceSpyObj['send']).toHaveBeenCalled();
     });
 
     it('send should not send all messages when debugging is off', () => {
-        const spy = spyOn(service['socketService']['socketClient'], 'emit');
         service.isDebug = false;
         service.send('title1', 'body1', MessageType.Error);
         service.send('title2', 'body2', MessageType.Log);
         service.send('title3', 'body3', MessageType.Message);
         service.send('title4', 'body4', MessageType.System);
-        expect(spy).toHaveBeenCalledTimes(4);
+        expect(socketServiceSpyObj['send']).toHaveBeenCalledTimes(4);
     });
 
     it('should reset connection with server if it fails', () => {
