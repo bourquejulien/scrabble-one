@@ -1,7 +1,6 @@
 import { Board, ImmutableBoard } from '@app/classes/board/board';
 import { Dictionary } from '@app/classes/dictionary/dictionary';
 import { Config } from '@app/config';
-import { BoardError } from '@app/errors/board-error';
 import { Bonus, Direction, getBonusDetails, Placement, reverseDirection, Square, Vec2 } from '@common';
 import { ValidationResponse } from './validation-response';
 
@@ -59,11 +58,7 @@ export class BoardValidator {
         try {
             clonedBoard.merge(letters);
         } catch (error) {
-            if (error instanceof BoardError) {
-                return { isSuccess: false, description: error.message, points: 0 };
-            }
-
-            throw error;
+            return { isSuccess: false, description: 'Impossible de remplacer une lettre existante', points: 0 };
         }
 
         const direction: Direction = this.retrieveDirection(positions);

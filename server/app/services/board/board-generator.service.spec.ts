@@ -4,6 +4,7 @@ import { expect } from 'chai';
 import { createStubInstance } from 'sinon';
 import { DictionaryService } from '@app/services/dictionary/dictionary.service';
 import { BoardGeneratorService } from './board-generator.service';
+import { Bonus } from '@common';
 
 describe('BoardHandlingService', () => {
     let service: BoardGeneratorService;
@@ -17,7 +18,34 @@ describe('BoardHandlingService', () => {
         expect(service).to.be.ok;
     });
 
-    it('should generate a board', () => {
+    it('should generate a BoardHandler', () => {
+        const bonusHandler = service.generateBoardHandler(false);
         expect(service.generateBoardHandler(false)).to.be.ok;
+        expect(bonusHandler.isRandomBonus).to.be.false;
+    });
+
+    it('should generate a random BoardHandler', () => {
+        const randomBonusHandler = service.generateBoardHandler(true);
+        expect(randomBonusHandler).to.be.ok;
+        expect(randomBonusHandler.isRandomBonus).to.be.true;
+    });
+
+    it('should keep random position in same place', () => {
+        const randomBonusHandler = service.generateBoardHandler(true);
+        const bonusHandler = service.generateBoardHandler(false);
+        expect(randomBonusHandler.isRandomBonus).to.be.true;
+        expect(bonusHandler.isRandomBonus).to.be.false;
+
+        const size = randomBonusHandler.immutableBoard.size;
+
+        for (let x = 0; x < size; x++) {
+            for (let y = 0; y < size; y++) {
+                if (randomBonusHandler.immutableBoard.getSquare({ x, y }).bonus === Bonus.None) {
+                    expect(bonusHandler.immutableBoard.getSquare({ x, y }).bonus === Bonus.None);
+                } else {
+                    expect(bonusHandler.immutableBoard.getSquare({ x, y }).bonus !== Bonus.None);
+                }
+            }
+        }
     });
 });
