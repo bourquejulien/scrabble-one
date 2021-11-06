@@ -54,7 +54,7 @@ describe('BoardHandlingService', () => {
         const stubInitBank = createSandbox()
             .stub(service, 'initializeBonusBank' as any)
             .returns([]);
-        service['shuffleBonuses'](service['retrieveBonuses'](true));
+        service['retrieveBonuses'](true);
         expect(stubInitBank.calledOnce).to.be.true;
     });
 });
