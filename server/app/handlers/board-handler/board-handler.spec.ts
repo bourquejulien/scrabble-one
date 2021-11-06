@@ -42,7 +42,6 @@ describe('BoardHandler', () => {
 
     beforeEach(() => {
         boardValidatorStub = new BoardValidatorStub();
-
         handler = new BoardHandler(new Board(BOARD_SIZE), boardValidatorStub as unknown as BoardValidator, false);
         const halfBoardSize = Math.floor(handler.immutableBoard.size / 2);
         centerPosition = { x: halfBoardSize, y: halfBoardSize };
@@ -119,5 +118,11 @@ describe('BoardHandler', () => {
             description: "Le caractère p n'est pas accepté",
             points: 0,
         });
+    });
+    it('retrieve new Letters should support errors', () => {
+        const stubbedBoard = new Board(BOARD_SIZE);
+        createSandbox().stub(stubbedBoard, 'getSquare').throws;
+        handler = new BoardHandler(stubbedBoard, boardValidatorStub as unknown as BoardValidator, false);
+        expect(handler.retrieveNewLetters(COMBINED_WORD)).to.throw;
     });
 });
