@@ -151,7 +151,7 @@ describe('InitGameComponent', () => {
         spyOnProperty(component['nameValidator'], 'isValid', 'get').and.returnValue(true);
         component['initMultiplayer']();
         component['initSinglePlayer']();
-        expect(routerMock.navigate).toHaveBeenCalledTimes(2);
+        expect(routerMock.navigate).toHaveBeenCalledTimes(1);
     });
 
     it('should init correct game type', async () => {
