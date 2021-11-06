@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 /* eslint-disable no-undef */
 /* eslint-disable @typescript-eslint/ban-types */
 /* eslint-disable @typescript-eslint/no-explicit-any */
@@ -13,7 +14,10 @@ import { RoomService } from '@app/services/room/room.service';
 import { SocketClientService } from '@app/services/socket-client/socket-client.service';
 import { Subject } from 'rxjs';
 import { WaitingRoomPageComponent } from './waiting-room-page.component';
-
+/*
+    It is near impossible to call the callback function in onPopState with my current knowledge
+    Source: https://stackoverflow.com/questions/67721936/how-can-i-test-locationstrategy-onpopstate
+*/
 describe('WaitingRoomPageComponent', () => {
     let component: WaitingRoomPageComponent;
     let fixture: ComponentFixture<WaitingRoomPageComponent>;
@@ -21,19 +25,19 @@ describe('WaitingRoomPageComponent', () => {
     const socketClient: SocketMock = new SocketMock();
     let routerSpy: jasmine.SpyObj<Router>;
     let roomServiceSpyObj: jasmine.SpyObj<RoomService>;
+    let onGameFullSubject: Subject<void>;
 
     beforeEach(async () => {
+        onGameFullSubject = new Subject<void>();
         socketServiceSpyObj = jasmine.createSpyObj('SocketClientService', ['on'], { socketClient });
-        roomServiceSpyObj = jasmine.createSpyObj('RoomService', ['toSinglePlayer', 'abort'], { onGameFull: new Subject<void>().asObservable() });
+        roomServiceSpyObj = jasmine.createSpyObj('RoomService', ['toSinglePlayer', 'abort'], { onGameFull: onGameFullSubject.asObservable() });
         routerSpy = jasmine.createSpyObj('Router', ['navigate']);
-        // locationStrategySpyObj = jasmine.createSpyObj('PathLocationStrategy', ['onPopState', 'getBaseHref']);
 
         await TestBed.configureTestingModule({
             declarations: [WaitingRoomPageComponent],
             imports: [HttpClientTestingModule, AppMaterialModule, BrowserAnimationsModule, FormsModule],
             providers: [
                 { provide: SocketClientService, useValue: socketServiceSpyObj },
-                // { provide: LocationStrategy, useValue: locationStrategySpyObj },
                 { provide: Router, useValue: routerSpy },
                 { provide: RoomService, useValue: roomServiceSpyObj },
             ],
@@ -52,16 +56,14 @@ describe('WaitingRoomPageComponent', () => {
 
     it('should create', () => {
         expect(component).toBeTruthy();
+        onGameFullSubject.next();
     });
 
-    // it('should abort and navigate back to settings page', async () => {
-    //     // locationStrategySpyObj.onPopState.and.callFake((callback: (...args: any[]) => {}) => callback());
-    //     routerSpy.navigate.and.callThrough();
-    //     roomServiceSpyObj.abort.and.callThrough();
-    //     component.abort();
-    //     expect(routerSpy.navigate).toHaveBeenCalledWith(['settings']);
-    //     expect(roomServiceSpyObj.abort).toHaveBeenCalled();
-    // });
+    it('should abort and navigate back to settings page', async () => {
+        component.abort();
+        expect(routerSpy.navigate).toHaveBeenCalledWith(['settings']);
+        expect(roomServiceSpyObj.abort).toHaveBeenCalled();
+    });
 
     it('should navigate to next page', async () => {
         component['nextPage']();

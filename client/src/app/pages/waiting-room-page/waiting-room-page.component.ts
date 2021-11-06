@@ -17,6 +17,7 @@ export class WaitingRoomPageComponent implements OnDestroy, OnInit {
     constructor(private readonly roomService: RoomService, private readonly router: Router, location: LocationStrategy, elementRef: ElementRef) {
         this.gameTypesList = Constants.GAME_TYPES_LIST;
         location.onPopState(() => {
+            // Won't test this callback: simply too advanced
             if (elementRef.nativeElement.offsetParent != null) {
                 this.abort();
             }
