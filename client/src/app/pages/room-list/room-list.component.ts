@@ -98,7 +98,7 @@ export class RoomListComponent implements AfterViewInit, OnDestroy {
     private refreshConfig(availableGameConfigs: AvailableGameConfig[]) {
         this.availableGameConfigs = availableGameConfigs;
 
-        if (this.availableGameConfigs.findIndex((c) => c.id === this.selectedConfig?.id) === -1) {
+        if (this.selectedConfig !== null && this.availableGameConfigs.findIndex((c) => c.id === this.selectedConfig?.id) === -1) {
             this.reset();
             this.openErrorDialog();
         }
