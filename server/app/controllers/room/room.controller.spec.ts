@@ -10,7 +10,7 @@ import { SessionHandlingService } from '@app/services/sessionHandling/session-ha
 import { SocketService } from '@app/services/socket/socket-service';
 import { GameType, Message, MessageType } from '@common';
 import { expect } from 'chai';
-import { assert, createStubInstance, SinonStubbedInstance, spy, stub } from 'sinon';
+import { assert, createSandbox, createStubInstance, SinonStubbedInstance, spy, stub } from 'sinon';
 import { Server, Socket } from 'socket.io';
 import { RoomController } from './room.controller';
 
@@ -26,9 +26,10 @@ describe('RoomController', () => {
     let stubSessionHandlingService: SessionHandlingService;
     let sessionHandler: SinonStubbedInstance<SessionHandler>;
     let gameService: SinonStubbedInstance<GameService>;
+    let stubSocketService: SinonStubbedInstance<SocketService>;
 
     beforeEach(() => {
-        const stubSocketService = createStubInstance(SocketService);
+        stubSocketService = createStubInstance(SocketService);
         socketServerMock = new SocketMock();
         stubSocketService['socketServer'] = socketServerMock as unknown as Server;
 
@@ -116,7 +117,7 @@ describe('RoomController', () => {
 
     it('should not join if the room is full', async () => {
         // Sorry for the copy-paste: it is the simplest way to go to change the attributes of the stub once it was created
-        const stubSocketService = createStubInstance(SocketService);
+        stubSocketService = createStubInstance(SocketService);
         socketServerMock = new SocketMock();
         stubSocketService['socketServer'] = socketServerMock as unknown as Server;
 
@@ -138,7 +139,7 @@ describe('RoomController', () => {
 
     it('should join a room', async () => {
         // Sorry for the copy-paste: it is the simplest way to go to change the attributes of the stub once it was created
-        const stubSocketService = createStubInstance(SocketService);
+        stubSocketService = createStubInstance(SocketService);
         socketServerMock = new SocketMock();
         stubSocketService['socketServer'] = socketServerMock as unknown as Server;
 
@@ -168,7 +169,7 @@ describe('RoomController', () => {
 
     it('should not join a room if the playerId is not in it', async () => {
         // Sorry for the copy-paste: it is the simplest way to go to change the attributes of the stub once it was created
-        const stubSocketService = createStubInstance(SocketService);
+        stubSocketService = createStubInstance(SocketService);
         socketServerMock = new SocketMock();
         stubSocketService['socketServer'] = socketServerMock as unknown as Server;
 
@@ -187,9 +188,57 @@ describe('RoomController', () => {
         clientSocket.triggerEndpoint('joinRoom', 'playerId');
         assert.notCalled(joinSpy);
     });
+    it('should not join a room if the playerId is not in it', async () => {
+        // Sorry for the copy-paste: it is the simplest way to go to change the attributes of the stub once it was created
+        stubSocketService = createStubInstance(SocketService);
+        socketServerMock = new SocketMock();
+        stubSocketService['socketServer'] = socketServerMock as unknown as Server;
 
+        stubSessionHandlingService = createStubInstance(SessionHandlingService, {
+            getSessionId: '',
+        }) as unknown as SessionHandlingService;
+
+        controller = new RoomController(stubSocketService, stubSessionHandlingService, gameService as unknown as GameService);
+        // End of copy-paste
+
+        controller['handleSockets']();
+
+        const clientSocket = new SocketMock();
+        const joinSpy = spy(clientSocket, 'join');
+        socketServerMock.triggerEndpoint('connection', clientSocket);
+        clientSocket.triggerEndpoint('joinRoom', 'playerId');
+
+        assert.notCalled(joinSpy);
+    });
     it('should tell when a room is full', async () => {
         const socket = new SocketMock() as unknown as Socket;
         expect(await RoomController['isRoomFull'](socket, 'full')).to.be.equals(true);
     });
+
+    it('should call delete on socketIdToPlayer', async () => {
+        gameService = createStubInstance(GameService);
+        controller = new RoomController(stubSocketService, stubSessionHandlingService, gameService as unknown as GameService);
+        const stubDelete = createSandbox().stub(controller['socketIdToPlayerId'], 'delete');
+        gameService.abandon.returns(
+            new Promise<boolean>(() => {
+                return true;
+            }),
+        );
+        controller['abandon'](socketServerMock as unknown as Socket, '0');
+        expect(stubDelete.called).to.be.true;
+    });
+    // Helps with coverage but throws cant read playerInfo of undefined
+    /*
+    it('should return an available game', () => {
+        sessionHandler.sessionData = { isActive: false, isStarted: false, timeLimitEpoch: 1000 };
+        sessionHandler.sessionInfo = { id: '0', playTimeMs: 1000, gameType: GameType.SinglePlayer };
+        const humanPlayer = createStubInstance(HumanPlayer);
+        humanPlayer.playerInfo = { id: '0', name: 'Boris', isHuman: true };
+        const playerHandler = createStubInstance(PlayerHandler);
+        playerHandler['players'] = [humanPlayer as unknown as HumanPlayer];
+        sessionHandler['playerHandler'] = playerHandler;
+        controller['sessionHandlingService']['sessionHandlers'] = [sessionHandler as unknown as SessionHandler];
+        expect(controller['sessionInfos']).to.eql({ id: '0', playTimeMS: 1000, waitingPlayerName: 'Boris', isRandomBonus: true });
+    });
+    */
 });

@@ -16,6 +16,7 @@ import { BoardHandler } from '@app/handlers/board-handler/board-handler';
 import { HumanPlayer } from '@app/classes/player/human-player/human-player';
 import { Player } from '@app/classes/player/player';
 import { PlayerHandler } from '@app/handlers/player-handler/player-handler';
+import { BoardController } from './board.controller';
 
 describe('BoardController', () => {
     let stubSessionHandlingService: SinonStubbedInstance<SessionHandlingService>;
@@ -25,7 +26,6 @@ describe('BoardController', () => {
 
     beforeEach(async () => {
         stubSessionHandlingService = createStubInstance(SessionHandlingService);
-
         stubSessionHandler = createStubInstance(SessionHandler);
         const stubBoardHandler = createStubInstance(BoardHandler);
         stubSessionHandler['boardHandler'] = stubBoardHandler as unknown as BoardHandler;
@@ -90,5 +90,12 @@ describe('BoardController', () => {
             .then((response) => {
                 expect(response.status).to.be.equal(Constants.HTTP_STATUS.OK);
             });
+    });
+
+    it('getHumanPlayer if player is not found by getHandlerByPlayerId ', () => {
+        stubSessionHandlingService.getHandlerByPlayerId.returns(null);
+        const boardController = new BoardController(stubSessionHandlingService as unknown as SessionHandlingService);
+        boardController['getHumanPlayer']('0');
+        expect(stubSessionHandlingService.getHandlerByPlayerId.called).to.be.true;
     });
 });

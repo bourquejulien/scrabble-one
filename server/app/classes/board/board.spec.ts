@@ -3,7 +3,7 @@
 import { Config } from '@app/config';
 import { BoardMergeError } from '@app/errors/board-merge-error';
 import { BoardOverflowError } from '@app/errors/board-overflow-error';
-import { Bonus, BonusInfos, Direction } from '@common';
+import { Bonus, BonusInfos, Direction, Vec2 } from '@common';
 import { expect } from 'chai';
 import { Board } from './board';
 
@@ -15,6 +15,8 @@ const BONUS: BonusInfos[] = [
     { bonus: Bonus.W3, position: { x: 0, y: 3 } },
     { bonus: Bonus.None, position: { x: 0, y: 4 } },
 ];
+
+const PLACEMENT: Vec2 = { x: 0, y: 0 };
 
 const SIZE = Config.GRID.GRID_SIZE;
 
@@ -93,5 +95,8 @@ describe('Board', () => {
 
         // eslint-disable-next-line dot-notation -- Need to validate class data
         expect(boardData).not.equal(board['board']);
+    });
+    it('should not change row or column if direction is wrong', () => {
+        board.getRelative(PLACEMENT, Direction.None);
     });
 });
