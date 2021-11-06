@@ -145,6 +145,11 @@ describe('BoardService', () => {
         expect(service.isPositionAvailable(position)).toBe(false);
     });
 
+    it('should return true if surrounding positions available', () => {
+        let testPosition = { x: Constants.GRID.GRID_SIZE + 2, y: Constants.GRID.GRID_SIZE + 2 };
+        expect(service.isPositionAvailable(testPosition)).toBe(true);
+    });
+
     it('should get correct letter on board at specified position', () => {
         service['boardData'].board[position.x - 1][position.y - 1].letter = 'a';
         expect(service.getLetter(position)).toBe('a');

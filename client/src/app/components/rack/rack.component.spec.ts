@@ -1,4 +1,4 @@
-/* eslint-disable dot-notation -- player is private and we need access for the test */
+/* eslint-disable dot-notation -- we need access to private properties for the test */
 /* eslint-disable @typescript-eslint/no-useless-constructor */
 /* eslint-disable @typescript-eslint/no-empty-function */
 /* eslint-disable no-unused-vars */
@@ -187,6 +187,12 @@ describe('RackComponent', () => {
         component.clearExchange();
 
         expect(component.selection.reserve.size).toEqual(0);
+    });
+
+    it('should exchange selected letters if letters provided', () => {
+        const spy = spyOn(component['commandService'], 'parseInput');
+        component.exchangeLetters();
+        expect(spy).toHaveBeenCalled();
     });
 
     afterAll(() => cleanStyles());
