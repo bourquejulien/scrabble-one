@@ -1,7 +1,9 @@
+/* eslint-disable dot-notation */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable no-unused-expressions -- Needed for chai library assertions */
 /* eslint-disable @typescript-eslint/no-unused-expressions */
 import { expect } from 'chai';
-import { createStubInstance } from 'sinon';
+import { createSandbox, createStubInstance } from 'sinon';
 import { DictionaryService } from '@app/services/dictionary/dictionary.service';
 import { BoardGeneratorService } from './board-generator.service';
 import { Bonus } from '@common';
@@ -47,5 +49,12 @@ describe('BoardHandlingService', () => {
                 }
             }
         }
+    });
+    it('should shuffleBonuses but not find wanted bonus', () => {
+        const stubInitBank = createSandbox()
+            .stub(service, 'initializeBonusBank' as any)
+            .returns([]);
+        service['shuffleBonuses'](service['retrieveBonuses'](true));
+        expect(stubInitBank.calledOnce).to.be.true;
     });
 });
