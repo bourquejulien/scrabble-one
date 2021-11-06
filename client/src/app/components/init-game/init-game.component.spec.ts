@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable dot-notation */
 /* eslint-disable no-unused-vars */
 /* eslint-disable max-classes-per-file -- Multiple stub implementation needed */
 import { CUSTOM_ELEMENTS_SCHEMA, Injectable, NO_ERRORS_SCHEMA } from '@angular/core';
@@ -13,6 +15,7 @@ import { InitGameComponent } from './init-game.component';
 import { PlayerType } from '@app/classes/player/player-type';
 import { GameType } from '@common';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { RoomService } from '@app/services/room/room.service';
 
 @Injectable({
     providedIn: 'root',
@@ -44,12 +47,15 @@ const FOUR_MINUTES = 4;
 describe('InitGameComponent', () => {
     let component: InitGameComponent;
     let fixture: ComponentFixture<InitGameComponent>;
+    let roomServiceSpyObj: jasmine.SpyObj<RoomService>;
     const NAMES = ['Jean', 'RenÉéÎîÉéÇçÏï', 'moulon', 'Jo', 'Josiannnnnnnnnnne', 'Jean123', 'A1', 'Alphonse', ''];
     const routerMock = {
-        navigate: jasmine.createSpy('navigate'),
+        navigate: jasmine.createSpy('navigate').and.callThrough(),
     };
 
     beforeEach(async () => {
+        roomServiceSpyObj = jasmine.createSpyObj('RoomService', ['create']);
+        roomServiceSpyObj.create.and.returnValue(Promise.resolve());
         await TestBed.configureTestingModule({
             declarations: [InitGameComponent],
             imports: [HttpClientTestingModule, AppMaterialModule, BrowserAnimationsModule, FormsModule],
@@ -58,7 +64,7 @@ describe('InitGameComponent', () => {
                 { provide: Router, useValue: routerMock },
                 { provide: GameService, useClass: GameServiceStub },
                 { provide: MatDialogRef, useClass: MatDialogStub },
-                { provide: MAT_DIALOG_DATA, useValue: GameType.Multiplayer },
+                { provide: MAT_DIALOG_DATA, useValue: { gameModeType: GameType.SinglePlayer } },
             ],
         }).compileComponents();
     });
@@ -126,14 +132,6 @@ describe('InitGameComponent', () => {
         expect(component.seconds).not.toEqual(THIRTY_SECONDS);
     }));
 
-    /* it('should create error if nameForm invalid', () => {
-    component.formConfig.firstPlayerName = 'allo';
-    // const currentListLength = component.errorsList.length;
-    component['confirmInitialization'];
-
-    expect(component.errorsList[0]).toEqual('*Le nom doit débuter par une majuscule.\n');
-});*/
-
     it('should init when pressing enter ', fakeAsync(() => {
         const keyEvent = new KeyboardEvent('keypress', { key: 'Enter', cancelable: true });
         const spy = spyOn(component, 'init').and.callThrough();
@@ -147,6 +145,21 @@ describe('InitGameComponent', () => {
         component.buttonDetect(keyEvent);
         expect(spy).not.toHaveBeenCalled();
     }));
+
+    it('should init appropriate games', async () => {
+        roomServiceSpyObj.create.and.returnValue(Promise.resolve());
+        spyOnProperty(component['nameValidator'], 'isValid', 'get').and.returnValue(true);
+        component['initMultiplayer']();
+        component['initSinglePlayer']();
+        expect(routerMock.navigate).toHaveBeenCalledTimes(2);
+    });
+
+    it('should init correct game type', async () => {
+        roomServiceSpyObj.create.and.returnValue(Promise.resolve());
+        spyOnProperty(component['nameValidator'], 'isValid', 'get').and.returnValue(true);
+        component['init']();
+        expect(routerMock.navigate).toHaveBeenCalled();
+    });
 
     afterAll(() => cleanStyles());
 });

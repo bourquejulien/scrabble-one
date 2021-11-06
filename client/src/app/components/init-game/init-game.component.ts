@@ -29,12 +29,12 @@ const DEFAULT_PLAY_TIME = TimeSpan.fromMinutesSeconds(1, 0);
     styleUrls: ['./init-game.component.scss'],
 })
 export class InitGameComponent implements OnInit {
-    readonly gameTypesList;
-    readonly botNames: string[];
-    readonly minutesList;
-    readonly secondsList;
-    readonly gameType;
-    readonly nameValidator: NameValidator;
+    gameTypesList;
+    botNames: string[];
+    minutesList;
+    secondsList;
+    gameType;
+    nameValidator: NameValidator;
     minutes: number;
     seconds: number;
     formConfig: FormConfig;
@@ -85,13 +85,10 @@ export class InitGameComponent implements OnInit {
         if (needsToReroute) {
             this.dialogRef.close();
 
-            switch (this.data.gameModeType) {
-                case GameType.SinglePlayer:
-                    await this.initSinglePlayer();
-                    break;
-                case GameType.Multiplayer:
-                    await this.initMultiplayer();
-                    break;
+            if (this.data.gameModeType === GameType.SinglePlayer) {
+                await this.initSinglePlayer();
+            } else {
+                await this.initMultiplayer();
             }
         }
     }
@@ -128,8 +125,8 @@ export class InitGameComponent implements OnInit {
             isRandomBonus: this.formConfig.isRandomBonus,
         };
 
-        await this.roomService.create(multiplayerConfig);
         await this.router.navigate(['waiting-room']);
+        await this.roomService.create(multiplayerConfig);
     }
 
     private forceSecondsToZero(): void {

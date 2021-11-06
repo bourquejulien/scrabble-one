@@ -146,7 +146,7 @@ describe('BoardService', () => {
     });
 
     it('should return true if surrounding positions available', () => {
-        let testPosition = { x: Constants.GRID.GRID_SIZE + 2, y: Constants.GRID.GRID_SIZE + 2 };
+        const testPosition = { x: Constants.GRID.GRID_SIZE + 2, y: Constants.GRID.GRID_SIZE + 2 };
         expect(service.isPositionAvailable(testPosition)).toBe(true);
     });
 
