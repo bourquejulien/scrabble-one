@@ -1,10 +1,10 @@
 import { Injectable } from '@angular/core';
+import { Constants } from '@app/constants/global.constants';
 import { BoardService } from '@app/services/board/board.service';
+import { CommandsService } from '@app/services/commands/commands.service';
 import { GridService } from '@app/services/grid/grid.service';
 import { RackService } from '@app/services/rack/rack.service';
 import { Vec2 } from '@common';
-import { CommandsService } from '@app/services/commands/commands.service';
-import { Constants } from '@app/constants/global.constants';
 
 @Injectable({
     providedIn: 'root',

@@ -1,9 +1,10 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable dot-notation */
 /* eslint-disable @typescript-eslint/no-magic-numbers */
 import { TestBed } from '@angular/core/testing';
 import { SocketMock } from '@app/classes/helpers/socket-test-helper';
 import { SocketClientService } from '@app/services/socket-client/socket-client.service';
-import { MessageType } from '@common';
+import { Message, MessageType } from '@common';
 import { MessagingService } from './messaging.service';
 
 describe('MessagingService', () => {
@@ -13,6 +14,10 @@ describe('MessagingService', () => {
 
     beforeEach(() => {
         socketServiceSpyObj = jasmine.createSpyObj('SocketClientService', ['on', 'reset'], { socketClient });
+        const callback = (event: string, action: (Param: any) => void) => {
+            action({});
+        };
+        socketServiceSpyObj.on.and.callFake(callback);
         TestBed.configureTestingModule({
             providers: [{ provide: SocketClientService, useValue: socketServiceSpyObj }],
         });
@@ -21,6 +26,13 @@ describe('MessagingService', () => {
 
     it('should be created', () => {
         expect(service).toBeTruthy();
+    });
+
+    it('should trigger callbacks', () => {
+        socketClient.triggerEndpoint('message', {} as unknown as Message);
+        expect(socketServiceSpyObj.on).toHaveBeenCalledWith('message', {} as unknown as Message);
+        socketClient.triggerEndpoint('connect_error', {});
+        expect(socketServiceSpyObj.on).toHaveBeenCalledWith('connect_error', {});
     });
 
     it('send should send messages when debugging is on', () => {
@@ -32,7 +44,7 @@ describe('MessagingService', () => {
     });
 
     it('send should not send all messages when debugging is off', () => {
-        const spy = spyOn(service['socketService'].socketClient, 'emit');
+        const spy = spyOn(service['socketService']['socketClient'], 'emit');
         service.isDebug = false;
         service.send('title1', 'body1', MessageType.Error);
         service.send('title2', 'body2', MessageType.Log);
@@ -52,7 +64,7 @@ describe('MessagingService', () => {
         const error: Error = { name: 'error', message: 'websocket error' };
 
         let message = '';
-        service['onMessageSubject'].subscribe((msg) => {
+        service['onMessageSubject'].subscribe((msg: { body: string; }) => {
             message = msg.body;
         });
         service['handleConnectionError'](error);
