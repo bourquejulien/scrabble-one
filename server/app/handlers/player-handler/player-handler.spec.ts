@@ -125,4 +125,20 @@ describe('PlayerHandler', () => {
         handler['switchTurn']('0');
         sandbox.assert.calledWith(stubNext, '');
     });
+    it('should get winning player', () => {
+        const turnSubject = new Subject<string>();
+        handler = new PlayerHandler();
+        const SCORE = 10;
+        const playerA = createStubInstance(HumanPlayer);
+        const playerB = createStubInstance(VirtualPlayer);
+        playerA.onTurn.returns(turnSubject.asObservable());
+        playerB.onTurn.returns(turnSubject.asObservable());
+        playerA.playerInfo = PLAYER_INFO_A;
+        playerB.playerInfo = PLAYER_INFO_B;
+        playerA.playerData = { baseScore: SCORE, scoreAdjustment: 0, skippedTurns: 4, rack: ['a', 'b', 'c', 'd', 'e', 'f', 'g'] };
+        playerB.playerData = PLAYER_DATA_DEFAULT;
+        handler.addPlayer(playerA as unknown as HumanPlayer);
+        handler.addPlayer(playerB as unknown as VirtualPlayer);
+        expect(handler.winner).to.eql('0');
+    });
 });
