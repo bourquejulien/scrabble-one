@@ -134,7 +134,7 @@ class SimpleChangeMock {
     }
 }
 
-fdescribe('BoardComponent', () => {
+describe('BoardComponent', () => {
     const playerType = PlayerType.Local;
     // let fontfaceobserverSpy: jasmine.SpyObj<FontFaceObserver>;
     let component: BoardComponent;
