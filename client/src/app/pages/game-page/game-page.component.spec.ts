@@ -1,5 +1,7 @@
 /* eslint-disable max-classes-per-file -- Needs many stub implementations */
-//import { HttpClientTestingModule } from '@angular/common/http/testing';
+// import { HttpClientTestingModule } from '@angular/common/http/testing';
+/* eslint-disable dot-notation -- Need to access private properties for testing*/
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { Component, CUSTOM_ELEMENTS_SCHEMA, Injectable, NO_ERRORS_SCHEMA } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
@@ -117,32 +119,26 @@ describe('GamePageComponent', () => {
     });
 
     it('should call dialogRef if trying to quit game', () => {
-        const spy = spyOn(component['dialog'], 'open')
-            .and
-            .returnValue({
-                afterClosed: () => of(true)
-            } as MatDialogRef<typeof component>);
+        const spy = spyOn(component['dialog'], 'open').and.returnValue({
+            afterClosed: () => of(true),
+        } as MatDialogRef<typeof component>);
         component['confirmQuit']();
         expect(spy).toHaveBeenCalled();
     });
 
     it('should stay on page if result is false', () => {
-        spyOn(component['dialog'], 'open')
-            .and
-            .returnValue({
-                afterClosed: () => of(false)
-            } as MatDialogRef<typeof component>);
+        spyOn(component['dialog'], 'open').and.returnValue({
+            afterClosed: () => of(false),
+        } as MatDialogRef<typeof component>);
         const spy = spyOn<any>(component.gameService, 'reset');
         component['confirmQuit']();
         expect(spy).not.toHaveBeenCalled();
     });
 
     it('should reroute to home', () => {
-        spyOn(component['dialog'], 'open')
-            .and
-            .returnValue({
-                afterClosed: () => of(true)
-            } as MatDialogRef<typeof component>);
+        spyOn(component['dialog'], 'open').and.returnValue({
+            afterClosed: () => of(true),
+        } as MatDialogRef<typeof component>);
         const spy = spyOn<any>(component.gameService, 'reset');
         component['confirmQuit']();
         expect(spy).toHaveBeenCalled();
@@ -150,22 +146,18 @@ describe('GamePageComponent', () => {
 
     it('should call dialogRef if trying to endGame', () => {
         const winner = EndGameWinner.Local;
-        const spy = spyOn(component['dialog'], 'open')
-            .and
-            .returnValue({
-                afterClosed: () => of(true)
-            } as MatDialogRef<typeof component>);
+        const spy = spyOn(component['dialog'], 'open').and.returnValue({
+            afterClosed: () => of(true),
+        } as MatDialogRef<typeof component>);
         component.endGame(winner);
         expect(spy).toHaveBeenCalled();
     });
 
     it('should reset game data if game ended', () => {
         const winner = EndGameWinner.Local;
-        spyOn(component['dialog'], 'open')
-            .and
-            .returnValue({
-                afterClosed: () => of(true)
-            } as MatDialogRef<typeof component>);
+        spyOn(component['dialog'], 'open').and.returnValue({
+            afterClosed: () => of(true),
+        } as MatDialogRef<typeof component>);
         const spy = spyOn<any>(component.gameService, 'reset');
         component.endGame(winner);
         expect(spy).toHaveBeenCalled();
@@ -173,11 +165,9 @@ describe('GamePageComponent', () => {
 
     it('should not reset game data if game not ended', () => {
         const winner = EndGameWinner.Local;
-        spyOn(component['dialog'], 'open')
-            .and
-            .returnValue({
-                afterClosed: () => of(false)
-            } as MatDialogRef<typeof component>);
+        spyOn(component['dialog'], 'open').and.returnValue({
+            afterClosed: () => of(false),
+        } as MatDialogRef<typeof component>);
         const spy = spyOn<any>(component.gameService, 'reset');
         component.endGame(winner);
         expect(spy).not.toHaveBeenCalled();

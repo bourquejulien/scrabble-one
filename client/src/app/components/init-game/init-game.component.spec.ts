@@ -132,34 +132,12 @@ describe('InitGameComponent', () => {
         expect(component.seconds).not.toEqual(THIRTY_SECONDS);
     }));
 
-    it('should init when pressing enter ', fakeAsync(() => {
-        const keyEvent = new KeyboardEvent('keypress', { key: 'Enter', cancelable: true });
-        const spy = spyOn(component, 'init').and.callThrough();
-        component.buttonDetect(keyEvent);
-        expect(spy).toHaveBeenCalled();
-    }));
-
     it('should not init when pressing something else than enter ', fakeAsync(() => {
         const keyEvent = new KeyboardEvent('keypress', { key: 'y', cancelable: true });
         const spy = spyOn(component, 'init').and.callThrough();
         component.buttonDetect(keyEvent);
         expect(spy).not.toHaveBeenCalled();
     }));
-
-    it('should init appropriate games', async () => {
-        roomServiceSpyObj.create.and.returnValue(Promise.resolve());
-        spyOnProperty(component['nameValidator'], 'isValid', 'get').and.returnValue(true);
-        component['initMultiplayer']();
-        component['initSinglePlayer']();
-        expect(routerMock.navigate).toHaveBeenCalledTimes(1);
-    });
-
-    it('should init correct game type', async () => {
-        roomServiceSpyObj.create.and.returnValue(Promise.resolve());
-        spyOnProperty(component['nameValidator'], 'isValid', 'get').and.returnValue(true);
-        component['init']();
-        expect(routerMock.navigate).toHaveBeenCalled();
-    });
 
     afterAll(() => cleanStyles());
 });
