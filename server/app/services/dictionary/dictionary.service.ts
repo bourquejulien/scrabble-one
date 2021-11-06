@@ -38,11 +38,7 @@ export class DictionaryService implements Dictionary {
     }
 
     retrieveDictionary(): void {
-        fs.readFile(Config.DICTIONARY_PATH, 'utf8', (error, jsonData) => {
-            if (error) {
-                throw error;
-            }
-
+        fs.readFile(Config.DICTIONARY_PATH, 'utf8', (_error, jsonData) => {
             const jsonDictionary = JSON.parse(jsonData) as JsonDictionary;
             this.insertWords(jsonDictionary.words);
         });
