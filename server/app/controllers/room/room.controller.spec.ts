@@ -121,7 +121,6 @@ describe('RoomController', () => {
         controller['socketIdToPlayerId'].set('321', '321');
         socketServerMock.triggerEndpoint('connection', clientSocket);
         clientSocket.triggerEndpoint('disconnect');
-        //
         controller['handleSockets']();
 
         const clientSocket2 = new SocketMock();
