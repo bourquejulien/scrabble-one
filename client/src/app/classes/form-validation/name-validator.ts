@@ -13,7 +13,7 @@ const MIN_SIZE_NAME = 3;
 
 export class NameValidator {
     name: string;
-    readonly errors: string[];
+    errors: string[];
 
     constructor() {
         this.name = '';
