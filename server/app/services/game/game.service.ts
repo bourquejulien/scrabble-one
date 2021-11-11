@@ -144,7 +144,7 @@ export class GameService {
         }
 
         if (handler.sessionInfo.gameType === GameType.Multiplayer && handler.sessionData.isActive) {
-            handler.abandon(id);
+            handler.abandonGame(id);
             logger.info(`Game abandoned: ${id}`);
         } else {
             handler.dispose();
