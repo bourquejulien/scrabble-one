@@ -1,13 +1,12 @@
 .room-container {
+    background-color: #eae7dc;
+    margin: auto;
+    width: 50%;
     width: max-content;
-    margin: 2rem;
     height: min-content;
     padding: 32px;
-    justify-content: center;
-    align-items: center;
-    float: left;
+    
 }
-
 .toolbar {
     display: flex;
     justify-content: center;
@@ -16,33 +15,40 @@
 }
 
 .container {
-    height: 100%;
     width: 100%;
     position: relative;
+    align-items: center;
+    
 }
 
 .room-info {
+    color: #eae7dc;
+    width: 50%;
+    margin-top: 100px;
     position: relative;
-    margin: 2rem;
-    float: right;
-}
-
-.info-card,
-.form-card {
-    margin: 2rem;
-    justify-content: center;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 .info-card {
-    margin: 2rem;
+    
+    margin: 10px;
     justify-content: center;
+    width: 30%;
+    padding: 30px;
+    display: inline-block;
+    
 }
 
 .form-card {
-    margin: 2rem;
+    width: 200px;
+    margin:auto;
     justify-content: center;
     text-align: center;
+    align-content: center;
+    padding: 32px;
     display: inline-block;
+    
 }
 
 .error {
@@ -56,14 +62,24 @@
     align-items: center;
 }
 
+
 .error-dialog button {
     margin-top: 1rem;
 }
 
 .exit-button {
     position: relative;
+    margin-top: 10px;
     margin-left: 5vh;
-    bottom: 10rem;
     text-align: center;
     align-items: center;
+}
+
+.random-game-button {
+    float: right;
+    margin-top: 10px;
+    position: relative;
+    margin-right: 5vh;
+    text-align: center;
+    align-items: right;
 }

@@ -1,11 +1,12 @@
-import { Component, AfterViewInit, OnDestroy, TemplateRef, ViewChild } from '@angular/core';
-import { RoomService } from '@app/services/room/room.service';
-import { Subscription } from 'rxjs';
-import { AvailableGameConfig, MultiplayerJoinConfig } from '@common';
-import { trigger, style, animate, transition } from '@angular/animations';
-import { NameValidator } from '@app/classes/form-validation/name-validator';
+import { animate, style, transition, trigger } from '@angular/animations';
+import { AfterViewInit, Component, OnDestroy, TemplateRef, ViewChild } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
+import { NameValidator } from '@app/classes/form-validation/name-validator';
+import { RoomService } from '@app/services/room/room.service';
+import { AvailableGameConfig, MultiplayerJoinConfig } from '@common';
+import { Subscription } from 'rxjs';
+// import { join } from 'path';
 
 @Component({
     selector: 'app-room-list',
@@ -58,6 +59,14 @@ export class RoomListComponent implements AfterViewInit, OnDestroy {
         this.nameValidator.reset();
     }
 
+    randomJoin(): void {
+        if (this.availableGameConfigs.length <= 1) {
+            return;
+        }
+        const randomGame: number = this.getRandomInt(0, this.availableGameConfigs.length);
+        this.selectedConfig = this.availableGameConfigs[randomGame];
+    }
+
     async join() {
         if (!this.validateForm() || this.selectedConfig == null) {
             return;
@@ -93,6 +102,12 @@ export class RoomListComponent implements AfterViewInit, OnDestroy {
         }
 
         return this.errorsList.length === 0;
+    }
+
+    private getRandomInt(min: number, max: number): number {
+        min = Math.ceil(min);
+        max = Math.floor(max);
+        return Math.floor(Math.random() * (max - min)) + min;
     }
 
     private refreshConfig(availableGameConfigs: AvailableGameConfig[]) {
