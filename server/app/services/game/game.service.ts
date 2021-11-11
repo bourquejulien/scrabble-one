@@ -114,7 +114,7 @@ export class GameService {
     async convert(convertConfig: ConvertConfig): Promise<ServerConfig | null> {
         const handler = this.sessionHandlingService.getHandlerByPlayerId(convertConfig.id);
 
-        if (handler == null || handler.sessionData.isStarted || handler.sessionInfo.gameType !== GameType.Multiplayer) {
+        if (handler == null) {
             logger.warn(`Cannot convert game to single player mode - playerId: ${convertConfig.id}`);
             return null;
         }
@@ -129,6 +129,7 @@ export class GameService {
         if (convertConfig.gameHadBegun) {
             const playerToReplace = handler.players.find((p) => p.id === convertConfig.id) ?? null;
             if (playerToReplace !== null) {
+                handler.abandon(convertConfig.id);
                 this.addVirtualPlayer(playerToReplace.playerInfo, handler, playerToReplace.playerData);
             }
         } else this.addVirtualPlayer(virtualPlayerInfo, handler);
@@ -143,21 +144,20 @@ export class GameService {
 
     async abandon(id: string): Promise<boolean> {
         const handler = this.sessionHandlingService.getHandlerByPlayerId(id);
-        console.log('abadnafaf');
         if (handler == null) {
             logger.warn(`Failed to stop game: ${id}`);
             return false;
         }
 
         if (handler.sessionInfo.gameType === GameType.Multiplayer && handler.sessionData.isActive) {
+            const player = handler.players.find((p) => p.id === id);
+            if (handler.sessionData.isStarted) {
+                if (player === undefined) return false;
+                const newName = player.playerInfo.name + ' Virtuel';
+                const convertConfig: ConvertConfig = { id: player.id, virtualPlayerName: newName, gameHadBegun: true };
+                this.convert(convertConfig);
+            }
             logger.info(`Game abandoned: ${id}`);
-        } else if (handler.sessionData.isStarted) {
-            const player = handler.abandon(id);
-            if (player === null) return false;
-            player.playerInfo.isHuman = false;
-            const newName = player.playerInfo.name + ' Virtuel';
-            const convertConfig: ConvertConfig = { id: player.id, virtualPlayerName: newName, gameHadBegun: true };
-            this.convert(convertConfig);
         } else {
             handler.dispose();
             this.sessionHandlingService.removeHandler(id);
