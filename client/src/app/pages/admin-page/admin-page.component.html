@@ -1,0 +1,101 @@
+<mat-toolbar class="toolbar" color="primary">
+    <button mat-icon-button routerLink="/home">
+        <mat-icon>chevron_left</mat-icon>
+    </button>
+    <span>Réglages d'administration</span>
+</mat-toolbar>
+<mat-accordion>
+    <mat-expansion-panel>
+        <mat-expansion-panel-header>
+            <mat-panel-title>
+                Options de dictionnaire
+            </mat-panel-title>
+            <mat-panel-description>
+                Ajouter ou retirer des dictionnaires pour la partie
+            </mat-panel-description>
+        </mat-expansion-panel-header>
+            <div>
+                <mat-divider></mat-divider>
+                <h3><b>Gérer les dictionnaires existants</b></h3>
+                <mat-selection-list>
+                    <div class="dictionary-settings" *ngFor="let dictionnary of adminService.dictionaries; let i = index">
+                        <mat-list-item >
+                            <mat-form-field appearance="outline">
+                                <mat-label>Nom du dictionnaire</mat-label>
+                                <input matInput placeholder="Nom du dictionnaire">
+                              </mat-form-field>
+                              <mat-form-field appearance="fill">
+                                <mat-label>Description du dictionnaire</mat-label>
+                                <textarea matInput></textarea>
+                              </mat-form-field>
+                          <button mat-stroked-button ><mat-icon>file_download</mat-icon></button>
+                          <button mat-stroked-button color="warn" (click)="removeDictionary(i)"><mat-icon>delete</mat-icon></button>
+                        </mat-list-item>
+                    </div>
+                  </mat-selection-list>
+                  <mat-divider></mat-divider>
+                  <h3><b>Télécharger un nouveau dictionnaire</b></h3>
+                  <input type="file" class="file-input" accept="application/json" (change)="onFileSelected($event)" #fileUpload>
+                  <div class="file-upload">
+                      Vous avez la possibilité de téléverser un dictionnaire en suivant le format prescrit et ensuite l'utiliser dans la partie.
+                      {{ adminService.fileName }}
+                      <button mat-stroked-button (click)="fileUpload.click()">
+                          Choisir un dictionnaire
+                        <mat-icon>attach_file</mat-icon>
+                      </button>
+                  </div>
+                  <div class="progress">
+                      <mat-progress-bar mode="determinate" [value]="adminService.uploadProgress" *ngIf="adminService.uploadProgress"></mat-progress-bar>
+                    </div>
+            </div>
+    </mat-expansion-panel>
+    <mat-expansion-panel>
+        <mat-expansion-panel-header>
+            <mat-panel-title>
+                Nom des joueurs virtuels
+            </mat-panel-title>
+            <mat-panel-description>
+                Ajouter ou retirer des choix de noms pour des joueurs virtuels
+            </mat-panel-description>
+        </mat-expansion-panel-header>
+        <mat-grid-list cols="2">
+            <mat-grid-tile>
+                <h4><b>Noms des joueurs virtuels standards</b></h4>
+                <mat-selection-list>
+                    <mat-list-item *ngFor="let name of adminService.virtualPlayerNames">
+                      {{name}}
+                      <button mat-stroked-button color="warn">
+                          <mat-icon>delete</mat-icon>
+                        </button>
+                    </mat-list-item>
+                </mat-selection-list>
+            </mat-grid-tile>
+            <mat-grid-tile>
+                <h4><b>Noms des joueurs virtuels standard experts</b></h4>
+                <mat-selection-list>
+                    <mat-list-item *ngFor="let name of adminService.virtualPlayerNames">
+                      {{name}}
+                    </mat-list-item>
+                  </mat-selection-list>
+
+                  <button mat-button color="warn">
+                    <mat-icon>delete</mat-icon>
+                  </button>
+            </mat-grid-tile>
+            <button mat-button>
+                Accepter les modifications
+            </button>
+        </mat-grid-list>
+    </mat-expansion-panel>
+    <mat-expansion-panel>
+        <mat-expansion-panel-header>
+            <mat-panel-title>
+                Réinitialiser les données
+            </mat-panel-title>
+            <mat-panel-description>
+                Zone dangereuse
+            </mat-panel-description>
+        </mat-expansion-panel-header>
+        <button mat-button color="warn">Réinitialiser toutes les données de la partie</button>
+    </mat-expansion-panel>
+</mat-accordion>
