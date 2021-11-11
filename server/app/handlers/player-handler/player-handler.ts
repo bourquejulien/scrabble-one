@@ -1,6 +1,6 @@
 import { Player } from '@app/classes/player/player';
-import { Observable, Subject, Subscription } from 'rxjs';
 import { Config } from '@app/config';
+import { Observable, Subject, Subscription } from 'rxjs';
 
 export class PlayerHandler {
     players: Player[];
@@ -43,7 +43,15 @@ export class PlayerHandler {
     onTurn(): Observable<string> {
         return this.nextTurn.asObservable();
     }
-
+    /*
+    infoToVirtual(playerId: string): void {
+        const playerIndex = this.players.findIndex((p) => p.id === playerId) ?? -1;
+        if (playerIndex === -1) return;
+        this.playerSubscriptions.get(this.players[playerIndex].id)?.unsubscribe();
+        this.removePlayer(playerId);
+        this.playerSubscriptions[playerId] = this.players[playerIndex].onTurn().subscribe((lastId) => this.switchTurn(lastId));
+    }
+*/
     get isOverSkipLimit(): boolean {
         return this.players.map((p) => p.playerData.skippedTurns > Config.MAX_SKIP_TURN).reduce((acc, isMaxSkip) => acc && isMaxSkip);
     }

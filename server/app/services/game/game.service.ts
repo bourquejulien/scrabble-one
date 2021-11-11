@@ -1,18 +1,19 @@
-import { GameType, MultiplayerCreateConfig, MultiplayerJoinConfig, ServerConfig, SinglePlayerConfig, ConvertConfig } from '@common';
-import { SessionHandlingService } from '@app/services/sessionHandling/session-handling.service';
-import { BoardGeneratorService } from '@app/services/board/board-generator.service';
-import { Service } from 'typedi';
-import { SessionHandler } from '@app/handlers/session-handler/session-handler';
 import { generateId } from '@app/classes/id';
-import { ReserveHandler } from '@app/handlers/reserve-handler/reserve-handler';
-import { VirtualPlayer } from '@app/classes/player/virtual-player/virtual-player';
+import { PlayerData } from '@app/classes/player-data';
+import { PlayerInfo } from '@app/classes/player-info';
 import { HumanPlayer } from '@app/classes/player/human-player/human-player';
 import { Action } from '@app/classes/player/virtual-player/actions/action';
-import { PlayerInfo } from '@app/classes/player-info';
-import { DictionaryService } from '@app/services/dictionary/dictionary.service';
-import { SocketService } from '@app/services/socket/socket-service';
-import * as logger from 'winston';
+import { VirtualPlayer } from '@app/classes/player/virtual-player/virtual-player';
 import { PlayerHandler } from '@app/handlers/player-handler/player-handler';
+import { ReserveHandler } from '@app/handlers/reserve-handler/reserve-handler';
+import { SessionHandler } from '@app/handlers/session-handler/session-handler';
+import { BoardGeneratorService } from '@app/services/board/board-generator.service';
+import { DictionaryService } from '@app/services/dictionary/dictionary.service';
+import { SessionHandlingService } from '@app/services/sessionHandling/session-handling.service';
+import { SocketService } from '@app/services/socket/socket-service';
+import { ConvertConfig, GameType, MultiplayerCreateConfig, MultiplayerJoinConfig, ServerConfig, SinglePlayerConfig } from '@common';
+import { Service } from 'typedi';
+import * as logger from 'winston';
 
 @Service()
 export class GameService {
@@ -125,7 +126,12 @@ export class GameService {
         };
 
         handler.sessionInfo.gameType = GameType.SinglePlayer;
-        this.addVirtualPlayer(virtualPlayerInfo, handler);
+        if (convertConfig.gameHadBegun) {
+            const playerToReplace = handler.players.find((p) => p.id === convertConfig.id) ?? null;
+            if (playerToReplace !== null) {
+                this.addVirtualPlayer(playerToReplace.playerInfo, handler, playerToReplace.playerData);
+            }
+        } else this.addVirtualPlayer(virtualPlayerInfo, handler);
         this.sessionHandlingService.updateEntries(handler);
 
         handler.start();
@@ -137,15 +143,21 @@ export class GameService {
 
     async abandon(id: string): Promise<boolean> {
         const handler = this.sessionHandlingService.getHandlerByPlayerId(id);
-
+        console.log('abadnafaf');
         if (handler == null) {
             logger.warn(`Failed to stop game: ${id}`);
             return false;
         }
 
         if (handler.sessionInfo.gameType === GameType.Multiplayer && handler.sessionData.isActive) {
-            handler.abandon(id);
             logger.info(`Game abandoned: ${id}`);
+        } else if (handler.sessionData.isStarted) {
+            const player = handler.abandon(id);
+            if (player === null) return false;
+            player.playerInfo.isHuman = false;
+            const newName = player.playerInfo.name + ' Virtuel';
+            const convertConfig: ConvertConfig = { id: player.id, virtualPlayerName: newName, gameHadBegun: true };
+            this.convert(convertConfig);
         } else {
             handler.dispose();
             this.sessionHandlingService.removeHandler(id);
@@ -162,10 +174,12 @@ export class GameService {
         return humanPlayer;
     }
 
-    private addVirtualPlayer(playerInfo: PlayerInfo, sessionHandler: SessionHandler): VirtualPlayer {
+    private addVirtualPlayer(playerInfo: PlayerInfo, sessionHandler: SessionHandler, playerData?: PlayerData): VirtualPlayer {
         const actionCallback = (action: Action): Action | null => action.execute();
         const virtualPlayer = new VirtualPlayer(playerInfo, this.dictionnaryService, actionCallback);
-
+        if (playerData !== undefined) {
+            virtualPlayer.playerData = playerData;
+        }
         sessionHandler.addPlayer(virtualPlayer);
 
         return virtualPlayer;

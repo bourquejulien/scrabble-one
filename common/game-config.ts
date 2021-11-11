@@ -23,6 +23,7 @@ export interface MultiplayerJoinConfig {
 export interface ConvertConfig {
     id: string;
     virtualPlayerName: string;
+    gameHadBegun: boolean;
 }
 
 export interface AvailableGameConfig {
