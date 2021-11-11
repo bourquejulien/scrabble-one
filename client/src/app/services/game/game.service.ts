@@ -101,6 +101,7 @@ export class GameService {
             this.sessionService.gameConfig.firstPlayerName + ' : ' + this.rackService.rack,
             MessageType.System,
         );
+        // TO DO: Call scoresService to update score board
     }
 
     private async refresh(): Promise<void> {
