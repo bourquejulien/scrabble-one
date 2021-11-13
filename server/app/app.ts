@@ -10,6 +10,7 @@ import { Service } from 'typedi';
 import { DictionaryService } from '@app/services/dictionary/dictionary.service';
 import { ReserveController } from '@app/controllers/reserve/reserve.controller';
 import { PlayerController } from './controllers/player/player.controller';
+import { AdminController } from './controllers/admin/admin.controller';
 
 @Service()
 export class Application {
@@ -21,6 +22,7 @@ export class Application {
         private readonly boardController: BoardController,
         private readonly playerController: PlayerController,
         private readonly reserveController: ReserveController,
+        private readonly adminController: AdminController,
         dictionaryService: DictionaryService,
     ) {
         dictionaryService.retrieveDictionary();
@@ -36,6 +38,7 @@ export class Application {
         this.app.use('/api/board', this.boardController.router);
         this.app.use('/api/player', this.playerController.router);
         this.app.use('/api/reserve', this.reserveController.router);
+        this.app.use('/api/admin', this.adminController.router);
         this.errorHandling();
     }
 

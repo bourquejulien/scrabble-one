@@ -1,5 +1,5 @@
 import { Dictionary } from '@app/classes/dictionary/dictionary';
-import { JsonDictionary } from '@app/classes/dictionary/json-dictionary';
+import { JsonDictionary } from '@common';
 import { Trie } from '@app/classes/trie/trie';
 import { Config } from '@app/config';
 import fs from 'fs';
