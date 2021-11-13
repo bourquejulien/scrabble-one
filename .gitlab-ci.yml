@@ -160,36 +160,25 @@ pages:
             - public
 
 deploy:server:
-    stage: deploy
-    rules:
-        - if: "$CI_COMMIT_TAG =~ /deploy/"
-          when: manual
-    script:
-        - "which ssh-agent || (apt-get update -qq && apt-get install -qq openssh-client )"
-        - eval $(ssh-agent -s)
-        - ssh-add <(echo "$EC2_PEM_FILE_CONTENT")
-        - mkdir -p ~/.ssh
-        - '[[ -f /.dockerenv ]] && echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config'
-        - |
-            timeout 600 ssh -t -o ServerAliveInterval=15 -o ServerAliveCountMax=5 "${EC2_USER}@${EC2_HOST}" "
-                set -x -ev
-
-                # Clone the repository
-                git clone 'https://${GITLAB_DEPLOY_TOKEN_USERNAME}:${GITLAB_DEPLOY_TOKEN_PASSWORD}@${GITLAB_REPO_URL}' repo || echo Git repository already exist
-                cd repo
-
-                # Checkout to the targeted commit
-                git fetch --all
-                git checkout ${CI_COMMIT_SHA}
-
-                # Build the project
-                cd server
-                npm ci
-                npm run build
-
-                # Force kill any node app or any app running on the server port
-                forever stopall && sudo fuser -k '${SERVER_PORT}/tcp' && sudo killall node
-
-                # Launch the server in background and append output to /var/log/messages for CloudWatch
-                forever start -a -l /var/log/messages out/server/app/index.js
-            "
+  image: docker:stable
+  before_script:
+    - docker info
+  stage: deploy
+  when: manual
+  services:
+    - name: docker:dind
+      alias: dockerdaemon
+      command: [ "--tls=false" ]
+  variables:
+    # Tell docker CLI how to talk to Docker daemon.
+    DOCKER_HOST: tcp://dockerdaemon:2375
+    # Use the overlayfs driver for improved performance.
+    DOCKER_DRIVER: overlay2
+    # Disable TLS since we're running inside local network.
+    DOCKER_TLS_CERTDIR: ""
+    IMAGE_NAME: "$CI_REGISTRY_IMAGE/server:latest"
+ 
+  script:
+    - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" "$CI_REGISTRY"
+    - docker build --target final -f server/Dockerfile -t "$IMAGE_NAME" .
+    - docker push "$IMAGE_NAME"
