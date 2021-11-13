@@ -146,6 +146,9 @@ test:server:
 pages:
     image: node:14.15.0
     stage: deploy
+    environment:
+        name: client
+        url: https://scrabble.one
     rules:
         - if: "$CI_COMMIT_TAG =~ /deploy/"
           when: manual
@@ -162,22 +165,25 @@ pages:
 deploy:server:
     image: docker:stable
     before_script:
-      - docker info
+        - docker info
+    environment:
+        name: server
+        url: https://server.scrabble.one
     stage: deploy
     rules:
-      - if: "$CI_COMMIT_TAG =~ /deploy/"
-        when: manual
+        - if: "$CI_COMMIT_TAG =~ /deploy/"
+          when: manual
     services:
-      - name: docker:dind
-        alias: docker
-        command: [ "--tls=false" ]
+        - name: docker:dind
+          alias: docker
+          command: [ "--tls=false" ]
     variables:
-      DOCKER_HOST: tcp://docker:2375
-      DOCKER_DRIVER: overlay2
-      DOCKER_TLS_CERTDIR: ""
-      DOCKER_BUILDKIT: 1
-      IMAGE_NAME: "$CI_REGISTRY_IMAGE/server:latest"
+        DOCKER_HOST: tcp://docker:2375
+        DOCKER_DRIVER: overlay2
+        DOCKER_TLS_CERTDIR: ""
+        DOCKER_BUILDKIT: 1
+        IMAGE_NAME: "$CI_REGISTRY_IMAGE/server:latest"
     script:
-      - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" "$CI_REGISTRY"
-      - docker build --target final -f server/Dockerfile -t "$IMAGE_NAME" .
-      - docker push "$IMAGE_NAME"
+        - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" "$CI_REGISTRY"
+        - docker build --target final -f server/Dockerfile -t "$IMAGE_NAME" .
+        - docker push "$IMAGE_NAME"
