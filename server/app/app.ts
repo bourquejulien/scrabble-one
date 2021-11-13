@@ -1,14 +1,14 @@
 import { HttpException } from '@app/classes/http.exception';
 import { BoardController } from '@app/controllers/board/board.controller';
 import { GameController } from '@app/controllers/game/game.controller';
+import { ReserveController } from '@app/controllers/reserve/reserve.controller';
+import { DictionaryService } from '@app/services/dictionary/dictionary.service';
 import cookieParser from 'cookie-parser';
 import cors from 'cors';
 import express from 'express';
 import { StatusCodes } from 'http-status-codes';
 import logger from 'morgan';
 import { Service } from 'typedi';
-import { DictionaryService } from '@app/services/dictionary/dictionary.service';
-import { ReserveController } from '@app/controllers/reserve/reserve.controller';
 import { PlayerController } from './controllers/player/player.controller';
 
 @Service()
@@ -27,6 +27,7 @@ export class Application {
 
         this.internalError = StatusCodes.INTERNAL_SERVER_ERROR;
         this.app = express();
+        this.validateEnv();
         this.config();
         this.bindRoutes();
     }
@@ -37,6 +38,22 @@ export class Application {
         this.app.use('/api/player', this.playerController.router);
         this.app.use('/api/reserve', this.reserveController.router);
         this.errorHandling();
+    }
+
+    private validateEnv(): void {
+        const REQUIRED_ENV_VARIABLES = ['DB_HOST', 'DB_USER', 'DB_PASSWORD'];
+
+        let isEnvVariableMissing = false;
+        for (const envVariable of REQUIRED_ENV_VARIABLES) {
+            if (!(envVariable in process.env)) {
+                console.error(`Error: ${envVariable} environment variable not set`);
+                isEnvVariableMissing = true;
+            }
+        }
+
+        if (isEnvVariableMissing) {
+            process.exit(1);
+        }
     }
 
     private config(): void {

@@ -4,17 +4,15 @@
 node_modules/
 false/
 
-# Exclusion des fichiers Javascripts
+# Exclusion des fichiers JavaScript
 out/
 
 # NPM Debug Log
 npm-debug.log
 
-##Typescrit compilation ##
-
+# TypeScript compilation
 *.js.map
 *.js
-
 
 # Garder les fichiers necessaires pour les tests
 !systemjs.config.js
@@ -25,3 +23,6 @@ npm-debug.log
 !tsconfig.spec.json
 !tsconfig.json
 !package-lock.json
+
+# Environment file
+.env
