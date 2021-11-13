@@ -1,0 +1,32 @@
+version: '3.4'
+
+x-app: &default
+    networks:
+        - mynetwork
+
+services:
+    mongo:
+        <<: *default
+        image: mongo
+        hostname: mongo
+        volumes:
+            - mongo_data:/data/db
+
+    server:
+        <<: *default
+        image: registry.gitlab.com/polytechnique-montr-al/log2990/20213/equipe-301/log2990-301/server:latest
+        build:
+            context: ..
+            dockerfile: Dockerfile
+            target: final
+        hostname: server
+        depends_on:
+            - mongo
+        ports:
+            - "3000:3000"
+
+networks:
+    mynetwork:
+
+volumes:
+    mongo_data:
