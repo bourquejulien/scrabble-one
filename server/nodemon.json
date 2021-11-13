@@ -7,5 +7,5 @@
     "ignore": [
         "app/**/*.spec.ts"
     ],
-    "exec": "npm run build && node -r --inspect out/server/app/index.js"
+    "exec": "npm run build && node -r dotenv/config --inspect out/server/app/index.js"
 }
