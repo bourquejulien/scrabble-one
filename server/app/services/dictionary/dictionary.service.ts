@@ -5,20 +5,18 @@ import { Service } from 'typedi';
 import * as logger from 'winston';
 import path from 'path';
 
+const defaultDictionary: DictionaryMetadata = {
+    id: 'dictionary.json',
+    description: 'Default Dictionary',
+    title: 'Dictionnaire du serveur',
+    nbWords: 1024,
+};
 @Service()
 export class DictionaryService {
-    dummyMetadata: DictionaryMetadata[] = [
-        {
-            id: 'dictionary.json',
-            description: 'Default Dictionary',
-            title: 'Dictionnaire du serveur',
-            nbWords: 1024,
-        },
-    ];
-    dictionaryMetadata: DictionaryMetadata[];
+    private dictionaryMetadata: DictionaryMetadata[];
 
     constructor() {
-        this.dictionaryMetadata = this.dummyMetadata;
+        this.dictionaryMetadata = [defaultDictionary];
     }
 
     getFilepath(metadata: DictionaryMetadata): string {
@@ -28,7 +26,7 @@ export class DictionaryService {
 
     reset() {
         this.dictionaryMetadata = [];
-        this.parse(this.getFilepath(this.dummyMetadata[0]));
+        this.parse(this.getFilepath(defaultDictionary));
     }
 
     remove(metadata: DictionaryMetadata) {
@@ -38,6 +36,13 @@ export class DictionaryService {
                 logger.error(`Deletion Error: ${err}`);
             }
         });
+    }
+
+    update(metadata: DictionaryMetadata[]) {
+        if (!this.dictionaryMetadata.find((m) => m === defaultDictionary) && metadata) {
+            this.dictionaryMetadata = metadata;
+            this.dictionaryMetadata.push(defaultDictionary);
+        }
     }
 
     add(metadata: DictionaryMetadata) {
@@ -66,5 +71,9 @@ export class DictionaryService {
 
     getMetadata(id: string) {
         return this.dictionaryMetadata.find((m) => m.id === id);
+    }
+
+    get dictionaries() {
+        return this.dictionaryMetadata;
     }
 }

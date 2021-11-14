@@ -46,12 +46,14 @@ export class AdminController {
         });
 
         this.router.get('/dictionary', (req: Request, res: Response) => {
-            res.json(this.dictionaryService.dictionaryMetadata);
+            res.json(this.dictionaryService.dictionaries);
         });
 
         this.router.post('/dictionary', (req: Request, res: Response) => {
-            console.log('', req.body);
-            this.dictionaryService.dictionaryMetadata = req.body;
+            this.dictionaryService.update(req.body);
+            let names = ' ';
+            this.dictionaryService.dictionaries.forEach((e) => (names = '«' + e.title + '» '));
+            logger.debug(`Updated dictionary: ${names}`);
             res.sendStatus(Constants.HTTP_STATUS.OK);
         });
 
