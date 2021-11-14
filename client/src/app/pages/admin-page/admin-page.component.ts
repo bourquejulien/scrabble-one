@@ -8,25 +8,24 @@ import { AdminService } from '@app/services/admin/admin.service';
     styleUrls: ['./admin-page.component.scss'],
 })
 export class AdminPageComponent {
-    constructor(public adminService: AdminService, private sncakbar: MatSnackBar) {}
+    constructor(public adminService: AdminService, private snackbar: MatSnackBar) {}
 
     onFileSelected(event: Event) {
         const input = event.target as HTMLInputElement;
         if (!input.files?.length) {
-            this.sncakbar.open('Fichier inadmisible pour le téléversement', 'Fermer');
             return;
         }
         this.adminService.uploadFile(input.files[0]);
     }
 
-    removeDictionary(id: string) {
+    updateDictionaries() {
         this.adminService
-            .removeDictionary(id)
+            .updateDictionaries()
             .then(() => {
-                this.sncakbar.open(`Dictionnaire ${id} a été retiré`, 'Fermer');
+                this.snackbar.open('Dictionnaires mis à jour', 'Fermer');
             })
             .catch(() => {
-                this.sncakbar.open(`Erreur survenue: dictionnaire ${id} n'a pas été retiré`, 'Fermer');
+                this.snackbar.open('Erreur lors de la mise à jour des dictionnaires', 'Fermer');
             });
     }
 

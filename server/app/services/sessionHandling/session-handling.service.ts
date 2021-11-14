@@ -1,23 +1,12 @@
 import { SessionHandler } from '@app/handlers/session-handler/session-handler';
 import { Service } from 'typedi';
-interface Playername {
-    name: string;
-    expert: boolean;
-}
 
 @Service()
 export class SessionHandlingService {
-    readonly defaultBotNames: Playername[] = [
-        { name: 'Monique', expert: false },
-        { name: 'Claudette', expert: false },
-        { name: 'Alphonse', expert: false },
-    ];
-    virtualPlayerNames: Playername[];
     private sessionHandlers: SessionHandler[];
     private readonly playerIds: Map<string, string>;
 
     constructor() {
-        this.virtualPlayerNames = this.defaultBotNames;
         this.sessionHandlers = [];
         this.playerIds = new Map<string, string>();
     }

@@ -38,8 +38,9 @@ export class AdminService {
 
         this.uploadSub = upload$.subscribe((uploadEvent) => {
             if (uploadEvent.type === HttpEventType.UploadProgress) {
-                // eslint-disable-next-line @typescript-eslint/no-magic-numbers
-                this.uploadProgress = Math.round(100 * uploadEvent.loaded);
+                const progressMax = 100;
+                const total = uploadEvent.total ?? progressMax;
+                this.uploadProgress = Math.round(progressMax * (uploadEvent.loaded / total));
             }
         });
     }
@@ -53,6 +54,18 @@ export class AdminService {
         this.dictionaries = await this.httpClient.get<DictionaryMetadata[]>(localUrl('dictionary', '')).toPromise();
     }
 
+    removeDictionary(metadata: DictionaryMetadata) {
+        this.dictionaries.splice(this.dictionaries.indexOf(metadata), 1);
+    }
+
+    async updateDictionaries() {
+        this.httpClient.post(localUrl('dictionary', ''), this.dictionaries).toPromise();
+    }
+
+    downloadDictionary(id: string) {
+        return this.httpClient.get<Blob>(localUrl('dictionary', id));
+    }
+
     async retrieveUsernames() {
         const result = await this.httpClient.get<Playername[]>(localUrl('playername', '')).toPromise();
         if (result) {
@@ -64,19 +77,11 @@ export class AdminService {
         await this.httpClient.post<Playername[]>(localUrl('playername', ''), this.virtualPlayerNames).toPromise();
     }
 
-    async resetSettings(): Promise<void> {
-        await this.httpClient.get<string[]>(localUrl('reset', '')).toPromise();
-    }
-
-    async removeDictionary(id: string): Promise<void> {
-        await this.httpClient.delete(localUrl('dictionary', id)).toPromise();
-    }
-
-    downloadDictionary(id: string) {
-        return this.httpClient.get<Blob>(localUrl('dictionary', id));
-    }
-
     removePlayername(playername: Playername) {
         this.virtualPlayerNames.splice(this.virtualPlayerNames.indexOf(playername), 1);
+    }
+
+    async resetSettings(): Promise<void> {
+        await this.httpClient.get<string[]>(localUrl('reset', '')).toPromise();
     }
 }

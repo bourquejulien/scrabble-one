@@ -21,6 +21,7 @@ export class AdminController {
     router: Router;
 
     constructor(private dictionaryService: DictionaryService) {
+        this.virtualPlayerNames = this.defaultBotNames;
         this.configureRouter();
     }
 
@@ -48,14 +49,21 @@ export class AdminController {
             res.json(this.dictionaryService.dictionaryMetadata);
         });
 
+        this.router.post('/dictionary', (req: Request, res: Response) => {
+            console.log('', req.body);
+            this.dictionaryService.dictionaryMetadata = req.body;
+            res.sendStatus(Constants.HTTP_STATUS.OK);
+        });
+
         this.router.get('/dictionary/:id', (req: Request, res: Response) => {
             const id = req.params.id;
             if (id) {
                 const metadata = this.dictionaryService.getMetadata(id);
-                if (metadata && metadata.filepath) {
-                    logger.debug(`Requesting to download dictionary: ${metadata.filepath}`);
+                if (metadata) {
+                    const filepath = this.dictionaryService.getFilepath(metadata);
+                    logger.debug(`Requesting to download dictionary: ${filepath}`);
                     res.status(Constants.HTTP_STATUS.OK);
-                    res.download(metadata.filepath);
+                    res.download(filepath);
                 }
             }
         });
@@ -64,8 +72,9 @@ export class AdminController {
             const id = req.params.id;
             if (id) {
                 const metadata = this.dictionaryService.getMetadata(id);
-                if (metadata && metadata.filepath) {
-                    logger.debug(`Requesting to delete dictionary: ${metadata.filepath}`);
+                if (metadata) {
+                    const filepath = this.dictionaryService.getFilepath(metadata);
+                    logger.debug(`Requesting to delete dictionary: ${filepath}`);
                     this.dictionaryService.remove(metadata);
                     res.status(Constants.HTTP_STATUS.OK);
                 }

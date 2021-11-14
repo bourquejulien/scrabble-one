@@ -22,20 +22,23 @@
                     <mat-list-item>
                         <mat-form-field appearance="outline">
                             <mat-label>Nom du dictionnaire</mat-label>
-                            <input matInput required placeholder="Nom du dictionnaire" [value]="dictionary.name">
+                            <input matInput required placeholder="Nom du dictionnaire" [value]="dictionary.title">
                         </mat-form-field>
                         <mat-form-field appearance="fill">
                             <mat-label>Description du dictionnaire</mat-label>
-                            <textarea matInput required [value]="dictionary.name"></textarea>
+                            <textarea matInput required [value]="dictionary.title"></textarea>
                         </mat-form-field>
                         <button mat-stroked-button (click)="downloadDictionary(dictionary.id)">
                             <mat-icon>file_download</mat-icon>
                         </button>
-                        <button mat-stroked-button color="warn" (click)="removeDictionary(dictionary.id)">
+                        <button mat-stroked-button color="warn" (click)="adminService.removeDictionary(dictionary)">
                             <mat-icon>delete</mat-icon>
                         </button>
                     </mat-list-item>
                 </div>
+                <button mat-stroked-button color="success" (click)="adminService.updateDictionaries()">
+                    Accepter les modifications <mat-icon>done</mat-icon>
+                </button>
             </mat-selection-list>
             <mat-divider></mat-divider>
             <h3><b>Télécharger un nouveau dictionnaire</b></h3>
@@ -90,7 +93,7 @@
         <button mat-stroked-button (click)="adminService.virtualPlayerNames.push({name: '', expert: false})">
             Ajouter un joueur virtuel <mat-icon>add</mat-icon>
         </button>
-        <button mat-stroked-button (click)="adminService.updateUsername()">
+        <button mat-stroked-button color="success" (click)="adminService.updateUsername()">
             Accepter les modifications <mat-icon>done</mat-icon>
         </button>
     </mat-expansion-panel>
@@ -103,7 +106,7 @@
                 Zone dangereuse
             </mat-panel-description>
         </mat-expansion-panel-header>
-        <b><i>Attention: cette option supprime tous les dictionnaires ajoutés, les meilleurs scores ainsi que les noms personnalisés des joueurs virtuels.</i></b>
+        <b><i>Attention: </i></b>cette option supprime tous les dictionnaires ajoutés, les meilleurs scores ainsi que les noms personnalisés des joueurs virtuels.
         <button mat-stroked-button color="warn" (click)="resetSettings()">Réinitialiser les réglages<mat-icon>warning</mat-icon></button>
     </mat-expansion-panel>
 </mat-accordion>
