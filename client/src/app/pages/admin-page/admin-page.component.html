@@ -97,12 +97,13 @@
     <mat-expansion-panel>
         <mat-expansion-panel-header>
             <mat-panel-title>
-                Réinitialiser les données
+                Réinitialiser les réglagles
             </mat-panel-title>
             <mat-panel-description>
                 Zone dangereuse
             </mat-panel-description>
         </mat-expansion-panel-header>
-        <button mat-button color="warn">Réinitialiser toutes les données de la partie</button>
+        <b><i>Attention: cette option supprime tous les dictionnaires ajoutés, les meilleurs scores ainsi que les noms personnalisés des joueurs virtuels.</i></b>
+        <button mat-stroked-button color="warn" (click)="resetSettings()">Réinitialiser les réglages<mat-icon>warning</mat-icon></button>
     </mat-expansion-panel>
 </mat-accordion>

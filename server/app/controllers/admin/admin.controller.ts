@@ -5,14 +5,22 @@ import { IncomingForm } from 'formidable';
 import { tmpdir } from 'os';
 import * as logger from 'winston';
 import { DictionaryService } from '@app/services/dictionary/dictionary.service';
-import { SessionHandlingService } from '@app/services/sessionHandling/session-handling.service';
-
+interface Playername {
+    name: string;
+    expert: boolean;
+}
 const UPLOAD_DIR = tmpdir();
 @Service()
 export class AdminController {
+    readonly defaultBotNames: Playername[] = [
+        { name: 'Monique', expert: false },
+        { name: 'Claudette', expert: false },
+        { name: 'Alphonse', expert: false },
+    ];
+    virtualPlayerNames: Playername[];
     router: Router;
 
-    constructor(private dictionaryService: DictionaryService, private sessionHandlingService: SessionHandlingService) {
+    constructor(private dictionaryService: DictionaryService) {
         this.configureRouter();
     }
 
@@ -65,19 +73,17 @@ export class AdminController {
         });
 
         this.router.get('/playername', (req: Request, res: Response) => {
-            res.json(this.sessionHandlingService.virtualPlayerNames);
-            logger.debug('Sent names');
+            res.json(this.virtualPlayerNames);
         });
 
-        this.router.patch('/playername', (req: Request, res: Response) => {
-            console.log('', req.body);
-            const json = JSON.parse(req.body);
-            this.sessionHandlingService.virtualPlayerNames = json;
+        this.router.post('/playername', (req: Request, res: Response) => {
+            this.virtualPlayerNames = req.body;
+            logger.debug('Virtual Player Names - length:' + this.virtualPlayerNames.length);
             res.sendStatus(Constants.HTTP_STATUS.OK);
         });
 
         this.router.get('/reset', (req: Request, res: Response) => {
-            this.sessionHandlingService.virtualPlayerNames = this.sessionHandlingService.defaultBotNames;
+            this.virtualPlayerNames = this.defaultBotNames;
             this.dictionaryService.reset();
             res.sendStatus(Constants.HTTP_STATUS.OK);
             logger.debug('Reset');

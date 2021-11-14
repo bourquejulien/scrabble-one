@@ -61,7 +61,7 @@ export class AdminService {
     }
 
     async updateUsername() {
-        await this.httpClient.patch<Playername[]>(localUrl('playername', ''), this.virtualPlayerNames).toPromise();
+        await this.httpClient.post<Playername[]>(localUrl('playername', ''), this.virtualPlayerNames).toPromise();
     }
 
     async resetSettings(): Promise<void> {
