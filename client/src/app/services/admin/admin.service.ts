@@ -21,6 +21,8 @@ export class AdminService {
     virtualPlayerNames: Playername[];
 
     constructor(private httpClient: HttpClient) {
+        this.dictionaries = [];
+        this.virtualPlayerNames = [];
         this.retrieveUsernames();
         this.retrieveDictionnaries();
     }
