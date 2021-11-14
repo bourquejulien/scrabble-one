@@ -28,7 +28,7 @@
                                 <mat-label>Description du dictionnaire</mat-label>
                                 <textarea matInput required [value]="dictionary.name"></textarea>
                               </mat-form-field>
-                          <button mat-stroked-button (click)="adminService.downloadDictionary(dictionary.id)"><mat-icon>file_download</mat-icon></button>
+                          <button mat-stroked-button (click)="downloadDictionary(dictionary.id)"><mat-icon>file_download</mat-icon></button>
                           <button mat-stroked-button color="warn" (click)="removeDictionary(dictionary.id)"><mat-icon>delete</mat-icon></button>
                         </mat-list-item>
                     </div>

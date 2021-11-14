@@ -6,8 +6,14 @@ export class DictionaryService {
     dictionaryMetadata: DictionaryMetadata[];
 
     dummyMetadata: DictionaryMetadata[] = [
-        { id: '1', description: 'Default Dictionary', filepath: '/tmp/nothere', name: 'Dictionnaire par défault', nbWords: 1024 },
-        { id: '2', description: 'Default Dictionary', filepath: '/tmp/nothere', name: 'Dictionnaire par défault', nbWords: 2048 },
+        {
+            id: '1',
+            description: 'Default Dictionary',
+            filepath: '/home/boss/poly/cours/LOG2990/log2990-301/server/assets/dictionary.json',
+            name: 'Dictionnaire du serveur',
+            nbWords: 1024,
+        },
+        { id: '2', description: 'Default Dictionary', filepath: '/tmp/nothere', name: 'Dictionnaire du serveur 2', nbWords: 2048 },
     ];
 
     constructor() {

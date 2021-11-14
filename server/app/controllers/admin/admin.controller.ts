@@ -47,10 +47,12 @@ export class AdminController {
             if (id) {
                 const metadata = this.dictionaryService.get(id);
                 if (metadata && metadata.filepath) {
+                    logger.debug(`Requesting to download dictionary: ${metadata.filepath}`);
+                    res.status(Constants.HTTP_STATUS.OK);
                     res.download(metadata.filepath);
                 }
             }
-            res.sendStatus(Constants.HTTP_STATUS.NOT_FOUND);
+            // res.sendStatus(Constants.HTTP_STATUS.NOT_FOUND);
         });
 
         this.router.get('/playername', (req: Request, res: Response) => {

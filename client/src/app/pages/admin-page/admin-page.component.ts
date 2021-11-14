@@ -30,15 +30,17 @@ export class AdminPageComponent {
             });
     }
 
-    downloadDictionary(index: number) {
-        this.adminService
-            .removeDictionary(`${index}`)
-            .then(() => {
-                this.sncakbar.open(`Dictionnaire ${index} a été retiré`, 'Fermer');
-            })
-            .catch(() => {
-                this.sncakbar.open(`Erreur survenue: dictionnaire ${index} n'a pas été retiré`, 'Fermer');
-            });
+    downloadDictionary(id: string) {
+        this.adminService.downloadDictionary(id).subscribe((json) => {
+            const obj = JSON.stringify(json);
+            const blob = new Blob([obj], { type: 'application/json' });
+            const a = document.createElement('a');
+            const objectUrl = URL.createObjectURL(blob);
+            a.href = objectUrl;
+            a.download = 'dictionary.json';
+            a.click();
+            URL.revokeObjectURL(objectUrl);
+        });
     }
 
     resetSettings() {

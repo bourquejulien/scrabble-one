@@ -19,8 +19,8 @@ export class AdminService {
 
     constructor(private httpClient: HttpClient) {
         this.virtualPlayerNames = new Map<string, boolean>();
-        this.retrieveDictionnaries();
         this.retrieveUsernames();
+        this.retrieveDictionnaries();
     }
 
     uploadFile(file: File) {
@@ -52,7 +52,10 @@ export class AdminService {
     }
 
     async retrieveUsernames() {
-        this.virtualPlayerNames = await this.httpClient.get<Map<string, boolean>>(localUrl('playername', '')).toPromise();
+        const result = await this.httpClient.get<Map<string, boolean>>(localUrl('playername', '')).toPromise();
+        if (result) {
+            this.virtualPlayerNames = result;
+        }
     }
 
     async resetSettings(): Promise<void> {
@@ -63,8 +66,8 @@ export class AdminService {
         await this.httpClient.delete(localUrl('dictionary', id)).toPromise();
     }
 
-    async downloadDictionary(id: string) {
-        await this.httpClient.get(localUrl('dictionary', id)).toPromise();
+    downloadDictionary(id: string) {
+        return this.httpClient.get<Blob>(localUrl('dictionary', id));
     }
 
     getPlayerNames(isExpert: boolean): string[] {
