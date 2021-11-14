@@ -33,8 +33,8 @@ export class AdminController {
                 if (file.mimetype !== 'application/json') {
                     logger.error('Dictionary Upload Failed: non-JSON data received');
                 }
+                logger.debug(`Dictionary downloaded : ${file.filepath}`);
                 // TODO: parse JSON, creat metadata, add to service
-                console.log('', file.filepath);
             });
         });
 

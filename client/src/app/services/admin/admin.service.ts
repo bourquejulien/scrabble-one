@@ -28,7 +28,7 @@ export class AdminService {
         this.fileName = file.name;
         formData.append('dictionary', file);
         const upload$ = this.httpClient
-            .post(localUrl('upload', ''), formData, {
+            .post(localUrl('dictionary', 'upload'), formData, {
                 reportProgress: true,
                 observe: 'events',
             })
