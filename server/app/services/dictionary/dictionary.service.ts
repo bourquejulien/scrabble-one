@@ -1,53 +1,39 @@
-import { Dictionary } from '@app/classes/dictionary/dictionary';
-import { JsonDictionary } from '@common';
-import { Trie } from '@app/classes/trie/trie';
-import { Config } from '@app/config';
+import { DictionaryMetadata } from '@common';
 import fs from 'fs';
 import { Service } from 'typedi';
-
 @Service()
-export class DictionaryService implements Dictionary {
-    private readonly dictionary: Trie;
-    private readonly reverseDictionary: Trie;
+export class DictionaryService {
+    dictionaryMetadata: DictionaryMetadata[];
+
+    dummyMetadata: DictionaryMetadata[] = [
+        { id: '1', description: 'Default Dictionary', filepath: '/tmp/nothere', name: 'Dictionnaire par défault', nbWords: 1024 },
+        { id: '2', description: 'Default Dictionary', filepath: '/tmp/nothere', name: 'Dictionnaire par défault', nbWords: 2048 },
+    ];
 
     constructor() {
-        this.dictionary = new Trie();
-        this.reverseDictionary = new Trie();
+        this.dictionaryMetadata = this.dummyMetadata;
     }
 
-    private static flipWord(word: string): string {
-        let flippedWord = '';
-
-        for (const char of word) {
-            flippedWord = char + flippedWord;
-        }
-
-        return flippedWord;
-    }
-
-    lookup(word: string): boolean {
-        return this.dictionary.contains(word);
-    }
-
-    lookUpStart(word: string): { isWord: boolean; isOther: boolean } {
-        return this.dictionary.startsWith(word);
-    }
-
-    lookUpEnd(word: string): boolean {
-        return this.reverseDictionary.startsWith(DictionaryService.flipWord(word)).isOther;
-    }
-
-    retrieveDictionary(): void {
-        fs.readFile(Config.DICTIONARY_PATH, 'utf8', (_error, jsonData) => {
-            const jsonDictionary = JSON.parse(jsonData) as JsonDictionary;
-            this.insertWords(jsonDictionary.words);
+    retrieveDictionary(dictionaryIndex: number): void {
+        fs.readFile(this.dictionaryMetadata[dictionaryIndex].filepath, 'utf8', (_error, jsonData) => {
+            // const jsonDictionary = JSON.parse(jsonData) as JsonDictionary;
         });
     }
 
-    private insertWords(words: string[]) {
-        for (const word of words) {
-            this.dictionary.insert(word);
-            this.reverseDictionary.insert(DictionaryService.flipWord(word));
-        }
+    remove() {
+        // this.dictionaryMetadata.
+    }
+
+    add(metadata: DictionaryMetadata) {
+        this.dictionaryMetadata.push(metadata);
+    }
+    /* parse(filepath: string): boolean {
+        // fs.readFile(filepath, 'utf8', (_error, data) => {
+
+        // });
+        return false;
+    } */
+    get(id: string) {
+        return this.dictionaryMetadata.find((m) => m.id === id);
     }
 }

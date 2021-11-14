@@ -3,13 +3,17 @@ import { Service } from 'typedi';
 import { Request, Response, Router } from 'express';
 import { Constants } from '@app/constants';
 import { Fields, Files, IncomingForm } from 'formidable';
+import { tmpdir } from 'os';
 import * as logger from 'winston';
+import { DictionaryService } from '@app/services/dictionary/dictionary.service';
+import { constants } from 'buffer';
 
+const UPLOAD_DIR = tmpdir();
 @Service()
 export class AdminController {
     router: Router;
 
-    constructor() {
+    constructor(private dictionaryService: DictionaryService) {
         this.configureRouter();
     }
 
@@ -17,17 +21,37 @@ export class AdminController {
         this.router = Router();
 
         this.router.post('/dictionary/upload', (req: Request, res: Response) => {
-            const form = new IncomingForm();
+            const form = new IncomingForm({ multiples: false, uploadDir: UPLOAD_DIR });
             form.parse(req, (err: Error, fields: Fields, files: Files) => {
                 if (err) {
+                    logger.error(`Upload Error Caught - ${err}`);
+                    res.sendStatus(Constants.HTTP_STATUS.BAD_REQUEST);
                     return;
                 }
-                console.log("", fields, files);
+                res.sendStatus(Constants.HTTP_STATUS.OK);
             });
-            form.on('file', () => {
-                logger.info('Got filename');
+            form.on('file', (formName, file) => {
+                if (file.mimetype !== 'application/json') {
+                    logger.error('Dictionary Upload Failed: non-JSON data received');
+                }
+                // TODO: parse JSON, creat metadata, add to service
+                console.log('', file.filepath);
             });
-            res.sendStatus(Constants.HTTP_STATUS.OK);
+        });
+
+        this.router.get('/dictionary', (req: Request, res: Response) => {
+            res.json(this.dictionaryService.dictionaryMetadata);
+        });
+
+        this.router.get('/dictionary/:id', (req: Request, res: Response) => {
+            const id = req.params.id;
+            if (id) {
+                const metadata = this.dictionaryService.get(id);
+                if (metadata && metadata.filepath) {
+                    res.download(metadata.filepath);
+                }
+            }
+            res.sendStatus(Constants.HTTP_STATUS.NOT_FOUND);
         });
     }
 }

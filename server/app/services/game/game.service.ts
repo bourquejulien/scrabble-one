@@ -9,17 +9,16 @@ import { VirtualPlayer } from '@app/classes/player/virtual-player/virtual-player
 import { HumanPlayer } from '@app/classes/player/human-player/human-player';
 import { Action } from '@app/classes/player/virtual-player/actions/action';
 import { PlayerInfo } from '@app/classes/player-info';
-import { DictionaryService } from '@app/services/dictionary/dictionary.service';
 import { SocketService } from '@app/services/socket/socket-service';
 import * as logger from 'winston';
 import { PlayerHandler } from '@app/handlers/player-handler/player-handler';
+import { DictionaryHandler } from '@app/handlers/dictionary/dictionary-handler';
 
 @Service()
 export class GameService {
     constructor(
         private readonly boardGeneratorService: BoardGeneratorService,
         private readonly sessionHandlingService: SessionHandlingService,
-        private readonly dictionnaryService: DictionaryService,
         private readonly socketService: SocketService,
     ) {}
 
@@ -32,8 +31,16 @@ export class GameService {
 
         const boardHandler = this.boardGeneratorService.generateBoardHandler(gameConfig.isRandomBonus);
         const reserveHandler = new ReserveHandler();
+        const dictionaryHandler = new DictionaryHandler();
 
-        const sessionHandler = new SessionHandler(sessionInfo, boardHandler, reserveHandler, new PlayerHandler(), this.socketService);
+        const sessionHandler = new SessionHandler(
+            sessionInfo,
+            boardHandler,
+            reserveHandler,
+            new PlayerHandler(),
+            dictionaryHandler,
+            this.socketService,
+        );
 
         const humanPlayerInfo: PlayerInfo = {
             id: generateId(),
@@ -67,8 +74,16 @@ export class GameService {
 
         const boardHandler = this.boardGeneratorService.generateBoardHandler(gameConfig.isRandomBonus);
         const reserveHandler = new ReserveHandler();
+        const dictionaryHandler = new DictionaryHandler();
 
-        const sessionHandler = new SessionHandler(sessionInfo, boardHandler, reserveHandler, new PlayerHandler(), this.socketService);
+        const sessionHandler = new SessionHandler(
+            sessionInfo,
+            boardHandler,
+            reserveHandler,
+            new PlayerHandler(),
+            dictionaryHandler,
+            this.socketService,
+        );
 
         const humanPlayerInfo: PlayerInfo = {
             id: generateId(),
@@ -164,7 +179,7 @@ export class GameService {
 
     private addVirtualPlayer(playerInfo: PlayerInfo, sessionHandler: SessionHandler): VirtualPlayer {
         const actionCallback = (action: Action): Action | null => action.execute();
-        const virtualPlayer = new VirtualPlayer(playerInfo, this.dictionnaryService, actionCallback);
+        const virtualPlayer = new VirtualPlayer(playerInfo, actionCallback);
 
         sessionHandler.addPlayer(virtualPlayer);
 

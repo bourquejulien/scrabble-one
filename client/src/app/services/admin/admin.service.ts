@@ -3,20 +3,22 @@ import { Injectable } from '@angular/core';
 import { environmentExt } from '@environment-ext';
 import { finalize } from 'rxjs/operators';
 import { Subscription } from 'rxjs';
+import { DictionaryMetadata } from '@common';
 
-const localUrl = (call: string, id?: string) => `${environmentExt.apiUrl}admin/${call}/${id}`;
+const localUrl = (call: string, id: string) => `${environmentExt.apiUrl}admin/${call}/${id}`;
 
 @Injectable({
     providedIn: 'root',
 })
 export class AdminService {
-    dictionaries: string[] = ['Default', 'Yours', 'Theirs'];
+    dictionaries: DictionaryMetadata[];
     fileName = '';
     uploadSub: Subscription;
     uploadProgress: number;
-    virtualPlayerNames: string[] = ['Claudette', 'Alphonse', 'Maurice'];
+    private virtualPlayerNames: Map<string, boolean>;
 
     constructor(private httpClient: HttpClient) {
+        this.virtualPlayerNames = new Map();
         this.retrieveDictionnaries();
         this.retrieveUsernames();
     }
@@ -24,7 +26,7 @@ export class AdminService {
     uploadFile(file: File) {
         const formData = new FormData();
         this.fileName = file.name;
-        formData.append('file', file);
+        formData.append('dictionary', file);
         const upload$ = this.httpClient
             .post(localUrl('upload', ''), formData, {
                 reportProgress: true,
@@ -46,18 +48,32 @@ export class AdminService {
     }
 
     async retrieveDictionnaries() {
-        this.dictionaries = await this.httpClient.get<string[]>(localUrl('dictionary')).toPromise();
+        this.dictionaries = await this.httpClient.get<DictionaryMetadata[]>(localUrl('dictionary', '')).toPromise();
     }
 
     async retrieveUsernames() {
-        this.virtualPlayerNames = await this.httpClient.get<string[]>(localUrl('playername')).toPromise();
+        this.virtualPlayerNames = await this.httpClient.get<Map<string, boolean>>(localUrl('playername', '')).toPromise();
     }
 
     async resetSettings(): Promise<void> {
-        await this.httpClient.get<string[]>(localUrl('reset')).toPromise();
+        await this.httpClient.get<string[]>(localUrl('reset', '')).toPromise();
     }
 
     async removeDictionary(id: string): Promise<void> {
         await this.httpClient.delete(localUrl('dictionary', id)).toPromise();
+    }
+
+    async downloadDictionary(id: string) {
+        await this.httpClient.get(localUrl('dictionary', id)).toPromise();
+    }
+
+    getPlayerNames(isExpert: boolean): string[] {
+        const names: string[] = [];
+        this.virtualPlayerNames.forEach((value, key) => {
+            if (value === isExpert) {
+                names.push(key);
+            }
+        });
+        return names;
     }
 }

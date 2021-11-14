@@ -13,6 +13,7 @@ export class AdminPageComponent {
     onFileSelected(event: Event) {
         const input = event.target as HTMLInputElement;
         if (!input.files?.length) {
+            this.sncakbar.open('Fichier inadmisible pour le téléversement', 'Fermer');
             return;
         }
         this.adminService.uploadFile(input.files[0]);

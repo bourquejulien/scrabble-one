@@ -3,10 +3,11 @@ import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 import { TimeSpan } from '@app/classes/time/timespan';
 import { GameService } from '@app/services/game/game.service';
-import { GameType, MultiplayerCreateConfig, SinglePlayerConfig } from '@common';
+import { DictionaryMetadata, GameType, MultiplayerCreateConfig, SinglePlayerConfig } from '@common';
 import { RoomService } from '@app/services/room/room.service';
 import { Constants } from '@app/constants/global.constants';
 import { NameValidator } from '@app/classes/form-validation/name-validator';
+import { AdminService } from '@app/services/admin/admin.service';
 
 interface FormConfig {
     gameType: string;
@@ -14,6 +15,7 @@ interface FormConfig {
     isRandomBonus: boolean;
     firstPlayerName: string;
     secondPlayerName: string;
+    gameDictionaryId: string;
 }
 
 // eslint-disable-next-line @typescript-eslint/no-magic-numbers -- Lists all option, the list is a constant
@@ -34,6 +36,7 @@ export class InitGameComponent implements OnInit {
     minutesList;
     secondsList;
     gameType;
+    dictionaries: DictionaryMetadata[];
     nameValidator: NameValidator;
     minutes: number;
     seconds: number;
@@ -43,23 +46,26 @@ export class InitGameComponent implements OnInit {
         readonly gameService: GameService,
         private readonly router: Router,
         private readonly roomService: RoomService,
+        private readonly adminService: AdminService,
         readonly dialogRef: MatDialogRef<InitGameComponent>,
         @Inject(MAT_DIALOG_DATA) readonly data: { gameModeType: GameType },
     ) {
         this.gameTypesList = Constants.GAME_TYPES_LIST;
-        this.botNames = Constants.BOT_NAMES;
+        this.botNames = this.adminService.getPlayerNames(false);
         this.minutesList = TURN_LENGTH_MINUTES;
         this.secondsList = TURN_LENGTH_SECONDS;
         this.gameType = GameType;
         this.nameValidator = new NameValidator();
         this.minutes = DEFAULT_PLAY_TIME.totalMinutes;
         this.seconds = DEFAULT_PLAY_TIME.seconds;
+        this.dictionaries = this.adminService.dictionaries;
         this.formConfig = {
             gameType: this.gameTypesList[0],
             playTime: DEFAULT_PLAY_TIME,
             isRandomBonus: false,
             firstPlayerName: '',
             secondPlayerName: '',
+            gameDictionaryId: '',
         };
     }
 

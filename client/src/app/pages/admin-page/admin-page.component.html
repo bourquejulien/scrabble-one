@@ -22,13 +22,13 @@
                         <mat-list-item >
                             <mat-form-field appearance="outline">
                                 <mat-label>Nom du dictionnaire</mat-label>
-                                <input matInput placeholder="Nom du dictionnaire">
+                                <input matInput required placeholder="Nom du dictionnaire" [value]="dictionnary.name">
                               </mat-form-field>
                               <mat-form-field appearance="fill">
                                 <mat-label>Description du dictionnaire</mat-label>
-                                <textarea matInput></textarea>
+                                <textarea matInput required [value]="dictionnary.name"></textarea>
                               </mat-form-field>
-                          <button mat-stroked-button ><mat-icon>file_download</mat-icon></button>
+                          <button mat-stroked-button (click)="adminService.downloadDictionary(dictionnary.id)"><mat-icon>file_download</mat-icon></button>
                           <button mat-stroked-button color="warn" (click)="removeDictionary(i)"><mat-icon>delete</mat-icon></button>
                         </mat-list-item>
                     </div>
@@ -62,18 +62,22 @@
             <mat-grid-tile>
                 <h4><b>Noms des joueurs virtuels standards</b></h4>
                 <mat-selection-list>
-                    <mat-list-item *ngFor="let name of adminService.virtualPlayerNames">
+                    <mat-list-item *ngFor="let name of adminService.getPlayerNames(false)">
                       {{name}}
                       <button mat-stroked-button color="warn">
                           <mat-icon>delete</mat-icon>
                         </button>
                     </mat-list-item>
                 </mat-selection-list>
+                <mat-form-field appearance="fill">
+                    <mat-label>Description du dictionnaire</mat-label>
+                    <textarea matInput></textarea>
+                  </mat-form-field>
             </mat-grid-tile>
             <mat-grid-tile>
                 <h4><b>Noms des joueurs virtuels standard experts</b></h4>
                 <mat-selection-list>
-                    <mat-list-item *ngFor="let name of adminService.virtualPlayerNames">
+                    <mat-list-item *ngFor="let name of adminService.getPlayerNames(true)">
                       {{name}}
                     </mat-list-item>
                   </mat-selection-list>

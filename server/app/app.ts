@@ -7,7 +7,6 @@ import express from 'express';
 import { StatusCodes } from 'http-status-codes';
 import logger from 'morgan';
 import { Service } from 'typedi';
-import { DictionaryService } from '@app/services/dictionary/dictionary.service';
 import { ReserveController } from '@app/controllers/reserve/reserve.controller';
 import { PlayerController } from './controllers/player/player.controller';
 import { AdminController } from './controllers/admin/admin.controller';
@@ -23,10 +22,7 @@ export class Application {
         private readonly playerController: PlayerController,
         private readonly reserveController: ReserveController,
         private readonly adminController: AdminController,
-        dictionaryService: DictionaryService,
     ) {
-        dictionaryService.retrieveDictionary();
-
         this.internalError = StatusCodes.INTERNAL_SERVER_ERROR;
         this.app = express();
         this.config();

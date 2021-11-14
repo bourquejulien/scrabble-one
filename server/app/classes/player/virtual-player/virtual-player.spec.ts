@@ -9,7 +9,7 @@ import { VirtualPlayer } from '@app/classes/player/virtual-player/virtual-player
 import { BoardHandler } from '@app/handlers/board-handler/board-handler';
 import { ReserveHandler } from '@app/handlers/reserve-handler/reserve-handler';
 import { SocketHandler } from '@app/handlers/socket-handler/socket-handler';
-import { DictionaryService } from '@app/services/dictionary/dictionary.service';
+import { DictionaryService } from '@app/handlers/dictionary/dictionary.service';
 import { expect } from 'chai';
 import { createSandbox, createStubInstance, SinonSandbox, stub } from 'sinon';
 import { Action } from './actions/action';

@@ -1,7 +1,6 @@
 import { Board } from '@app/classes/board/board';
 import { BoardValidator } from '@app/classes/validation/board-validator';
 import { Config } from '@app/config';
-import { DictionaryService } from '@app/services/dictionary/dictionary.service';
 import JsonBonuses from '@assets/bonus.json';
 import { Bonus, BonusInfos, LETTER_DEFINITIONS } from '@common';
 import { Service } from 'typedi';
@@ -11,7 +10,7 @@ import { BoardHandler } from '@app/handlers/board-handler/board-handler';
 export class BoardGeneratorService {
     private readonly bonusCounts: Map<Bonus, number>;
 
-    constructor(private readonly dictionaryService: DictionaryService) {
+    constructor() {
         this.bonusCounts = new Map<Bonus, number>([
             [Bonus.L2, 0],
             [Bonus.W2, 0],
@@ -39,7 +38,7 @@ export class BoardGeneratorService {
 
     generateBoardHandler(isRandomBonus: boolean): BoardHandler {
         const board = new Board(Config.GRID.GRID_SIZE, this.retrieveBonuses(isRandomBonus));
-        const boardValidator = new BoardValidator(board, this.dictionaryService, BoardGeneratorService.retrieveLetterValues());
+        const boardValidator = new BoardValidator(board, BoardGeneratorService.retrieveLetterValues());
 
         return new BoardHandler(board, boardValidator, isRandomBonus);
     }

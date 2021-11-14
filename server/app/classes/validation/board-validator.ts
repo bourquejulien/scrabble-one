@@ -5,7 +5,7 @@ import { Bonus, Direction, getBonusDetails, Placement, reverseDirection, Square,
 import { ValidationResponse } from './validation-response';
 
 export class BoardValidator {
-    constructor(private readonly board: ImmutableBoard, private readonly dictionary: Dictionary, private letterPoints: { [key: string]: number }) {}
+    constructor(private readonly board: ImmutableBoard, private letterPoints: { [key: string]: number }) {}
 
     private static validateSquare(square: Square | null): boolean {
         return square != null && square.letter !== '';
@@ -47,7 +47,7 @@ export class BoardValidator {
         return position;
     }
 
-    validate(letters: Placement[]): ValidationResponse {
+    validate(letters: Placement[], dictionary: Dictionary): ValidationResponse {
         if (letters.length === 0) {
             return { isSuccess: false, description: 'Aucune lettre à valider', points: 0 };
         }
@@ -86,7 +86,7 @@ export class BoardValidator {
             return { isSuccess: false, description: 'Mot incohérent', points: 0 };
         }
 
-        return this.validateWords(clonedBoard, sortedPositions, direction);
+        return this.validateWords(clonedBoard, sortedPositions, direction, dictionary);
     }
 
     getLetterPoints(letter: string): number {
@@ -157,17 +157,17 @@ export class BoardValidator {
         return direction;
     }
 
-    private validateWords(clonedBoard: Board, sortedPositions: Vec2[], direction: Direction): ValidationResponse {
+    private validateWords(clonedBoard: Board, sortedPositions: Vec2[], direction: Direction, dictionary: Dictionary): ValidationResponse {
         let totalPoint = 0;
 
-        let response = this.validateWord(clonedBoard, sortedPositions[0], direction);
+        let response = this.validateWord(clonedBoard, sortedPositions[0], direction, dictionary);
         if (!response.isSuccess) {
             return response;
         }
         totalPoint += response.points;
 
         for (const position of sortedPositions) {
-            response = this.validateWord(clonedBoard, position, direction === Direction.Down ? Direction.Right : Direction.Down);
+            response = this.validateWord(clonedBoard, position, direction === Direction.Down ? Direction.Right : Direction.Down, dictionary);
             if (!response.isSuccess) {
                 return response;
             }
@@ -180,7 +180,7 @@ export class BoardValidator {
         return { isSuccess: true, description: '', points: totalPoint };
     }
 
-    private validateWord(clonedBoard: Board, initialPosition: Vec2, direction: Direction): ValidationResponse {
+    private validateWord(clonedBoard: Board, initialPosition: Vec2, direction: Direction, dictionary: Dictionary): ValidationResponse {
         const firstPosition = BoardValidator.getFirstPosition(clonedBoard, initialPosition, direction);
 
         let nextSquare: Square | null = clonedBoard.getSquare(firstPosition);
@@ -213,7 +213,7 @@ export class BoardValidator {
             return { isSuccess: true, description: '', points: 0 };
         }
 
-        if (this.dictionary.lookup(word)) {
+        if (dictionary.lookup(word)) {
             return { isSuccess: true, description: '', points: totalPoint * multiplier };
         }
         return { isSuccess: false, description: `Le mot : (${word}) n'existe pas dans le dictionnaire`, points: 0 };

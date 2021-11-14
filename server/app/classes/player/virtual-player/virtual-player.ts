@@ -2,7 +2,6 @@ import { Config } from '@app/config';
 import { SkipAction } from '@app/classes/player/virtual-player/actions/skip-action';
 import { ExchangeAction } from '@app/classes/player/virtual-player/actions/exchange-action';
 import { PlayGenerator } from '@app/classes/virtual-player/play-generator';
-import { DictionaryService } from '@app/services/dictionary/dictionary.service';
 import { PlayAction } from './actions/play-action';
 import { Action } from './actions/action';
 import { Player } from '@app/classes/player/player';
@@ -13,11 +12,7 @@ import { Timer } from '@app/classes/delay';
 const MIN_PLAYTIME_MILLISECONDS = 3000;
 
 export class VirtualPlayer extends Player {
-    constructor(
-        public playerInfo: PlayerInfo,
-        private readonly dictionaryService: DictionaryService,
-        private readonly runAction: (action: Action) => Action | null,
-    ) {
+    constructor(public playerInfo: PlayerInfo, private readonly runAction: (action: Action) => Action | null) {
         super();
     }
 
@@ -55,7 +50,7 @@ export class VirtualPlayer extends Player {
         }
 
         logger.debug(`VirtualPlayer: ${this.id} - PlayAction`);
-        const playGenerator = new PlayGenerator(this.dictionaryService, this.boardHandler, this.playerData.rack);
+        const playGenerator = new PlayGenerator(this.dictionaryHandler, this.boardHandler, this.playerData.rack);
 
         return new PlayAction(this.boardHandler, playGenerator, this.playerData, this.socketHandler);
     }
