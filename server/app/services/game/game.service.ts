@@ -29,9 +29,9 @@ export class GameService {
             gameType: gameConfig.gameType,
         };
 
-        const boardHandler = this.boardGeneratorService.generateBoardHandler(gameConfig.isRandomBonus);
-        const reserveHandler = new ReserveHandler();
         const dictionaryHandler = new DictionaryHandler();
+        const boardHandler = this.boardGeneratorService.generateBoardHandler(gameConfig.isRandomBonus, dictionaryHandler);
+        const reserveHandler = new ReserveHandler();
 
         const sessionHandler = new SessionHandler(
             sessionInfo,
@@ -72,9 +72,9 @@ export class GameService {
             gameType: gameConfig.gameType,
         };
 
-        const boardHandler = this.boardGeneratorService.generateBoardHandler(gameConfig.isRandomBonus);
-        const reserveHandler = new ReserveHandler();
         const dictionaryHandler = new DictionaryHandler();
+        const boardHandler = this.boardGeneratorService.generateBoardHandler(gameConfig.isRandomBonus, dictionaryHandler);
+        const reserveHandler = new ReserveHandler();
 
         const sessionHandler = new SessionHandler(
             sessionInfo,
@@ -179,7 +179,7 @@ export class GameService {
 
     private addVirtualPlayer(playerInfo: PlayerInfo, sessionHandler: SessionHandler): VirtualPlayer {
         const actionCallback = (action: Action): Action | null => action.execute();
-        const virtualPlayer = new VirtualPlayer(playerInfo, actionCallback);
+        const virtualPlayer = new VirtualPlayer(sessionHandler.dictionaryHandler,playerInfo, actionCallback);
 
         sessionHandler.addPlayer(virtualPlayer);
 

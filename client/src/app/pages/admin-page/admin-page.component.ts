@@ -19,14 +19,14 @@ export class AdminPageComponent {
         this.adminService.uploadFile(input.files[0]);
     }
 
-    removeDictionary(index: number) {
+    removeDictionary(id: string) {
         this.adminService
-            .removeDictionary(`${index}`)
+            .removeDictionary(id)
             .then(() => {
-                this.sncakbar.open(`Dictionnaire ${index} a été retiré`, 'Fermer');
+                this.sncakbar.open(`Dictionnaire ${id} a été retiré`, 'Fermer');
             })
             .catch(() => {
-                this.sncakbar.open(`Erreur survenue: dictionnaire ${index} n'a pas été retiré`, 'Fermer');
+                this.sncakbar.open(`Erreur survenue: dictionnaire ${id} n'a pas été retiré`, 'Fermer');
             });
     }
 

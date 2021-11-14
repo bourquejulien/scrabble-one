@@ -18,7 +18,7 @@ export class AdminService {
     private virtualPlayerNames: Map<string, boolean>;
 
     constructor(private httpClient: HttpClient) {
-        this.virtualPlayerNames = new Map();
+        this.virtualPlayerNames = new Map<string, boolean>();
         this.retrieveDictionnaries();
         this.retrieveUsernames();
     }
@@ -69,6 +69,7 @@ export class AdminService {
 
     getPlayerNames(isExpert: boolean): string[] {
         const names: string[] = [];
+        if (this.virtualPlayerNames.size === 0) return [];
         this.virtualPlayerNames.forEach((value, key) => {
             if (value === isExpert) {
                 names.push(key);

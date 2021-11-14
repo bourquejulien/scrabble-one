@@ -24,7 +24,7 @@ export class SessionHandler {
         public boardHandler: BoardHandler,
         public reserveHandler: ReserveHandler,
         private playerHandler: PlayerHandler,
-        private dictionaryHandler: DictionaryHandler,
+        public dictionaryHandler: DictionaryHandler,
         socketService: SocketService,
     ) {
         this.socketHandler = socketService.generate(sessionInfo.id);

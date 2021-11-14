@@ -8,11 +8,16 @@ import { Player } from '@app/classes/player/player';
 import { PlayerInfo } from '@app/classes/player-info';
 import * as logger from 'winston';
 import { Timer } from '@app/classes/delay';
+import { DictionaryHandler } from '@app/handlers/dictionary/dictionary-handler';
 
 const MIN_PLAYTIME_MILLISECONDS = 3000;
 
 export class VirtualPlayer extends Player {
-    constructor(public playerInfo: PlayerInfo, private readonly runAction: (action: Action) => Action | null) {
+    constructor(
+        private dictionaryHandler: DictionaryHandler,
+        public playerInfo: PlayerInfo,
+        private readonly runAction: (action: Action) => Action | null,
+    ) {
         super();
     }
 

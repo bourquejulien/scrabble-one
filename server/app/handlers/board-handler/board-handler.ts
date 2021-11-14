@@ -3,11 +3,17 @@ import { BoardValidator } from '@app/classes/validation/board-validator';
 import { ValidationResponse } from '@app/classes/validation/validation-response';
 import { BoardError } from '@app/errors/board-error';
 import { Placement } from '@common';
+import { DictionaryHandler } from '@app/handlers/dictionary/dictionary-handler';
 
 export class BoardHandler {
     private wordRegex: RegExp;
 
-    constructor(private board: Board, private boardValidator: BoardValidator, readonly isRandomBonus: boolean) {
+    constructor(
+        private board: Board,
+        private boardValidator: BoardValidator,
+        readonly isRandomBonus: boolean,
+        public dictionaryHandler: DictionaryHandler,
+    ) {
         this.wordRegex = /^[A-zÀ-ú]{1,15}$/;
     }
 
@@ -24,7 +30,7 @@ export class BoardHandler {
             }
         }
 
-        return this.boardValidator.validate(letters);
+        return this.boardValidator.validate(letters, this.dictionaryHandler);
     }
 
     placeLetters(letters: Placement[]): ValidationResponse {

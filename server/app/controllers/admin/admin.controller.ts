@@ -6,7 +6,6 @@ import { Fields, Files, IncomingForm } from 'formidable';
 import { tmpdir } from 'os';
 import * as logger from 'winston';
 import { DictionaryService } from '@app/services/dictionary/dictionary.service';
-import { constants } from 'buffer';
 
 const UPLOAD_DIR = tmpdir();
 @Service()
@@ -52,6 +51,10 @@ export class AdminController {
                 }
             }
             res.sendStatus(Constants.HTTP_STATUS.NOT_FOUND);
+        });
+
+        this.router.get('/playername', (req: Request, res: Response) => {
+            res.json();
         });
     }
 }
