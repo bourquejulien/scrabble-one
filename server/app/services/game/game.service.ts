@@ -130,6 +130,7 @@ export class GameService {
             const playerToReplace = handler.players.find((p) => p.id === convertConfig.id) ?? null;
             if (playerToReplace !== null) {
                 handler.abandon(convertConfig.id);
+                this.socketService.send('opponentQuit', handler.sessionInfo.id);
                 this.addVirtualPlayer(playerToReplace.playerInfo, handler, playerToReplace.playerData);
             }
         } else this.addVirtualPlayer(virtualPlayerInfo, handler);
