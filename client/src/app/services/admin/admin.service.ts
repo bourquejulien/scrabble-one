@@ -6,7 +6,10 @@ import { Subscription } from 'rxjs';
 import { DictionaryMetadata } from '@common';
 
 const localUrl = (call: string, id: string) => `${environmentExt.apiUrl}admin/${call}/${id}`;
-
+interface Playername {
+    name: string;
+    expert: boolean;
+}
 @Injectable({
     providedIn: 'root',
 })
@@ -15,10 +18,9 @@ export class AdminService {
     fileName = '';
     uploadSub: Subscription;
     uploadProgress: number;
-    private virtualPlayerNames: Map<string, boolean>;
+    virtualPlayerNames: Playername[];
 
     constructor(private httpClient: HttpClient) {
-        this.virtualPlayerNames = new Map<string, boolean>();
         this.retrieveUsernames();
         this.retrieveDictionnaries();
     }
@@ -52,10 +54,14 @@ export class AdminService {
     }
 
     async retrieveUsernames() {
-        const result = await this.httpClient.get<Map<string, boolean>>(localUrl('playername', '')).toPromise();
+        const result = await this.httpClient.get<Playername[]>(localUrl('playername', '')).toPromise();
         if (result) {
             this.virtualPlayerNames = result;
         }
+    }
+
+    async updateUsername() {
+        await this.httpClient.patch<Playername[]>(localUrl('playername', ''), this.virtualPlayerNames).toPromise();
     }
 
     async resetSettings(): Promise<void> {
@@ -70,14 +76,7 @@ export class AdminService {
         return this.httpClient.get<Blob>(localUrl('dictionary', id));
     }
 
-    getPlayerNames(isExpert: boolean): string[] {
-        const names: string[] = [];
-        if (this.virtualPlayerNames.size === 0) return [];
-        this.virtualPlayerNames.forEach((value, key) => {
-            if (value === isExpert) {
-                names.push(key);
-            }
-        });
-        return names;
+    removePlayername(playername: Playername) {
+        this.virtualPlayerNames.splice(this.virtualPlayerNames.indexOf(playername), 1);
     }
 }
