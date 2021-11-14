@@ -9,7 +9,6 @@ import { VirtualPlayer } from '@app/classes/player/virtual-player/virtual-player
 import { BoardHandler } from '@app/handlers/board-handler/board-handler';
 import { ReserveHandler } from '@app/handlers/reserve-handler/reserve-handler';
 import { SocketHandler } from '@app/handlers/socket-handler/socket-handler';
-import { DictionaryService } from '@app/handlers/dictionary/dictionary.service';
 import { expect } from 'chai';
 import { createSandbox, createStubInstance, SinonSandbox, stub } from 'sinon';
 import { Action } from './actions/action';
@@ -21,6 +20,7 @@ import { PlayAction } from './actions/play-action';
 import { ExchangeAction } from './actions/exchange-action';
 import { SkipAction } from './actions/skip-action';
 import { PlaceAction } from './actions/place-action';
+import { DictionaryHandler } from '@app/handlers/dictionary/dictionary-handler';
 
 class TestAction implements Action {
     maxCallCount = 3;
@@ -49,7 +49,6 @@ describe('VirtualPlayer', () => {
     const exchangeAction = createStubInstance(ExchangeAction);
     const skipAction = createStubInstance(SkipAction);
     const placeAction = createStubInstance(PlaceAction);
-    const dictionaryService = createStubInstance(DictionaryService);
     const socketHandler = createStubInstance(SocketHandler);
     const boardHandler = createStubInstance(BoardHandler);
     reserveHandler['reserve'] = [];
@@ -71,7 +70,8 @@ describe('VirtualPlayer', () => {
 
     beforeEach(() => {
         (board as unknown as Board)['filledPositions'] = ARBITRARY_POSITIONS;
-        service = new VirtualPlayer(playerInfo, dictionaryService as unknown as DictionaryService, runAction);
+        const dictionaryHandler = createStubInstance(DictionaryHandler) as unknown as DictionaryHandler;
+        service = new VirtualPlayer(dictionaryHandler, playerInfo, runAction);
         service.init(boardHandler as unknown as BoardHandler, reserveHandler, socketHandler as unknown as SocketHandler);
         sandboxRandom = createSandbox();
         sandboxTimer = createSandbox();
@@ -125,7 +125,8 @@ describe('VirtualPlayer', () => {
         };
         sandboxRandom.stub(Math, 'random').returns(SKIP_PERCENTAGE);
 
-        service = new VirtualPlayer(playerInfo, dictionaryService as unknown as DictionaryService, actionRunner);
+        const dictionaryHandler = createStubInstance(DictionaryHandler) as unknown as DictionaryHandler;
+        service = new VirtualPlayer(dictionaryHandler, playerInfo, actionRunner);
         service.init(boardHandler as unknown as BoardHandler, reserveHandler, socketHandler as unknown as SocketHandler);
         sandboxTimer.stub(Timer, 'delay').returns(Promise.resolve());
         await service['startTurn']();

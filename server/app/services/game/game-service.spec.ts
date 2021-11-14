@@ -8,7 +8,6 @@ import Sinon, { assert, createStubInstance, stub } from 'sinon';
 import { GameService } from '@app/services/game/game.service';
 import { BoardGeneratorService } from '@app/services/board/board-generator.service';
 import { SessionHandlingService } from '@app/services/sessionHandling/session-handling.service';
-import { DictionaryService } from '@app/handlers/dictionary/dictionary.service';
 import { SocketService } from '@app/services/socket/socket-service';
 import { ConvertConfig, GameType, MultiplayerCreateConfig, MultiplayerJoinConfig, ServerConfig, SinglePlayerConfig } from '@common';
 import { SessionHandler } from '@app/handlers/session-handler/session-handler';
@@ -89,21 +88,18 @@ describe('GameService', () => {
     let service: GameService;
     let boardGeneratorStub: Sinon.SinonStubbedInstance<BoardGeneratorService>;
     let sessionHandlingStub: Sinon.SinonStubbedInstance<SessionHandlingService>;
-    let dictionaryServiceStub: Sinon.SinonStubbedInstance<DictionaryService>;
     let sessionHandlerStub: StubSessionHandler;
     let socketServiceStub: SocketService;
 
     beforeEach(() => {
         boardGeneratorStub = createStubInstance(BoardGeneratorService);
         sessionHandlingStub = createStubInstance(SessionHandlingService);
-        dictionaryServiceStub = createStubInstance(DictionaryService);
         socketServiceStub = createStubInstance(SocketService);
         sessionHandlerStub = new StubSessionHandler();
 
         service = new GameService(
             boardGeneratorStub as unknown as BoardGeneratorService,
             sessionHandlingStub as unknown as SessionHandlingService,
-            dictionaryServiceStub as unknown as DictionaryService,
             socketServiceStub as unknown as SocketService,
         );
     });

@@ -2,7 +2,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable no-unused-expressions -- Needed for chai library assertions */
 /* eslint-disable @typescript-eslint/no-unused-expressions */
-import { expect } from 'chai';
+/* import { expect } from 'chai';
 import { createSandbox, createStubInstance } from 'sinon';
 import { DictionaryService } from '@app/handlers/dictionary/dictionary.service';
 import { BoardGeneratorService } from './board-generator.service';
@@ -57,4 +57,4 @@ describe('BoardHandlingService', () => {
         service['retrieveBonuses'](true);
         expect(stubInitBank.calledOnce).to.be.true;
     });
-});
+}); */

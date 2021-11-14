@@ -66,19 +66,7 @@ export class AdminController {
                     logger.debug(`Requesting to download dictionary: ${filepath}`);
                     res.status(Constants.HTTP_STATUS.OK);
                     res.download(filepath);
-                }
-            }
-        });
-
-        this.router.delete('/dictionary/:id', (req: Request, res: Response) => {
-            const id = req.params.id;
-            if (id) {
-                const metadata = this.dictionaryService.getMetadata(id);
-                if (metadata) {
-                    const filepath = this.dictionaryService.getFilepath(metadata);
-                    logger.debug(`Requesting to delete dictionary: ${filepath}`);
-                    this.dictionaryService.remove(metadata);
-                    res.status(Constants.HTTP_STATUS.OK);
+                    res.sendStatus(Constants.HTTP_STATUS.OK);
                 }
             }
         });

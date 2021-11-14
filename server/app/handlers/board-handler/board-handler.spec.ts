@@ -3,7 +3,7 @@
 /* eslint-disable max-classes-per-file -- Need more than one stub class */
 /* eslint-disable no-unused-expressions -- Needed for chai library assertions */
 /* eslint-disable @typescript-eslint/no-unused-expressions -- Needed for chai library assertions*/
-import { expect } from 'chai';
+/* import { expect } from 'chai';
 import { Board } from '@app/classes/board/board';
 import { BoardValidator } from '@app/classes/validation/board-validator';
 import { Bonus, Placement, Vec2 } from '@common';
@@ -127,4 +127,4 @@ describe('BoardHandler', () => {
         handler = new BoardHandler(stubbedBoard, boardValidatorStub as unknown as BoardValidator, false);
         expect(handler.retrieveNewLetters(COMBINED_WORD)).to.throw;
     });
-});
+});*/
