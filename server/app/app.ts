@@ -53,7 +53,7 @@ export class Application {
     private errorHandling(): void {
         // When previous handlers have not served a request: path wasn't found
         this.app.use((req: express.Request, res: express.Response, next: express.NextFunction) => {
-            const err: HttpException = new HttpException('Not Found');
+            const err: HttpException = new HttpException(`Path: (${req.path}) - Not Found`);
             next(err);
         });
 
