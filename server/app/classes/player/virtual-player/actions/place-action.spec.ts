@@ -10,7 +10,6 @@ import { expect } from 'chai';
 import { createSandbox, createStubInstance } from 'sinon';
 import { PlaceAction } from './place-action';
 import { Play } from '@app/classes/virtual-player/play';
-import { ValidationResponse } from '@app/classes/validation/validation-response';
 
 const VALID_PLACEMENT: Placement[] = [
     { letter: 'B', position: { x: 0, y: 0 } },
@@ -18,20 +17,6 @@ const VALID_PLACEMENT: Placement[] = [
     { letter: 'c', position: { x: 0, y: 2 } },
 ];
 
-export class BoardHandlerMock extends BoardHandler {
-    lookupLetters(letters: Placement[]): ValidationResponse {
-        if (letters === VALID_PLACEMENT) return { isSuccess: true, points: 0, description: '' };
-        return { isSuccess: false, points: 0, description: '' };
-    }
-
-    placeLetters(letters: Placement[]): ValidationResponse {
-        return { isSuccess: false, points: 0, description: '' };
-    }
-
-    retrieveNewLetters(placements: Placement[]): Placement[] {
-        return placements;
-    }
-}
 const LETTERS = ['a', 'b', 'c', 'd', 'e', 'f', 'g'];
 /* eslint-disable dot-notation */
 describe('Place Action', () => {

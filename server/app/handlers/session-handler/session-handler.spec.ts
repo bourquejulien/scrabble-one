@@ -25,8 +25,8 @@ const PLAYER_INFO_A: PlayerInfo = { id: '0', name: 'tester1', isHuman: true };
 const PLAYER_INFO_B: PlayerInfo = { id: '1', name: 'tester2', isHuman: false };
 const PLAYER_DATA_DEFAULT: PlayerData = { baseScore: 0, scoreAdjustment: 2, skippedTurns: 4, rack: ['a', 'b', 'c', 'd', 'e', 'f', 'g'] };
 class PlayerTester extends Player {
-    constructor() {
-        super();
+    constructor(playerInfo: PlayerInfo) {
+        super(playerInfo);
     }
     async startTurn(): Promise<void> {
         // Does Nothing
@@ -64,10 +64,8 @@ describe('SessionHandler', () => {
         handler['socketHandler'] = socketHandler;
 
         stubPlayerHandler.players = [];
-        playerA = new PlayerTester();
-        playerB = new PlayerTester();
-        playerA.playerInfo = PLAYER_INFO_A;
-        playerB.playerInfo = PLAYER_INFO_B;
+        playerA = new PlayerTester(PLAYER_INFO_A);
+        playerB = new PlayerTester(PLAYER_INFO_B);
         playerA.isTurn = true;
         playerB.isTurn = false;
         playerA.playerData = PLAYER_DATA_DEFAULT;

@@ -1,68 +1,67 @@
-/* eslint-disable @typescript-eslint/no-magic-numbers */
-/* eslint-disable dot-notation */
-/* eslint-disable max-classes-per-file */
-/* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable no-unused-vars */
-/* eslint-disable no-unused-expressions */
-/* eslint-disable @typescript-eslint/no-unused-expressions */
+/* eslint-disable @typescript-eslint/no-unused-expressions,no-unused-expressions */
 import { PlayerData } from '@app/classes/player-data';
 import { BoardHandler } from '@app/handlers/board-handler/board-handler';
 import { Placement } from '@common';
 import { expect } from 'chai';
-import { createSandbox, createStubInstance, SinonSandbox, stub } from 'sinon';
-import { PlayAction } from './play-action';
+import Sinon, { createSandbox, createStubInstance, SinonSandbox, stub } from 'sinon';
 import { PlayGenerator } from '@app/classes/virtual-player/play-generator';
 import { Play } from '@app/classes/virtual-player/play';
-import { Config } from '@app/config';
 import { SocketHandler } from '@app/handlers/socket-handler/socket-handler';
 import { PlaceAction } from '@app/classes/player/virtual-player/actions/place-action';
-import { SkipAction } from '@app/classes/player/virtual-player/actions/skip-action';
+import { PlayActionExpert } from '@app/classes/player/virtual-player/virtual-player-expert/actions/play-action-expert';
+import { ReserveHandler } from '@app/handlers/reserve-handler/reserve-handler';
+import { ExchangeAction } from '@app/classes/player/virtual-player/actions/exchange-action';
 
 const VALID_PLACEMENT: Placement[] = [
     { letter: 'B', position: { x: 0, y: 0 } },
     { letter: 'a', position: { x: 0, y: 1 } },
     { letter: 'c', position: { x: 0, y: 2 } },
 ];
-const SCORE_RANGE_REPLACEMENT = [
-    { percentage: 0, range: { min: 0, max: 6 } },
-    { percentage: 0, range: { min: 7, max: 12 } },
-    { percentage: 0, range: { min: 13, max: 18 } },
-];
 const PLAY: Play[] = [{ score: 0, word: 'bac', letters: VALID_PLACEMENT }];
-const DEFAULT_SCORE_RANGE = { min: 0, max: 0 };
 const LETTERS = ['a', 'b', 'c', 'd', 'e', 'f', 'g'];
 
-/* eslint-disable dot-notation */
 describe('Play Action', () => {
-    // const board = new Board(SIZE);
-    // const boardValidator = createStubInstance(BoardValidator) as unknown as BoardValidator;
-    const boardHandler = createStubInstance(BoardHandler);
-    const socketHandler = createStubInstance(SocketHandler);
-    boardHandler.lookupLetters.returns({ isSuccess: true, points: 0, description: '' });
-    boardHandler.placeLetters.returns({ isSuccess: false, points: 0, description: '' });
-    boardHandler.retrieveNewLetters.returns(VALID_PLACEMENT);
-    const playGeneratorA = createStubInstance(PlayGenerator);
-    playGeneratorA.generateNext.returns(false);
-    const playGeneratorB = createStubInstance(PlayGenerator);
-    playGeneratorB.generateNext.returns(false);
+    let boardHandler: Sinon.SinonStubbedInstance<BoardHandler>;
+    let socketHandler: Sinon.SinonStubbedInstance<SocketHandler>;
+    let reserveHandler: ReserveHandler;
+    let playGeneratorA: Sinon.SinonStubbedInstance<PlayGenerator>;
+    let playGeneratorB: Sinon.SinonStubbedInstance<PlayGenerator>;
     let sandboxRandom: SinonSandbox;
-    stub(playGeneratorA, 'orderedPlays').get(() => {
-        return PLAY;
-    });
-    stub(playGeneratorB, 'orderedPlays').get(() => {
-        return [];
-    });
-
-    const playerData: PlayerData = { baseScore: 0, scoreAdjustment: 0, skippedTurns: 0, rack: [] };
-    let action: PlayAction;
+    let playerData: PlayerData;
+    let action: PlayActionExpert;
 
     beforeEach(() => {
-        action = new PlayAction(
+        socketHandler = createStubInstance(SocketHandler);
+
+        boardHandler = createStubInstance(BoardHandler);
+        boardHandler.lookupLetters.returns({ isSuccess: true, points: 0, description: '' });
+        boardHandler.placeLetters.returns({ isSuccess: false, points: 0, description: '' });
+        boardHandler.retrieveNewLetters.returns(VALID_PLACEMENT);
+
+        reserveHandler = createStubInstance(ReserveHandler);
+
+        playGeneratorA = createStubInstance(PlayGenerator);
+        playGeneratorA.generateNext.returns(false);
+        playGeneratorB = createStubInstance(PlayGenerator);
+        playGeneratorB.generateNext.returns(false);
+
+        playerData = { baseScore: 0, scoreAdjustment: 0, skippedTurns: 0, rack: [] };
+
+        stub(playGeneratorA, 'orderedPlays').get(() => {
+            return PLAY;
+        });
+        stub(playGeneratorB, 'orderedPlays').get(() => {
+            return [];
+        });
+
+        action = new PlayActionExpert(
             boardHandler as unknown as BoardHandler,
             playGeneratorA as unknown as PlayGenerator,
             playerData,
             socketHandler as unknown as SocketHandler,
+            reserveHandler as unknown as ReserveHandler,
         );
+
         LETTERS.forEach((l) => playerData.rack.push(l));
         sandboxRandom = createSandbox();
     });
@@ -82,14 +81,15 @@ describe('Play Action', () => {
     });
 
     it('should not generate play', () => {
-        action = new PlayAction(
+        action = new PlayActionExpert(
             boardHandler as unknown as BoardHandler,
             playGeneratorB as unknown as PlayGenerator,
             playerData,
             socketHandler as unknown as SocketHandler,
+            reserveHandler as unknown as ReserveHandler,
         );
         const returnValue = action.execute();
-        expect(returnValue).to.be.instanceof(SkipAction);
+        expect(returnValue).to.be.instanceof(ExchangeAction);
     });
 
     it('should not generate plays', () => {
@@ -98,22 +98,15 @@ describe('Play Action', () => {
         stub(playGeneratorMock, 'orderedPlays').get(() => {
             return [];
         });
-        action = new PlayAction(
+        action = new PlayActionExpert(
             boardHandler as unknown as BoardHandler,
             playGeneratorA as unknown as PlayGenerator,
             playerData,
             socketHandler as unknown as SocketHandler,
+            reserveHandler as unknown as ReserveHandler,
         );
         sandboxRandom.stub(Math, 'random').returns(0);
         const returnValue = action.execute();
         expect(returnValue).to.be.instanceof(PlaceAction);
-    });
-
-    it('should return good scoreRange', () => {
-        expect(PlayAction['getScoreRange']()).to.not.eql(DEFAULT_SCORE_RANGE);
-    });
-    it('should return default scoreRange', () => {
-        Config.VIRTUAL_PLAYER.SCORE_RANGE = SCORE_RANGE_REPLACEMENT;
-        expect(PlayAction['getScoreRange']()).to.eql(DEFAULT_SCORE_RANGE);
     });
 });
