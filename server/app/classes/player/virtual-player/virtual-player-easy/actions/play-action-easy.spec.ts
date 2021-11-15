@@ -22,11 +22,11 @@ const SCORE_RANGE_REPLACEMENT = [
     { percentage: 0, range: { min: 7, max: 12 } },
     { percentage: 0, range: { min: 13, max: 18 } },
 ];
-const PLAY: Play[] = [{ score: 0, word: 'bac', letters: VALID_PLACEMENT }];
+const PLAY: Play[] = [{ isSuccess: true, score: 12, placements: [], words: [] }];
 const DEFAULT_SCORE_RANGE = { min: 0, max: 0 };
 const LETTERS = ['a', 'b', 'c', 'd', 'e', 'f', 'g'];
 
-describe('Play Action', () => {
+describe('PlayActionEasy', () => {
     let boardHandler: Sinon.SinonStubbedInstance<BoardHandler>;
     let socketHandler: Sinon.SinonStubbedInstance<SocketHandler>;
     let playGeneratorA: Sinon.SinonStubbedInstance<PlayGenerator>;
@@ -97,11 +97,11 @@ describe('Play Action', () => {
         const playGeneratorMock = createStubInstance(PlayGenerator);
         playGeneratorMock.generateNext.returns(false);
         stub(playGeneratorMock, 'orderedPlays').get(() => {
-            return [];
+            return [{ isSuccess: true, score: 0, placements: [], words: [] }];
         });
         action = new PlayActionEasy(
             boardHandler as unknown as BoardHandler,
-            playGeneratorA as unknown as PlayGenerator,
+            playGeneratorMock as unknown as PlayGenerator,
             playerData,
             socketHandler as unknown as SocketHandler,
         );

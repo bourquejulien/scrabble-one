@@ -208,13 +208,12 @@ export class BoardValidator {
             nextSquare = clonedBoard.getRelative(currentSquare.position, direction);
             word += currentSquare.letter.toLowerCase();
 
-            if (!isBonus) {
-                totalPoint += this.getLetterScore(currentSquare.letter);
-                continue;
-            }
-
+            const letterScore = this.getLetterScore(currentSquare.letter);
             const bonusDetails = getBonusDetails(currentSquare.bonus);
-            if (bonusDetails.isLetterBonus) {
+
+            if (!isBonus) {
+                totalPoint += letterScore;
+            } else if (bonusDetails.isLetterBonus) {
                 totalPoint += this.getLetterScore(currentSquare.letter) * bonusDetails.score;
             } else {
                 totalPoint += this.getLetterScore(currentSquare.letter);

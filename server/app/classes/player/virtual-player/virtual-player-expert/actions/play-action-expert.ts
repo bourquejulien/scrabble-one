@@ -9,18 +9,22 @@ import { Action } from '@app/classes/player/virtual-player/actions/action';
 import { PlaceAction } from '@app/classes/player/virtual-player/actions/place-action';
 import { ExchangeAction } from '@app/classes/player/virtual-player/actions/exchange-action';
 import { ReserveHandler } from '@app/handlers/reserve-handler/reserve-handler';
+import { PlayAction } from '@app/classes/player/virtual-player/actions/play-action';
 
-export class PlayActionExpert implements Action {
+export class PlayActionExpert extends PlayAction {
     constructor(
         private readonly boardHandler: BoardHandler,
         private readonly playGenerator: PlayGenerator,
         private readonly playerData: PlayerData,
         private readonly socketHandler: SocketHandler,
         private readonly reserveHandler: ReserveHandler,
-    ) {}
+    ) {
+        super();
+    }
 
     execute(): Action | null {
         logger.debug('Generating plays - Expert');
+
         while (this.playGenerator.generateNext());
 
         const orderedPlays = this.playGenerator.orderedPlays;
@@ -32,13 +36,12 @@ export class PlayActionExpert implements Action {
 
         const play = orderedPlays[0];
 
-        const alternatives = new Set<string>();
-        for (let i = 1; alternatives.size < Config.VIRTUAL_PLAYER.NB_ALTERNATIVES && i < orderedPlays.length; i++) {
-            alternatives.add(orderedPlays[i].word);
-        }
-
-        this.socketHandler.sendMessage({ title: '', body: 'Mot placé : ' + play.word, messageType: MessageType.Message });
-        this.socketHandler.sendMessage({ title: '', body: 'Mot alternatifs : ' + Array.from(alternatives).toString(), messageType: MessageType.Log });
+        this.socketHandler.sendMessage({ title: 'Mot placé', body: this.formatPlay(play), messageType: MessageType.Message });
+        this.socketHandler.sendMessage({
+            title: 'Mot alternatifs',
+            body: this.formatPlays(orderedPlays.slice(1, Config.VIRTUAL_PLAYER.NB_ALTERNATIVES + 1)),
+            messageType: MessageType.Log,
+        });
 
         return new PlaceAction(this.boardHandler, play, this.playerData);
     }

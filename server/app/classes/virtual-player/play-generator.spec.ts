@@ -6,7 +6,7 @@ import { Dictionary } from '@app/classes/dictionary/dictionary';
 import { ValidationResponse } from '@app/classes/validation/validation-response';
 import { Config } from '@app/config';
 import { BoardHandler } from '@app/handlers/board-handler/board-handler';
-import { Direction, Placement, Vec2 } from '@common';
+import { Direction, Placement } from '@common';
 import { expect } from 'chai';
 import { PlayGenerator } from './play-generator';
 
@@ -57,10 +57,11 @@ class StubDictionary implements Dictionary {
 class BoardHandlerMock {
     isValid = true;
     board = new Board(Config.GRID.GRID_SIZE);
-    foundWords: { word: string; initialPosition: Vec2; direction: Direction }[] = [];
+    foundWords: Placement[][] = [];
 
     // eslint-disable-next-line no-unused-vars -- Parameters are not needed here as we already got the in retrieveNewLetters.
     lookupLetters(letters: Placement[]): ValidationResponse {
+        this.foundWords.push(letters);
         return this.isValid ? { isSuccess: true, score: 0, placements: [], words: [] } : { isSuccess: false, description: '' };
     }
 
@@ -93,7 +94,7 @@ describe('PlayGenerator', () => {
         const playGenerator = new PlayGenerator(stubDictionary, boardHandlerMock as unknown as BoardHandler, WORD.split(''));
         playGenerator.generateNext();
 
-        expect(playGenerator.orderedPlays[0].word).to.equal(WORD);
+        expect(boardHandlerMock.foundWords[0].length).to.equal(WORD.length);
     });
 
     it('should retrieve existing word', () => {
@@ -131,8 +132,8 @@ describe('PlayGenerator', () => {
         const playGenerator = new PlayGenerator(stubDictionary, boardHandlerMock as unknown as BoardHandler, RACK);
         playGenerator.generateNext();
 
-        expect(playGenerator.orderedPlays[0].word).to.equal(GENERATED_WORD);
-        expect(playGenerator.orderedPlays.length).to.equal(2);
+        expect(boardHandlerMock.foundWords[0].length).to.equal(GENERATED_WORD.length);
+        expect(playGenerator.orderedPlays.length).to.equal(1);
     });
 
     it('should not generate non validated words', () => {

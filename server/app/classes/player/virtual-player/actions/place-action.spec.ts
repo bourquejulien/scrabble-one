@@ -24,7 +24,16 @@ describe('Place Action', () => {
     boardHandler.lookupLetters.returns({ isSuccess: true, score: 0, placements: [], words: [] });
     boardHandler.placeLetters.returns({ isSuccess: false, description: '' });
     boardHandler.retrieveNewLetters.returns(VALID_PLACEMENT);
-    const play: Play = { score: 0, word: 'bac', letters: VALID_PLACEMENT };
+    const play: Play = {
+        isSuccess: true,
+        score: 12,
+        placements: [
+            { letter: 'l', position: { x: 0, y: 0 } },
+            { letter: 'l', position: { x: 0, y: 0 } },
+            { letter: 'l', position: { x: 0, y: 0 } },
+        ],
+        words: [],
+    };
     const playerData: PlayerData = { baseScore: 0, scoreAdjustment: 0, skippedTurns: 0, rack: [] };
     const action = new PlaceAction(boardHandler as unknown as BoardHandler, play, playerData);
     beforeEach(() => {

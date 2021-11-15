@@ -8,14 +8,18 @@ import * as logger from 'winston';
 import { SkipAction } from '@app/classes/player/virtual-player/actions/skip-action';
 import { Action } from '@app/classes/player/virtual-player/actions/action';
 import { PlaceAction } from '@app/classes/player/virtual-player/actions/place-action';
+import { PlayAction } from '@app/classes/player/virtual-player/actions/play-action';
+import { Play } from '@app/classes/virtual-player/play';
 
-export class PlayActionEasy implements Action {
+export class PlayActionEasy extends PlayAction {
     constructor(
         private readonly boardHandler: BoardHandler,
         private readonly playGenerator: PlayGenerator,
         private readonly playerData: PlayerData,
         private readonly socketHandler: SocketHandler,
-    ) {}
+    ) {
+        super();
+    }
 
     private static getScoreRange(): { min: number; max: number } {
         let random = Math.random();
@@ -47,14 +51,14 @@ export class PlayActionEasy implements Action {
         const chosenPlay = Math.floor(Math.random() * filteredPlays.length);
         const play = filteredPlays[chosenPlay];
 
-        const alternatives = new Set<string>();
-        for (let i = 0; alternatives.size < Config.VIRTUAL_PLAYER.NB_ALTERNATIVES && i < filteredPlays.length; i++) {
+        const alternatives: Play[] = [];
+        for (let i = 0; alternatives.length < Config.VIRTUAL_PLAYER.NB_ALTERNATIVES && i < filteredPlays.length; i++) {
             const alternativeIndex = (chosenPlay + i) % filteredPlays.length;
-            alternatives.add(filteredPlays[alternativeIndex].word);
+            alternatives.push(filteredPlays[alternativeIndex]);
         }
 
-        this.socketHandler.sendMessage({ title: '', body: 'Mot placé : ' + play.word, messageType: MessageType.Message });
-        this.socketHandler.sendMessage({ title: '', body: 'Mot alternatifs : ' + Array.from(alternatives).toString(), messageType: MessageType.Log });
+        this.socketHandler.sendMessage({ title: 'Mot placé', body: this.formatPlay(play), messageType: MessageType.Message });
+        this.socketHandler.sendMessage({ title: 'Mot alternatifs', body: this.formatPlays(alternatives), messageType: MessageType.Log });
 
         return new PlaceAction(this.boardHandler, play, this.playerData);
     }

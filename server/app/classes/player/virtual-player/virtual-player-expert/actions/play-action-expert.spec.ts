@@ -17,10 +17,10 @@ const VALID_PLACEMENT: Placement[] = [
     { letter: 'a', position: { x: 0, y: 1 } },
     { letter: 'c', position: { x: 0, y: 2 } },
 ];
-const PLAY: Play[] = [{ score: 0, word: 'bac', letters: VALID_PLACEMENT }];
+const PLAY: Play[] = [{ isSuccess: true, score: 12, placements: [], words: [] }];
 const LETTERS = ['a', 'b', 'c', 'd', 'e', 'f', 'g'];
 
-describe('Play Action', () => {
+describe('PlayActionExpert', () => {
     let boardHandler: Sinon.SinonStubbedInstance<BoardHandler>;
     let socketHandler: Sinon.SinonStubbedInstance<SocketHandler>;
     let reserveHandler: ReserveHandler;
