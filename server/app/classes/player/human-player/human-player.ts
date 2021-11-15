@@ -6,7 +6,7 @@ import * as logger from 'winston';
 
 export class HumanPlayer extends Player {
     constructor(public playerInfo: PlayerInfo) {
-        super();
+        super(playerInfo);
     }
 
     async startTurn(): Promise<void> {

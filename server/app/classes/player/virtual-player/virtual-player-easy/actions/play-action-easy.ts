@@ -1,15 +1,15 @@
 import { PlayerData } from '@app/classes/player-data';
 import { PlayGenerator } from '@app/classes/virtual-player/play-generator';
-import { Action } from './action';
-import { PlaceAction } from './place-action';
 import { BoardHandler } from '@app/handlers/board-handler/board-handler';
 import { Config } from '@app/config';
 import { SocketHandler } from '@app/handlers/socket-handler/socket-handler';
 import { MessageType } from '@common';
 import * as logger from 'winston';
 import { SkipAction } from '@app/classes/player/virtual-player/actions/skip-action';
+import { Action } from '@app/classes/player/virtual-player/actions/action';
+import { PlaceAction } from '@app/classes/player/virtual-player/actions/place-action';
 
-export class PlayAction implements Action {
+export class PlayActionEasy implements Action {
     constructor(
         private readonly boardHandler: BoardHandler,
         private readonly playGenerator: PlayGenerator,
@@ -32,9 +32,9 @@ export class PlayAction implements Action {
     }
 
     execute(): Action | null {
-        const scoreRange = PlayAction.getScoreRange();
+        const scoreRange = PlayActionEasy.getScoreRange();
 
-        logger.debug('Generating plays');
+        logger.debug('Generating plays - Easy');
         while (this.playGenerator.generateNext());
 
         const filteredPlays = this.playGenerator.orderedPlays.filter((e) => e.score >= scoreRange.min && e.score <= scoreRange.max);
