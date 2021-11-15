@@ -6,11 +6,9 @@ import { Component } from '@angular/core';
     styleUrls: ['./main-page.component.scss'],
 })
 export class MainPageComponent {
-    readonly title: string;
     readonly developers: string[];
 
     constructor() {
-        this.title = 'LOG2990';
         this.developers = [
             'Julien Bourque',
             'Alexandre Dufort',
