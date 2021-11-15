@@ -76,7 +76,7 @@ export class PlayGenerator {
             const letters = this.boardHandler.retrieveNewLetters(PlayGenerator.generatePlacement(positionedWord, startPosition, direction));
             const response = this.boardHandler.lookupLetters(letters);
             if (response.isSuccess) {
-                this.plays.push({ score: response.points, word: positionedWord.word, letters });
+                this.plays.push({ score: response.score, word: positionedWord.word, letters });
             }
         }
     }

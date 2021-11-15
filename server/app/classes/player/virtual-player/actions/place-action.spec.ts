@@ -21,8 +21,8 @@ const LETTERS = ['a', 'b', 'c', 'd', 'e', 'f', 'g'];
 /* eslint-disable dot-notation */
 describe('Place Action', () => {
     const boardHandler = createStubInstance(BoardHandler);
-    boardHandler.lookupLetters.returns({ isSuccess: true, points: 0, description: '' });
-    boardHandler.placeLetters.returns({ isSuccess: false, points: 0, description: '' });
+    boardHandler.lookupLetters.returns({ isSuccess: true, score: 0, placements: [], words: [] });
+    boardHandler.placeLetters.returns({ isSuccess: false, description: '' });
     boardHandler.retrieveNewLetters.returns(VALID_PLACEMENT);
     const play: Play = { score: 0, word: 'bac', letters: VALID_PLACEMENT };
     const playerData: PlayerData = { baseScore: 0, scoreAdjustment: 0, skippedTurns: 0, rack: [] };

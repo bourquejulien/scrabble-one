@@ -61,7 +61,7 @@ class BoardHandlerMock {
 
     // eslint-disable-next-line no-unused-vars -- Parameters are not needed here as we already got the in retrieveNewLetters.
     lookupLetters(letters: Placement[]): ValidationResponse {
-        return { isSuccess: this.isValid, points: 0, description: '' };
+        return this.isValid ? { isSuccess: true, score: 0, placements: [], words: [] } : { isSuccess: false, description: '' };
     }
 
     retrieveNewLetters(letters: Placement[]): Placement[] {

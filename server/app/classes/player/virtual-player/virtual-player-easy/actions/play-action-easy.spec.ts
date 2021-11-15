@@ -39,8 +39,8 @@ describe('Play Action', () => {
         socketHandler = createStubInstance(SocketHandler);
 
         boardHandler = createStubInstance(BoardHandler);
-        boardHandler.lookupLetters.returns({ isSuccess: true, points: 0, description: '' });
-        boardHandler.placeLetters.returns({ isSuccess: false, points: 0, description: '' });
+        boardHandler.lookupLetters.returns({ isSuccess: true, score: 0, placements: [], words: [] });
+        boardHandler.placeLetters.returns({ isSuccess: false, description: '' });
         boardHandler.retrieveNewLetters.returns(VALID_PLACEMENT);
 
         playGeneratorA = createStubInstance(PlayGenerator);
