@@ -146,6 +146,9 @@ test:server:
 pages:
     image: node:14.15.0
     stage: deploy
+    environment:
+        name: client
+        url: https://scrabble.one
     rules:
         - if: "$CI_COMMIT_TAG =~ /deploy/"
           when: manual
@@ -160,36 +163,27 @@ pages:
             - public
 
 deploy:server:
+    image: docker:stable
+    before_script:
+        - docker info
+    environment:
+        name: server
+        url: https://server.scrabble.one
     stage: deploy
     rules:
         - if: "$CI_COMMIT_TAG =~ /deploy/"
           when: manual
+    services:
+        - name: docker:dind
+          alias: docker
+          command: [ "--tls=false" ]
+    variables:
+        DOCKER_HOST: tcp://docker:2375
+        DOCKER_DRIVER: overlay2
+        DOCKER_TLS_CERTDIR: ""
+        DOCKER_BUILDKIT: 1
+        IMAGE_NAME: "$CI_REGISTRY_IMAGE/server:latest"
     script:
-        - "which ssh-agent || (apt-get update -qq && apt-get install -qq openssh-client )"
-        - eval $(ssh-agent -s)
-        - ssh-add <(echo "$EC2_PEM_FILE_CONTENT")
-        - mkdir -p ~/.ssh
-        - '[[ -f /.dockerenv ]] && echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config'
-        - |
-            timeout 600 ssh -t -o ServerAliveInterval=15 -o ServerAliveCountMax=5 "${EC2_USER}@${EC2_HOST}" "
-                set -x -ev
-
-                # Clone the repository
-                git clone 'https://${GITLAB_DEPLOY_TOKEN_USERNAME}:${GITLAB_DEPLOY_TOKEN_PASSWORD}@${GITLAB_REPO_URL}' repo || echo Git repository already exist
-                cd repo
-
-                # Checkout to the targeted commit
-                git fetch --all
-                git checkout ${CI_COMMIT_SHA}
-
-                # Build the project
-                cd server
-                npm ci
-                npm run build
-
-                # Force kill any node app or any app running on the server port
-                forever stopall && sudo fuser -k '${SERVER_PORT}/tcp' && sudo killall node
-
-                # Launch the server in background and append output to /var/log/messages for CloudWatch
-                forever start -a -l /var/log/messages out/server/app/index.js
-            "
+        - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" "$CI_REGISTRY"
+        - docker build --target final -f server/Dockerfile -t "$IMAGE_NAME" .
+        - docker push "$IMAGE_NAME"
