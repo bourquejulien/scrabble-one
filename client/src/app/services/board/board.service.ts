@@ -5,6 +5,7 @@ import { SessionService } from '@app/services/session/session.service';
 import { Answer, BoardData, Bonus, Direction, Placement, Square, Vec2 } from '@common';
 import { environmentExt } from '@environment-ext';
 import { SocketClientService } from '@app/services/socket-client/socket-client.service';
+import { BehaviorSubject, Observable } from 'rxjs';
 
 const localUrl = (call: string, id: string) => `${environmentExt.apiUrl}board/${call}/${id}`;
 
@@ -13,6 +14,7 @@ const localUrl = (call: string, id: string) => `${environmentExt.apiUrl}board/${
 })
 export class BoardService {
     private boardData: BoardData;
+    private readonly boardSubject: BehaviorSubject<BoardData>;
 
     constructor(
         private readonly httpClient: HttpClient,
@@ -21,6 +23,7 @@ export class BoardService {
     ) {
         this.reset();
         this.socketService.on('board', (boardData: BoardData) => this.refresh(boardData));
+        this.boardSubject = new BehaviorSubject<BoardData>(this.boardData);
     }
 
     get gameBoard(): BoardData {
@@ -74,7 +77,12 @@ export class BoardService {
         return this.boardData.board[position.x - 1][position.y - 1].letter;
     }
 
+    get boardUpdated(): Observable<BoardData> {
+        return this.boardSubject.asObservable();
+    }
+
     private refresh(boardData: BoardData): void {
         this.boardData = boardData;
+        this.boardSubject.next(boardData);
     }
 }

@@ -1,5 +1,4 @@
-import { Component, Input } from '@angular/core';
-import { PlayerType } from '@app/classes/player/player-type';
+import { Component } from '@angular/core';
 
 @Component({
     selector: 'app-play-area',
@@ -7,7 +6,6 @@ import { PlayerType } from '@app/classes/player/player-type';
     styleUrls: ['./play-area.component.scss'],
 })
 export class PlayAreaComponent {
-    @Input() playerType: PlayerType;
     reserveSelection: Set<number>;
 
     constructor() {
