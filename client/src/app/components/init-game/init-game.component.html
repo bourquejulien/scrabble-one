@@ -27,8 +27,8 @@
         </mat-form-field>
         <mat-form-field class="inputs" appearance="fill">
             <mat-label>Dictionnaire</mat-label>
-            <mat-select name="gameDictionary">
-                <mat-option *ngFor="let dictionary of dictionaries" [value]="dictionary.id">{{ dictionary.title }}</mat-option>
+            <mat-select name="gameDictionary" [(ngModel)]="dictionary" required>
+                <mat-option *ngFor="let d of adminService.dictionaries" [value]="d">{{ d.title }}</mat-option>
             </mat-select>
         </mat-form-field>
     </div>

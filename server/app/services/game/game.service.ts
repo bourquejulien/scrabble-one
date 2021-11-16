@@ -12,6 +12,7 @@ import { PlayerInfo } from '@app/classes/player-info';
 import { SocketService } from '@app/services/socket/socket-service';
 import * as logger from 'winston';
 import { PlayerHandler } from '@app/handlers/player-handler/player-handler';
+import { DictionaryService } from '@app/services/dictionary/dictionary.service';
 import { DictionaryHandler } from '@app/handlers/dictionary/dictionary-handler';
 
 @Service()
@@ -19,6 +20,7 @@ export class GameService {
     constructor(
         private readonly boardGeneratorService: BoardGeneratorService,
         private readonly sessionHandlingService: SessionHandlingService,
+        private readonly dictionaryService: DictionaryService,
         private readonly socketService: SocketService,
     ) {}
 
@@ -28,19 +30,12 @@ export class GameService {
             playTimeMs: gameConfig.playTimeMs,
             gameType: gameConfig.gameType,
         };
-
-        const dictionaryHandler = new DictionaryHandler();
+        const words = this.dictionaryService.getWords(gameConfig.dictionary);
+        const dictionaryHandler = new DictionaryHandler(words);
         const boardHandler = this.boardGeneratorService.generateBoardHandler(gameConfig.isRandomBonus, dictionaryHandler);
         const reserveHandler = new ReserveHandler();
 
-        const sessionHandler = new SessionHandler(
-            sessionInfo,
-            boardHandler,
-            reserveHandler,
-            new PlayerHandler(),
-            dictionaryHandler,
-            this.socketService,
-        );
+        const sessionHandler = new SessionHandler(sessionInfo, boardHandler, reserveHandler, new PlayerHandler(), this.socketService);
 
         const humanPlayerInfo: PlayerInfo = {
             id: generateId(),
@@ -72,18 +67,12 @@ export class GameService {
             gameType: gameConfig.gameType,
         };
 
-        const dictionaryHandler = new DictionaryHandler();
+        const words = this.dictionaryService.getWords(gameConfig.dictionary);
+        const dictionaryHandler = new DictionaryHandler(words);
         const boardHandler = this.boardGeneratorService.generateBoardHandler(gameConfig.isRandomBonus, dictionaryHandler);
         const reserveHandler = new ReserveHandler();
 
-        const sessionHandler = new SessionHandler(
-            sessionInfo,
-            boardHandler,
-            reserveHandler,
-            new PlayerHandler(),
-            dictionaryHandler,
-            this.socketService,
-        );
+        const sessionHandler = new SessionHandler(sessionInfo, boardHandler, reserveHandler, new PlayerHandler(), this.socketService);
 
         const humanPlayerInfo: PlayerInfo = {
             id: generateId(),
@@ -179,7 +168,7 @@ export class GameService {
 
     private addVirtualPlayer(playerInfo: PlayerInfo, sessionHandler: SessionHandler): VirtualPlayer {
         const actionCallback = (action: Action): Action | null => action.execute();
-        const virtualPlayer = new VirtualPlayer(sessionHandler.dictionaryHandler,playerInfo, actionCallback);
+        const virtualPlayer = new VirtualPlayer(sessionHandler.boardHandler.dictionaryHandler, playerInfo, actionCallback);
 
         sessionHandler.addPlayer(virtualPlayer);
 

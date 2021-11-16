@@ -61,6 +61,7 @@
         "express-fileupload": "^1.2.1",
         "formidable": "^2.0.1",
         "http-status-codes": "^2.1.4",
+        "jsonschema": "^1.4.0",
         "module-alias": "^2.2.2",
         "mongodb": "^4.1.0",
         "morgan": "^1.10.0",

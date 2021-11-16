@@ -4,6 +4,7 @@ import fs from 'fs';
 import { Service } from 'typedi';
 import * as logger from 'winston';
 import path from 'path';
+import { Validator } from 'jsonschema';
 
 const defaultDictionary: DictionaryMetadata = {
     id: 'dictionary.json',
@@ -11,6 +12,13 @@ const defaultDictionary: DictionaryMetadata = {
     title: 'Dictionnaire du serveur',
     nbWords: 1024,
 };
+const schema = {
+    title: 'string',
+    description: 'string',
+    words: ['string'],
+    required: ['title', 'description', 'words'],
+};
+const dictionaryPath = /* process.env.DICTIONARIES_FOLDER ??*/ process.cwd() + '/assets/';
 @Service()
 export class DictionaryService {
     private dictionaryMetadata: DictionaryMetadata[];
@@ -20,8 +28,17 @@ export class DictionaryService {
     }
 
     getFilepath(metadata: DictionaryMetadata): string {
-        const folder: string = /* process.env.DICTIONARIES_FOLDER ??*/ process.cwd() + '/assets/';
-        return path.join(folder, metadata.id);
+        return path.join(dictionaryPath, metadata.id);
+    }
+
+    getWords(metadata: DictionaryMetadata): string[] {
+        let result: string[] = [];
+        fs.readFile(this.getFilepath(metadata), 'utf8', (_error, data) => {
+            const json = JSON.parse(data) as JsonDictionary;
+            result = json.words;
+            logger.debug('Parsed words in the dictionary');
+        });
+        return result;
     }
 
     reset() {
@@ -50,8 +67,10 @@ export class DictionaryService {
     }
 
     parse(filepath: string): boolean {
+        let result = false;
         fs.readFile(filepath, 'utf8', (_error, data) => {
-            try {
+            if (this.validate(data)) {
+                logger.debug('Dictionary parsing successful');
                 const json = JSON.parse(data) as JsonDictionary;
                 const metadata: DictionaryMetadata = {
                     title: json.title,
@@ -60,13 +79,16 @@ export class DictionaryService {
                     nbWords: json.words.length,
                 };
                 this.dictionaryMetadata.push(metadata);
-                return true;
-            } catch (err) {
-                logger.error('Dictionary Casting Error');
-                return false;
+                result = true;
             }
+            logger.debug('Dictionary parsing unsuccessful');
         });
-        return false;
+        return result;
+    }
+
+    validate(data: string) {
+        const validator = new Validator();
+        return validator.validate(data, schema);
     }
 
     getMetadata(id: string) {

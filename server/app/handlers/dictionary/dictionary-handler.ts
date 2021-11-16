@@ -1,14 +1,14 @@
 import { Dictionary } from '@app/classes/dictionary/dictionary';
 import { Trie } from '@app/classes/trie/trie';
-// import { DictionaryService } from '@app/services/dictionary/dictionary.service';
 
 export class DictionaryHandler implements Dictionary {
     private readonly dictionary: Trie;
     private readonly reverseDictionary: Trie;
 
-    constructor(/* private dictionaryService: DictionaryService */) {
+    constructor(words: string[]) {
         this.dictionary = new Trie();
         this.reverseDictionary = new Trie();
+        this.insertWords(words);
     }
 
     private static flipWord(word: string): string {

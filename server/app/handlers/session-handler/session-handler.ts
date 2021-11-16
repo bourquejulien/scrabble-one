@@ -10,8 +10,6 @@ import { BoardHandler } from '@app/handlers/board-handler/board-handler';
 import { ReserveHandler } from '@app/handlers/reserve-handler/reserve-handler';
 import * as logger from 'winston';
 import { SocketService } from '@app/services/socket/socket-service';
-import { DictionaryHandler } from '@app/handlers/dictionary/dictionary-handler';
-
 export class SessionHandler {
     sessionData: SessionData;
     private timer: NodeJS.Timer;
@@ -24,7 +22,6 @@ export class SessionHandler {
         public boardHandler: BoardHandler,
         public reserveHandler: ReserveHandler,
         private playerHandler: PlayerHandler,
-        public dictionaryHandler: DictionaryHandler,
         socketService: SocketService,
     ) {
         this.socketHandler = socketService.generate(sessionInfo.id);

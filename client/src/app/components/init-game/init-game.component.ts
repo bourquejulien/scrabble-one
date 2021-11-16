@@ -15,7 +15,6 @@ interface FormConfig {
     isRandomBonus: boolean;
     firstPlayerName: string;
     secondPlayerName: string;
-    gameDictionaryId: string;
 }
 
 // eslint-disable-next-line @typescript-eslint/no-magic-numbers -- Lists all option, the list is a constant
@@ -36,7 +35,7 @@ export class InitGameComponent implements OnInit {
     minutesList;
     secondsList;
     gameType;
-    dictionaries: DictionaryMetadata[];
+    dictionary: DictionaryMetadata;
     nameValidator: NameValidator;
     minutes: number;
     seconds: number;
@@ -46,7 +45,7 @@ export class InitGameComponent implements OnInit {
         readonly gameService: GameService,
         private readonly router: Router,
         private readonly roomService: RoomService,
-        private readonly adminService: AdminService,
+        public adminService: AdminService,
         readonly dialogRef: MatDialogRef<InitGameComponent>,
         @Inject(MAT_DIALOG_DATA) readonly data: { gameModeType: GameType },
     ) {
@@ -58,14 +57,12 @@ export class InitGameComponent implements OnInit {
         this.nameValidator = new NameValidator();
         this.minutes = DEFAULT_PLAY_TIME.totalMinutes;
         this.seconds = DEFAULT_PLAY_TIME.seconds;
-        this.dictionaries = this.adminService.dictionaries;
         this.formConfig = {
             gameType: this.gameTypesList[0],
             playTime: DEFAULT_PLAY_TIME,
             isRandomBonus: false,
             firstPlayerName: '',
             secondPlayerName: '',
-            gameDictionaryId: '',
         };
     }
 
@@ -117,6 +114,7 @@ export class InitGameComponent implements OnInit {
             playerName: this.formConfig.firstPlayerName,
             virtualPlayerName: this.formConfig.secondPlayerName,
             isRandomBonus: this.formConfig.isRandomBonus,
+            dictionary: this.dictionary,
         };
 
         await this.gameService.startSinglePlayer(singlePlayerConfig);
@@ -129,6 +127,7 @@ export class InitGameComponent implements OnInit {
             playTimeMs: this.formConfig.playTime.totalMilliseconds,
             playerName: this.formConfig.firstPlayerName,
             isRandomBonus: this.formConfig.isRandomBonus,
+            dictionary: this.dictionary,
         };
 
         await this.router.navigate(['waiting-room']);

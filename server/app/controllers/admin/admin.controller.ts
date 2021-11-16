@@ -40,6 +40,7 @@ export class AdminController {
                 if (this.dictionaryService.parse(file.filepath)) {
                     res.sendStatus(Constants.HTTP_STATUS.OK);
                 } else {
+                    res.json({ erreur: 'Format du dictionnaire invalide' });
                     res.sendStatus(Constants.HTTP_STATUS.BAD_REQUEST);
                 }
             });
