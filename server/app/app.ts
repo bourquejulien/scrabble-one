@@ -1,5 +1,4 @@
 import { HttpException } from '@app/classes/http.exception';
-import { BoardController } from '@app/controllers/board/board.controller';
 import { GameController } from '@app/controllers/game/game.controller';
 import cookieParser from 'cookie-parser';
 import cors from 'cors';
@@ -8,7 +7,6 @@ import { StatusCodes } from 'http-status-codes';
 import logger from 'morgan';
 import { Service } from 'typedi';
 import { DictionaryService } from '@app/services/dictionary/dictionary.service';
-import { ReserveController } from '@app/controllers/reserve/reserve.controller';
 import { PlayerController } from './controllers/player/player.controller';
 
 @Service()
@@ -18,9 +16,7 @@ export class Application {
 
     constructor(
         private readonly gameController: GameController,
-        private readonly boardController: BoardController,
         private readonly playerController: PlayerController,
-        private readonly reserveController: ReserveController,
         dictionaryService: DictionaryService,
     ) {
         dictionaryService.retrieveDictionary();
@@ -33,9 +29,7 @@ export class Application {
 
     private bindRoutes(): void {
         this.app.use('/api/game', this.gameController.router);
-        this.app.use('/api/board', this.boardController.router);
         this.app.use('/api/player', this.playerController.router);
-        this.app.use('/api/reserve', this.reserveController.router);
         this.errorHandling();
     }
 

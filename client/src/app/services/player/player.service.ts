@@ -23,7 +23,7 @@ export class PlayerService {
         const positionToPlace = this.boardService.retrievePlacements(word, position, direction);
 
         try {
-            const answer = await this.boardService.placeLetters(positionToPlace);
+            const answer = await this.httpClient.post<Answer>(localUrl('place', this.sessionService.id), positionToPlace).toPromise();
             return answer.isSuccess;
         } catch (err) {
             return false;

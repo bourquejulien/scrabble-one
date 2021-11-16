@@ -1,13 +1,8 @@
-import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Constants } from '@app/constants/global.constants';
-import { SessionService } from '@app/services/session/session.service';
-import { Answer, BoardData, Bonus, Direction, Placement, Square, Vec2 } from '@common';
-import { environmentExt } from '@environment-ext';
+import { BoardData, Bonus, Direction, Placement, Square, Vec2 } from '@common';
 import { SocketClientService } from '@app/services/socket-client/socket-client.service';
 import { BehaviorSubject, Observable } from 'rxjs';
-
-const localUrl = (call: string, id: string) => `${environmentExt.apiUrl}board/${call}/${id}`;
 
 @Injectable({
     providedIn: 'root',
@@ -16,11 +11,7 @@ export class BoardService {
     private boardData: BoardData;
     private readonly boardSubject: BehaviorSubject<BoardData>;
 
-    constructor(
-        private readonly httpClient: HttpClient,
-        private readonly socketService: SocketClientService,
-        private readonly sessionService: SessionService,
-    ) {
+    constructor(private readonly socketService: SocketClientService) {
         this.reset();
         this.socketService.on('board', (boardData: BoardData) => this.refresh(boardData));
         this.boardSubject = new BehaviorSubject<BoardData>(this.boardData);
@@ -28,10 +19,6 @@ export class BoardService {
 
     get gameBoard(): BoardData {
         return this.boardData;
-    }
-
-    async placeLetters(letters: Placement[]): Promise<Answer> {
-        return await this.httpClient.post<Answer>(localUrl('place', this.sessionService.id), letters).toPromise();
     }
 
     retrievePlacements(word: string, initialPosition: Vec2, direction: Direction): Placement[] {
