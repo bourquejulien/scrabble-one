@@ -178,7 +178,7 @@ export class GameService {
     private addVirtualPlayer(playerInfo: PlayerInfo, sessionHandler: SessionHandler, playerData?: PlayerData): VirtualPlayer {
         const actionCallback = (action: Action): Action | null => action.execute();
         const virtualPlayer = new VirtualPlayer(playerInfo, this.dictionnaryService, actionCallback);
-        if (playerData !== undefined) {
+        if (playerData) {
             virtualPlayer.playerData = playerData;
         }
         sessionHandler.addPlayer(virtualPlayer);

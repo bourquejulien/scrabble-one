@@ -3,6 +3,6 @@
     >Votre adversaire a quitter la partie, un joueur virtuel de niveau débutant l'a remplacé</mat-dialog-content
 >
 <mat-dialog-actions align="end">
-    <button mat-button mat-dialog-close>Continuer</button>
-    <button mat-button [mat-dialog-close]="true" routerLink="home" cdkFocusInitial>Quitter la partie</button>
+    <button mat-button mat-dialog-close (click)="continue()">Continuer</button>
+    <button mat-button [mat-dialog-close]="true" routerLink="home" cdkFocusInitial (click)="quit()">Quitter la partie</button>
 </mat-dialog-actions>
