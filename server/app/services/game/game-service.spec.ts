@@ -9,12 +9,21 @@ import { GameService } from '@app/services/game/game.service';
 import { BoardGeneratorService } from '@app/services/board/board-generator.service';
 import { SessionHandlingService } from '@app/services/sessionHandling/session-handling.service';
 import { SocketService } from '@app/services/socket/socket-service';
-import { ConvertConfig, GameType, MultiplayerCreateConfig, MultiplayerJoinConfig, ServerConfig, SinglePlayerConfig } from '@common';
+import {
+    ConvertConfig,
+    DictionaryMetadata,
+    GameType,
+    MultiplayerCreateConfig,
+    MultiplayerJoinConfig,
+    ServerConfig,
+    SinglePlayerConfig,
+} from '@common';
 import { SessionHandler } from '@app/handlers/session-handler/session-handler';
 import { HumanPlayer } from '@app/classes/player/human-player/human-player';
 import { Player } from '@app/classes/player/player';
 import { SessionData } from '@app/classes/session-data';
 import { SessionInfo } from '@app/classes/session-info';
+import { DictionaryService } from '@app/services/dictionary/dictionary.service';
 
 class StubSessionHandler {
     players: Player[] = [];
@@ -59,12 +68,20 @@ class StubSessionHandler {
     }
 }
 
+const dictionary: DictionaryMetadata = {
+    description: 'Blablabla',
+    id: 'dictionary.json',
+    nbWords: 1024,
+    title: 'My cool dictionary',
+};
+
 const singlePlayerConfig: SinglePlayerConfig = {
     gameType: GameType.SinglePlayer,
     playTimeMs: 0,
     playerName: 'test1',
     virtualPlayerName: 'test2',
     isRandomBonus: true,
+    dictionary,
 };
 
 const multiplayerCreateConfig: MultiplayerCreateConfig = {
@@ -72,6 +89,7 @@ const multiplayerCreateConfig: MultiplayerCreateConfig = {
     playTimeMs: 0,
     playerName: 'test1',
     isRandomBonus: true,
+    dictionary,
 };
 
 const multiplayerJoinConfig: MultiplayerJoinConfig = {
@@ -88,6 +106,7 @@ describe('GameService', () => {
     let service: GameService;
     let boardGeneratorStub: Sinon.SinonStubbedInstance<BoardGeneratorService>;
     let sessionHandlingStub: Sinon.SinonStubbedInstance<SessionHandlingService>;
+    let dictionaryServiceStub: Sinon.SinonStubbedInstance<DictionaryService>;
     let sessionHandlerStub: StubSessionHandler;
     let socketServiceStub: SocketService;
 
@@ -95,11 +114,13 @@ describe('GameService', () => {
         boardGeneratorStub = createStubInstance(BoardGeneratorService);
         sessionHandlingStub = createStubInstance(SessionHandlingService);
         socketServiceStub = createStubInstance(SocketService);
+        dictionaryServiceStub = createStubInstance(DictionaryService);
         sessionHandlerStub = new StubSessionHandler();
 
         service = new GameService(
             boardGeneratorStub as unknown as BoardGeneratorService,
             sessionHandlingStub as unknown as SessionHandlingService,
+            dictionaryServiceStub as unknown as DictionaryService,
             socketServiceStub as unknown as SocketService,
         );
     });

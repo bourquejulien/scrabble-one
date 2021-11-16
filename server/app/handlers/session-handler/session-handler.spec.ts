@@ -20,7 +20,7 @@ import { PlayerHandler } from '@app/handlers/player-handler/player-handler';
 import { Config } from '@app/config';
 import { SocketService } from '@app/services/socket/socket-service';
 import { SocketHandler } from '@app/handlers/socket-handler/socket-handler';
-import { DictionaryHandler } from '@app/handlers/dictionary/dictionary-handler';
+
 const TIME_MS = 120 * 1000;
 const PLAYER_INFO_A: PlayerInfo = { id: '0', name: 'tester1', isHuman: true };
 const PLAYER_INFO_B: PlayerInfo = { id: '1', name: 'tester2', isHuman: false };
@@ -47,7 +47,6 @@ describe('SessionHandler', () => {
     const stubReserveHandler = createStubInstance(ReserveHandler);
     const stubSocketService = createStubInstance(SocketService);
     const stubPlayerHandler = createStubInstance(PlayerHandler);
-    const stubDictionaryHandler = createStubInstance(DictionaryHandler);
 
     const socketHandler = new SocketHandler(stubSocketService, '0');
     let playerA: PlayerTester;
@@ -59,7 +58,6 @@ describe('SessionHandler', () => {
         stubBoardHandler as unknown as BoardHandler,
         stubReserveHandler as unknown as ReserveHandler,
         stubPlayerHandler as unknown as PlayerHandler,
-        stubDictionaryHandler as unknown as DictionaryHandler,
         stubSocketService as unknown as SocketService,
     ) as unknown as SessionHandler;
     handler['socketHandler'] = socketHandler;
@@ -84,7 +82,6 @@ describe('SessionHandler', () => {
             stubBoardHandler as unknown as BoardHandler,
             stubReserveHandler as unknown as ReserveHandler,
             stubPlayerHandler as unknown as PlayerHandler,
-            stubDictionaryHandler as unknown as DictionaryHandler,
             stubSocketService as unknown as SocketService,
         ) as unknown as SessionHandler;
     });
