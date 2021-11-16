@@ -1,5 +1,5 @@
 import { SessionInfo } from '@app/classes/session-info';
-import { ServerConfig, SessionStats } from '@common';
+import { ServerConfig } from '@common';
 import { Player } from '@app/classes/player/player';
 import { SessionData } from '@app/classes/session-data';
 import { Config } from '@app/config';
@@ -68,18 +68,6 @@ export class SessionHandler {
         return this.playerHandler.removePlayer(id);
     }
 
-    getStats(id: string): SessionStats | null {
-        const index = this.players.findIndex((p) => p.id === id);
-        const firstPlayer = this.players[index];
-        const secondPlayer = this.players[1 - index];
-
-        if (firstPlayer == null || secondPlayer == null) {
-            return null;
-        }
-
-        return { localStats: firstPlayer.stats, remoteStats: secondPlayer.stats };
-    }
-
     abandon(playerId: string): void {
         logger.debug(`SessionHandler - Abandon - PlayerId: ${playerId}`);
 
@@ -120,6 +108,11 @@ export class SessionHandler {
             this.endGame();
             return;
         }
+
+        this.socketHandler.sendData('stats', this.playerHandler.getStats(this.players[0].id), this.players[0].id);
+        this.socketHandler.sendData('stats', this.playerHandler.getStats(this.players[1].id), this.players[1].id);
+        this.socketHandler.sendData('board', this.boardHandler.immutableBoard.boardData);
+        this.socketHandler.sendData('reserve', this.reserveHandler.reserve);
 
         this.players.find((p) => p.id === id)?.startTurn();
         this.sessionData.timeLimitEpoch = new Date().getTime() + this.sessionInfo.playTimeMs;

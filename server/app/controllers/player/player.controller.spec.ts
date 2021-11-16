@@ -11,12 +11,11 @@ import { createStubInstance, SinonStubbedInstance } from 'sinon';
 import request from 'supertest';
 import { Container } from 'typedi';
 import { HumanPlayer } from '@app/classes/player/human-player/human-player';
-import { Answer, Placement, SessionStats } from '@common';
+import { Answer, Placement } from '@common';
 
 describe('PlayerController', () => {
     let stubSessionHandlingService: SinonStubbedInstance<SessionHandlingService>;
     let expressApp: Express.Application;
-    const sessionStats: SessionStats = { localStats: { points: 100, rackSize: 5 }, remoteStats: { points: 200, rackSize: 1 } };
     const exchangeLettersResponse = 'ExchangeLetterResponse';
     const placeLettersAnswer: Answer = { isSuccess: true, body: 'Not your turn' };
     const rack = ['m', 'e', 't', 'a'];
@@ -24,7 +23,6 @@ describe('PlayerController', () => {
     beforeEach(async () => {
         stubSessionHandlingService = createStubInstance(SessionHandlingService);
         const stubSessionHandler = createStubInstance(SessionHandler);
-        stubSessionHandler.getStats.returns(sessionStats);
 
         const player1: Player = {
             id: '1',

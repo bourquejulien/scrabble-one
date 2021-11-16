@@ -165,6 +165,10 @@ export class BoardComponent implements OnDestroy, AfterViewInit {
 
     private refresh(): void {
         this.gridService.resetCanvas(this.tempContext);
+
+        // TODO This only needs to be done once per game
+        this.gridService.drawGrid(this.gridContext);
+
         this.gridService.drawSquares(this.squareContext);
         this.placeLetterService.myRack = [];
         this.placeLetterService.tempRack = [];
