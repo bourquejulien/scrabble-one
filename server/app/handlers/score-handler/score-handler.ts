@@ -11,7 +11,7 @@ export class ScoreHandler {
         if(!playerWinner.playerInfo.isHuman) {
             return;
         }
-
+        // on access to 'best scores' page , call getScores from score-service.
         
     }
 }
