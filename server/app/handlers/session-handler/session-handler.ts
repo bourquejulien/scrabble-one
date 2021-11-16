@@ -49,6 +49,7 @@ export class SessionHandler {
         this.sessionData.isStarted = true;
         this.timer = setInterval(() => this.timerTick(), Config.SESSION.REFRESH_INTERVAL_MS);
         this.playerHandler.start();
+        logger.info(`Game ${this.sessionInfo.id} started`);
     }
 
     dispose(): void {

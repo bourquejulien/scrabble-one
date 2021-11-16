@@ -94,18 +94,23 @@ export class RoomController {
             });
 
             socket.on('joinRoom', async (playerId: string) => {
-                const sessionId = this.sessionHandlingService.getSessionId(playerId);
-
-                if (sessionId !== '') {
-                    if (!(await RoomController.isRoomFull(socket, sessionId))) {
-                        socket.join([sessionId, playerId]);
-                        this.socketIdToPlayerId.set(socket.id, playerId);
-                        logger.info(`Joined room: ${sessionId}`);
-                    }
-                    this.socketService.socketServer.emit('availableRooms', this.sessionInfos);
-                } else {
-                    logger.info(`Invalid room ID provided: ${sessionId}`);
+                const sessionHandler = this.sessionHandlingService.getHandlerByPlayerId(playerId);
+                if (sessionHandler === null) {
+                    logger.info(`Invalid room ID provided: ${sessionHandler}`);
+                    return;
                 }
+
+                if (!(await RoomController.isRoomFull(socket, sessionHandler.sessionInfo.id))) {
+                    socket.join([sessionHandler.sessionInfo.id, playerId]);
+                    this.socketIdToPlayerId.set(socket.id, playerId);
+
+                    if (sessionHandler.sessionData.isActive && !sessionHandler.sessionData.isStarted) {
+                        sessionHandler.start();
+                    }
+
+                    logger.info(`Joined room: ${sessionHandler.sessionInfo.id}`);
+                }
+                this.socketService.socketServer.emit('availableRooms', this.sessionInfos);
             });
         });
     }
