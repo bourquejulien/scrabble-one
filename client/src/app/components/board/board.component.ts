@@ -133,7 +133,7 @@ export class BoardComponent implements OnDestroy, AfterViewInit {
     }
 
     ngOnDestroy(): void {
-        this.boardSubscription.unsubscribe();
+        this.boardSubscription?.unsubscribe();
     }
 
     updateFontSize(size: number): void {

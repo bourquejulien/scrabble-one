@@ -83,18 +83,6 @@ describe('PlayerService', () => {
         expect(isSuccess).toBe(false);
     });
 
-    it('should refresh player data if letters successfully placed', async () => {
-        const answer = { isSuccess: true, body: 'Valid' };
-        const spy = spyOn(service, 'refresh');
-        letterToPlace = [{ letter: 'k', position: { x: 11, y: 3 } }];
-        boardServiceSpy['retrievePlacements'].and.returnValue(letterToPlace);
-        boardServiceSpy['placeLetters'].and.returnValue(Promise.resolve(answer));
-
-        await service.placeLetters('k', { x: 11, y: 3 }, Direction.Up);
-        await service.refresh();
-        expect(spy).toHaveBeenCalled();
-    });
-
     it('should call POST request with http client when exchanging', fakeAsync(() => {
         // Inspiration: https://www.syntaxsuccess.com/viewarticle/mocking-http-request-with-httpclient-in-angular
         service.exchangeLetters(lettersToExchange);
@@ -104,19 +92,6 @@ describe('PlayerService', () => {
 
         request[0].flush([]);
         tick();
-    }));
-
-    it('should refresh player data if valid letters provided when exchanging', fakeAsync(() => {
-        const answer = { isSuccess: true, body: 'Valid' };
-        const spy = spyOn(service, 'refresh');
-
-        service.exchangeLetters(lettersToExchange);
-        const request = httpMock.match(localUrl('exchange', `${sessionId}`));
-
-        request[0].flush(answer);
-        tick();
-
-        expect(spy).toHaveBeenCalled();
     }));
 
     it('should send error message when exchange called if invalid letters provided', fakeAsync(async () => {
@@ -153,24 +128,6 @@ describe('PlayerService', () => {
         const isSuccess = await service.placeLetters('k', { x: 11, y: 3 }, Direction.Up);
         expect(isSuccess).toEqual(false);
     }));
-
-    it('should refresh player data if turn skipped', fakeAsync(() => {
-        const answer = { isSuccess: true, body: 'Valid' };
-        const spy = spyOn(service, 'refresh');
-
-        service.skipTurn();
-        const request = httpMock.match(localUrl('skip', `${sessionId}`));
-
-        request[0].flush(answer);
-        tick();
-
-        expect(spy).toHaveBeenCalled();
-    }));
-
-    it('should refresh player data if refresh function called', async () => {
-        await service.refresh();
-        expect(boardServiceSpy['refresh']).toHaveBeenCalled();
-    });
 
     it('should reset game data if reset function called', () => {
         service.reset();
