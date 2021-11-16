@@ -42,6 +42,7 @@ export class GameService {
 
         this.socketService.on('onTurn', async (id: string) => this.onNextTurn(id));
         this.socketService.on('endGame', async (winnerId: string) => this.endGame(winnerId));
+        this.socketService.on('stats', (sessionStats: SessionStats) => this.refresh(sessionStats));
     }
 
     async startSinglePlayer(config: SinglePlayerConfig): Promise<void> {
@@ -53,7 +54,6 @@ export class GameService {
         this.socketService.join(serverConfig.id);
         this.sessionService.serverConfig = serverConfig;
 
-        await this.refresh();
         this.gameRunning = true;
         this.onNextTurn(serverConfig.startId);
     }
@@ -79,8 +79,6 @@ export class GameService {
             return;
         }
 
-        await this.refresh();
-
         this.currentTurn = playerType;
         this.onTurn.next(this.currentTurn);
     }
@@ -94,8 +92,8 @@ export class GameService {
             winner = winnerId === this.sessionService.id ? EndGameWinner.Local : EndGameWinner.Remote;
         }
 
-        await this.refresh();
         this.gameEnding.next(winner);
+
         this.messagingService.send(
             'Fin de partie - lettres restantes',
             this.sessionService.gameConfig.firstPlayerName + ' : ' + this.rackService.rack,
@@ -103,9 +101,7 @@ export class GameService {
         );
     }
 
-    private async refresh(): Promise<void> {
-        this.stats = await this.httpCLient.get<SessionStats>(localUrl('player', 'stats', this.sessionService.id)).toPromise();
-        await this.playerService.refresh();
-        await this.rackService.refresh();
+    private refresh(sessionStats: SessionStats): void {
+        this.stats = sessionStats;
     }
 }

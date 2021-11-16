@@ -1,9 +1,5 @@
-import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { SessionService } from '@app/services/session/session.service';
-import { environmentExt } from '@environment-ext';
-
-const localUrl = (call: string, id: string) => `${environmentExt.apiUrl}player/${call}/${id}`;
+import { SocketClientService } from '@app/services/socket-client/socket-client.service';
 
 @Injectable({
     providedIn: 'root',
@@ -11,8 +7,9 @@ const localUrl = (call: string, id: string) => `${environmentExt.apiUrl}player/$
 export class RackService {
     rack: string[];
 
-    constructor(private readonly httpClient: HttpClient, private readonly sessionService: SessionService) {
+    constructor(socketService: SocketClientService) {
         this.rack = [];
+        socketService.on('rack', (rack: string[]) => this.refresh(rack));
     }
 
     swapLeft(position: number): number {
@@ -43,7 +40,7 @@ export class RackService {
         return index;
     }
 
-    empty() {
+    reset() {
         this.rack.length = 0;
     }
 
@@ -51,12 +48,11 @@ export class RackService {
         return ((value % this.length) + this.length) % this.length;
     }
 
-    async refresh(): Promise<void> {
-        const rack = await this.httpClient.get<string[]>(localUrl('rack', this.sessionService.id)).toPromise();
-        this.update(rack);
+    get length(): number {
+        return this.rack.length;
     }
 
-    private update(rack: string[]): void {
+    private refresh(rack: string[]): void {
         rack = rack.slice();
 
         for (let i = 0; i < rack.length - this.rack.length; ) {
@@ -91,9 +87,5 @@ export class RackService {
         const newPosition = this.mod(position + delta);
         [this.rack[position], this.rack[newPosition]] = [this.rack[newPosition], this.rack[position]];
         return newPosition;
-    }
-
-    get length(): number {
-        return this.rack.length;
     }
 }

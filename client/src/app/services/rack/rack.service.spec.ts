@@ -113,7 +113,7 @@ describe('RackService', () => {
     });
 
     it('should empty', () => {
-        service.empty();
+        service.reset();
         expect(service.length).toEqual(0);
     });
 });

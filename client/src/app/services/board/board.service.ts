@@ -4,16 +4,23 @@ import { Constants } from '@app/constants/global.constants';
 import { SessionService } from '@app/services/session/session.service';
 import { Answer, BoardData, Bonus, Direction, Placement, Square, Vec2 } from '@common';
 import { environmentExt } from '@environment-ext';
+import { SocketClientService } from '@app/services/socket-client/socket-client.service';
 
 const localUrl = (call: string, id: string) => `${environmentExt.apiUrl}board/${call}/${id}`;
+
 @Injectable({
     providedIn: 'root',
 })
 export class BoardService {
     private boardData: BoardData;
 
-    constructor(private readonly httpClient: HttpClient, private readonly sessionService: SessionService) {
+    constructor(
+        private readonly httpClient: HttpClient,
+        private readonly socketService: SocketClientService,
+        private readonly sessionService: SessionService,
+    ) {
         this.reset();
+        this.socketService.on('board', (boardData: BoardData) => this.refresh(boardData));
     }
 
     get gameBoard(): BoardData {
@@ -22,11 +29,6 @@ export class BoardService {
 
     async placeLetters(letters: Placement[]): Promise<Answer> {
         return await this.httpClient.post<Answer>(localUrl('place', this.sessionService.id), letters).toPromise();
-    }
-
-    async refresh(): Promise<BoardData | null> {
-        this.boardData = await this.httpClient.get<BoardData>(localUrl('retrieve', this.sessionService.id)).toPromise();
-        return this.boardData;
     }
 
     retrievePlacements(word: string, initialPosition: Vec2, direction: Direction): Placement[] {
@@ -70,5 +72,9 @@ export class BoardService {
 
     getLetter(position: Vec2): string {
         return this.boardData.board[position.x - 1][position.y - 1].letter;
+    }
+
+    private refresh(boardData: BoardData): void {
+        this.boardData = boardData;
     }
 }
