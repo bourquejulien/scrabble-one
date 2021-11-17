@@ -25,13 +25,13 @@
                 <mat-option *ngFor="let seconds of secondsList" [value]="seconds">{{ seconds }}</mat-option>
             </mat-select>
         </mat-form-field>
-        <mat-form-field class="inputs" appearance="fill">
-            <mat-label>Dictionnaire</mat-label>
-            <mat-select name="gameDictionary" [(ngModel)]="dictionary" required>
-                <mat-option *ngFor="let d of adminService.dictionaries" [value]="d">{{ d.title }}</mat-option>
-            </mat-select>
-        </mat-form-field>
     </div>
+    <mat-form-field class="inputs" appearance="fill">
+        <mat-label>Dictionnaire</mat-label>
+        <mat-select name="gameDictionary" [(ngModel)]="dictionary" required>
+            <mat-option *ngFor="let d of adminService.dictionaries" [value]="d">{{ d.title }}</mat-option>
+        </mat-select>
+    </mat-form-field>
     <p class="inputPresentationText" *ngIf="data.gameModeType === gameType.SinglePlayer; else elseBlock">Nom des joueurs</p>
     <ng-template #elseBlock>
         <label class="inputPresentationText">Nom du joueur</label>
