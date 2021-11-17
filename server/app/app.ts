@@ -42,11 +42,7 @@ export class Application {
 
     private validateEnv(): void {
         // https://www.npmjs.com/package/dotenv?activeTab=readme
-        const envStatus = dotenv.config();
-        if (envStatus.error) {
-            throw envStatus.error;
-        }
-
+        dotenv.config();
         const REQUIRED_ENV_VARIABLES = ['DB_HOST', 'DB_USER', 'DB_PASSWORD'];
 
         let isEnvVariableMissing = false;

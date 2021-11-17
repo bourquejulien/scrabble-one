@@ -6,5 +6,5 @@ logger.configure({
 });
 
 process.env.DB_HOST = 'testHost';
-process.env.DB_USER = 'testUser';
+process.env.DB_USER = 'testUsr';
 process.env.DB_PASSWORD = 'testPsswd';
