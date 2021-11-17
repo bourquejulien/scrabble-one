@@ -39,7 +39,7 @@ export class BoardGeneratorService {
 
     generateBoardHandler(isRandomBonus: boolean, dictionaryHandler: DictionaryHandler): BoardHandler {
         const board = new Board(Config.GRID.GRID_SIZE, this.retrieveBonuses(isRandomBonus));
-        const boardValidator = new BoardValidator(board, BoardGeneratorService.retrieveLetterValues());
+        const boardValidator = new BoardValidator(board, dictionaryHandler,BoardGeneratorService.retrieveLetterValues());
 
         return new BoardHandler(board, boardValidator, isRandomBonus, dictionaryHandler);
     }

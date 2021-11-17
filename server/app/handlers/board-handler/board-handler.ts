@@ -30,7 +30,7 @@ export class BoardHandler {
             }
         }
 
-        return this.boardValidator.validate(letters, this.dictionaryHandler);
+        return this.boardValidator.validate(letters);
     }
 
     placeLetters(letters: Placement[]): ValidationResponse {

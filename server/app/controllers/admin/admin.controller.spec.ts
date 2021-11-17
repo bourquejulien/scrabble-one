@@ -15,7 +15,7 @@ import { DictionaryMetadata } from '@common';
 
 const PATH = process.cwd() + '/assets/dictionary.json';
 
-describe.only('AdminController', () => {
+describe('AdminController', () => {
     let expressApp: Express.Application;
     let dictionaryServiceStub: SinonStubbedInstance<DictionaryService>;
     let file: File;

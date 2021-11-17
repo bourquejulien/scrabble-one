@@ -5,7 +5,7 @@ import { expect } from 'chai';
 import { DictionaryService } from './dictionary.service';
 import mock from 'mock-fs';
 
-describe.only('DictionaryService', () => {
+describe('DictionaryService', () => {
     let service: DictionaryService;
 
     const dictionary: DictionaryMetadata = {

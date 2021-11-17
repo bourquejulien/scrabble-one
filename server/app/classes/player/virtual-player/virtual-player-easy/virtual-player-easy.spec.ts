@@ -4,7 +4,6 @@ import { VirtualPlayerEasy } from '@app/classes/player/virtual-player/virtual-pl
 import { BoardHandler } from '@app/handlers/board-handler/board-handler';
 import { ReserveHandler } from '@app/handlers/reserve-handler/reserve-handler';
 import { SocketHandler } from '@app/handlers/socket-handler/socket-handler';
-import { DictionaryService } from '@app/services/dictionary/dictionary.service';
 import { expect } from 'chai';
 import { createSandbox, createStubInstance, SinonSandbox } from 'sinon';
 import { Board } from '@app/classes/board/board';
@@ -12,6 +11,7 @@ import { SkipAction } from '@app/classes/player/virtual-player/actions/skip-acti
 import { ExchangeAction } from '@app/classes/player/virtual-player/actions/exchange-action';
 import { PlayActionEasy } from '@app/classes/player/virtual-player/virtual-player-easy/actions/play-action-easy';
 import { Action } from '@app/classes/player/virtual-player/actions/action';
+import { DictionaryHandler } from '@app/handlers/dictionary/dictionary-handler';
 
 const RANDOM_RETURN_EXCHANGE = 0.09;
 const RANDOM_RETURN_SKIP = 0.11;
@@ -23,7 +23,7 @@ describe('VirtualPlayer', () => {
     let service: VirtualPlayerEasy;
 
     const reserveHandler = createStubInstance(ReserveHandler);
-    const dictionaryService = createStubInstance(DictionaryService);
+    const dictionaryHandler = createStubInstance(DictionaryHandler);
     const socketHandler = createStubInstance(SocketHandler);
     const boardHandler = createStubInstance(BoardHandler);
 
@@ -32,7 +32,7 @@ describe('VirtualPlayer', () => {
     let sandboxRandom: SinonSandbox;
 
     beforeEach(() => {
-        service = new VirtualPlayerEasy(dictionaryService as unknown as DictionaryService, playerInfo, runAction);
+        service = new VirtualPlayerEasy(dictionaryHandler as unknown as DictionaryHandler, playerInfo, runAction);
 
         service.init(boardHandler as unknown as BoardHandler, reserveHandler, socketHandler as unknown as SocketHandler);
         boardHandler['board'] = new Board(BOARD_SIZE);

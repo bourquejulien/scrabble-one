@@ -14,7 +14,7 @@ import { VirtualPlayerExpert } from '@app/classes/player/virtual-player/virtual-
 import * as logger from 'winston';
 import { PlayerHandler } from '@app/handlers/player-handler/player-handler';
 import { DictionaryService } from '@app/services/dictionary/dictionary.service';
-import { DictionaryHandler } from '@app/handlers/dictionary-handler/dictionary-handler';
+import { DictionaryHandler } from '@app/handlers/dictionary/dictionary-handler';
 
 @Service()
 export class GameService {
