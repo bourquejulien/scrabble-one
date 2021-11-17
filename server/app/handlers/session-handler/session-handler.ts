@@ -48,6 +48,8 @@ export class SessionHandler {
         this.sessionData.isActive = true;
         this.sessionData.isStarted = true;
         this.timer = setInterval(() => this.timerTick(), Config.SESSION.REFRESH_INTERVAL_MS);
+
+        this.refresh();
         this.playerHandler.start();
         logger.info(`Game ${this.sessionInfo.id} started`);
     }
@@ -110,13 +112,17 @@ export class SessionHandler {
             return;
         }
 
+        this.refresh();
+
+        this.players.find((p) => p.id === id)?.startTurn();
+        this.sessionData.timeLimitEpoch = new Date().getTime() + this.sessionInfo.playTimeMs;
+    }
+
+    private refresh() {
         this.socketHandler.sendData('stats', this.playerHandler.getStats(this.players[0].id), this.players[0].id);
         this.socketHandler.sendData('stats', this.playerHandler.getStats(this.players[1].id), this.players[1].id);
         this.socketHandler.sendData('board', this.boardHandler.immutableBoard.boardData);
         this.socketHandler.sendData('reserve', this.reserveHandler.reserve);
-
-        this.players.find((p) => p.id === id)?.startTurn();
-        this.sessionData.timeLimitEpoch = new Date().getTime() + this.sessionInfo.playTimeMs;
     }
 
     private get isEndGame(): boolean {

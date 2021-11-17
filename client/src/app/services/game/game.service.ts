@@ -47,13 +47,12 @@ export class GameService {
 
     async startSinglePlayer(config: SinglePlayerConfig): Promise<void> {
         const serverConfig = await this.httpCLient.put<ServerConfig>(localUrl('game', 'init/single'), config).toPromise();
+        this.socketService.join(serverConfig.id);
         await this.start(serverConfig);
     }
 
     async start(serverConfig: ServerConfig): Promise<void> {
-        this.socketService.join(serverConfig.id);
         this.sessionService.serverConfig = serverConfig;
-
         this.gameRunning = true;
         this.onNextTurn(serverConfig.startId);
     }
