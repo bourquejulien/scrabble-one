@@ -45,17 +45,12 @@ export class Application {
         dotenv.config();
         const REQUIRED_ENV_VARIABLES = ['DB_HOST', 'DB_USER', 'DB_PASSWORD'];
 
-        let isEnvVariableMissing = false;
         for (const envVariable of REQUIRED_ENV_VARIABLES) {
             if (!(envVariable in process.env)) {
                 // eslint-disable-next-line no-console
                 console.error(`Error: ${envVariable} environment variable not set`);
-                isEnvVariableMissing = true;
+                process.exit(1);
             }
-        }
-
-        if (isEnvVariableMissing) {
-            process.exit(1);
         }
     }
 
