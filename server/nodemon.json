@@ -1,6 +1,11 @@
 {
-    "watch": ["app", "../common"],
+    "watch": [
+        "app",
+        "../common"
+    ],
     "ext": "ts",
-    "ignore": ["app/**/*.spec.ts"],
-    "exec": "npm run build && node --inspect out/server/app/index.js"
+    "ignore": [
+        "app/**/*.spec.ts"
+    ],
+    "exec": "npm run build && node -r dotenv/config --inspect out/server/app/index.js"
 }
