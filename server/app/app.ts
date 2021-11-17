@@ -47,6 +47,10 @@ export class Application {
             throw envStatus.error;
         }
 
+        process.env['DB_HOST'] = 'test';
+        process.env['DB_USER'] = 'test';
+        process.env['DB_PASSWORD'] = 'test';
+
         const REQUIRED_ENV_VARIABLES = ['DB_HOST', 'DB_USER', 'DB_PASSWORD'];
 
         let isEnvVariableMissing = false;
