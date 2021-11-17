@@ -1,5 +1,5 @@
 // WARNING : Make sure to always import 'reflect-metadata' and 'module-alias/register' first
-import dotenv from 'dotenv';
+
 import 'module-alias/register';
 import 'reflect-metadata';
 import { Container } from 'typedi';
@@ -24,12 +24,6 @@ logger.configure({
         }),
     ],
 });
-
-// https://www.npmjs.com/package/dotenv?activeTab=readme  
-const envStatus = dotenv.config();
-if (envStatus.error) {
-    throw envStatus.error;
-}
 
 const server: Server = Container.get(Server);
 server.init();

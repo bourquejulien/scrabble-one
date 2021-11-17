@@ -102,7 +102,6 @@ export class SessionHandler {
         }
 
         this.socketHandler.sendData('endGame', this.playerHandler.winner);
-        // updateScoreBoard
         logger.debug(`winner: ${this.playerHandler.winner}`);
         this.dispose();
     }

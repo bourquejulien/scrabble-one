@@ -5,6 +5,7 @@ import { ReserveController } from '@app/controllers/reserve/reserve.controller';
 import { DictionaryService } from '@app/services/dictionary/dictionary.service';
 import cookieParser from 'cookie-parser';
 import cors from 'cors';
+import dotenv from 'dotenv';
 import express from 'express';
 import { StatusCodes } from 'http-status-codes';
 import logger from 'morgan';
@@ -24,7 +25,6 @@ export class Application {
         dictionaryService: DictionaryService,
     ) {
         dictionaryService.retrieveDictionary();
-
         this.internalError = StatusCodes.INTERNAL_SERVER_ERROR;
         this.app = express();
         this.validateEnv();
@@ -41,11 +41,18 @@ export class Application {
     }
 
     private validateEnv(): void {
+        // https://www.npmjs.com/package/dotenv?activeTab=readme
+        const envStatus = dotenv.config();
+        if (envStatus.error) {
+            throw envStatus.error;
+        }
+
         const REQUIRED_ENV_VARIABLES = ['DB_HOST', 'DB_USER', 'DB_PASSWORD'];
 
         let isEnvVariableMissing = false;
         for (const envVariable of REQUIRED_ENV_VARIABLES) {
             if (!(envVariable in process.env)) {
+                // eslint-disable-next-line no-console
                 console.error(`Error: ${envVariable} environment variable not set`);
                 isEnvVariableMissing = true;
             }
