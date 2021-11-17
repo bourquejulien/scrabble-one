@@ -4,7 +4,7 @@
 
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { Injectable } from '@angular/core';
-import { fakeAsync, TestBed, tick } from '@angular/core/testing';
+import { fakeAsync, TestBed } from '@angular/core/testing';
 import { BoardService } from '@app/services/board/board.service';
 import { PlayerService } from '@app/services/player/player.service';
 import { RackService } from '@app/services/rack/rack.service';
@@ -63,24 +63,15 @@ describe('PlayerService', () => {
         expect(service).toBeTruthy();
     });
 
-    it('shoud place letters using placeLetters from board service', async () => {
-        const answer = { isSuccess: false, body: 'Error' };
+    it('should return false if place call fails', async () => {
         letterToPlace = [{ letter: 'k', position: { x: 11, y: 3 } }];
         boardServiceSpy['retrievePlacements'].and.returnValue(letterToPlace);
-        boardServiceSpy['placeLetters'].and.resolveTo(answer);
 
-        await service.placeLetters('k', { x: 11, y: 3 }, Direction.Up);
-        expect(boardServiceSpy['placeLetters']).toHaveBeenCalled();
-    });
+        service.placeLetters('k', { x: 11, y: 3 }, Direction.Up).then((isSuccess) => {
+            expect(isSuccess).toBe(false);
+        });
 
-    it('should send error message if validation fail', async () => {
-        const answer = { isSuccess: false, body: 'Error' };
-        letterToPlace = [{ letter: 'k', position: { x: 11, y: 3 } }];
-        boardServiceSpy['retrievePlacements'].and.returnValue(letterToPlace);
-        boardServiceSpy['placeLetters'].and.returnValue(Promise.resolve(answer));
-
-        const isSuccess = await service.placeLetters('k', { x: 11, y: 3 }, Direction.Up);
-        expect(isSuccess).toBe(false);
+        httpMock.expectOne(localUrl('place', `${sessionId}`)).error(new ErrorEvent('Turn wifi on!'));
     });
 
     it('should call POST request with http client when exchanging', fakeAsync(() => {
@@ -91,21 +82,6 @@ describe('PlayerService', () => {
         expect(request[0].request.method).toEqual('POST');
 
         request[0].flush([]);
-        tick();
-    }));
-
-    it('should send error message when exchange called if invalid letters provided', fakeAsync(async () => {
-        const answer = { isSuccess: false, body: 'Error' };
-
-        service.exchangeLetters('z');
-        const request = httpMock.expectOne(localUrl('exchange', `${sessionId}`));
-        boardServiceSpy['placeLetters'].and.returnValue(Promise.resolve(answer));
-
-        request.flush(answer);
-        tick();
-
-        const isSuccess = await service.placeLetters('k', { x: 11, y: 3 }, Direction.Up);
-        expect(isSuccess).toEqual(false);
     }));
 
     it('should call POST request with http client when skipping', fakeAsync(() => {
@@ -115,18 +91,19 @@ describe('PlayerService', () => {
         expect(request[0].request.method).toEqual('POST');
     }));
 
-    it('should send error message when skipTurn fails', fakeAsync(async () => {
-        const answer = { isSuccess: false, body: 'Error' };
+    it('should call POST request with http client when trying to place letter', fakeAsync(async () => {
+        letterToPlace = [{ letter: 'k', position: { x: 11, y: 3 } }];
+        const answer = { isSuccess: true, body: 'Error' };
 
-        service.skipTurn();
-        const request = httpMock.expectOne(localUrl('skip', `${sessionId}`));
+        boardServiceSpy['retrievePlacements'].and.returnValue(letterToPlace);
 
+        service.placeLetters('k', { x: 11, y: 3 }, Direction.Up).then((isSuccess) => {
+            expect(isSuccess).toBe(true);
+        });
+
+        const request = httpMock.expectOne(localUrl('place', `${sessionId}`));
         request.flush(answer);
-        tick();
-
-        boardServiceSpy['placeLetters'].and.returnValue(Promise.resolve(answer));
-        const isSuccess = await service.placeLetters('k', { x: 11, y: 3 }, Direction.Up);
-        expect(isSuccess).toEqual(false);
+        expect(request.request.method).toEqual('POST');
     }));
 
     it('should reset game data if reset function called', () => {

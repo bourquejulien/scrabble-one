@@ -34,7 +34,10 @@ export class Application {
     }
 
     private config(): void {
-        this.app.use(logger('common'));
+        // Middlewares configuration
+        if (process.env.NODE_ENV !== 'test') {
+            this.app.use(logger('common'));
+        }
         this.app.use(express.json());
         this.app.use(express.urlencoded({ extended: true }));
         this.app.use(cookieParser());
