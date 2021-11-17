@@ -1,19 +1,20 @@
-import { GameType, MultiplayerCreateConfig, MultiplayerJoinConfig, ServerConfig, SinglePlayerConfig, ConvertConfig } from '@common';
-import { SessionHandlingService } from '@app/services/sessionHandling/session-handling.service';
-import { BoardGeneratorService } from '@app/services/board/board-generator.service';
-import { Service } from 'typedi';
-import { SessionHandler } from '@app/handlers/session-handler/session-handler';
 import { generateId } from '@app/classes/id';
+import { Service } from 'typedi';
 import { ReserveHandler } from '@app/handlers/reserve-handler/reserve-handler';
-import { VirtualPlayer } from '@app/classes/player/virtual-player/virtual-player';
+import { PlayerInfo } from '@app/classes/player-info';
 import { HumanPlayer } from '@app/classes/player/human-player/human-player';
 import { Action } from '@app/classes/player/virtual-player/actions/action';
-import { PlayerInfo } from '@app/classes/player-info';
+import { VirtualPlayer } from '@app/classes/player/virtual-player/virtual-player';
+import { SessionHandler } from '@app/handlers/session-handler/session-handler';
+import { BoardGeneratorService } from '@app/services/board/board-generator.service';
+import { SessionHandlingService } from '@app/services/sessionHandling/session-handling.service';
 import { SocketService } from '@app/services/socket/socket-service';
+import { ConvertConfig, GameType, MultiplayerCreateConfig, MultiplayerJoinConfig, ServerConfig, SinglePlayerConfig } from '@common';
+import { VirtualPlayerExpert } from '@app/classes/player/virtual-player/virtual-player-expert/virtual-player-expert';
 import * as logger from 'winston';
 import { PlayerHandler } from '@app/handlers/player-handler/player-handler';
 import { DictionaryService } from '@app/services/dictionary/dictionary.service';
-import { DictionaryHandler } from '@app/handlers/dictionary/dictionary-handler';
+import { DictionaryHandler } from '@app/handlers/dictionary-handler/dictionary-handler';
 
 @Service()
 export class GameService {
@@ -148,7 +149,7 @@ export class GameService {
         }
 
         if (handler.sessionInfo.gameType === GameType.Multiplayer && handler.sessionData.isActive) {
-            handler.abandon(id);
+            handler.abandonGame(id);
             logger.info(`Game abandoned: ${id}`);
         } else {
             handler.dispose();
@@ -168,7 +169,8 @@ export class GameService {
 
     private addVirtualPlayer(playerInfo: PlayerInfo, sessionHandler: SessionHandler): VirtualPlayer {
         const actionCallback = (action: Action): Action | null => action.execute();
-        const virtualPlayer = new VirtualPlayer(sessionHandler.boardHandler.dictionaryHandler, playerInfo, actionCallback);
+
+        const virtualPlayer = new VirtualPlayerExpert(sessionHandler.boardHandler.dictionaryHandler, playerInfo, actionCallback);
 
         sessionHandler.addPlayer(virtualPlayer);
 

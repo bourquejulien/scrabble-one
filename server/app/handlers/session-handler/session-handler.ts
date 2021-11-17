@@ -1,15 +1,16 @@
-import { SessionInfo } from '@app/classes/session-info';
-import { ServerConfig, SessionStats } from '@common';
 import { Player } from '@app/classes/player/player';
 import { SessionData } from '@app/classes/session-data';
+import { SessionInfo } from '@app/classes/session-info';
 import { Config } from '@app/config';
-import { SocketHandler } from '@app/handlers/socket-handler/socket-handler';
-import { PlayerHandler } from '@app/handlers/player-handler/player-handler';
-import { Subscription } from 'rxjs';
 import { BoardHandler } from '@app/handlers/board-handler/board-handler';
+import { PlayerHandler } from '@app/handlers/player-handler/player-handler';
 import { ReserveHandler } from '@app/handlers/reserve-handler/reserve-handler';
-import * as logger from 'winston';
+import { SocketHandler } from '@app/handlers/socket-handler/socket-handler';
 import { SocketService } from '@app/services/socket/socket-service';
+import { ServerConfig, SessionStats } from '@common';
+import { Subscription } from 'rxjs';
+import * as logger from 'winston';
+
 export class SessionHandler {
     sessionData: SessionData;
     private timer: NodeJS.Timer;
@@ -79,7 +80,7 @@ export class SessionHandler {
         return { localStats: firstPlayer.stats, remoteStats: secondPlayer.stats };
     }
 
-    abandon(playerId: string): void {
+    abandonGame(playerId: string): void {
         logger.debug(`SessionHandler - Abandon - PlayerId: ${playerId}`);
 
         const winner = this.players.find((p) => p.id !== playerId)?.id ?? '';
@@ -98,6 +99,7 @@ export class SessionHandler {
         }
 
         this.socketHandler.sendData('endGame', this.playerHandler.winner);
+        logger.debug(`winner: ${this.playerHandler.winner}`);
         this.dispose();
     }
 

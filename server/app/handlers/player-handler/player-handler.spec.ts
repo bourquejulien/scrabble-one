@@ -7,7 +7,7 @@ import { PlayerData } from '@app/classes/player-data';
 import { PlayerInfo } from '@app/classes/player-info';
 import { HumanPlayer } from '@app/classes/player/human-player/human-player';
 import { Player } from '@app/classes/player/player';
-import { VirtualPlayer } from '@app/classes/player/virtual-player/virtual-player';
+import { VirtualPlayerEasy } from '@app/classes/player/virtual-player/virtual-player-easy/virtual-player-easy';
 import { expect } from 'chai';
 import { BehaviorSubject, Observable, Subject, Subscription } from 'rxjs';
 import { createSandbox, createStubInstance } from 'sinon';
@@ -29,7 +29,7 @@ describe('PlayerHandler', () => {
     beforeEach(() => {
         const turnSubject = new Subject<string>();
         const playerA = createStubInstance(HumanPlayer);
-        const playerB = createStubInstance(VirtualPlayer);
+        const playerB = createStubInstance(VirtualPlayerEasy);
         playerA.onTurn.returns(turnSubject.asObservable());
         playerB.onTurn.returns(turnSubject.asObservable());
         playerA.playerInfo = PLAYER_INFO_A;
@@ -40,7 +40,7 @@ describe('PlayerHandler', () => {
         playerB.isTurn = false;
         handler['playerSubscriptions'].set('0', new Subscription());
         handler.addPlayer(playerA as unknown as HumanPlayer);
-        handler.addPlayer(playerB as unknown as VirtualPlayer);
+        handler.addPlayer(playerB as unknown as VirtualPlayerEasy);
     });
 
     afterEach(() => {
@@ -130,7 +130,7 @@ describe('PlayerHandler', () => {
         handler = new PlayerHandler();
         const SCORE = 10;
         const playerA = createStubInstance(HumanPlayer);
-        const playerB = createStubInstance(VirtualPlayer);
+        const playerB = createStubInstance(VirtualPlayerEasy);
         playerA.onTurn.returns(turnSubject.asObservable());
         playerB.onTurn.returns(turnSubject.asObservable());
         playerA.playerInfo = PLAYER_INFO_A;
@@ -138,7 +138,7 @@ describe('PlayerHandler', () => {
         playerA.playerData = { baseScore: SCORE, scoreAdjustment: 0, skippedTurns: 4, rack: ['a', 'b', 'c', 'd', 'e', 'f', 'g'] };
         playerB.playerData = PLAYER_DATA_DEFAULT;
         handler.addPlayer(playerA as unknown as HumanPlayer);
-        handler.addPlayer(playerB as unknown as VirtualPlayer);
+        handler.addPlayer(playerB as unknown as VirtualPlayerEasy);
         expect(handler.winner).to.eql('0');
     });
     it('should get winning secondplayer', () => {
@@ -146,7 +146,7 @@ describe('PlayerHandler', () => {
         handler = new PlayerHandler();
         const SCORE = 10;
         const playerA = createStubInstance(HumanPlayer);
-        const playerB = createStubInstance(VirtualPlayer);
+        const playerB = createStubInstance(VirtualPlayerEasy);
         playerA.onTurn.returns(turnSubject.asObservable());
         playerB.onTurn.returns(turnSubject.asObservable());
         playerA.playerInfo = PLAYER_INFO_A;
@@ -154,7 +154,7 @@ describe('PlayerHandler', () => {
         playerB.playerData = { baseScore: SCORE, scoreAdjustment: 0, skippedTurns: 4, rack: ['a', 'b', 'c', 'd', 'e', 'f', 'g'] };
         playerA.playerData = PLAYER_DATA_DEFAULT;
         handler.addPlayer(playerA as unknown as HumanPlayer);
-        handler.addPlayer(playerB as unknown as VirtualPlayer);
+        handler.addPlayer(playerB as unknown as VirtualPlayerEasy);
         expect(handler.winner).to.eql('1');
     });
 });

@@ -6,7 +6,7 @@ import * as logger from 'winston';
 
 export class HumanPlayer extends Player {
     constructor(public playerInfo: PlayerInfo) {
-        super();
+        super(playerInfo);
     }
 
     async startTurn(): Promise<void> {
@@ -52,7 +52,7 @@ export class HumanPlayer extends Player {
             return { isSuccess: false, body: '' };
         }
 
-        this.playerData.baseScore += validationData.points;
+        this.playerData.baseScore += validationData.score;
 
         this.updateRack(lettersToPlace);
         this.fillRack();

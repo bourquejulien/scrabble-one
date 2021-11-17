@@ -26,7 +26,7 @@ class BoardValidatorStub {
 
     validate(letters: Placement[]): ValidationResponse {
         this.lastLetters = letters;
-        return { isSuccess: this.isSuccess, points: 0, description: '' };
+        return this.isSuccess ? { isSuccess: true, score: 0, placements: [], words: [] } : { isSuccess: false, description: '' };
     }
 
     // eslint-disable-next-line no-unused-vars -- Parameter useless for stub
@@ -106,7 +106,7 @@ describe('BoardHandler', () => {
             { letter: 'z', position: { x: 11, y: 7 } },
             { letter: 'e', position: { x: 12, y: 7 } },
         ];
-        createSandbox().stub(boardValidatorStub, 'validate').returns({ isSuccess: true, points: 0, description: '' });
+        createSandbox().stub(boardValidatorStub, 'validate').returns({ isSuccess: true, score: 0, placements: [], words: [] });
         handler.placeLetters(COMBINED_WORD);
         expect(handler.retrieveNewLetters(PLACEMENT)).to.eql([]);
     });
@@ -116,9 +116,9 @@ describe('BoardHandler', () => {
         expect(handler.lookupLetters(COMBINED_WORD)).to.eql({
             isSuccess: false,
             description: "Le caractère p n'est pas accepté",
-            points: 0,
         });
     });
+
     it('retrieve new Letters should support errors', () => {
         const stubbedBoard = new Board(BOARD_SIZE);
         createSandbox()

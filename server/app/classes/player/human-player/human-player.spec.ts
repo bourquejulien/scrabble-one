@@ -17,8 +17,12 @@ import { Board } from '@app/classes/board/board';
 import { BoardValidator } from '@app/classes/validation/board-validator';
 import { ReserveHandler } from '@app/handlers/reserve-handler/reserve-handler';
 import { Observable } from 'rxjs';
+<<<<<<< HEAD
 import { ValidationResponse } from '@app/classes/validation/validation-response';
 import { DictionaryHandler } from '@app/handlers/dictionary/dictionary-handler';
+=======
+import { ValidationFailed, ValidationResponse } from '@app/classes/validation/validation-response';
+>>>>>>> 08dda0ec52835fd800c7e79e5d68ce38579c353c
 const LETTERS = ['a', 'b', 'c', 'd', 'e', 'f', 'g'];
 const RACK = ['a', '*', 'c', 'd', 'e', 'f', 'g'];
 const NOT_FILLED_RACK = ['a', 'b', 'c', 'd', 'e'];
@@ -57,12 +61,12 @@ export class SocketServiceMock extends SocketService {
 }
 export class BoardHandlerMock extends BoardHandler {
     lookupLetters(letters: Placement[]): ValidationResponse {
-        if (letters === VALID_PLACEMENT) return { isSuccess: true, points: 0, description: '' };
-        return { isSuccess: false, points: 0, description: '' };
+        if (letters === VALID_PLACEMENT) return { isSuccess: true, score: 0, placements: [], words: [] };
+        return { isSuccess: false, description: '' };
     }
 
-    placeLetters(letters: Placement[]): ValidationResponse {
-        return { isSuccess: false, points: 0, description: '' };
+    placeLetters(letters: Placement[]): ValidationFailed {
+        return { isSuccess: false, description: '' };
     }
 
     retrieveNewLetters(placements: Placement[]): Placement[] {

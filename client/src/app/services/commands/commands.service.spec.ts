@@ -38,15 +38,9 @@ describe('CommandsService', () => {
         expect(service).toBeTruthy();
     });
 
-    it('#parseInput should call show help', () => {
-        const spy = spyOn<any>(service, 'showHelp');
-        service.parseInput('!aide');
-        expect(spy).toHaveBeenCalled();
-    });
-
     it('#parseInput should send a help message', () => {
         const spy = spyOn<any>(service['messagingService'], 'send');
-        service['showHelp']();
+        service.parseInput('!aide');
         expect(spy).toHaveBeenCalledWith(SystemMessages.HelpTitle, SystemMessages.HelpMessage, MessageType.System);
     });
 
