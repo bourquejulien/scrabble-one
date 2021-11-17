@@ -136,7 +136,7 @@ describe('BoardValidator', () => {
         const expectedScore = 18;
         const response = boardValidator.validate(generatePlacement(WORDS[5], centerPosition, Direction.Down));
         expect(response.isSuccess).to.be.true;
-        expect(response.points).to.equal(expectedScore);
+        if (response.isSuccess) expect(response.score).to.equal(expectedScore);
     });
 
     it('should succeed and return correct score on valid combination', () => {
@@ -150,10 +150,14 @@ describe('BoardValidator', () => {
             { letter: 'e', position: { x: 7, y: 11 } },
         ];
 
-        expect(boardValidator.validate(FIRST_PLACEMENT)).to.eql({ isSuccess: true, points: expectedScores[0], description: '' });
+        let response = boardValidator.validate(FIRST_PLACEMENT);
+        expect(response.isSuccess).to.be.true;
+        if (response.isSuccess) expect(response.score).to.eql(expectedScores[0]);
         board.merge(FIRST_PLACEMENT);
 
-        expect(boardValidator.validate(COMBINED_WORD)).to.eql({ isSuccess: true, points: expectedScores[1], description: '' });
+        response = boardValidator.validate(COMBINED_WORD);
+        expect(response.isSuccess).to.be.true;
+        if (response.isSuccess) expect(response.score).to.eql(expectedScores[1]);
     });
 
     it('should fail if word combination is invalid', () => {
@@ -204,21 +208,23 @@ describe('BoardValidator', () => {
     it('should fail if first placement as only one letter', () => {
         expect(boardValidator.validate(generatePlacement('a', centerPosition, Direction.Right)).isSuccess).to.be.false;
     });
+
     it('retrieve Direction should return Direction.None if weird placement', () => {
         const BAD_PLACEMENT: Vec2[] = [
             { x: 0, y: 0 },
             { x: 1, y: 1 },
             { x: 2, y: 2 },
         ];
-        expect(boardValidator['retrieveDirection'](BAD_PLACEMENT)).to.eql(Direction.None);
+        expect(BoardValidator['retrieveDirection'](BAD_PLACEMENT)).to.eql(Direction.None);
     });
+
     it('retrieve Direction should return Direction.None if weird placement modified', () => {
         const BAD_PLACEMENT_MODIFIED: Vec2[] = [
             { x: 0, y: 0 },
             { x: 0, y: 1 },
             { x: 1, y: 1 },
         ];
-        expect(boardValidator['retrieveDirection'](BAD_PLACEMENT_MODIFIED)).to.eql(Direction.None);
+        expect(BoardValidator['retrieveDirection'](BAD_PLACEMENT_MODIFIED)).to.eql(Direction.None);
     });
 
     it('retrieve Direction should return Direction.None if weird placement modified again', () => {
@@ -227,6 +233,6 @@ describe('BoardValidator', () => {
             { x: 1, y: 0 },
             { x: 1, y: 0 },
         ];
-        expect(boardValidator['retrieveDirection'](BAD_PLACEMENT_MODIFIED)).to.eql(Direction.None);
+        expect(BoardValidator['retrieveDirection'](BAD_PLACEMENT_MODIFIED)).to.eql(Direction.None);
     });
 });

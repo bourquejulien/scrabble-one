@@ -1,8 +1,8 @@
 import { Direction, reverseDirection, Vec2, Square, Placement } from '@common';
 import { ImmutableBoard } from '@app/classes/board/board';
 import { Dictionary } from '@app/classes/dictionary/dictionary';
-import { Play } from './play';
 import { BoardHandler } from '@app/handlers/board-handler/board-handler';
+import { Play } from '@app/classes/virtual-player/play';
 
 interface PositionedWord {
     word: string;
@@ -76,7 +76,7 @@ export class PlayGenerator {
             const letters = this.boardHandler.retrieveNewLetters(PlayGenerator.generatePlacement(positionedWord, startPosition, direction));
             const response = this.boardHandler.lookupLetters(letters);
             if (response.isSuccess) {
-                this.plays.push({ score: response.points, word: positionedWord.word, letters });
+                this.plays.push(response);
             }
         }
     }
@@ -110,7 +110,10 @@ export class PlayGenerator {
         this.findWord(generatedWords, this.availableLetters, { word: startWord, startPosition }, true);
         this.findWord(generatedWords, this.availableLetters, { word: startWord, startPosition }, false);
 
-        return generatedWords;
+        const filter = new Map<string, PositionedWord>();
+        generatedWords.forEach((w) => filter.set(w.word + w.startPosition, w));
+
+        return Array.from(filter.values());
     }
 
     private findWord(generatedWords: PositionedWord[], letters: string[], startWord: PositionedWord, isForward: boolean) {

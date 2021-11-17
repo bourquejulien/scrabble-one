@@ -13,7 +13,6 @@ import * as logger from 'winston';
 
 export class SessionHandler {
     sessionData: SessionData;
-    isAbandonned: boolean;
     private timer: NodeJS.Timer;
 
     private readonly playerSubscription: Subscription;
@@ -26,7 +25,6 @@ export class SessionHandler {
         private playerHandler: PlayerHandler,
         socketService: SocketService,
     ) {
-        this.isAbandonned = false;
         this.socketHandler = socketService.generate(sessionInfo.id);
         this.sessionData = { isActive: false, isStarted: false, timeLimitEpoch: 0 };
         this.playerSubscription = this.playerHandler.onTurn().subscribe((id) => this.onTurn(id));
