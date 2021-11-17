@@ -1,5 +1,5 @@
 import { LocationStrategy } from '@angular/common';
-import { Component, ElementRef, OnDestroy, ViewChild } from '@angular/core';
+import { Component, ElementRef, HostBinding, OnDestroy, ViewChild } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { MatDrawer } from '@angular/material/sidenav';
 import { Router } from '@angular/router';
@@ -17,6 +17,7 @@ export enum Icon {
     Logout = 'exit_to_app',
     Message = 'question_answer',
     Skip = 'block',
+    Dark = 'dark_mode',
 }
 
 interface ButtonConfig {
@@ -33,7 +34,7 @@ interface ButtonConfig {
 })
 export class GamePageComponent implements OnDestroy {
     @ViewChild('drawer', { static: true }) drawer: MatDrawer;
-
+    @HostBinding('class') cssClassName = '';
     playerType: PlayerType;
     buttonConfig: ButtonConfig[];
     iconList: string[];
@@ -82,6 +83,12 @@ export class GamePageComponent implements OnDestroy {
                 hover: 'Passer son tour',
                 action: async () => this.commandService.parseInput('!passer'),
             },
+            {
+                color: 'primary',
+                icon: Icon.Dark,
+                hover: 'Activer le mode sombre',
+                action: () => this.toggleDarkMode(),
+            },
         ];
 
         this.gameEndingSubscription = gameService.gameEnding.subscribe((winner) => this.endGame(winner));
@@ -96,6 +103,15 @@ export class GamePageComponent implements OnDestroy {
     toggleDrawer(): void {
         this.drawer.toggle();
         this.isOpen = !this.isOpen;
+    }
+
+    toggleDarkMode(): void {
+        const darkMode = 'darkMode';
+        if (this.cssClassName === darkMode) {
+            this.cssClassName = '';
+        } else {
+            this.cssClassName = 'darkMode';
+        }
     }
 
     endGame(winner: EndGameWinner) {
