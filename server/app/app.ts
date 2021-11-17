@@ -5,7 +5,6 @@ import { ReserveController } from '@app/controllers/reserve/reserve.controller';
 import { DictionaryService } from '@app/services/dictionary/dictionary.service';
 import cookieParser from 'cookie-parser';
 import cors from 'cors';
-import dotenv from 'dotenv';
 import express from 'express';
 import { StatusCodes } from 'http-status-codes';
 import logger from 'morgan';
@@ -41,8 +40,6 @@ export class Application {
     }
 
     private validateEnv(): void {
-        // https://www.npmjs.com/package/dotenv?activeTab=readme
-        dotenv.config();
         const REQUIRED_ENV_VARIABLES = ['DB_HOST', 'DB_USER', 'DB_PASSWORD'];
 
         for (const envVariable of REQUIRED_ENV_VARIABLES) {

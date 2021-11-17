@@ -1,5 +1,6 @@
 // WARNING : Make sure to always import 'reflect-metadata' and 'module-alias/register' first
 
+import dotenv from 'dotenv';
 import 'module-alias/register';
 import 'reflect-metadata';
 import { Container } from 'typedi';
@@ -25,5 +26,6 @@ logger.configure({
     ],
 });
 
+dotenv.config();
 const server: Server = Container.get(Server);
 server.init();
