@@ -50,7 +50,9 @@ export class InitGameComponent implements OnInit {
         @Inject(MAT_DIALOG_DATA) readonly data: { gameModeType: GameType },
     ) {
         this.gameTypesList = Constants.GAME_TYPES_LIST;
-        this.botNames = [];
+        this.botNames = adminService.virtualPlayerNames.beginners;
+        console.log('', this.botNames);
+        console.log('', adminService.virtualPlayerNames);
         this.minutesList = TURN_LENGTH_MINUTES;
         this.secondsList = TURN_LENGTH_SECONDS;
         this.gameType = GameType;

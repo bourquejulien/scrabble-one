@@ -6,9 +6,9 @@ import { Subscription } from 'rxjs';
 import { DictionaryMetadata } from '@common';
 
 const localUrl = (call: string, id: string) => `${environmentExt.apiUrl}admin/${call}/${id}`;
-interface Playername {
-    name: string;
-    expert: boolean;
+interface Playernames {
+    experts: string[];
+    beginners: string[];
 }
 @Injectable({
     providedIn: 'root',
@@ -18,11 +18,11 @@ export class AdminService {
     fileName = '';
     uploadSub: Subscription;
     uploadProgress: number;
-    virtualPlayerNames: Playername[];
+    virtualPlayerNames: Playernames;
 
     constructor(private httpClient: HttpClient) {
         this.dictionaries = [];
-        this.virtualPlayerNames = [];
+        this.virtualPlayerNames = { experts: [], beginners: [] };
         this.retrieveUsernames();
         this.retrieveDictionnaries();
     }
@@ -69,18 +69,22 @@ export class AdminService {
     }
 
     async retrieveUsernames() {
-        const result = await this.httpClient.get<Playername[]>(localUrl('playername', '')).toPromise();
+        const result = await this.httpClient.get<Playernames>(localUrl('playername', '')).toPromise();
         if (result) {
             this.virtualPlayerNames = result;
         }
     }
 
     async updateUsername() {
-        await this.httpClient.post<Playername[]>(localUrl('playername', ''), this.virtualPlayerNames).toPromise();
+        await this.httpClient.post<Playernames>(localUrl('playername', ''), this.virtualPlayerNames).toPromise();
     }
 
-    removePlayername(playername: Playername) {
-        this.virtualPlayerNames.splice(this.virtualPlayerNames.indexOf(playername), 1);
+    removePlayername(playername: string, expert: boolean) {
+        if (expert) {
+            this.virtualPlayerNames.experts.splice(this.virtualPlayerNames.experts.indexOf(playername), 1);
+        } else {
+            this.virtualPlayerNames.beginners.splice(this.virtualPlayerNames.beginners.indexOf(playername), 1);
+        }
     }
 
     async resetSettings(): Promise<void> {

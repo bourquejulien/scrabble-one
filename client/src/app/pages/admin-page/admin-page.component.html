@@ -73,24 +73,43 @@
                 Ajouter ou retirer des choix de noms pour des joueurs virtuels
             </mat-panel-description>
         </mat-expansion-panel-header>
-        <h4><b>Noms des joueurs virtuels standards</b></h4>
-        <mat-selection-list>
-            <mat-list-item *ngFor="let player of adminService.virtualPlayerNames; let i = index">
-                <div>
-                    <mat-form-field appearance="outline">
-                        <mat-label>Nom du joueur virtuel</mat-label>
-                        <input matInput required placeholder="Nom du joueur virtuel" [(ngModel)]="player.name" [value]="player.name">
-                    </mat-form-field>
-                    <span></span>
-                    Expert:
-                    <mat-checkbox mat-button [(ngModel)]="player.expert" [checked]="player.expert"></mat-checkbox>
-                    <button mat-stroked-button color="warn" (click)="adminService.removePlayername(player)" *ngIf="i >= 3">
-                        <mat-icon>delete</mat-icon>
-                    </button>
-                </div>
-            </mat-list-item>
-        </mat-selection-list>
-        <button mat-stroked-button (click)="adminService.virtualPlayerNames.push({name: '', expert: false})">
+        <!-- <mat-grid-list>
+            <mat-grid-tile-header></mat-grid-tile-header>
+            <mat-grid-tile>
+                <h4><b>Noms des joueurs virtuels experts</b></h4>
+                <mat-selection-list>
+                    <mat-list-item *ngFor="let player of adminService.virtualPlayerNames.experts; let i = index">
+                        <div>
+                            <mat-form-field appearance="outline">
+                                <mat-label>Nom du joueur virtuel</mat-label>
+                                <input matInput required placeholder="Nom du joueur virtuel" [(ngModel)]="player" [value]="player">
+                            </mat-form-field>
+                            <button mat-stroked-button color="warn" (click)="adminService.removePlayername(player, true)" *ngIf="i >= 3">
+                                <mat-icon>delete</mat-icon>
+                            </button>
+                        </div>
+                    </mat-list-item>
+                </mat-selection-list>
+            </mat-grid-tile>
+            <mat-grid-tile-header></mat-grid-tile-header>
+            <mat-grid-tile>
+                <h4><b>Noms des joueurs virtuels experts</b></h4>
+                <mat-selection-list>
+                    <mat-list-item *ngFor="let player of adminService.virtualPlayerNames.experts; let i = index">
+                        <div>
+                            <mat-form-field appearance="outline">
+                                <mat-label>Nom du joueur virtuel</mat-label>
+                                <input matInput required placeholder="Nom du joueur virtuel" [(ngModel)]="player" [value]="player">
+                            </mat-form-field>
+                            <button mat-stroked-button color="warn" (click)="adminService.removePlayername(player, true)" *ngIf="i >= 3">
+                                <mat-icon>delete</mat-icon>
+                            </button>
+                        </div>
+                    </mat-list-item>
+                </mat-selection-list>
+            </mat-grid-tile>
+        </mat-grid-list> -->
+        <button mat-stroked-button (click)="adminService.virtualPlayerNames.experts.push('')">
             Ajouter un joueur virtuel <mat-icon>add</mat-icon>
         </button>
         <button mat-stroked-button color="success" (click)="adminService.updateUsername()">

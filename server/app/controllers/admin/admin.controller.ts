@@ -5,19 +5,18 @@ import { IncomingForm } from 'formidable';
 import { tmpdir } from 'os';
 import * as logger from 'winston';
 import { DictionaryService } from '@app/services/dictionary/dictionary.service';
-interface Playername {
-    name: string;
-    expert: boolean;
+interface Playernames {
+    experts: string[];
+    beginners: string[];
 }
 const UPLOAD_DIR = tmpdir();
 @Service()
 export class AdminController {
-    readonly defaultBotNames: Playername[] = [
-        { name: 'Monique', expert: false },
-        { name: 'Claudette', expert: false },
-        { name: 'Alphonse', expert: false },
-    ];
-    virtualPlayerNames: Playername[];
+    readonly defaultBotNames: Playernames = {
+        experts: ['Monique', 'Claudette', 'Alphonse'],
+        beginners: ['Éléanor', 'Alphrède', 'Jeaninne'],
+    };
+    virtualPlayerNames: Playernames;
     router: Router;
 
     constructor(private dictionaryService: DictionaryService) {
@@ -67,7 +66,6 @@ export class AdminController {
                     logger.debug(`Requesting to download dictionary: ${filepath}`);
                     res.status(Constants.HTTP_STATUS.OK);
                     res.download(filepath);
-                    res.sendStatus(Constants.HTTP_STATUS.OK);
                 }
             }
         });
@@ -78,7 +76,7 @@ export class AdminController {
 
         this.router.post('/playername', (req: Request, res: Response) => {
             this.virtualPlayerNames = req.body;
-            logger.debug('Virtual Player Names - length:' + this.virtualPlayerNames.length);
+            logger.debug('Virtual Player Names - length:' + this.virtualPlayerNames.experts.length + this.virtualPlayerNames.beginners.length);
             res.sendStatus(Constants.HTTP_STATUS.OK);
         });
 
