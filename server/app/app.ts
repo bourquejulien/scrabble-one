@@ -1,13 +1,14 @@
 import { HttpException } from '@app/classes/http.exception';
 import { GameController } from '@app/controllers/game/game.controller';
+import { DictionaryService } from '@app/services/dictionary/dictionary.service';
 import cookieParser from 'cookie-parser';
 import cors from 'cors';
 import express from 'express';
 import { StatusCodes } from 'http-status-codes';
-import logger from 'morgan';
+import morgan from 'morgan';
 import { Service } from 'typedi';
-import { DictionaryService } from '@app/services/dictionary/dictionary.service';
 import { PlayerController } from './controllers/player/player.controller';
+import * as logger from 'winston';
 
 @Service()
 export class Application {
@@ -20,9 +21,9 @@ export class Application {
         dictionaryService: DictionaryService,
     ) {
         dictionaryService.retrieveDictionary();
-
         this.internalError = StatusCodes.INTERNAL_SERVER_ERROR;
         this.app = express();
+        this.validateEnv();
         this.config();
         this.bindRoutes();
     }
@@ -33,10 +34,21 @@ export class Application {
         this.errorHandling();
     }
 
+    private validateEnv(): void {
+        const REQUIRED_ENV_VARIABLES = ['DB_HOST', 'DB_USER', 'DB_PASSWORD'];
+
+        for (const envVariable of REQUIRED_ENV_VARIABLES) {
+            if (!(envVariable in process.env)) {
+                logger.error(`Error: ${envVariable} environment variable not set`);
+                process.exit(1);
+            }
+        }
+    }
+
     private config(): void {
         // Middlewares configuration
         if (process.env.NODE_ENV !== 'test') {
-            this.app.use(logger('common'));
+            this.app.use(morgan('dev'));
         }
         this.app.use(express.json());
         this.app.use(express.urlencoded({ extended: true }));

@@ -229,14 +229,14 @@ describe('SessionHandler', () => {
 
     it('abandon should call dispose', () => {
         const stubDispose = createSandbox().stub(handler, 'dispose' as any);
-        handler.abandon('0');
+        handler.abandonGame('0');
         expect(stubDispose.called).to.be.true;
     });
 
     it('abandon should call dispose but with unavailable player', () => {
         const stubDispose = createSandbox().stub(handler, 'dispose' as any);
         handler['playerHandler'].players = [playerA];
-        handler.abandon('0');
+        handler.abandonGame('0');
         expect(stubDispose.called).to.be.true;
     });
 
