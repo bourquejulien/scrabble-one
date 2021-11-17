@@ -83,7 +83,6 @@ export class SessionHandler {
     }
 
     abandonGame(playerId: string): void {
-        this.isAbandonned = true;
         logger.debug(`SessionHandler - Abandon - PlayerId: ${playerId}`);
 
         const winner = this.players.find((p) => p.id !== playerId)?.id ?? '';
