@@ -1,8 +1,10 @@
 import { Timer } from '@app/classes/delay';
+import { Score } from '@app/classes/score';
 import { Config } from '@app/config';
 import { GameService } from '@app/services/game/game.service';
 import { SessionHandlingService } from '@app/services/sessionHandling/session-handling.service';
 import { SocketService } from '@app/services/socket/socket-service';
+import { StatsService } from '@app/services/stats/stats.service';
 import { AvailableGameConfig, Message, MessageType } from '@common';
 import { Socket } from 'socket.io';
 import { Service } from 'typedi';
@@ -18,6 +20,7 @@ export class RoomController {
         private readonly socketService: SocketService,
         private readonly sessionHandlingService: SessionHandlingService,
         private readonly gameService: GameService,
+        private readonly stats: StatsService,
     ) {
         this.socketIdToPlayerId = new Map<string, string>();
     }
@@ -31,7 +34,7 @@ export class RoomController {
         return roomSockets.length >= maxPlayers;
     }
 
-    handleSockets(): void {
+    async handleSockets(): Promise<void> {
         this.socketService.socketServer.on('connection', (socket) => {
             logger.info(`Connection with user id: ${socket.id}`);
 
@@ -91,6 +94,14 @@ export class RoomController {
             socket.on('getRooms', () => {
                 const sessionInfo = this.sessionInfos;
                 socket.emit('availableRooms', sessionInfo);
+            });
+
+            socket.on('add element in db', async () => {
+                const scoreBidon: Score = { name: ['James Charlse'], scoreValue: 152 };
+                this.stats.scoreService.updateScoreboard(scoreBidon, 'classicScoreboard');
+
+                logger.info(await this.stats.getScoreboardClassic()[0]);
+                // logger.info(this.stats.getScoreboardClassic[0].scoreValue);
             });
 
             socket.on('joinRoom', async (playerId: string) => {

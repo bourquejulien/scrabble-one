@@ -16,7 +16,7 @@ export class Server {
         private readonly application: Application,
         private readonly socketService: SocketService,
         private readonly roomController: RoomController,
-        private readonly databaseService: DatabaseService
+        private readonly databaseService: DatabaseService,
     ) {}
 
     private static normalizePort(val: number | string): number | string | boolean {

@@ -1,4 +1,4 @@
 export interface Score {
-    name: string[],
-    scoreValue: number
+    name: string[];
+    scoreValue: number;
 }

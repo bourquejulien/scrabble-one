@@ -1,7 +1,7 @@
-import { Score } from "@app/classes/score";
-import { DatabaseService } from "@app/services/database/database.service";
-import { Collection } from "mongodb";
-import { Service } from "typedi";
+import { Score } from '@app/classes/score';
+import { DatabaseService } from '@app/services/database/database.service';
+import { Collection } from 'mongodb';
+import { Service } from 'typedi';
 
 const DATABASE_COLLECTION_CLASSIC = 'classicScoreboard';
 const DATABASE_COLLECTION_LOG = 'logScoreboard';
@@ -17,31 +17,37 @@ export class ScoreService {
     }
 
     async updateScoreboard(score: Score, collectionName: string): Promise<void> {
-        let collection = this.databaseService.scrabbleDb.collection(collectionName);
+        const collection = this.databaseService.scrabbleDb.collection(collectionName);
         collection.insertOne(score);
-        let currentScores = await collection.find().sort({ 'score.scoreValue': -1 }).limit(5).toArray();
-        let lastScore = currentScores.pop();
+        const currentScores = await collection.find().sort({ 'score.scoreValue': -1 }).limit(5).toArray();
+        const lastScore = currentScores.pop();
         collection.deleteOne({ scoreValue: lastScore?.scoreValue });
 
         // TO DO: Delete last from database
     }
 
     async isPlayerInScoreboard(playerName: string, collectionName: string): Promise<boolean> {
-        let collection = this.databaseService.scrabbleDb.collection(collectionName);
+        const collection = this.databaseService.scrabbleDb.collection(collectionName);
         return collection.findOne({ name: playerName }) === null ? false : true;
     }
 
     async getPlayerNamesByScore(playerName: string, collectionName: string): Promise<string[] | undefined> {
-        let collection = this.databaseService.scrabbleDb.collection(collectionName);
-        return collection.findOne({ score: playerName })?.then((score) => { return score?.name.toArray() });
+        const collection = this.databaseService.scrabbleDb.collection(collectionName);
+        return collection.findOne({ score: playerName })?.then((score) => {
+            return score?.name.toArray();
+        });
     }
 
     async getPlayerScore(playerName: string, collectionName: string): Promise<number> {
-        let collection = this.databaseService.scrabbleDb.collection(collectionName);
-        return collection.findOne({ name: playerName })?.then((score) => { return score?.scoreValue });
+        // let collection = this.databaseService.scrabbleDb.collection(collectionName);
+        return this.getCollection(collectionName)
+            .findOne({ name: playerName })
+            .then((score) => {
+                return score!.scoreValue;
+            });
     }
 
-    getCollection(collectionName: string): Collection<Score> {
+    private getCollection(collectionName: string): Collection<Score> {
         return collectionName === DATABASE_COLLECTION_CLASSIC ? this.classicScoreboard : this.logScoreboard;
     }
 
@@ -51,8 +57,8 @@ export class ScoreService {
     }
 
     async getScoreboardLog(): Promise<Score[]> {
-        return this.logScoreboard.find().toArray()
+        return this.logScoreboard.find().toArray();
     }
 
-    //////////// TO DO : IF SAME SCORE BUT DIFFERENT PEOPLE
+    /// ///////// TO DO : IF SAME SCORE BUT DIFFERENT PEOPLE
 }

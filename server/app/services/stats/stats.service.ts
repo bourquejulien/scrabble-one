@@ -10,7 +10,7 @@ export class StatsService {
 
     async updateScoreboards(playerHandler: PlayerHandler, collectionName: string): Promise<void> {
         let playerWinner: Player;
-        let winnerId = playerHandler.winner;
+        const winnerId = playerHandler.winner;
         playerWinner = playerHandler.players[0].id === winnerId ? playerHandler.players[0] : playerHandler.players[1];
 
         // check if human player
@@ -19,20 +19,19 @@ export class StatsService {
         }
 
         // check if already in board and if score in board greater than current score; if not, treat it as if it were a whole new player
-        if (!await this.isNewScoreGreater(playerWinner, collectionName)) {
+        if (!(await this.isNewScoreGreater(playerWinner, collectionName))) {
             return;
         }
 
-
-        let newBestPlayerScore: Score = { name: [playerWinner.playerInfo.name], scoreValue: playerWinner.stats.points }
+        const newBestPlayerScore: Score = { name: [playerWinner.playerInfo.name], scoreValue: playerWinner.stats.points };
         this.scoreService.updateScoreboard(newBestPlayerScore, collectionName);
     }
 
     async isNewScoreGreater(playerWinner: Player, collectionName: string): Promise<boolean> {
-        let isInScoreboard = await this.scoreService.isPlayerInScoreboard(playerWinner.playerInfo.name, collectionName);
+        const isInScoreboard = await this.scoreService.isPlayerInScoreboard(playerWinner.playerInfo.name, collectionName);
 
         if (isInScoreboard) {
-            let playerScoreInBoard = await this.scoreService.getPlayerScore(playerWinner.playerInfo.name, collectionName);
+            const playerScoreInBoard = await this.scoreService.getPlayerScore(playerWinner.playerInfo.name, collectionName);
             if (playerScoreInBoard > playerWinner.stats.points) {
                 return false;
             }
