@@ -83,7 +83,6 @@ const multiplayerJoinConfig: MultiplayerJoinConfig = {
 const convertConfig: ConvertConfig = {
     id: '438f98gser89dg',
     virtualPlayerName: 'test1',
-    gameHadBegun: false,
 };
 
 describe('GameService', () => {
