@@ -44,23 +44,23 @@ export class DatabaseService {
         await scoreboardClassic.insertMany([
             {
                 name: ['Snoop'],
-                scoreValue: '15'
+                scoreValue: 15
             },
             {
                 name: ['Dog'],
-                scoreValue: '12'
+                scoreValue: 12
             },
             {
                 name: ['Donald'],
-                scoreValue: '11'
+                scoreValue: 11
             },
             {
                 name: ['Pepe'],
-                scoreValue: '10'
+                scoreValue: 10
             },
             {
                 name: ['John', 'Cena'],
-                scoreValue: '8'
+                scoreValue: 8
             }
         ], options);
         logger.info('Classic scoreboard has been filled with default values.');
@@ -74,23 +74,23 @@ export class DatabaseService {
         await scoreboardClassic.insertMany([
             {
                 name: ['Monty'],
-                scoreValue: '20'
+                scoreValue: 20
             },
             {
                 name: ['Python'],
-                scoreValue: '17'
+                scoreValue: 17
             },
             {
                 name: ['Satoru'],
-                scoreValue: '16'
+                scoreValue: 16
             },
             {
                 name: ['Gojo'],
-                scoreValue: '15'
+                scoreValue: 15
             },
             {
                 name: ['Nick', 'Jonas'],
-                scoreValue: '13'
+                scoreValue: 13
             }
         ], options);
         logger.info('Log scoreboard has been filled with default values.');

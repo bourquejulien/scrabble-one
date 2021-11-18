@@ -16,17 +16,43 @@ export class ScoreService {
         this.logScoreboard = this.databaseService.scrabbleDb.collection(DATABASE_COLLECTION_LOG);
     }
 
-    async updateScoreboard(score: Score): Promise<void> {
-        this.classicScoreboard.insertOne(score);
-        this.classicScoreboard.find().sort({ 'score.scoreValue': -1 }).limit(5);
+    async updateScoreboard(score: Score, collectionName: string): Promise<void> {
+        let collection = this.databaseService.scrabbleDb.collection(collectionName);
+        collection.insertOne(score);
+        let currentScores = await collection.find().sort({ 'score.scoreValue': -1 }).limit(5).toArray();
+        let lastScore = currentScores.pop();
+        collection.deleteOne({ scoreValue: lastScore?.scoreValue });
+
         // TO DO: Delete last from database
     }
 
-    get scoreboardClassic(): Collection<Score> {
-        return this.classicScoreboard;
+    async isPlayerInScoreboard(playerName: string, collectionName: string): Promise<boolean> {
+        let collection = this.databaseService.scrabbleDb.collection(collectionName);
+        return collection.findOne({ name: playerName }) === null ? false : true;
     }
 
-    get scoreboardLog(): Collection<Score> {
-        return this.logScoreboard;
+    async getPlayerNamesByScore(playerName: string, collectionName: string): Promise<string[] | undefined> {
+        let collection = this.databaseService.scrabbleDb.collection(collectionName);
+        return collection.findOne({ score: playerName })?.then((score) => { return score?.name.toArray() });
     }
+
+    async getPlayerScore(playerName: string, collectionName: string): Promise<number> {
+        let collection = this.databaseService.scrabbleDb.collection(collectionName);
+        return collection.findOne({ name: playerName })?.then((score) => { return score?.scoreValue });
+    }
+
+    getCollection(collectionName: string): Collection<Score> {
+        return collectionName === DATABASE_COLLECTION_CLASSIC ? this.classicScoreboard : this.logScoreboard;
+    }
+
+    async getScoreboardClassic(): Promise<Score[]> {
+        // TO DO: MAYBE LIMIT 5??
+        return this.classicScoreboard.find().toArray();
+    }
+
+    async getScoreboardLog(): Promise<Score[]> {
+        return this.logScoreboard.find().toArray()
+    }
+
+    //////////// TO DO : IF SAME SCORE BUT DIFFERENT PEOPLE
 }
