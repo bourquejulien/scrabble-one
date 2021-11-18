@@ -86,6 +86,7 @@ export class GameService {
         this.currentTurn = playerType;
         this.onTurn.next(this.currentTurn);
     }
+
     private async endGame(winnerId: string) {
         let winner: EndGameWinner;
 

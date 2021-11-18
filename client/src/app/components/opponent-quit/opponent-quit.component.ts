@@ -11,7 +11,7 @@ export class OpponentQuitComponent {
     constructor(private readonly socketService: SocketClientService, private dialogRef: MatDialog) {}
 
     quit() {
-        this.socketService.send('exit');
+        this.socketService.reset();
         this.dialogRef.closeAll();
     }
 

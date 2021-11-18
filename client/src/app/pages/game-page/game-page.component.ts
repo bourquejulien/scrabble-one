@@ -109,6 +109,7 @@ export class GamePageComponent implements OnDestroy {
             }
         });
     }
+
     opponentQuit() {
         this.dialog.open(OpponentQuitComponent);
     }
