@@ -7,11 +7,17 @@
     padding: 32px;
     
 }
+
+body {
+    background-image: url('~src/assets/img/scrabble_bg.jpg');
+    background-size: cover;
+}
+
 .toolbar {
-    display: flex;
     justify-content: center;
     align-items: center;
-    background-color: var(--game-green);
+    background-color: #eae7dc;
+    color:black;
 }
 
 .container {
@@ -27,7 +33,7 @@
 
 .room-info {
     
-    width: 50%;
+    width: 55%;
     margin-top: 100px;
     position: relative;
     margin-left: auto;
@@ -44,14 +50,17 @@
 }
 
 .form-card {
-    width: 200px;
+    width: 310px;
+    height: auto;
+    margin-top: 10px;
     margin:auto;
     justify-content: center;
     text-align: center;
     align-content: center;
+    margin-left: 100px;
     padding: 32px;
     display: inline-block;
-    
+    bottom: 10px;
 }
 
 .error {
@@ -71,16 +80,22 @@
 }
 
 .exit-button {
+    padding: 15px 25px;
+    font-size: 15px;
+    background: #eae7dc;
     position: relative;
-    margin-top: 10px;
+    margin-top: 30px;
     margin-left: 5vh;
     text-align: center;
     align-items: center;
 }
 
 .random-game-button {
+    padding: 15px 25px;
+    font-size: 15px;
+    background: #eae7dc;
     float: right;
-    margin-top: 10px;
+    margin-top: 30px;
     position: relative;
     margin-right: 5vh;
     text-align: center;

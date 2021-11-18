@@ -6,6 +6,7 @@ export interface SinglePlayerConfig {
     playerName: string;
     virtualPlayerName: string;
     isRandomBonus: boolean;
+    
 }
 
 export interface MultiplayerCreateConfig {
