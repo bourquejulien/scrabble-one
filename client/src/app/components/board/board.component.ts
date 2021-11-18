@@ -74,9 +74,11 @@ export class BoardComponent implements OnChanges, AfterViewInit {
 
     onMouseDown(event: MouseEvent): void {
         this.mouseHandlingService.mouseHitDetect(event);
-        this.resetPlaceSelection();
 
-        this.mouseHandlingService.mouseHitDetect(event);
+        if (!this.isMouseOnBoard) {
+            this.resetPlaceSelection();
+            this.gridService.resetCanvas(this.tempContext);
+        }
         const canClick = this.placeLetterService.myRack.length === 0 && this.gameService.currentTurn === PlayerType.Local;
         if (canClick) {
             this.mouseHandlingService.mouseHitDetect(event);
@@ -111,7 +113,6 @@ export class BoardComponent implements OnChanges, AfterViewInit {
             }
             return;
         }
-        this.gridService.resetCanvas(this.tempContext);
     }
 
     ngAfterViewInit(): void {
