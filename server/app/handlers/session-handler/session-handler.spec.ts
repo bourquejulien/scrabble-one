@@ -5,7 +5,7 @@
 /* eslint-disable @typescript-eslint/no-magic-numbers */
 /* eslint-disable no-unused-expressions */
 /* eslint-disable @typescript-eslint/no-unused-expressions */
-/*
+
 import { SessionInfo } from '@app/classes/session-info';
 import { GameType, ServerConfig } from '@common';
 import { expect } from 'chai';
@@ -239,16 +239,9 @@ describe('SessionHandler', () => {
         }, Config.SESSION.REFRESH_INTERVAL_MS);
     });
 
-    it('abandon should call dispose', () => {
-        const stubDispose = createSandbox().stub(handler, 'dispose' as any);
+    it('abandon should call removePlayer', () => {
         handler.abandon('0');
-        expect(stubDispose.called).to.be.true;
-    });
-    it('abandon should call dispose but with unavailable player', () => {
-        const stubDispose = createSandbox().stub(handler, 'dispose' as any);
-        handler['playerHandler'].players = [playerA];
-        handler.abandon('0');
-        expect(stubDispose.called).to.be.true;
+        expect(handler.sessionInfo.gameType).to.eql(GameType.SinglePlayer);
     });
     it('callback in timer should be called', () => {
         const timerTickStub = createSandbox().stub(handler, 'timerTick' as any);
@@ -267,4 +260,3 @@ describe('SessionHandler', () => {
         expect(stubDispose.calledOnce).to.be.true;
     });
 });
-*/
