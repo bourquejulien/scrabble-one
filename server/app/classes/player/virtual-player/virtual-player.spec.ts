@@ -117,13 +117,17 @@ describe('VirtualPlayer', () => {
     it('startTurn should execute many actions', async () => {
         const SKIP_PERCENTAGE = 0.1;
         const testAction = new TestAction();
+        const testAction2 = new TestAction2();
         sandboxRandom.stub(Math, 'random').returns(SKIP_PERCENTAGE);
 
         service = new VirtualPlayer(playerInfo, dictionaryService as unknown as DictionaryService);
         createSandbox()
             .stub(service, 'nextAction' as any)
             .returns(testAction);
-        const stubRunAction2 = createSandbox().stub(TestAction2, 'execute' as any);
+        createSandbox()
+            .stub(testAction, 'execute' as any)
+            .returns(testAction2);
+        const stubRunAction2 = createSandbox().stub(testAction2, 'execute' as any);
         service.init(boardHandler as unknown as BoardHandler, reserveHandler, socketHandler as unknown as SocketHandler);
         sandboxTimer.stub(Timer, 'delay').returns(Promise.resolve());
         await service['startTurn']();
