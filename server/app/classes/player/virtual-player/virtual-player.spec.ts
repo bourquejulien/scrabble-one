@@ -23,14 +23,14 @@ import { SkipAction } from './actions/skip-action';
 import { PlaceAction } from './actions/place-action';
 
 class TestAction implements Action {
-    maxCallCount = 3;
-    callCount = 0;
     execute(): Action | null {
-        this.callCount++;
-        if (this.callCount >= this.maxCallCount) {
-            return null;
-        }
-        return this;
+        return new TestAction2();
+    }
+}
+
+class TestAction2 implements Action {
+    execute(): Action | null {
+        return null;
     }
 }
 
@@ -64,14 +64,13 @@ describe('VirtualPlayer', () => {
     placeAction.execute.returns(playAction as unknown as PlaceAction);
     const board = createStubInstance(Board);
     const playerInfo: PlayerInfo = { id: 'test', name: 'mauricetest', isHuman: false };
-    const runAction: (action: Action) => Action | null = () => null;
     let sandboxRandom: SinonSandbox;
     let sandboxTimer: SinonSandbox;
     let sandboxNext: SinonSandbox;
 
     beforeEach(() => {
         (board as unknown as Board)['filledPositions'] = ARBITRARY_POSITIONS;
-        service = new VirtualPlayer(playerInfo, dictionaryService as unknown as DictionaryService, runAction);
+        service = new VirtualPlayer(playerInfo, dictionaryService as unknown as DictionaryService);
         service.init(boardHandler as unknown as BoardHandler, reserveHandler, socketHandler as unknown as SocketHandler);
         sandboxRandom = createSandbox();
         sandboxTimer = createSandbox();
@@ -118,18 +117,17 @@ describe('VirtualPlayer', () => {
     it('startTurn should execute many actions', async () => {
         const SKIP_PERCENTAGE = 0.1;
         const testAction = new TestAction();
-        let callCount = 0;
-        const actionRunner = (action: Action): null | Action => {
-            callCount++;
-            return testAction.execute();
-        };
         sandboxRandom.stub(Math, 'random').returns(SKIP_PERCENTAGE);
 
-        service = new VirtualPlayer(playerInfo, dictionaryService as unknown as DictionaryService, actionRunner);
+        service = new VirtualPlayer(playerInfo, dictionaryService as unknown as DictionaryService);
+        createSandbox()
+            .stub(service, 'nextAction' as any)
+            .returns(testAction);
+        const stubRunAction2 = createSandbox().stub(TestAction2, 'execute' as any);
         service.init(boardHandler as unknown as BoardHandler, reserveHandler, socketHandler as unknown as SocketHandler);
         sandboxTimer.stub(Timer, 'delay').returns(Promise.resolve());
         await service['startTurn']();
-        expect(callCount).to.be.equal(testAction.maxCallCount);
+        expect(stubRunAction2.called).to.be.true;
     });
 
     it('starting turn should make next action return play action sometimes', () => {

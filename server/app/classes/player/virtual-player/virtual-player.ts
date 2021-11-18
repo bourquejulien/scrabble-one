@@ -13,11 +13,7 @@ import { Timer } from '@app/classes/delay';
 const MIN_PLAYTIME_MILLISECONDS = 3000;
 
 export class VirtualPlayer extends Player {
-    constructor(
-        public playerInfo: PlayerInfo,
-        private readonly dictionaryService: DictionaryService,
-        private readonly runAction: (action: Action) => Action | null,
-    ) {
+    constructor(public playerInfo: PlayerInfo, private readonly dictionaryService: DictionaryService) {
         super();
     }
 
@@ -58,5 +54,9 @@ export class VirtualPlayer extends Player {
         const playGenerator = new PlayGenerator(this.dictionaryService, this.boardHandler, this.playerData.rack);
 
         return new PlayAction(this.boardHandler, playGenerator, this.playerData, this.socketHandler);
+    }
+
+    private runAction(action: Action): Action | null {
+        return action.execute();
     }
 }
