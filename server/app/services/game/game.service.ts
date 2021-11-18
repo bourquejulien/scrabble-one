@@ -138,12 +138,12 @@ export class GameService {
 
     async abandon(id: string): Promise<boolean> {
         const handler = this.sessionHandlingService.getHandlerByPlayerId(id);
-        if (handler == null || handler.sessionInfo.gameType !== GameType.Multiplayer) {
+        if (handler == null) {
             logger.warn(`Failed to stop game: ${id}`);
             return false;
         }
 
-        if (handler.sessionData.isStarted) {
+        if (handler.sessionData.isStarted && handler.sessionInfo.gameType === GameType.Multiplayer) {
             this.humanToVirtualPlayer(handler, id);
         } else {
             handler.dispose();
@@ -155,11 +155,11 @@ export class GameService {
     }
 
     private humanToVirtualPlayer(handler: SessionHandler, playerId: string): boolean {
-        const player = handler.players.find((p) => p.id === playerId);
+        const player = handler.players.find((p) => p.id === playerId) as HumanPlayer;
+        player.skipTurn();
         if (player) {
             const newName = player.playerInfo.name + ' Virtuel';
-            const convertConfig: ConvertConfig = { id: player.id, virtualPlayerName: newName };
-            handler.abandon(convertConfig.id);
+            handler.abandon(playerId);
             this.socketService.send('opponentQuit', handler.sessionInfo.id);
             const virtualPlayerInfo: PlayerInfo = {
                 id: generateId(),
