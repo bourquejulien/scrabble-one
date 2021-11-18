@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
-import { SocketClientService } from '@app/services/socket-client/socket-client.service';
+import { GameService } from '@app/services/game/game.service';
 
 @Component({
     selector: 'app-opponent-quit',
@@ -8,10 +8,10 @@ import { SocketClientService } from '@app/services/socket-client/socket-client.s
     styleUrls: ['./opponent-quit.component.scss'],
 })
 export class OpponentQuitComponent {
-    constructor(private readonly socketService: SocketClientService, private dialogRef: MatDialog) {}
+    constructor(private readonly gameService: GameService, private dialogRef: MatDialog) {}
 
     quit() {
-        this.socketService.reset();
+        this.gameService.reset();
         this.dialogRef.closeAll();
     }
 
