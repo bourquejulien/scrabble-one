@@ -238,7 +238,7 @@ describe('SessionHandler', () => {
     });
 
     it('abandon should call removePlayer', () => {
-        handler.abandon('0');
+        handler.abandonGame('0');
         expect(handler.sessionInfo.gameType).to.eql(GameType.SinglePlayer);
     });
     it('callback in timer should be called', () => {
