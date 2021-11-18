@@ -2,6 +2,7 @@
 // import { HttpClientTestingModule } from '@angular/common/http/testing';
 /* eslint-disable dot-notation -- Need to access private properties for testing*/
 /* eslint-disable @typescript-eslint/no-explicit-any */
+/*
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { Component, CUSTOM_ELEMENTS_SCHEMA, Injectable, NO_ERRORS_SCHEMA } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
@@ -175,3 +176,4 @@ describe('GamePageComponent', () => {
 
     afterAll(() => cleanStyles());
 });
+*/
