@@ -54,7 +54,6 @@ export class BoardComponent implements OnChanges, AfterViewInit {
         const enterValid: boolean = event.key === 'Enter' && this.placeLetterService.tempRack.length > 0;
         const lastSquare =
             this.placeLetterService.gridPosition.x > Constants.GRID.GRID_SIZE || this.placeLetterService.gridPosition.y > Constants.GRID.GRID_SIZE;
-
         if (backSpaceValid) {
             this.placeLetterService.backSpaceOperation(this.tempContext);
             this.gridService.drawBonusOfPosition(this.squareContext, this.placeLetterService.gridPosition);
