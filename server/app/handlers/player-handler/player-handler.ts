@@ -62,7 +62,7 @@ export class PlayerHandler {
     }
 
     get rackEmptied(): boolean {
-        return this.players.map((p) => p.playerData.rack.length === 0).reduce((acc, isEmpty) => acc || isEmpty);
+        return this.players.map((p) => p.rack.length === 0).reduce((acc, isEmpty) => acc || isEmpty);
     }
 
     get winner(): string {

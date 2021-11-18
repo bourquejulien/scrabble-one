@@ -1,4 +1,3 @@
-import { PlayerData } from '@app/classes/player-data';
 import { PlayerInfo } from '@app/classes/player-info';
 import { Config } from '@app/config';
 import { BoardHandler } from '@app/handlers/board-handler/board-handler';
@@ -6,30 +5,33 @@ import { ReserveHandler } from '@app/handlers/reserve-handler/reserve-handler';
 import { SocketHandler } from '@app/handlers/socket-handler/socket-handler';
 import { LETTER_DEFINITIONS, PlayerStats } from '@common';
 import { Observable, Subject } from 'rxjs';
+import { PlayerStatsHandler } from '@app/handlers/stats-handlers/player-stats-handler/player-stats-handler';
 
 export abstract class Player {
     isTurn: boolean;
-    playerData: PlayerData;
+    rack: string[];
 
     protected turnEnded: Subject<string>;
     protected boardHandler: BoardHandler;
     protected reserveHandler: ReserveHandler;
     protected socketHandler: SocketHandler;
+    protected statsHandler: PlayerStatsHandler;
 
     protected constructor(public playerInfo: PlayerInfo) {
-        this.playerData = { baseScore: 0, scoreAdjustment: 0, skippedTurns: 0, rack: [] };
+        this.rack = [];
         this.turnEnded = new Subject<string>();
     }
 
-    init(boardHandler: BoardHandler, reserveHandler: ReserveHandler, socketHandler: SocketHandler): void {
+    init(boardHandler: BoardHandler, reserveHandler: ReserveHandler, socketHandler: SocketHandler, playerStatsHandler: PlayerStatsHandler): void {
         this.boardHandler = boardHandler;
         this.reserveHandler = reserveHandler;
         this.socketHandler = socketHandler;
+        this.statsHandler = playerStatsHandler;
     }
 
     fillRack(): void {
-        while (this.reserveHandler.length > 0 && this.playerData.rack.length < Config.RACK_SIZE) {
-            this.playerData.rack.push(this.reserveHandler.drawLetter());
+        while (this.reserveHandler.length > 0 && this.rack.length < Config.RACK_SIZE) {
+            this.rack.push(this.reserveHandler.drawLetter());
         }
     }
 
@@ -39,7 +41,7 @@ export abstract class Player {
 
     rackPoints(): number {
         let playerPoint = 0;
-        for (const letter of this.playerData.rack) {
+        for (const letter of this.rack) {
             const currentLetterData = LETTER_DEFINITIONS.get(letter.toLowerCase());
             playerPoint += currentLetterData?.points ?? 0;
         }
@@ -52,8 +54,8 @@ export abstract class Player {
     }
 
     get stats(): PlayerStats {
-        const points = Math.max(0, this.playerData.baseScore + this.playerData.scoreAdjustment);
-        return { points, rackSize: this.playerData.rack.length };
+        const points = this.statsHandler.points;
+        return { points, rackSize: this.rack.length };
     }
 
     protected endTurn(): void {

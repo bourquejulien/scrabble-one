@@ -119,7 +119,7 @@ export class SessionHandler {
         this.sessionData.timeLimitEpoch = new Date().getTime() + this.sessionInfo.playTimeMs;
     }
 
-    private refresh() {
+    private refresh(): void {
         this.socketHandler.sendData('stats', this.playerHandler.getStats(this.players[0].id), this.players[0].id);
         this.socketHandler.sendData('stats', this.playerHandler.getStats(this.players[1].id), this.players[1].id);
         this.socketHandler.sendData('board', this.boardHandler.immutableBoard.boardData);

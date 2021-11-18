@@ -52,14 +52,13 @@ export class HumanPlayer extends Player {
             return { isSuccess: false, body: '' };
         }
 
-        this.playerData.baseScore += validationData.score;
+        this.statsHandler.onPlace(validationData);
 
         this.updateRack(lettersToPlace);
         this.fillRack();
 
         await this.boardHandler.placeLetters(placements);
 
-        this.playerData.skippedTurns = 0;
         this.endTurn();
 
         this.socketHandler.sendMessage(
@@ -97,7 +96,7 @@ export class HumanPlayer extends Player {
         }
 
         lettersToExchange.forEach(() => {
-            this.playerData.rack.push(this.reserveHandler.drawLetter());
+            this.rack.push(this.reserveHandler.drawLetter());
         });
 
         for (const letter of lettersToExchange) {
@@ -105,7 +104,7 @@ export class HumanPlayer extends Player {
         }
 
         this.updateRack(lettersToExchange);
-        this.playerData.skippedTurns = 0;
+        this.statsHandler.onExchange();
         this.endTurn();
 
         this.socketHandler.sendMessage(
@@ -121,7 +120,7 @@ export class HumanPlayer extends Player {
     }
 
     skipTurn(): Answer {
-        this.playerData.skippedTurns++;
+        this.statsHandler.onSkip();
         this.endTurn();
 
         this.socketHandler.sendMessage(
@@ -146,22 +145,22 @@ export class HumanPlayer extends Player {
     }
 
     private refresh(): void {
-        this.socketHandler.sendData('rack', this.playerData.rack, this.id);
+        this.socketHandler.sendData('rack', this.rack, this.id);
     }
 
     private updateRack(lettersToPlace: string[]): void {
         for (const letter of lettersToPlace) {
-            const letterIndex = this.playerData.rack.indexOf(letter);
+            const letterIndex = this.rack.indexOf(letter);
             if (letterIndex === -1) {
                 return;
             }
-            this.playerData.rack.splice(letterIndex, 1);
+            this.rack.splice(letterIndex, 1);
         }
     }
 
     private areLettersInRack(lettersToPlace: string[]): boolean {
         for (const letter of lettersToPlace) {
-            if (this.playerData.rack.indexOf(letter) === -1) {
+            if (this.rack.indexOf(letter) === -1) {
                 this.socketHandler.sendMessage(
                     {
                         title: SystemMessages.ImpossibleCommand,
