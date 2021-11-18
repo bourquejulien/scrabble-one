@@ -1,61 +1,53 @@
-import { PlayerData } from '@app/classes/player-data';
-import { PlayGenerator } from '@app/classes/virtual-player/play-generator';
-import { Action } from './action';
-import { PlaceAction } from './place-action';
-import { BoardHandler } from '@app/handlers/board-handler/board-handler';
+import { Action } from '@app/classes/player/virtual-player/actions/action';
+import { Play } from '@app/classes/virtual-player/play';
+import { ValidatedWord } from '@app/classes/validation/validation-response';
 import { Config } from '@app/config';
-import { SocketHandler } from '@app/handlers/socket-handler/socket-handler';
-import { MessageType } from '@common';
-import * as logger from 'winston';
-import { SkipAction } from '@app/classes/player/virtual-player/actions/skip-action';
 
-export class PlayAction implements Action {
-    constructor(
-        private readonly boardHandler: BoardHandler,
-        private readonly playGenerator: PlayGenerator,
-        private readonly playerData: PlayerData,
-        private readonly socketHandler: SocketHandler,
-    ) {}
-
-    private static getScoreRange(): { min: number; max: number } {
-        let random = Math.random();
-        const scoreRanges = Config.VIRTUAL_PLAYER.SCORE_RANGE;
-
-        for (const scoreRange of scoreRanges) {
-            if (random < scoreRange.percentage) {
-                return scoreRange.range;
-            }
-            random -= scoreRange.percentage;
-        }
-
-        return { min: 0, max: 0 };
+export abstract class PlayAction implements Action {
+    private static getRowLetter(position: number): string {
+        return String.fromCharCode('A'.charCodeAt(0) + position);
     }
 
-    execute(): Action | null {
-        const scoreRange = PlayAction.getScoreRange();
+    private static formatWord(word: ValidatedWord): string {
+        const outputs = word.letters.map((validatedLetter) => {
+            const letter = validatedLetter.placement.letter.toUpperCase();
+            return validatedLetter.isNew ? `<b>${letter}</b>` : letter;
+        });
 
-        logger.debug('Generating plays');
-        while (this.playGenerator.generateNext());
+        outputs.push(` (${word.score})`);
 
-        const filteredPlays = this.playGenerator.orderedPlays.filter((e) => e.score >= scoreRange.min && e.score <= scoreRange.max);
-
-        if (filteredPlays.length === 0) {
-            logger.debug('No play generated - Skipping');
-            return new SkipAction(this.playerData, this.socketHandler);
-        }
-
-        const chosenPlay = Math.floor(Math.random() * filteredPlays.length);
-        const play = filteredPlays[chosenPlay];
-
-        const alternatives = new Set<string>();
-        for (let i = 0; alternatives.size < Config.VIRTUAL_PLAYER.NB_ALTERNATIVES && i < filteredPlays.length; i++) {
-            const alternativeIndex = (chosenPlay + i) % filteredPlays.length;
-            alternatives.add(filteredPlays[alternativeIndex].word);
-        }
-
-        this.socketHandler.sendMessage({ title: '', body: 'Mot placé : ' + play.word, messageType: MessageType.Message });
-        this.socketHandler.sendMessage({ title: '', body: 'Mot alternatifs : ' + Array.from(alternatives).toString(), messageType: MessageType.Log });
-
-        return new PlaceAction(this.boardHandler, play, this.playerData);
+        return outputs.join('');
     }
+
+    protected formatPlays(plays: Play[]): string {
+        const outputs: string[] = [];
+
+        plays.sort((a, b) => b.score - a.score);
+
+        for (const play of plays) {
+            outputs.push(this.formatPlay(play));
+            outputs.push('\n\n\n');
+        }
+
+        return outputs.slice(0, -1).join('');
+    }
+
+    protected formatPlay(play: Play): string {
+        const outputs = play.placements.map((p) => `${PlayAction.getRowLetter(p.position.y)}${p.position.x + 1}:${p.letter.toUpperCase()} `);
+        outputs.push(`(${play.score})\n`);
+
+        for (const word of play.words) {
+            outputs.push(PlayAction.formatWord(word));
+            outputs.push('\n');
+        }
+
+        if (play.placements.length === Config.RACK_SIZE) {
+            outputs.push('Bingo! (50)');
+            outputs.push('\n');
+        }
+
+        return outputs.slice(0, -1).join('');
+    }
+
+    abstract execute(): Action | null;
 }

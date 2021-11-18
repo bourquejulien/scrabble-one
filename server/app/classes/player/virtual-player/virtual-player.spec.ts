@@ -1,26 +1,17 @@
-/* eslint-disable dot-notation */
-/* eslint-disable no-unused-vars */
-/* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable no-unused-expressions */
-/* eslint-disable @typescript-eslint/no-unused-expressions */
-/* eslint-disable max-classes-per-file -- Multiple stubs are used */
-import { PlayerInfo } from '@app/classes/player-info';
+/* eslint-disable dot-notation,@typescript-eslint/no-unused-expressions,no-unused-expressions,max-classes-per-file */
+import { Timer } from '@app/classes/delay';
 import { VirtualPlayer } from '@app/classes/player/virtual-player/virtual-player';
 import { BoardHandler } from '@app/handlers/board-handler/board-handler';
 import { ReserveHandler } from '@app/handlers/reserve-handler/reserve-handler';
 import { SocketHandler } from '@app/handlers/socket-handler/socket-handler';
-import { DictionaryService } from '@app/services/dictionary/dictionary.service';
 import { expect } from 'chai';
-import { createSandbox, createStubInstance, SinonSandbox, stub } from 'sinon';
-import { Action } from './actions/action';
 import { Observable } from 'rxjs';
-import { Timer } from '@app/classes/delay';
-import { LETTER_DEFINITIONS, Vec2 } from '@common';
-import { Board } from '@app/classes/board/board';
-import { PlayAction } from './actions/play-action';
+import Sinon, { createSandbox, createStubInstance, SinonSandbox } from 'sinon';
+import { Action } from './actions/action';
 import { ExchangeAction } from './actions/exchange-action';
-import { SkipAction } from './actions/skip-action';
 import { PlaceAction } from './actions/place-action';
+import { SkipAction } from './actions/skip-action';
+import { PlayActionEasy } from './virtual-player-easy/actions/play-action-easy';
 
 class TestAction implements Action {
     execute(): Action | null {
@@ -34,53 +25,68 @@ class TestAction2 implements Action {
     }
 }
 
-const ARBITRARY_POSITIONS: Vec2[] = [
-    { x: 0, y: 0 },
-    { x: 0, y: 1 },
-    { x: 0, y: 2 },
-];
-const RANDOM_RETURN_EXCHANGE = 0.12;
+class ActionRunner {
+    ranActionCount = 0;
+
+    runAction(action: Action): Action | null {
+        this.ranActionCount++;
+        return action.execute();
+    }
+}
+
+class VirtualPlayerTester extends VirtualPlayer {
+    actionToReturn: Action;
+
+    constructor(actionRunner: ActionRunner) {
+        super((action) => actionRunner.runAction(action), { id: '', name: '', isHuman: false });
+    }
+
+    protected nextAction(): Action {
+        return this.actionToReturn;
+    }
+}
+
 const SIZE = 9;
 
 describe('VirtualPlayer', () => {
-    let service: VirtualPlayer;
-    const reserveHandler = createStubInstance(ReserveHandler);
-    const playAction = createStubInstance(PlayAction);
-    const exchangeAction = createStubInstance(ExchangeAction);
-    const skipAction = createStubInstance(SkipAction);
-    const placeAction = createStubInstance(PlaceAction);
-    const dictionaryService = createStubInstance(DictionaryService);
-    const socketHandler = createStubInstance(SocketHandler);
-    const boardHandler = createStubInstance(BoardHandler);
-    reserveHandler['reserve'] = [];
-    for (const [letter, letterData] of LETTER_DEFINITIONS) {
-        for (let i = 0; i < letterData.maxQuantity; i++) {
-            reserveHandler['reserve'].push(letter);
-        }
-    }
-    playAction.execute.returns(playAction as unknown as PlayAction);
-    exchangeAction.execute.returns(playAction as unknown as ExchangeAction);
-    skipAction.execute.returns(playAction as unknown as SkipAction);
-    placeAction.execute.returns(playAction as unknown as PlaceAction);
-    const board = createStubInstance(Board);
-    const playerInfo: PlayerInfo = { id: 'test', name: 'mauricetest', isHuman: false };
-    let sandboxRandom: SinonSandbox;
+    let service: VirtualPlayerTester;
+    let actionRunner: ActionRunner;
+    let reserveHandler: Sinon.SinonStubbedInstance<ReserveHandler>;
+    let playAction: Sinon.SinonStubbedInstance<PlayActionEasy>;
+    let exchangeAction: Sinon.SinonStubbedInstance<ExchangeAction>;
+    let skipAction: Sinon.SinonStubbedInstance<SkipAction>;
+    let placeAction: Sinon.SinonStubbedInstance<PlaceAction>;
+    let socketHandler: Sinon.SinonStubbedInstance<SocketHandler>;
+    let boardHandler: Sinon.SinonStubbedInstance<BoardHandler>;
     let sandboxTimer: SinonSandbox;
     let sandboxNext: SinonSandbox;
 
     beforeEach(() => {
-        (board as unknown as Board)['filledPositions'] = ARBITRARY_POSITIONS;
-        service = new VirtualPlayer(playerInfo, dictionaryService as unknown as DictionaryService);
+        reserveHandler = createStubInstance(ReserveHandler);
+        playAction = createStubInstance(PlayActionEasy);
+        exchangeAction = createStubInstance(ExchangeAction);
+        skipAction = createStubInstance(SkipAction);
+        placeAction = createStubInstance(PlaceAction);
+        socketHandler = createStubInstance(SocketHandler);
+        boardHandler = createStubInstance(BoardHandler);
+
+        actionRunner = new ActionRunner();
+        service = new VirtualPlayerTester(actionRunner);
         service.init(boardHandler as unknown as BoardHandler, reserveHandler, socketHandler as unknown as SocketHandler);
-        sandboxRandom = createSandbox();
+
+        reserveHandler['reserve'] = [];
+
+        playAction.execute.returns(placeAction);
+        exchangeAction.execute.returns(null);
+        skipAction.execute.returns(null);
+        placeAction.execute.returns(null);
         sandboxTimer = createSandbox();
         sandboxNext = createSandbox();
-        stub(board, 'positions').get(() => {
-            return ARBITRARY_POSITIONS;
-        });
+
+        service.actionToReturn = skipAction;
     });
+
     afterEach(() => {
-        sandboxRandom.restore();
         sandboxTimer.restore();
         sandboxNext.restore();
     });
@@ -93,7 +99,6 @@ describe('VirtualPlayer', () => {
         const sandbox = createSandbox();
         const stubFill = sandbox.stub(service, 'fillRack');
         sandboxTimer.stub(Timer, 'delay').returns(Promise.resolve());
-        sandboxRandom.stub(Math, 'random').returns(RANDOM_RETURN_EXCHANGE);
         await service.startTurn();
         sandbox.assert.calledOnce(stubFill);
     });
@@ -101,54 +106,17 @@ describe('VirtualPlayer', () => {
     it('starting turn should eventually end turn', async () => {
         reserveHandler.reserve.length = SIZE;
         sandboxTimer.stub(Timer, 'delay').returns(Promise.resolve());
-        sandboxRandom.stub(Math, 'random').returns(RANDOM_RETURN_EXCHANGE);
         await service.startTurn();
         expect(service.isTurn).to.be.false;
     });
 
-    it('starting turn should make next action return Exchange action sometimes', () => {
-        sandboxRandom.stub(Math, 'random').returns(RANDOM_RETURN_EXCHANGE);
-        sandboxTimer.stub(Timer, 'delay').returns(Promise.resolve());
-        service['reserveHandler'].reserve = ['a'];
-        const returnValue = service['nextAction']();
-        expect(returnValue instanceof SkipAction).to.be.true;
-    });
-
     it('startTurn should execute many actions', async () => {
-        const SKIP_PERCENTAGE = 0.1;
         const testAction = new TestAction();
-        const testAction2 = new TestAction2();
-        sandboxRandom.stub(Math, 'random').returns(SKIP_PERCENTAGE);
-
-        service = new VirtualPlayer(playerInfo, dictionaryService as unknown as DictionaryService);
-        createSandbox()
-            .stub(service, 'nextAction' as any)
-            .returns(testAction);
-        createSandbox()
-            .stub(testAction, 'execute' as any)
-            .returns(testAction2);
-        const stubRunAction2 = createSandbox().stub(testAction2, 'execute' as any);
-        service.init(boardHandler as unknown as BoardHandler, reserveHandler, socketHandler as unknown as SocketHandler);
+        service.actionToReturn = testAction;
         sandboxTimer.stub(Timer, 'delay').returns(Promise.resolve());
+
         await service['startTurn']();
-        expect(stubRunAction2.called).to.be.true;
-    });
-
-    it('starting turn should make next action return play action sometimes', () => {
-        const boardSize = 15;
-        sandboxRandom.stub(Math, 'random').returns(1);
-        sandboxTimer.stub(Timer, 'delay').returns(Promise.resolve());
-        boardHandler['board'] = new Board(boardSize);
-        const returnValue = service['nextAction']();
-        expect(returnValue).to.be.instanceof(PlayAction);
-    });
-
-    it('starting turn should make next action return skip action sometimes', () => {
-        sandboxRandom.stub(Math, 'random').returns(0);
-        sandboxTimer.stub(Timer, 'delay').returns(Promise.resolve());
-        service['reserveHandler'].reserve = ['a'];
-        const returnValue = service['nextAction']();
-        expect(returnValue instanceof ExchangeAction).to.be.true;
+        expect(actionRunner.ranActionCount).to.be.equal(testAction.maxCallCount);
     });
 
     it('getting id should return id', () => {

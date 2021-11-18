@@ -20,7 +20,7 @@ export class BoardHandler {
         for (const square of letters) {
             square.letter = BoardHandler.removeAccents(square.letter);
             if (!this.wordRegex.test(square.letter)) {
-                return { isSuccess: false, description: `Le caractère ${square.letter} n'est pas accepté`, points: 0 };
+                return { isSuccess: false, description: `Le caractère ${square.letter} n'est pas accepté` };
             }
         }
 

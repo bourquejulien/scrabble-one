@@ -58,7 +58,7 @@ class StubSessionHandler {
     // eslint-disable-next-line @typescript-eslint/no-empty-function
     dispose() {}
 
-    abandon() {
+    abandonGame() {
         this.abandonCalled = true;
     }
 }

@@ -2,7 +2,9 @@ import { generateId } from '@app/classes/id';
 import { PlayerData } from '@app/classes/player-data';
 import { PlayerInfo } from '@app/classes/player-info';
 import { HumanPlayer } from '@app/classes/player/human-player/human-player';
+import { Action } from '@app/classes/player/virtual-player/actions/action';
 import { VirtualPlayer } from '@app/classes/player/virtual-player/virtual-player';
+import { VirtualPlayerExpert } from '@app/classes/player/virtual-player/virtual-player-expert/virtual-player-expert';
 import { PlayerHandler } from '@app/handlers/player-handler/player-handler';
 import { ReserveHandler } from '@app/handlers/reserve-handler/reserve-handler';
 import { SessionHandler } from '@app/handlers/session-handler/session-handler';
@@ -158,7 +160,7 @@ export class GameService {
         if (player) {
             player.skipTurn();
             const newName = player.playerInfo.name + ' Virtuel';
-            handler.abandon(playerId);
+            handler.abandonGame(playerId);
             this.socketService.send('opponentQuit', handler.sessionInfo.id);
             const virtualPlayerInfo: PlayerInfo = {
                 id: generateId(),
@@ -181,7 +183,8 @@ export class GameService {
     }
 
     private addVirtualPlayer(playerInfo: PlayerInfo, sessionHandler: SessionHandler, playerData?: PlayerData): VirtualPlayer {
-        const virtualPlayer = new VirtualPlayer(playerInfo, this.dictionnaryService);
+        const actionCallback = (action: Action): Action | null => action.execute();
+        const virtualPlayer = new VirtualPlayerExpert(this.dictionnaryService, playerInfo, actionCallback);
         if (playerData) {
             virtualPlayer.playerData = playerData;
         }

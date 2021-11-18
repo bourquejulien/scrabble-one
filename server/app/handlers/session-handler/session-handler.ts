@@ -80,10 +80,9 @@ export class SessionHandler {
         return { localStats: firstPlayer.stats, remoteStats: secondPlayer.stats };
     }
 
-    abandon(playerId: string): Player | null {
+    abandonGame(playerId: string): void {
         logger.debug(`SessionHandler - Abandon - PlayerId: ${playerId}`);
         this.sessionInfo.gameType = GameType.SinglePlayer;
-        return this.playerHandler.removePlayer(playerId);
     }
 
     private endGame(): void {
@@ -96,6 +95,7 @@ export class SessionHandler {
         }
 
         this.socketHandler.sendData('endGame', this.playerHandler.winner);
+        logger.debug(`winner: ${this.playerHandler.winner}`);
         this.dispose();
     }
 

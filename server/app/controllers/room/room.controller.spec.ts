@@ -5,18 +5,18 @@
 /* eslint-disable dot-notation */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable max-classes-per-file */
-import { expect } from 'chai';
-import { RoomController } from './room.controller';
-import { assert, createStubInstance, SinonFakeTimers, SinonStubbedInstance, spy, stub, useFakeTimers } from 'sinon';
+import { SocketMock } from '@app/classes/helpers/socket-test-helper';
+import { BoardHandler } from '@app/handlers/board-handler/board-handler';
+import { PlayerHandler } from '@app/handlers/player-handler/player-handler';
+import { SessionHandler } from '@app/handlers/session-handler/session-handler';
+import { GameService } from '@app/services/game/game.service';
 import { SessionHandlingService } from '@app/services/sessionHandling/session-handling.service';
 import { SocketService } from '@app/services/socket/socket-service';
 import { GameType, Message, MessageType } from '@common';
-import { GameService } from '@app/services/game/game.service';
-import { SessionHandler } from '@app/handlers/session-handler/session-handler';
-import { SocketMock } from '@app/classes/helpers/socket-test-helper';
+import { expect } from 'chai';
+import { assert, createStubInstance, SinonFakeTimers, SinonStubbedInstance, spy, stub, useFakeTimers } from 'sinon';
 import { Server, Socket } from 'socket.io';
-import { BoardHandler } from '@app/handlers/board-handler/board-handler';
-import { PlayerHandler } from '@app/handlers/player-handler/player-handler';
+import { RoomController } from './room.controller';
 
 const IDS = {
     player: '123',
@@ -291,7 +291,7 @@ describe('RoomController', () => {
         const playerId = 'id';
         const socket = new SocketStub();
 
-        await controller['abandon'](socket as unknown as Socket, playerId);
+        await controller['abandonCreatedGame'](socket as unknown as Socket, playerId);
         expect(socket.leaveCallCount).to.equal(2);
     });
 });
