@@ -31,14 +31,14 @@ describe('AdminService', () => {
 
     it('should correctly remove items', () => {
         const metadata: DictionaryMetadata = {
-            id: 'dictionary.json',
-            description: 'dictionary for tests',
+            id: 'dictionary-handler.json',
+            description: 'dictionary-handler for tests',
             nbWords: 1024,
             title: 'Grand Dictionary of Tests',
         };
-        const nameLength = service.virtualPlayerNames.length;
-        service.removePlayername({ name: 'Monique', expert: false });
-        expect(service.virtualPlayerNames.length).toBe(nameLength - 1);
+        const nameLength = service.virtualPlayerNames.beginners.length;
+        service.removePlayername('Monique', false);
+        expect(service.virtualPlayerNames.beginners.length).toBe(nameLength - 1);
         const dictionaryNb = service.dictionaries.length;
         service.removeDictionary(metadata);
         expect(service.dictionaries.length).toBe(dictionaryNb - 1);

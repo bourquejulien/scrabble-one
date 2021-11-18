@@ -3,7 +3,7 @@ import { BoardValidator } from '@app/classes/validation/board-validator';
 import { ValidationResponse } from '@app/classes/validation/validation-response';
 import { BoardError } from '@app/errors/board-error';
 import { Placement } from '@common';
-import { DictionaryHandler } from '@app/handlers/dictionary/dictionary-handler';
+import { DictionaryHandler } from '@app/handlers/dictionary-handler/dictionary-handler';
 
 export class BoardHandler {
     private wordRegex: RegExp;

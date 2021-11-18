@@ -9,7 +9,7 @@ import { BoardHandler } from '@app/handlers/board-handler/board-handler';
 import { SocketHandler } from '@app/handlers/socket-handler/socket-handler';
 import { ReserveHandler } from '@app/handlers/reserve-handler/reserve-handler';
 import { Board } from '@app/classes/board/board';
-import { DictionaryHandler } from '@app/handlers/dictionary/dictionary-handler';
+import { DictionaryHandler } from '@app/handlers/dictionary-handler/dictionary-handler';
 
 const BOARD_SIZE = 15;
 

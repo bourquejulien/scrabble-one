@@ -30,19 +30,16 @@ export class AdminPageComponent {
     }
 
     downloadDictionary(id: string) {
-        this.adminService.downloadDictionary(id).subscribe(
-            (result) => {
-                const obj = JSON.stringify(result);
-                const blob = new Blob([obj], { type: 'application/json' });
-                const a = document.createElement('a');
-                const objectUrl = URL.createObjectURL(blob);
-                a.href = objectUrl;
-                a.download = 'dictionary.json';
-                a.click();
-                URL.revokeObjectURL(objectUrl);
-            },
-            (error) => console.log(error),
-        );
+        this.adminService.downloadDictionary(id).subscribe((result) => {
+            const obj = JSON.stringify(result);
+            const blob = new Blob([obj], { type: 'application/json' });
+            const a = document.createElement('a');
+            const objectUrl = URL.createObjectURL(blob);
+            a.href = objectUrl;
+            a.download = 'dictionary.json';
+            a.click();
+            URL.revokeObjectURL(objectUrl);
+        });
     }
 
     resetSettings() {

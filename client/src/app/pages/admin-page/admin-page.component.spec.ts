@@ -11,7 +11,7 @@ import { AdminPageComponent } from './admin-page.component';
 const dictionary: DictionaryMetadata = {
     id: 'dictionary.json',
     nbWords: 2048,
-    description: 'cool dictionary',
+    description: 'cool dictionary-handler',
     title: 'Dictionary',
 };
 
@@ -44,14 +44,14 @@ describe('AdminPageComponent', () => {
         expect(component).toBeTruthy();
     });
 
-    it('should download dictionary', () => {
+    it('should download dictionary-handler', () => {
         const subject = new Subject<Blob>();
         adminServiceSpyObj.downloadDictionary.and.returnValue(subject.asObservable());
         component.downloadDictionary(dictionary.id);
         subject.next(new Blob(['{}'], { type: 'application/json' }));
     });
 
-    it('should download dictionary', () => {
+    it('should download dictionary-handler', () => {
         // adminServiceSpyObj.
     });
 

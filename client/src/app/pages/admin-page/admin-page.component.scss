@@ -11,7 +11,12 @@ button {
 }
 
 .dictionary-edit {
-    display: flexbox;
+    display: flex;
     justify-content: center;
     margin: 16px;
+}
+
+mat-grid-tile {
+    display: flex;
+    justify-content: center;
 }

@@ -72,7 +72,7 @@ const dictionary: DictionaryMetadata = {
     description: 'Blablabla',
     id: 'dictionary.json',
     nbWords: 1024,
-    title: 'My cool dictionary',
+    title: 'My cool dictionary-handler',
 };
 
 const singlePlayerConfig: SinglePlayerConfig = {

@@ -5,7 +5,7 @@ import JsonBonuses from '@assets/bonus.json';
 import { Bonus, BonusInfos, LETTER_DEFINITIONS } from '@common';
 import { Service } from 'typedi';
 import { BoardHandler } from '@app/handlers/board-handler/board-handler';
-import { DictionaryHandler } from '@app/handlers/dictionary/dictionary-handler';
+import { DictionaryHandler } from '@app/handlers/dictionary-handler/dictionary-handler';
 
 @Service()
 export class BoardGeneratorService {
@@ -39,7 +39,7 @@ export class BoardGeneratorService {
 
     generateBoardHandler(isRandomBonus: boolean, dictionaryHandler: DictionaryHandler): BoardHandler {
         const board = new Board(Config.GRID.GRID_SIZE, this.retrieveBonuses(isRandomBonus));
-        const boardValidator = new BoardValidator(board, dictionaryHandler,BoardGeneratorService.retrieveLetterValues());
+        const boardValidator = new BoardValidator(board, dictionaryHandler, BoardGeneratorService.retrieveLetterValues());
 
         return new BoardHandler(board, boardValidator, isRandomBonus, dictionaryHandler);
     }

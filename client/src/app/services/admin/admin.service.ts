@@ -30,7 +30,7 @@ export class AdminService {
     uploadFile(file: File) {
         const formData = new FormData();
         this.fileName = file.name;
-        formData.append('dictionary', file);
+        formData.append('file', file);
         const upload$ = this.httpClient
             .post(localUrl('dictionary', 'upload'), formData, {
                 reportProgress: true,
@@ -61,7 +61,7 @@ export class AdminService {
     }
 
     async updateDictionaries() {
-        this.httpClient.post(localUrl('dictionary', ''), this.dictionaries).toPromise();
+        await this.httpClient.post(localUrl('dictionary', ''), this.dictionaries).toPromise();
     }
 
     downloadDictionary(id: string) {

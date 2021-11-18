@@ -22,7 +22,7 @@ describe('AdminController', () => {
     let incomingFormStub: SinonStub;
     const metadata: DictionaryMetadata = {
         id: 'dictionary.json',
-        description: 'dictionary for tests',
+        description: 'dictionary-handler for tests',
         nbWords: 1024,
         title: 'Grand Dictionary of Tests',
     };
@@ -48,45 +48,45 @@ describe('AdminController', () => {
         incomingFormStub.restore();
     });
 
-    it('POST /dictionary/ ', async () => {
+    it('POST /dictionary-handler/ ', async () => {
         return request(expressApp)
-            .post('/api/admin/dictionary')
+            .post('/api/admin/dictionary-handler')
             .send({})
             .then((response) => {
                 expect(response.status).to.be.equal(Constants.HTTP_STATUS.OK);
             });
     });
 
-    it('GET /dictionary/ ', async () => {
+    it('GET /dictionary-handler/ ', async () => {
         return request(expressApp)
-            .get('/api/admin/dictionary/')
+            .get('/api/admin/dictionary-handler/')
             .then((response) => {
                 expect(response.status).to.be.equal(Constants.HTTP_STATUS.OK);
             });
     });
 
-    it('GET /dictionary/ with id ', async () => {
+    it('GET /dictionary-handler/ with id ', async () => {
         return request(expressApp)
-            .get('/api/admin/dictionary/123')
+            .get('/api/admin/dictionary-handler/123')
             .then((response) => {
                 expect(response.status).to.be.equal(Constants.HTTP_STATUS.OK);
             });
     });
 
-    it('POST /dictionary/upload ', async () => {
+    it('POST /dictionary-handler/upload ', async () => {
         dictionaryServiceStub.parse.returns(true);
         return request(expressApp)
-            .post('/api/admin/dictionary/upload')
+            .post('/api/admin/dictionary-handler/upload')
             .send({})
             .then((response) => {
                 expect(response.status).to.be.equal(Constants.HTTP_STATUS.OK);
             });
     });
 
-    it('POST /dictionary/upload ', async () => {
+    it('POST /dictionary-handler/upload ', async () => {
         dictionaryServiceStub.parse.returns(false);
         return request(expressApp)
-            .post('/api/admin/dictionary/upload')
+            .post('/api/admin/dictionary-handler/upload')
             .send({})
             .then((response) => {
                 expect(response.status).to.be.equal(Constants.HTTP_STATUS.BAD_REQUEST);

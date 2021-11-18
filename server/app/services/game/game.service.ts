@@ -14,7 +14,7 @@ import { VirtualPlayerExpert } from '@app/classes/player/virtual-player/virtual-
 import * as logger from 'winston';
 import { PlayerHandler } from '@app/handlers/player-handler/player-handler';
 import { DictionaryService } from '@app/services/dictionary/dictionary.service';
-import { DictionaryHandler } from '@app/handlers/dictionary/dictionary-handler';
+import { DictionaryHandler } from '@app/handlers/dictionary-handler/dictionary-handler';
 
 @Service()
 export class GameService {
@@ -31,8 +31,14 @@ export class GameService {
             playTimeMs: gameConfig.playTimeMs,
             gameType: gameConfig.gameType,
         };
-        const words = this.dictionaryService.getWords(gameConfig.dictionary);
-        const dictionaryHandler = new DictionaryHandler(words);
+        let words: string[] = [];
+        try {
+            words = await this.dictionaryService.getWords(gameConfig.dictionary);
+        } catch (err) {
+            logger.error(`${err.stack}`);
+            return Promise.reject(`${err}`);
+        }
+        const dictionaryHandler = new DictionaryHandler(words, gameConfig.dictionary);
         const boardHandler = this.boardGeneratorService.generateBoardHandler(gameConfig.isRandomBonus, dictionaryHandler);
         const reserveHandler = new ReserveHandler();
 
@@ -68,8 +74,8 @@ export class GameService {
             gameType: gameConfig.gameType,
         };
 
-        const words = this.dictionaryService.getWords(gameConfig.dictionary);
-        const dictionaryHandler = new DictionaryHandler(words);
+        const words = await this.dictionaryService.getWords(gameConfig.dictionary);
+        const dictionaryHandler = new DictionaryHandler(words, gameConfig.dictionary);
         const boardHandler = this.boardGeneratorService.generateBoardHandler(gameConfig.isRandomBonus, dictionaryHandler);
         const reserveHandler = new ReserveHandler();
 

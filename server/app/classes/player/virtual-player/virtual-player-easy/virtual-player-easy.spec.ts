@@ -11,7 +11,7 @@ import { SkipAction } from '@app/classes/player/virtual-player/actions/skip-acti
 import { ExchangeAction } from '@app/classes/player/virtual-player/actions/exchange-action';
 import { PlayActionEasy } from '@app/classes/player/virtual-player/virtual-player-easy/actions/play-action-easy';
 import { Action } from '@app/classes/player/virtual-player/actions/action';
-import { DictionaryHandler } from '@app/handlers/dictionary/dictionary-handler';
+import { DictionaryHandler } from '@app/handlers/dictionary-handler/dictionary-handler';
 
 const RANDOM_RETURN_EXCHANGE = 0.09;
 const RANDOM_RETURN_SKIP = 0.11;

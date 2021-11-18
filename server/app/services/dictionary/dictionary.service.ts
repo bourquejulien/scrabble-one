@@ -1,16 +1,17 @@
 import { DictionaryMetadata, JsonDictionary } from '@common';
 import { generateId } from '@app/classes/id';
-import fs from 'fs';
+import { promises } from 'fs';
 import { Service } from 'typedi';
 import * as logger from 'winston';
 import path from 'path';
 import { Validator } from 'jsonschema';
+import { Constants } from '@app/constants';
 
 const defaultDictionary: DictionaryMetadata = {
     id: 'dictionary.json',
     description: 'Default Dictionary',
     title: 'Dictionnaire du serveur',
-    nbWords: 1024,
+    nbWords: 402503,
 };
 const schema = {
     title: 'string',
@@ -19,6 +20,7 @@ const schema = {
     required: ['title', 'description', 'words'],
 };
 const dictionaryPath = /* process.env.DICTIONARIES_FOLDER ??*/ process.cwd() + '/assets/';
+
 @Service()
 export class DictionaryService {
     private dictionaryMetadata: DictionaryMetadata[];
@@ -31,18 +33,26 @@ export class DictionaryService {
         return path.join(dictionaryPath, metadata.id);
     }
 
-    getWords(metadata: DictionaryMetadata): string[] {
+    async getWords(metadata: DictionaryMetadata): Promise<string[]> {
         let result: string[] = [];
-        fs.readFile(this.getFilepath(metadata), 'utf8', (_error, data) => {
-            let json: JsonDictionary;
-            try {
-                json = JSON.parse(data) as JsonDictionary;
-                result = json.words;
-                logger.debug('Parsed words in the dictionary');
-            } catch (SyntaxError) {
-                logger.debug('JSON.parse returned an error;');
-            }
-        });
+        await promises
+            .readFile(this.getFilepath(metadata), 'utf8')
+            .then((data) => {
+                let json: JsonDictionary;
+                try {
+                    json = JSON.parse(data) as JsonDictionary;
+                    result = json.words;
+                    logger.debug(`Parsed words ${result.length} in the dictionary`);
+                } catch (err) {
+                    logger.error(`JSON.parse returned an error ${err.stack}`);
+                }
+            })
+            .catch((err) => {
+                logger.error(`${err.stack}`);
+            });
+        if (result.length < Constants.MIN_DICTIONARY_SIZE) {
+            throw new Error('Not enough words in the chosen dictionary');
+        }
         return result;
     }
 
@@ -52,15 +62,19 @@ export class DictionaryService {
     }
 
     remove(metadata: DictionaryMetadata) {
+        const filepath = this.getFilepath(metadata);
         if (metadata !== defaultDictionary) {
             this.dictionaryMetadata.splice(this.dictionaryMetadata.indexOf(metadata), 1);
-            fs.rm(this.getFilepath(metadata), (err) => {
-                if (err) {
-                    logger.error(`Deletion Error: ${err}`);
-                }
-            });
+            promises
+                .rm(filepath)
+                .then(() => {
+                    logger.debug(`Successful Deletion: ${filepath}`);
+                })
+                .catch((err) => {
+                    logger.error(err.stack);
+                });
         } else {
-            logger.error('Attempted to delete the default dictionary :o');
+            logger.error('Attempted to delete the default dictionary-handler :o');
         }
     }
 
@@ -82,26 +96,31 @@ export class DictionaryService {
 
     parse(filepath: string): boolean {
         let result = false;
-        fs.readFile(filepath, 'utf8', (_error, data) => {
-            if (this.validate(data)) {
-                let json: JsonDictionary;
-                try {
-                    json = JSON.parse(data) as JsonDictionary;
-                    const metadata: DictionaryMetadata = {
-                        title: json.title,
-                        description: json.description,
-                        id: generateId(),
-                        nbWords: json.words.length,
-                    };
-                    this.dictionaryMetadata.push(metadata);
-                    result = true;
-                } catch (SyntaxError) {
-                    logger.debug('JSON.parse returned an error;');
+        promises
+            .readFile(filepath, 'utf8')
+            .then((data) => {
+                if (this.validate(data)) {
+                    logger.debug(`Parsing well-formatted file ${filepath}`);
+                    let json: JsonDictionary;
+                    try {
+                        json = JSON.parse(data) as JsonDictionary;
+                        const metadata: DictionaryMetadata = {
+                            title: json.title,
+                            description: json.description,
+                            id: generateId(),
+                            nbWords: json.words.length,
+                        };
+                        this.dictionaryMetadata.push(metadata);
+                        result = true;
+                    } catch (err) {
+                        logger.debug('JSON.parse returned an error');
+                    }
+                    logger.debug('Dictionary parsing successful');
                 }
-                logger.debug('Dictionary parsing successful');
-            }
-            logger.debug('Dictionary parsing unsuccessful');
-        });
+            })
+            .catch((err) => {
+                logger.error(err.stack);
+            });
         return result;
     }
 

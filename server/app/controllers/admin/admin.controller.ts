@@ -9,12 +9,12 @@ interface Playernames {
     experts: string[];
     beginners: string[];
 }
-const UPLOAD_DIR = tmpdir();
+const UPLOAD_DIR = process.env.UPLOAD_DIR ?? tmpdir();
 @Service()
 export class AdminController {
     readonly defaultBotNames: Playernames = {
-        experts: ['Monique', 'Claudette', 'Alphonse'],
-        beginners: ['Éléanor', 'Alphrède', 'Jeaninne'],
+        beginners: ['Monique', 'Claudette', 'Alphonse'],
+        experts: ['Éléanor', 'Alfred', 'Jeaninne'],
     };
     virtualPlayerNames: Playernames;
     router: Router;
@@ -43,6 +43,7 @@ export class AdminController {
                     res.sendStatus(Constants.HTTP_STATUS.BAD_REQUEST);
                 }
             });
+            res.sendStatus(Constants.HTTP_STATUS.BAD_REQUEST);
         });
 
         this.router.get('/dictionary', (req: Request, res: Response) => {

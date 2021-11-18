@@ -2,7 +2,7 @@
 /* eslint-disable no-unused-expressions -- To be */
 /* eslint-disable @typescript-eslint/no-unused-expressions */
 /* import { Board } from '@app/classes/board/board';
-import { Dictionary } from '@app/classes/dictionary/dictionary';
+import { Dictionary } from '@app/classes/dictionary-handler/dictionary-handler';
 import { Config } from '@app/config';
 import JsonBonuses from '@assets/bonus.json';
 import { Bonus, BonusInfos, Direction, LETTER_DEFINITIONS, Placement, Vec2 } from '@common';

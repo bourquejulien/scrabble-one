@@ -1,11 +1,14 @@
 import { Dictionary } from '@app/classes/dictionary/dictionary';
 import { Trie } from '@app/classes/trie/trie';
+import { DictionaryMetadata } from '@common';
 
 export class DictionaryHandler implements Dictionary {
+    readonly metadata: DictionaryMetadata;
     private readonly dictionary: Trie;
     private readonly reverseDictionary: Trie;
 
-    constructor(words: string[]) {
+    constructor(words: string[], metadata: DictionaryMetadata) {
+        this.metadata = metadata;
         this.dictionary = new Trie();
         this.reverseDictionary = new Trie();
         this.insertWords(words);

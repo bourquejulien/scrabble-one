@@ -11,7 +11,7 @@ import { PlayActionEasy } from './virtual-player-easy/actions/play-action-easy';
 import { ExchangeAction } from './actions/exchange-action';
 import { SkipAction } from './actions/skip-action';
 import { PlaceAction } from './actions/place-action';
-import { DictionaryHandler } from '@app/handlers/dictionary/dictionary-handler';
+import { DictionaryHandler } from '@app/handlers/dictionary-handler/dictionary-handler-handler';
 import { VirtualPlayer } from '@app/classes/player/virtual-player/virtual-player';
 
 class TestAction implements Action {

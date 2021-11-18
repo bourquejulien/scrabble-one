@@ -4,7 +4,7 @@ import { PlayerInfo } from '@app/classes/player-info';
 import * as logger from 'winston';
 import { VirtualPlayer } from '@app/classes/player/virtual-player/virtual-player';
 import { PlayActionExpert } from '@app/classes/player/virtual-player/virtual-player-expert/actions/play-action-expert';
-import { DictionaryHandler } from '@app/handlers/dictionary/dictionary-handler';
+import { DictionaryHandler } from '@app/handlers/dictionary-handler/dictionary-handler';
 
 export class VirtualPlayerExpert extends VirtualPlayer {
     constructor(private readonly dictionaryHandler: DictionaryHandler, playerInfo: PlayerInfo, runAction: (action: Action) => Action | null) {

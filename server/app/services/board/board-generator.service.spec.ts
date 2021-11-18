@@ -4,7 +4,7 @@
 /* eslint-disable @typescript-eslint/no-unused-expressions */
 /* import { expect } from 'chai';
 import { createSandbox, createStubInstance } from 'sinon';
-import { DictionaryService } from '@app/handlers/dictionary/dictionary.service';
+import { DictionaryService } from '@app/handlers/dictionary-handler/dictionary-handler.service';
 import { BoardGeneratorService } from './board-generator.service';
 import { Bonus } from '@common';
 

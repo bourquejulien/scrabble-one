@@ -11,7 +11,7 @@ describe('DictionaryService', () => {
     const dictionary: DictionaryMetadata = {
         id: 'not.json',
         description: 'Blablabla',
-        title: 'My cool dictionary',
+        title: 'My cool dictionary-handler',
         nbWords: 1024,
     };
 
@@ -26,7 +26,7 @@ describe('DictionaryService', () => {
         service = new DictionaryService();
         mock({
             'assets/': {
-                'dictionary.json': '{"title":"Dico", "description":"French dictionary", "words":["alpha", "beta", "gamma"]}',
+                'dictionary.json': '{"title":"Dico", "description":"French dictionary-handler", "words":["alpha", "beta", "gamma"]}',
                 'not.json': Buffer.from([1, 2, 3]),
             },
         });
@@ -66,7 +66,7 @@ describe('DictionaryService', () => {
         expect(service.dictionaries.length).to.equal(0);
     });
 
-    it('should not get rid of the default dictionary', () => {
+    it('should not get rid of the default dictionary-handler', () => {
         service.add(defaultDictionary);
         service.update([]);
         expect(service.dictionaries.length).to.equal(2);
