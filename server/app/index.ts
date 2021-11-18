@@ -7,6 +7,8 @@ import { Container } from 'typedi';
 import winston, * as logger from 'winston';
 import { Server } from './server';
 
+dotenv.config();
+
 const logFormat = winston.format.printf(({ level, message, timestamp }) => {
     return `${timestamp} - ${level} - ${message}`;
 });
@@ -26,6 +28,5 @@ logger.configure({
     ],
 });
 
-dotenv.config();
 const server: Server = Container.get(Server);
 server.init();
