@@ -13,7 +13,7 @@ import { SessionHandlingService } from './session-handling.service';
 import { GameType } from '@common';
 import { PlayerHandler } from '@app/handlers/player-handler/player-handler';
 import { HumanPlayer } from '@app/classes/player/human-player/human-player';
-import { VirtualPlayer } from '@app/classes/player/virtual-player/virtual-player';
+import { VirtualPlayerEasy } from '@app/classes/player/virtual-player/virtual-player-easy/virtual-player-easy';
 import { PlayerInfo } from '@app/classes/player-info';
 import { SessionData } from '@app/classes/session-data';
 
@@ -36,7 +36,7 @@ describe('SessionHandlingService', () => {
         stubSessionHandler.sessionData = sessionData;
         const stubPlayerHandler = createStubInstance(PlayerHandler) as unknown as PlayerHandler;
         playerA = createStubInstance(HumanPlayer);
-        const playerB = createStubInstance(VirtualPlayer);
+        const playerB = createStubInstance(VirtualPlayerEasy);
         playerA.startTurn.returns(new Promise<void>(() => {}));
         playerB.startTurn.returns(new Promise<void>(() => {}));
         stubPlayerHandler.addPlayer(playerA as unknown as Player);

@@ -3,19 +3,19 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable no-unused-expressions -- Needed for chai library assertions */
 /* eslint-disable @typescript-eslint/no-unused-expressions */
-import { expect } from 'chai';
-import Sinon, { assert, createStubInstance, stub } from 'sinon';
-import { GameService } from '@app/services/game/game.service';
-import { BoardGeneratorService } from '@app/services/board/board-generator.service';
-import { SessionHandlingService } from '@app/services/sessionHandling/session-handling.service';
-import { DictionaryService } from '@app/services/dictionary/dictionary.service';
-import { SocketService } from '@app/services/socket/socket-service';
-import { ConvertConfig, GameType, MultiplayerCreateConfig, MultiplayerJoinConfig, ServerConfig, SinglePlayerConfig } from '@common';
-import { SessionHandler } from '@app/handlers/session-handler/session-handler';
 import { HumanPlayer } from '@app/classes/player/human-player/human-player';
 import { Player } from '@app/classes/player/player';
 import { SessionData } from '@app/classes/session-data';
 import { SessionInfo } from '@app/classes/session-info';
+import { SessionHandler } from '@app/handlers/session-handler/session-handler';
+import { BoardGeneratorService } from '@app/services/board/board-generator.service';
+import { DictionaryService } from '@app/services/dictionary/dictionary.service';
+import { GameService } from '@app/services/game/game.service';
+import { SessionHandlingService } from '@app/services/sessionHandling/session-handling.service';
+import { SocketService } from '@app/services/socket/socket-service';
+import { ConvertConfig, GameType, MultiplayerCreateConfig, MultiplayerJoinConfig, ServerConfig, SinglePlayerConfig } from '@common';
+import { expect } from 'chai';
+import Sinon, { assert, createStubInstance, stub } from 'sinon';
 
 class StubSessionHandler {
     players: Player[] = [];
@@ -55,7 +55,7 @@ class StubSessionHandler {
     // eslint-disable-next-line @typescript-eslint/no-empty-function
     dispose() {}
 
-    abandon() {
+    abandonGame() {
         this.abandonCalled = true;
     }
 }
