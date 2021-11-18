@@ -9,9 +9,8 @@ export class StatsService {
     constructor(readonly scoreService: ScoreService) {}
 
     async updateScoreboards(playerHandler: PlayerHandler, collectionName: string): Promise<void> {
-        let playerWinner: Player;
         const winnerId = playerHandler.winner;
-        playerWinner = playerHandler.players[0].id === winnerId ? playerHandler.players[0] : playerHandler.players[1];
+        const playerWinner: Player = playerHandler.players[0].id === winnerId ? playerHandler.players[0] : playerHandler.players[1];
 
         // check if human player
         if (!playerWinner.playerInfo.isHuman) {

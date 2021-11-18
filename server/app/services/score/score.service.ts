@@ -5,7 +5,6 @@ import { Service } from 'typedi';
 
 const DATABASE_COLLECTION_CLASSIC = 'classicScoreboard';
 const DATABASE_COLLECTION_LOG = 'logScoreboard';
-
 @Service()
 export class ScoreService {
     private classicScoreboard: Collection<Score>;
@@ -17,42 +16,40 @@ export class ScoreService {
     }
 
     async updateScoreboard(score: Score, collectionName: string): Promise<void> {
-        const collection = this.databaseService.scrabbleDb.collection(collectionName);
-        collection.insertOne(score);
-        const currentScores = await collection.find().sort({ 'score.scoreValue': -1 }).limit(5).toArray();
-        const lastScore = currentScores.pop();
-        collection.deleteOne({ scoreValue: lastScore?.scoreValue });
+        this.getCollection(collectionName).insertOne(score);
 
-        // TO DO: Delete last from database
+        // removed the limit... not necessary in this function i think
+        const sortedScores = await this.getCollection(collectionName).find().sort({ 'score.scoreValue': -1 }).toArray();
+        const lastScore = sortedScores.pop();
+
+        this.getCollection(collectionName).deleteOne({ scoreValue: lastScore?.scoreValue });
+    }
+
+    async updateNamesWithSameScore(score: Score, collectionName: string): Promise<void> {
+        let playersWithSameScore = await this.getPlayerNamesByScore(score.scoreValue, collectionName);
+        playersWithSameScore.push(score.name[0]);
+        this.getCollection(collectionName).findOneAndUpdate({ scoreValue: score.scoreValue }, { $set: { name: playersWithSameScore } });
     }
 
     async isPlayerInScoreboard(playerName: string, collectionName: string): Promise<boolean> {
-        const collection = this.databaseService.scrabbleDb.collection(collectionName);
-        return collection.findOne({ name: playerName }) === null ? false : true;
+        return this.getCollection(collectionName).findOne({ name: playerName }) === null ? false : true;
     }
 
-    async getPlayerNamesByScore(playerName: string, collectionName: string): Promise<string[] | undefined> {
-        const collection = this.databaseService.scrabbleDb.collection(collectionName);
-        return collection.findOne({ score: playerName })?.then((score) => {
-            return score?.name.toArray();
+    async getPlayerNamesByScore(scoreVal: number, collectionName: string): Promise<string[]> {
+        return this.getCollection(collectionName).findOne({ score: scoreVal }).then((score) => {
+            return score === undefined ? [''] : score.name;
         });
     }
 
     async getPlayerScore(playerName: string, collectionName: string): Promise<number> {
-        // let collection = this.databaseService.scrabbleDb.collection(collectionName);
         return this.getCollection(collectionName)
             .findOne({ name: playerName })
             .then((score) => {
-                return score!.scoreValue;
+                return score === undefined ? -1 : score.scoreValue;
             });
     }
 
-    private getCollection(collectionName: string): Collection<Score> {
-        return collectionName === DATABASE_COLLECTION_CLASSIC ? this.classicScoreboard : this.logScoreboard;
-    }
-
     async getScoreboardClassic(): Promise<Score[]> {
-        // TO DO: MAYBE LIMIT 5??
         return this.classicScoreboard.find().toArray();
     }
 
@@ -60,5 +57,7 @@ export class ScoreService {
         return this.logScoreboard.find().toArray();
     }
 
-    /// ///////// TO DO : IF SAME SCORE BUT DIFFERENT PEOPLE
+    private getCollection(collectionName: string): Collection<Score> {
+        return collectionName === DATABASE_COLLECTION_CLASSIC ? this.classicScoreboard : this.logScoreboard;
+    }
 }
