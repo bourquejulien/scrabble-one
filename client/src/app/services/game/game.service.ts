@@ -65,6 +65,7 @@ export class GameService {
         this.playerService.reset();
         this.socketService.reset();
     }
+
     private async onNextTurn(id: string): Promise<void> {
         if (!this.gameRunning) return;
 

@@ -56,7 +56,6 @@ export class RoomService {
         const config: ConvertConfig = {
             id: this.pendingRoomId,
             virtualPlayerName: Constants.BOT_NAMES[Math.floor(Constants.BOT_NAMES.length * Math.random())],
-            gameHadBegun: false,
         };
 
         const serverConfig = await this.httpCLient.put<ServerConfig>(localUrl('game', 'convert'), config).toPromise();

@@ -126,14 +126,7 @@ export class GameService {
         };
 
         handler.sessionInfo.gameType = GameType.SinglePlayer;
-        if (convertConfig.gameHadBegun) {
-            const playerToReplace = handler.players.find((p) => p.id === convertConfig.id) ?? null;
-            if (playerToReplace !== null) {
-                handler.abandon(convertConfig.id);
-                this.socketService.send('opponentQuit', handler.sessionInfo.id);
-                this.addVirtualPlayer(playerToReplace.playerInfo, handler, playerToReplace.playerData);
-            }
-        } else this.addVirtualPlayer(virtualPlayerInfo, handler);
+        this.addVirtualPlayer(virtualPlayerInfo, handler);
         this.sessionHandlingService.updateEntries(handler);
 
         handler.start();
@@ -145,20 +138,13 @@ export class GameService {
 
     async abandon(id: string): Promise<boolean> {
         const handler = this.sessionHandlingService.getHandlerByPlayerId(id);
-        if (handler == null) {
+        if (handler == null || handler.sessionInfo.gameType !== GameType.Multiplayer) {
             logger.warn(`Failed to stop game: ${id}`);
             return false;
         }
 
-        if (handler.sessionInfo.gameType === GameType.Multiplayer && handler.sessionData.isActive) {
-            const player = handler.players.find((p) => p.id === id);
-            if (handler.sessionData.isStarted) {
-                if (player === undefined) return false;
-                const newName = player.playerInfo.name + ' Virtuel';
-                const convertConfig: ConvertConfig = { id: player.id, virtualPlayerName: newName, gameHadBegun: true };
-                this.convert(convertConfig);
-            }
-            logger.info(`Game abandoned: ${id}`);
+        if (handler.sessionData.isStarted) {
+            this.humanToVirtualPlayer(handler, id);
         } else {
             handler.dispose();
             this.sessionHandlingService.removeHandler(id);
@@ -168,6 +154,26 @@ export class GameService {
         return true;
     }
 
+    private humanToVirtualPlayer(handler: SessionHandler, playerId: string): boolean {
+        const player = handler.players.find((p) => p.id === playerId);
+        if (player) {
+            const newName = player.playerInfo.name + ' Virtuel';
+            const convertConfig: ConvertConfig = { id: player.id, virtualPlayerName: newName };
+            handler.abandon(convertConfig.id);
+            this.socketService.send('opponentQuit', handler.sessionInfo.id);
+            const virtualPlayerInfo: PlayerInfo = {
+                id: generateId(),
+                name: newName,
+                isHuman: false,
+            };
+            this.addVirtualPlayer(virtualPlayerInfo, handler, player.playerData);
+            logger.info(`Game abandoned: ${playerId}`);
+        } else {
+            logger.warn(`Failed to convert player after abandon: ${playerId}`);
+            return false;
+        }
+        return true;
+    }
     private addHumanPlayer(playerInfo: PlayerInfo, sessionHandler: SessionHandler): HumanPlayer {
         const humanPlayer = new HumanPlayer(playerInfo);
         sessionHandler.addPlayer(humanPlayer);
