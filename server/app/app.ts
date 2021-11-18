@@ -7,9 +7,10 @@ import cookieParser from 'cookie-parser';
 import cors from 'cors';
 import express from 'express';
 import { StatusCodes } from 'http-status-codes';
-import logger from 'morgan';
+import morgan from 'morgan';
 import { Service } from 'typedi';
 import { PlayerController } from './controllers/player/player.controller';
+import * as logger from 'winston';
 
 @Service()
 export class Application {
@@ -44,8 +45,7 @@ export class Application {
 
         for (const envVariable of REQUIRED_ENV_VARIABLES) {
             if (!(envVariable in process.env)) {
-                // eslint-disable-next-line no-console
-                console.error(`Error: ${envVariable} environment variable not set`);
+                logger.error(`Error: ${envVariable} environment variable not set`);
                 process.exit(1);
             }
         }
@@ -54,7 +54,7 @@ export class Application {
     private config(): void {
         // Middlewares configuration
         if (process.env.NODE_ENV === 'test') {
-            this.app.use(logger('dev'));
+            this.app.use(morgan('dev'));
         }
         this.app.use(express.json());
         this.app.use(express.urlencoded({ extended: true }));
@@ -65,7 +65,7 @@ export class Application {
     private errorHandling(): void {
         // When previous handlers have not served a request: path wasn't found
         this.app.use((req: express.Request, res: express.Response, next: express.NextFunction) => {
-            const err: HttpException = new HttpException('Not Found');
+            const err: HttpException = new HttpException(`Path: (${req.path}) - Not Found`);
             next(err);
         });
 
