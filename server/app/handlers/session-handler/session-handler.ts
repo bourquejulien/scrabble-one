@@ -83,6 +83,7 @@ export class SessionHandler {
     abandonGame(playerId: string): void {
         logger.debug(`SessionHandler - Abandon - PlayerId: ${playerId}`);
         this.sessionInfo.gameType = GameType.SinglePlayer;
+        this.removePlayer(playerId);
     }
 
     private endGame(): void {
