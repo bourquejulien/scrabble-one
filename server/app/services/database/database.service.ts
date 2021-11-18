@@ -22,8 +22,15 @@ export class DatabaseService {
         try {
             await this.client.connect();
             await this.scrabbleDb.command({ ping: 1 });
-            await this.fillClassicBoardWithDefault();
-            await this.fillLogBoardWithDefault();
+            let countClassic = await this.scrabbleDb.collection(DATABASE_COLLECTION_CLASSIC).countDocuments();
+            let countLog = await this.scrabbleDb.collection(DATABASE_COLLECTION_LOG).countDocuments();
+
+            if (!countClassic) {
+                await this.fillClassicBoardWithDefault();
+            }
+            if (!countLog) {
+                await this.fillLogBoardWithDefault();
+            }
         } catch {
             await this.client.close();
         }
