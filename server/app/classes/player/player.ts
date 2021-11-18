@@ -9,7 +9,6 @@ import { Observable, Subject } from 'rxjs';
 
 export abstract class Player {
     isTurn: boolean;
-    playerInfo: PlayerInfo;
     playerData: PlayerData;
 
     protected turnEnded: Subject<string>;
@@ -17,7 +16,7 @@ export abstract class Player {
     protected reserveHandler: ReserveHandler;
     protected socketHandler: SocketHandler;
 
-    protected constructor() {
+    protected constructor(public playerInfo: PlayerInfo) {
         this.playerData = { baseScore: 0, scoreAdjustment: 0, skippedTurns: 0, rack: [] };
         this.turnEnded = new Subject<string>();
     }

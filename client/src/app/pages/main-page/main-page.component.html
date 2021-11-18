@@ -1,7 +1,7 @@
 <body class="background">
     <div class="container justified">
-        <h1 class="header-item">Bienvenue au cours {{ title }}</h1>
-        <h2>Scrabble</h2>
+        <h1 class="header-item">Réalisé dans le cadre du cours LOG2990</h1>
+        <h2>Scrabble.one</h2>
         <section id="game">
             <p>Choix du mode de jeu</p>
             <div class="button-group">
@@ -36,12 +36,7 @@
                 <h4>
                     Équipe Poly 301<br />
                     <br />
-                    Julien Bourque<br />
-                    Alexandre Dufort<br />
-                    Éloïse Brosseau<br />
-                    Étienne Hourdebaigt<br />
-                    Ikram Kohil<br />
-                    Morgan De Gregorio Beaudoin<br />
+                    <label *ngFor='let dev of developers'>{{dev}}<br /></label>
                 </h4>
             </div>
         </div>

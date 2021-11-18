@@ -1,12 +1,12 @@
+import { Timer } from '@app/classes/delay';
+import { Config } from '@app/config';
+import { GameService } from '@app/services/game/game.service';
+import { SessionHandlingService } from '@app/services/sessionHandling/session-handling.service';
+import { SocketService } from '@app/services/socket/socket-service';
 import { AvailableGameConfig, Message, MessageType } from '@common';
 import { Socket } from 'socket.io';
 import { Service } from 'typedi';
-import { SocketService } from '@app/services/socket/socket-service';
-import { SessionHandlingService } from '@app/services/sessionHandling/session-handling.service';
-import { Config } from '@app/config';
 import * as logger from 'winston';
-import { Timer } from '@app/classes/delay';
-import { GameService } from '@app/services/game/game.service';
 
 const END_GAME_DELAY_MS = 5000;
 
@@ -44,7 +44,7 @@ export class RoomController {
                 }
 
                 await Timer.delay(END_GAME_DELAY_MS);
-                await this.abandon(socket, playerId);
+                await this.abandonCreatedGame(socket, playerId);
 
                 this.socketService.socketServer.emit('availableRooms', this.sessionInfos);
             });
@@ -58,7 +58,7 @@ export class RoomController {
                     return;
                 }
 
-                this.abandon(socket, playerId);
+                this.abandonCreatedGame(socket, playerId);
             });
 
             socket.on('message', (message: Message) => {
@@ -119,7 +119,7 @@ export class RoomController {
         }));
     }
 
-    private async abandon(socket: Socket, playerId: string) {
+    private async abandonCreatedGame(socket: Socket, playerId: string) {
         this.socketIdToPlayerId.delete(socket.id);
         await this.gameService.abandon(playerId);
 

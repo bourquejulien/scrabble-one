@@ -1,15 +1,16 @@
 import { HttpException } from '@app/classes/http.exception';
 import { BoardController } from '@app/controllers/board/board.controller';
 import { GameController } from '@app/controllers/game/game.controller';
+import { ReserveController } from '@app/controllers/reserve/reserve.controller';
+import { DictionaryService } from '@app/services/dictionary/dictionary.service';
 import cookieParser from 'cookie-parser';
 import cors from 'cors';
 import express from 'express';
 import { StatusCodes } from 'http-status-codes';
-import logger from 'morgan';
+import morgan from 'morgan';
 import { Service } from 'typedi';
-import { DictionaryService } from '@app/services/dictionary/dictionary.service';
-import { ReserveController } from '@app/controllers/reserve/reserve.controller';
 import { PlayerController } from './controllers/player/player.controller';
+import * as logger from 'winston';
 
 @Service()
 export class Application {
@@ -24,9 +25,9 @@ export class Application {
         dictionaryService: DictionaryService,
     ) {
         dictionaryService.retrieveDictionary();
-
         this.internalError = StatusCodes.INTERNAL_SERVER_ERROR;
         this.app = express();
+        this.validateEnv();
         this.config();
         this.bindRoutes();
     }
@@ -39,10 +40,21 @@ export class Application {
         this.errorHandling();
     }
 
+    private validateEnv(): void {
+        const REQUIRED_ENV_VARIABLES = ['DB_HOST', 'DB_USER', 'DB_PASSWORD'];
+
+        for (const envVariable of REQUIRED_ENV_VARIABLES) {
+            if (!(envVariable in process.env)) {
+                logger.error(`Error: ${envVariable} environment variable not set`);
+                process.exit(1);
+            }
+        }
+    }
+
     private config(): void {
         // Middlewares configuration
         if (process.env.NODE_ENV === 'test') {
-            this.app.use(logger('dev'));
+            this.app.use(morgan('dev'));
         }
         this.app.use(express.json());
         this.app.use(express.urlencoded({ extended: true }));
@@ -53,7 +65,7 @@ export class Application {
     private errorHandling(): void {
         // When previous handlers have not served a request: path wasn't found
         this.app.use((req: express.Request, res: express.Response, next: express.NextFunction) => {
-            const err: HttpException = new HttpException('Not Found');
+            const err: HttpException = new HttpException(`Path: (${req.path}) - Not Found`);
             next(err);
         });
 
