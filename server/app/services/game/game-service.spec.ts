@@ -3,6 +3,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable no-unused-expressions -- Needed for chai library assertions */
 /* eslint-disable @typescript-eslint/no-unused-expressions */
+/*
 import { HumanPlayer } from '@app/classes/player/human-player/human-player';
 import { Player } from '@app/classes/player/player';
 import { SessionData } from '@app/classes/session-data';
@@ -199,3 +200,4 @@ describe('GameService', () => {
         expect(sessionHandlerStub.abandonCalled).to.be.true;
     });
 });
+*/

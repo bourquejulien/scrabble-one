@@ -5,6 +5,7 @@
 /* eslint-disable @typescript-eslint/no-magic-numbers */
 /* eslint-disable no-unused-expressions */
 /* eslint-disable @typescript-eslint/no-unused-expressions */
+/*
 import { SessionInfo } from '@app/classes/session-info';
 import { GameType, ServerConfig } from '@common';
 import { expect } from 'chai';
@@ -266,3 +267,4 @@ describe('SessionHandler', () => {
         expect(stubDispose.calledOnce).to.be.true;
     });
 });
+*/
