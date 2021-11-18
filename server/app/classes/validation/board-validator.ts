@@ -2,7 +2,7 @@ import { Board, ImmutableBoard } from '@app/classes/board/board';
 import { Dictionary } from '@app/classes/dictionary/dictionary';
 import { Config } from '@app/config';
 import { Bonus, Direction, getBonusDetails, Placement, reverseDirection, Square, Vec2 } from '@common';
-import { ValidationResponse } from './validation-response';
+import { ValidatedLetter, ValidatedWord, ValidationFailed, ValidationResponse } from './validation-response';
 
 export class BoardValidator {
     constructor(private readonly board: ImmutableBoard, private readonly dictionary: Dictionary, private letterPoints: { [key: string]: number }) {}
@@ -47,82 +47,7 @@ export class BoardValidator {
         return position;
     }
 
-    validate(letters: Placement[]): ValidationResponse {
-        if (letters.length === 0) {
-            return { isSuccess: false, description: 'Aucune lettre à valider', points: 0 };
-        }
-
-        const positions: Vec2[] = letters.map((e) => e.position);
-        const clonedBoard: Board = this.board.clone();
-
-        try {
-            clonedBoard.merge(letters);
-        } catch (error) {
-            return { isSuccess: false, description: 'Impossible de remplacer une lettre existante', points: 0 };
-        }
-
-        const direction: Direction = this.retrieveDirection(positions);
-
-        if (direction === Direction.None) {
-            return { isSuccess: false, description: 'Toutes les lettres doivent être placées sur la même ligne', points: 0 };
-        }
-
-        const sortedLetters = BoardValidator.sortLetters(letters, direction);
-        const sortedPositions = sortedLetters.map((e) => e.position);
-
-        if (this.board.positions.length === 0) {
-            if (!this.validateFirstPlacement(letters)) {
-                return {
-                    isSuccess: false,
-                    description: 'Premier mot invalide, est-il placé au bon endroit?',
-                    points: 0,
-                };
-            }
-        } else if (!this.ensureAggregation(positions)) {
-            return { isSuccess: false, description: "Le mot placé n'est pas lié au jeu", points: 0 };
-        }
-
-        if (!BoardValidator.ensureCoherence(clonedBoard, sortedPositions, direction)) {
-            return { isSuccess: false, description: 'Mot incohérent', points: 0 };
-        }
-
-        return this.validateWords(clonedBoard, sortedPositions, direction);
-    }
-
-    getLetterPoints(letter: string): number {
-        return this.letterPoints[letter] ?? 0;
-    }
-
-    private validateFirstPlacement(letters: Placement[]): boolean {
-        if (letters.length < 2) {
-            return false;
-        }
-
-        const halfBoardSize = Math.floor(this.board.size / 2);
-        for (const { position } of letters) {
-            if (position.x === halfBoardSize && position.y === halfBoardSize) {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    private ensureAggregation(positions: Vec2[]): boolean {
-        for (const position of positions) {
-            const isLeftSquareValid = BoardValidator.validateSquare(this.board.getRelative(position, Direction.Left));
-            const isRigthSquareValid = BoardValidator.validateSquare(this.board.getRelative(position, Direction.Right));
-            const isUpSquareValid = BoardValidator.validateSquare(this.board.getRelative(position, Direction.Up));
-            const isDownSquareValid = BoardValidator.validateSquare(this.board.getRelative(position, Direction.Down));
-
-            if (isLeftSquareValid || isRigthSquareValid || isUpSquareValid || isDownSquareValid) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    private retrieveDirection(positions: Vec2[]): Direction {
+    private static retrieveDirection(positions: Vec2[]): Direction {
         if (positions.length < 2) {
             return Direction.Right;
         }
@@ -157,31 +82,118 @@ export class BoardValidator {
         return direction;
     }
 
-    private validateWords(clonedBoard: Board, sortedPositions: Vec2[], direction: Direction): ValidationResponse {
-        let totalPoint = 0;
-
-        let response = this.validateWord(clonedBoard, sortedPositions[0], direction);
-        if (!response.isSuccess) {
-            return response;
-        }
-        totalPoint += response.points;
-
-        for (const position of sortedPositions) {
-            response = this.validateWord(clonedBoard, position, direction === Direction.Down ? Direction.Right : Direction.Down);
-            if (!response.isSuccess) {
-                return response;
-            }
-
-            totalPoint += response.points;
-        }
-
-        totalPoint += this.getBingoBonus(sortedPositions.length);
-
-        return { isSuccess: true, description: '', points: totalPoint };
+    private static getBingoBonus(placementLength: number): number {
+        const BINGO_BONUS = 50;
+        return placementLength > Config.RACK_SIZE ? BINGO_BONUS : 0;
     }
 
-    private validateWord(clonedBoard: Board, initialPosition: Vec2, direction: Direction): ValidationResponse {
+    validate(placements: Placement[]): ValidationResponse {
+        if (placements.length === 0) {
+            return { isSuccess: false, description: 'Aucune lettre à valider' };
+        }
+
+        const positions: Vec2[] = placements.map((e) => e.position);
+        const clonedBoard: Board = this.board.clone();
+
+        try {
+            clonedBoard.merge(placements);
+        } catch (error) {
+            return { isSuccess: false, description: 'Impossible de remplacer une lettre existante' };
+        }
+
+        const direction: Direction = BoardValidator.retrieveDirection(positions);
+
+        if (direction === Direction.None) {
+            return { isSuccess: false, description: 'Toutes les lettres doivent être placées sur la même ligne' };
+        }
+
+        const sortedLetters = BoardValidator.sortLetters(placements, direction);
+        const sortedPositions = sortedLetters.map((e) => e.position);
+
+        if (this.board.positions.length === 0) {
+            if (!this.validateFirstPlacement(placements)) {
+                return { isSuccess: false, description: 'Premier mot invalide, est-il placé au bon endroit?' };
+            }
+        } else if (!this.ensureAggregation(positions)) {
+            return { isSuccess: false, description: "Le mot placé n'est pas lié au jeu" };
+        }
+
+        if (!BoardValidator.ensureCoherence(clonedBoard, sortedPositions, direction)) {
+            return { isSuccess: false, description: 'Mot incohérent' };
+        }
+
+        const response = this.validateWords(clonedBoard, sortedPositions, direction);
+
+        if ('isSuccess' in response) {
+            return response;
+        }
+
+        const score = response.map((w) => w.score).reduce((prev, curr) => prev + curr) + BoardValidator.getBingoBonus(sortedPositions.length);
+
+        return { isSuccess: true, score, placements, words: response };
+    }
+
+    getLetterScore(letter: string): number {
+        return this.letterPoints[letter] ?? 0;
+    }
+
+    private validateFirstPlacement(letters: Placement[]): boolean {
+        if (letters.length < 2) {
+            return false;
+        }
+
+        const halfBoardSize = Math.floor(this.board.size / 2);
+        for (const { position } of letters) {
+            if (position.x === halfBoardSize && position.y === halfBoardSize) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private ensureAggregation(positions: Vec2[]): boolean {
+        for (const position of positions) {
+            const isLeftSquareValid = BoardValidator.validateSquare(this.board.getRelative(position, Direction.Left));
+            const isRightSquareValid = BoardValidator.validateSquare(this.board.getRelative(position, Direction.Right));
+            const isUpSquareValid = BoardValidator.validateSquare(this.board.getRelative(position, Direction.Up));
+            const isDownSquareValid = BoardValidator.validateSquare(this.board.getRelative(position, Direction.Down));
+
+            if (isLeftSquareValid || isRightSquareValid || isUpSquareValid || isDownSquareValid) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private validateWords(clonedBoard: Board, sortedPositions: Vec2[], direction: Direction): ValidationFailed | ValidatedWord[] {
+        const words: ValidatedWord[] = [];
+        const addWord = (word: ValidatedWord): void => {
+            if (word.score > 0) words.push(word);
+        };
+
+        let validationResponse = this.validateWord(clonedBoard, sortedPositions[0], direction);
+        if ('isSuccess' in validationResponse) {
+            return validationResponse;
+        }
+
+        addWord(validationResponse);
+
+        for (const position of sortedPositions) {
+            validationResponse = this.validateWord(clonedBoard, position, direction === Direction.Down ? Direction.Right : Direction.Down);
+            if ('isSuccess' in validationResponse) {
+                return validationResponse;
+            }
+
+            addWord(validationResponse);
+        }
+
+        return words;
+    }
+
+    private validateWord(clonedBoard: Board, initialPosition: Vec2, direction: Direction): ValidatedWord | ValidationFailed {
         const firstPosition = BoardValidator.getFirstPosition(clonedBoard, initialPosition, direction);
+        const letters: ValidatedLetter[] = [];
 
         let nextSquare: Square | null = clonedBoard.getSquare(firstPosition);
         let word = '';
@@ -190,37 +202,36 @@ export class BoardValidator {
 
         while (nextSquare != null && nextSquare.letter !== '') {
             const currentSquare = nextSquare;
-            const isBonus = currentSquare.bonus !== Bonus.None && this.board.getSquare(currentSquare.position).letter === '';
+            const isNew = this.board.getSquare(currentSquare.position).letter === '';
+            const isBonus = currentSquare.bonus !== Bonus.None && isNew;
 
             nextSquare = clonedBoard.getRelative(currentSquare.position, direction);
             word += currentSquare.letter.toLowerCase();
 
-            if (!isBonus) {
-                totalPoint += this.getLetterPoints(currentSquare.letter);
-                continue;
-            }
-
+            const letterScore = this.getLetterScore(currentSquare.letter);
             const bonusDetails = getBonusDetails(currentSquare.bonus);
-            if (bonusDetails.isLetterBonus) {
-                totalPoint += this.getLetterPoints(currentSquare.letter) * bonusDetails.score;
+
+            if (!isBonus) {
+                totalPoint += letterScore;
+            } else if (bonusDetails.isLetterBonus) {
+                totalPoint += this.getLetterScore(currentSquare.letter) * bonusDetails.score;
             } else {
-                totalPoint += this.getLetterPoints(currentSquare.letter);
+                totalPoint += this.getLetterScore(currentSquare.letter);
                 multiplier *= bonusDetails.score;
             }
+
+            const placement: Placement = { position: currentSquare.position, letter: currentSquare.letter };
+            letters.push({ placement, isNew });
         }
 
         if (word.length < 2) {
-            return { isSuccess: true, description: '', points: 0 };
+            return { score: 0, letters };
         }
 
         if (this.dictionary.lookup(word)) {
-            return { isSuccess: true, description: '', points: totalPoint * multiplier };
+            return { score: totalPoint * multiplier, letters };
         }
-        return { isSuccess: false, description: `Le mot : (${word}) n'existe pas dans le dictionnaire`, points: 0 };
-    }
 
-    private getBingoBonus(placementLength: number): number {
-        const BINGO_BONUS = 50;
-        return placementLength > Config.RACK_SIZE ? BINGO_BONUS : 0;
+        return { isSuccess: false, description: `Le mot : (${word}) n'existe pas dans le dictionnaire` };
     }
 }

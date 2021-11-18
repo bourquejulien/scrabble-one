@@ -17,7 +17,7 @@ import { Board } from '@app/classes/board/board';
 import { BoardValidator } from '@app/classes/validation/board-validator';
 import { ReserveHandler } from '@app/handlers/reserve-handler/reserve-handler';
 import { Observable } from 'rxjs';
-import { ValidationResponse } from '@app/classes/validation/validation-response';
+import { ValidationFailed, ValidationResponse } from '@app/classes/validation/validation-response';
 const LETTERS = ['a', 'b', 'c', 'd', 'e', 'f', 'g'];
 const RACK = ['a', '*', 'c', 'd', 'e', 'f', 'g'];
 const NOT_FILLED_RACK = ['a', 'b', 'c', 'd', 'e'];
@@ -56,12 +56,12 @@ export class SocketServiceMock extends SocketService {
 }
 export class BoardHandlerMock extends BoardHandler {
     lookupLetters(letters: Placement[]): ValidationResponse {
-        if (letters === VALID_PLACEMENT) return { isSuccess: true, points: 0, description: '' };
-        return { isSuccess: false, points: 0, description: '' };
+        if (letters === VALID_PLACEMENT) return { isSuccess: true, score: 0, placements: [], words: [] };
+        return { isSuccess: false, description: '' };
     }
 
-    placeLetters(letters: Placement[]): ValidationResponse {
-        return { isSuccess: false, points: 0, description: '' };
+    placeLetters(letters: Placement[]): ValidationFailed {
+        return { isSuccess: false, description: '' };
     }
 
     retrieveNewLetters(placements: Placement[]): Placement[] {

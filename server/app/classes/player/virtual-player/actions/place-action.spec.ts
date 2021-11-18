@@ -10,7 +10,6 @@ import { expect } from 'chai';
 import { createSandbox, createStubInstance } from 'sinon';
 import { PlaceAction } from './place-action';
 import { Play } from '@app/classes/virtual-player/play';
-import { ValidationResponse } from '@app/classes/validation/validation-response';
 
 const VALID_PLACEMENT: Placement[] = [
     { letter: 'B', position: { x: 0, y: 0 } },
@@ -18,28 +17,23 @@ const VALID_PLACEMENT: Placement[] = [
     { letter: 'c', position: { x: 0, y: 2 } },
 ];
 
-export class BoardHandlerMock extends BoardHandler {
-    lookupLetters(letters: Placement[]): ValidationResponse {
-        if (letters === VALID_PLACEMENT) return { isSuccess: true, points: 0, description: '' };
-        return { isSuccess: false, points: 0, description: '' };
-    }
-
-    placeLetters(letters: Placement[]): ValidationResponse {
-        return { isSuccess: false, points: 0, description: '' };
-    }
-
-    retrieveNewLetters(placements: Placement[]): Placement[] {
-        return placements;
-    }
-}
 const LETTERS = ['a', 'b', 'c', 'd', 'e', 'f', 'g'];
 /* eslint-disable dot-notation */
 describe('Place Action', () => {
     const boardHandler = createStubInstance(BoardHandler);
-    boardHandler.lookupLetters.returns({ isSuccess: true, points: 0, description: '' });
-    boardHandler.placeLetters.returns({ isSuccess: false, points: 0, description: '' });
+    boardHandler.lookupLetters.returns({ isSuccess: true, score: 0, placements: [], words: [] });
+    boardHandler.placeLetters.returns({ isSuccess: false, description: '' });
     boardHandler.retrieveNewLetters.returns(VALID_PLACEMENT);
-    const play: Play = { score: 0, word: 'bac', letters: VALID_PLACEMENT };
+    const play: Play = {
+        isSuccess: true,
+        score: 12,
+        placements: [
+            { letter: 'l', position: { x: 0, y: 0 } },
+            { letter: 'l', position: { x: 0, y: 0 } },
+            { letter: 'l', position: { x: 0, y: 0 } },
+        ],
+        words: [],
+    };
     const playerData: PlayerData = { baseScore: 0, scoreAdjustment: 0, skippedTurns: 0, rack: [] };
     const action = new PlaceAction(boardHandler as unknown as BoardHandler, play, playerData);
     beforeEach(() => {

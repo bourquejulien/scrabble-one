@@ -13,7 +13,7 @@ describe('Exchange Action', () => {
     const reserve: ReserveHandler = new ReserveHandler();
     const socketHandler = createStubInstance(SocketHandler) as unknown as SocketHandler;
     const playerData: PlayerData = { baseScore: 0, scoreAdjustment: 0, skippedTurns: 0, rack: [] };
-    let action = new ExchangeAction(reserve, socketHandler, playerData);
+    let action = new ExchangeAction(reserve, socketHandler, playerData, true);
     beforeEach(() => {
         LETTERS.forEach((l) => playerData.rack.push(l));
     });
@@ -23,7 +23,7 @@ describe('Exchange Action', () => {
     });
 
     it('execute should change letters', () => {
-        action = new ExchangeAction(reserve, socketHandler, playerData);
+        action = new ExchangeAction(reserve, socketHandler, playerData, true);
         action.execute();
         expect(playerData.rack).to.not.eql(LETTERS);
     });
