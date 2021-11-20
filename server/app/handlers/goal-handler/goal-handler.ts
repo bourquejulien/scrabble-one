@@ -10,7 +10,7 @@ export abstract class GoalHandler implements PlacementNotifier, ExchangeNotifier
     readonly goals: Goal[];
     protected readonly updateSubject: Subject<void>;
 
-    protected constructor() {
+    constructor() {
         this.goals = [];
         this.updateSubject = new Subject<void>();
     }

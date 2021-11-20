@@ -11,9 +11,14 @@ import { BoardGeneratorService } from '@app/services/board/board-generator.servi
 import { DictionaryService } from '@app/services/dictionary/dictionary.service';
 import { SessionHandlingService } from '@app/services/sessionHandling/session-handling.service';
 import { SocketService } from '@app/services/socket/socket-service';
-import { ConvertConfig, GameType, MultiplayerCreateConfig, MultiplayerJoinConfig, ServerConfig, SinglePlayerConfig } from '@common';
+import { ConvertConfig, GameMode, GameType, MultiplayerCreateConfig, MultiplayerJoinConfig, ServerConfig, SinglePlayerConfig } from '@common';
 import { VirtualPlayerExpert } from '@app/classes/player/virtual-player/virtual-player-expert/virtual-player-expert';
 import * as logger from 'winston';
+import { SessionInfo } from '@app/classes/session-info';
+import { GoalHandler } from '@app/handlers/goal-handler/goal-handler';
+import { DisabledGoalHandler } from '@app/handlers/goal-handler/disabled-goal-handler';
+import { Log2990GoalHandler } from '@app/handlers/goal-handler/log2990-goal-handler';
+import { SessionStatsHandler } from '@app/handlers/stats-handlers/session-stats-handler/session-stats-handler';
 
 @Service()
 export class GameService {
@@ -25,16 +30,20 @@ export class GameService {
     ) {}
 
     async initSinglePlayer(gameConfig: SinglePlayerConfig): Promise<ServerConfig> {
-        const sessionInfo = {
+        const sessionInfo: SessionInfo = {
             id: generateId(),
             playTimeMs: gameConfig.playTimeMs,
             gameType: gameConfig.gameType,
+            gameMode: gameConfig.gameMode,
         };
 
+        // TODO add a construction service?
         const boardHandler = this.boardGeneratorService.generateBoardHandler(gameConfig.isRandomBonus);
         const reserveHandler = new ReserveHandler();
+        const socketHandler = this.socketService.generate(sessionInfo.id);
+        const statsHandler = new SessionStatsHandler(socketHandler, reserveHandler, this.getGoalHandler(sessionInfo.gameMode));
 
-        const sessionHandler = new SessionHandler(sessionInfo, boardHandler, reserveHandler, new PlayerHandler(), this.socketService);
+        const sessionHandler = new SessionHandler(sessionInfo, boardHandler, reserveHandler, new PlayerHandler(), socketHandler, statsHandler);
 
         const humanPlayerInfo: PlayerInfo = {
             id: generateId(),
@@ -60,16 +69,20 @@ export class GameService {
     }
 
     async initMultiplayer(gameConfig: MultiplayerCreateConfig): Promise<string> {
-        const sessionInfo = {
+        const sessionInfo: SessionInfo = {
             id: generateId(),
             playTimeMs: gameConfig.playTimeMs,
             gameType: gameConfig.gameType,
+            gameMode: gameConfig.gameMode,
         };
 
+        // TODO add a construction service?
         const boardHandler = this.boardGeneratorService.generateBoardHandler(gameConfig.isRandomBonus);
         const reserveHandler = new ReserveHandler();
+        const socketHandler = this.socketService.generate(sessionInfo.id);
+        const statsHandler = new SessionStatsHandler(socketHandler, reserveHandler, this.getGoalHandler(sessionInfo.gameMode));
 
-        const sessionHandler = new SessionHandler(sessionInfo, boardHandler, reserveHandler, new PlayerHandler(), this.socketService);
+        const sessionHandler = new SessionHandler(sessionInfo, boardHandler, reserveHandler, new PlayerHandler(), socketHandler, statsHandler);
 
         const humanPlayerInfo: PlayerInfo = {
             id: generateId(),
@@ -170,5 +183,9 @@ export class GameService {
         sessionHandler.addPlayer(virtualPlayer);
 
         return virtualPlayer;
+    }
+
+    private getGoalHandler(gameMode: GameMode): GoalHandler {
+        return gameMode === GameMode.Standard ? new DisabledGoalHandler() : new Log2990GoalHandler();
     }
 }

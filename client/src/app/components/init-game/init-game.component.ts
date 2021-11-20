@@ -1,9 +1,9 @@
 import { Component, HostListener, Inject, OnInit } from '@angular/core';
-import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 import { TimeSpan } from '@app/classes/time/timespan';
 import { GameService } from '@app/services/game/game.service';
-import { GameType, MultiplayerCreateConfig, SinglePlayerConfig } from '@common';
+import { GameMode, GameType, MultiplayerCreateConfig, SinglePlayerConfig } from '@common';
 import { RoomService } from '@app/services/room/room.service';
 import { Constants } from '@app/constants/global.constants';
 import { NameValidator } from '@app/classes/form-validation/name-validator';
@@ -107,6 +107,8 @@ export class InitGameComponent implements OnInit {
     private async initSinglePlayer(): Promise<void> {
         const singlePlayerConfig: SinglePlayerConfig = {
             gameType: GameType.SinglePlayer,
+            // TODO
+            gameMode: GameMode.Standard,
             playTimeMs: this.formConfig.playTime.totalMilliseconds,
             playerName: this.formConfig.firstPlayerName,
             virtualPlayerName: this.formConfig.secondPlayerName,
@@ -120,6 +122,8 @@ export class InitGameComponent implements OnInit {
     private async initMultiplayer(): Promise<void> {
         const multiplayerConfig: MultiplayerCreateConfig = {
             gameType: GameType.Multiplayer,
+            // TODO
+            gameMode: GameMode.Standard,
             playTimeMs: this.formConfig.playTime.totalMilliseconds,
             playerName: this.formConfig.firstPlayerName,
             isRandomBonus: this.formConfig.isRandomBonus,

@@ -6,7 +6,6 @@ import { BoardHandler } from '@app/handlers/board-handler/board-handler';
 import { PlayerHandler } from '@app/handlers/player-handler/player-handler';
 import { ReserveHandler } from '@app/handlers/reserve-handler/reserve-handler';
 import { SocketHandler } from '@app/handlers/socket-handler/socket-handler';
-import { SocketService } from '@app/services/socket/socket-service';
 import { ServerConfig } from '@common';
 import { Subscription } from 'rxjs';
 import * as logger from 'winston';
@@ -17,17 +16,15 @@ export class SessionHandler {
     private timer: NodeJS.Timer;
 
     private readonly playerSubscription: Subscription;
-    private socketHandler: SocketHandler;
 
     constructor(
         public sessionInfo: SessionInfo,
         public boardHandler: BoardHandler,
         public reserveHandler: ReserveHandler,
         private playerHandler: PlayerHandler,
+        private socketHandler: SocketHandler,
         private statsHandler: SessionStatsHandler,
-        socketService: SocketService,
     ) {
-        this.socketHandler = socketService.generate(sessionInfo.id);
         this.sessionData = { isActive: false, isStarted: false, timeLimitEpoch: 0 };
         this.playerSubscription = this.playerHandler.onTurn().subscribe((id) => this.onTurn(id));
     }
@@ -40,6 +37,7 @@ export class SessionHandler {
             id: firstPlayer.id,
             startId: this.players.filter((p) => p.isTurn).map((p) => p.id)[0] ?? '',
             gameType: this.sessionInfo.gameType,
+            gameMode: this.sessionInfo.gameMode,
             playTimeMs: this.sessionInfo.playTimeMs,
             firstPlayerName: firstPlayer.playerInfo.name,
             secondPlayerName: secondPlayer.playerInfo.name,

@@ -1,7 +1,9 @@
 import { GameType } from './game-type';
+import { GameMode } from './game-mode';
 
 export interface SinglePlayerConfig {
     gameType: GameType;
+    gameMode: GameMode;
     playTimeMs: number;
     playerName: string;
     virtualPlayerName: string;
@@ -10,6 +12,7 @@ export interface SinglePlayerConfig {
 
 export interface MultiplayerCreateConfig {
     gameType: GameType;
+    gameMode: GameMode;
     playTimeMs: number;
     playerName: string;
     isRandomBonus: boolean;
@@ -28,15 +31,16 @@ export interface ConvertConfig {
 export interface AvailableGameConfig {
     id: string;
     playTimeMs: number;
-    waitingPlayerName: string,
-    isRandomBonus: boolean,
+    waitingPlayerName: string;
+    isRandomBonus: boolean;
 }
 
 export interface ServerConfig {
-    id: string,
-    startId: string,
-    gameType: GameType,
-    playTimeMs: number,
-    firstPlayerName: string,
-    secondPlayerName: string,
+    id: string;
+    startId: string;
+    gameType: GameType;
+    gameMode: GameMode;
+    playTimeMs: number;
+    firstPlayerName: string;
+    secondPlayerName: string;
 }

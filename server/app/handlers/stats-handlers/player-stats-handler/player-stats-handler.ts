@@ -3,7 +3,7 @@ import { LETTER_DEFINITIONS, PlayerStats } from '@common';
 import { GoalHandler } from '@app/handlers/goal-handler/goal-handler';
 import { PlayerStatsNotifier } from '@app/handlers/stats-handlers/player-stats-handler/player-stats-notifier';
 
-export class PlayerStatsHandler implements PlayerStatsNotifier{
+export class PlayerStatsHandler implements PlayerStatsNotifier {
     baseScore: number;
     scoreAdjustment: number;
     skippedTurns: number;
