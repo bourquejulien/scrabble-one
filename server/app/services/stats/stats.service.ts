@@ -48,4 +48,8 @@ export class StatsService {
     async getScoreboardClassic(): Promise<Score[]> {
         return this.scoreService.getScoreboardClassic();
     }
+
+    async getScoreBoardLog(): Promise<Score[]> {
+        return this.scoreService.getScoreboardLog();
+    }
 }

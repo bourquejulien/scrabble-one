@@ -2,6 +2,7 @@ import { HttpException } from '@app/classes/http.exception';
 import { BoardController } from '@app/controllers/board/board.controller';
 import { GameController } from '@app/controllers/game/game.controller';
 import { ReserveController } from '@app/controllers/reserve/reserve.controller';
+import { StatsController } from '@app/controllers/stats/stats.controller';
 import { DictionaryService } from '@app/services/dictionary/dictionary.service';
 import cookieParser from 'cookie-parser';
 import cors from 'cors';
@@ -9,8 +10,8 @@ import express from 'express';
 import { StatusCodes } from 'http-status-codes';
 import morgan from 'morgan';
 import { Service } from 'typedi';
-import { PlayerController } from './controllers/player/player.controller';
 import * as logger from 'winston';
+import { PlayerController } from './controllers/player/player.controller';
 
 @Service()
 export class Application {
@@ -22,6 +23,7 @@ export class Application {
         private readonly boardController: BoardController,
         private readonly playerController: PlayerController,
         private readonly reserveController: ReserveController,
+        private readonly statsController: StatsController,
         dictionaryService: DictionaryService,
     ) {
         dictionaryService.retrieveDictionary();
@@ -37,6 +39,7 @@ export class Application {
         this.app.use('/api/board', this.boardController.router);
         this.app.use('/api/player', this.playerController.router);
         this.app.use('/api/reserve', this.reserveController.router);
+        this.app.use('api/score', this.statsController.router);
         this.errorHandling();
     }
 
