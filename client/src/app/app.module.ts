@@ -21,6 +21,8 @@ import { ToolbarComponent } from './components/toolbar/toolbar.component';
 import { GameModePageComponent } from './pages/game-mode-page/game-mode-page.component';
 import { RoomListComponent } from './pages/room-list/room-list.component';
 import { WaitingRoomPageComponent } from './pages/waiting-room-page/waiting-room-page.component';
+import { BestScoresComponent } from './pages/best-scores/best-scores.component';
+import { ScoreboardServiceComponent } from './services/scoreboard-service/scoreboard-service.component';
 
 /**
  * Main module that is used in main.ts.
@@ -47,6 +49,8 @@ import { WaitingRoomPageComponent } from './pages/waiting-room-page/waiting-room
         InitGameComponent,
         BoardComponent,
         ToolbarComponent,
+        BestScoresComponent,
+        ScoreboardServiceComponent,
     ],
     imports: [AppMaterialModule, AppRoutingModule, BrowserAnimationsModule, BrowserModule, FormsModule, HttpClientModule],
     providers: [],
