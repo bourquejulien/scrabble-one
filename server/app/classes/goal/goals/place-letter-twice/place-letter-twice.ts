@@ -1,20 +1,27 @@
 import { PlacementNotifier } from '@app/classes/goal/goals/notifiers/placement-notifier';
 import { ValidationResponse } from '@app/classes/validation/validation-response';
-import { GoalStatus } from '@common';
-import { Goal } from '@app/classes/goal/goal';
+import { BaseGoal, Goal } from '@app/classes/goal/base-goal';
+import { goalGenerator } from '@app/classes/goal/goals/goal.decorator';
 
-export class PlaceLetterTwice extends Goal implements PlacementNotifier {
-    constructor() {
-        super({
-            id: 'place-letter-twice',
-            // TODO Dans le mots ou les lettres placées?
-            name: 'Placer un mot contenant au moins 2 fois la même lettre',
-            score: 10,
-            status: GoalStatus.Pending,
-        });
+@goalGenerator
+export class PlaceLetterTwice extends BaseGoal implements PlacementNotifier {
+    constructor(ownerId: string) {
+        super(
+            {
+                id: 'place-letter-twice',
+                // TODO Dans le mots ou les lettres placées?
+                name: 'Placer un mot contenant au moins 2 fois la même lettre',
+                score: 10,
+            },
+            ownerId,
+        );
     }
 
-    notifyPlacement(validationResponse: ValidationResponse): void {
+    static generate(ownerId: string): Goal {
+        return new PlaceLetterTwice(ownerId);
+    }
+
+    notifyPlacement(validationResponse: ValidationResponse, id: string): void {
         if (!validationResponse.isSuccess || this.isCompleted) {
             return;
         }
@@ -23,7 +30,7 @@ export class PlaceLetterTwice extends Goal implements PlacementNotifier {
 
         for (const { letter } of validationResponse.placements) {
             if (letters.has(letter)) {
-                this.data.status = GoalStatus.Succeeded;
+                this.successId = id;
                 return;
             }
         }

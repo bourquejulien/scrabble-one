@@ -5,7 +5,8 @@ export enum GoalStatus {
 }
 
 export interface GoalData {
-    id: string
+    id: string;
+    isGlobal: boolean;
     name: string;
     score: number;
     status: GoalStatus;

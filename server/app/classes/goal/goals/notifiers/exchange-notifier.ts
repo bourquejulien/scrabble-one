@@ -1,3 +1,3 @@
 export interface ExchangeNotifier {
-    notifyExchange(): void;
+    notifyExchange(id: string): void;
 }

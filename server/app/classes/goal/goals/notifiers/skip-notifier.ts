@@ -1,3 +1,3 @@
 export interface SkipNotifier {
-    notifySkip(): void;
+    notifySkip(id: string): void;
 }

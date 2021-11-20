@@ -1,19 +1,26 @@
 import { PlacementNotifier } from '@app/classes/goal/goals/notifiers/placement-notifier';
 import { ValidatedLetter, ValidationResponse } from '@app/classes/validation/validation-response';
-import { GoalStatus } from '@common';
-import { Goal } from '@app/classes/goal/goal';
+import { BaseGoal, Goal } from '@app/classes/goal/base-goal';
+import { goalGenerator } from '@app/classes/goal/goals/goal.decorator';
 
 const MIN_WORD_SIZE = 3;
 const SCORE_MULTIPLIER = 3;
 
-export class PlacePalindrome extends Goal implements PlacementNotifier {
-    constructor() {
-        super({
-            id: 'place-palindrome',
-            name: `Former un palindrome de ${MIN_WORD_SIZE} lettres ou plus`,
-            score: -1,
-            status: GoalStatus.Pending,
-        });
+@goalGenerator
+export class PlacePalindrome extends BaseGoal implements PlacementNotifier {
+    constructor(ownerId: string) {
+        super(
+            {
+                id: 'place-palindrome',
+                name: `Former un palindrome de ${MIN_WORD_SIZE} lettres ou plus`,
+                score: -1,
+            },
+            ownerId,
+        );
+    }
+
+    static generate(ownerId: string): Goal {
+        return new PlacePalindrome(ownerId);
     }
 
     private static isPalindrome(letters: ValidatedLetter[]): boolean {
@@ -26,14 +33,14 @@ export class PlacePalindrome extends Goal implements PlacementNotifier {
         return true;
     }
 
-    notifyPlacement(validationResponse: ValidationResponse): void {
+    notifyPlacement(validationResponse: ValidationResponse, id: string): void {
         if (!validationResponse.isSuccess || this.isCompleted) {
             return;
         }
 
         for (const word of validationResponse.words) {
             if (word.letters.length >= MIN_WORD_SIZE && PlacePalindrome.isPalindrome(word.letters)) {
-                this.data.status = GoalStatus.Succeeded;
+                this.successId = id;
                 this.data.score = validationResponse.score * SCORE_MULTIPLIER;
                 return;
             }

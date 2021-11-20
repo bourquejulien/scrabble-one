@@ -1,29 +1,36 @@
 import { PlacementNotifier } from '@app/classes/goal/goals/notifiers/placement-notifier';
 import { ValidationResponse } from '@app/classes/validation/validation-response';
-import { GoalStatus } from '@common';
-import { Goal } from '@app/classes/goal/goal';
+import { BaseGoal, Goal } from '@app/classes/goal/base-goal';
+import { goalGenerator } from '@app/classes/goal/goals/goal.decorator';
 
 const WORD_SIZE = 8;
 
-export class PlaceLongWord extends Goal implements PlacementNotifier {
-    constructor() {
-        super({
-            id: 'place-long-word',
-            // TODO Reformulation
-            name: `Former un mot de ${WORD_SIZE} lettres ou plus`,
-            score: 20,
-            status: GoalStatus.Pending,
-        });
+@goalGenerator
+export class PlaceLongWord extends BaseGoal implements PlacementNotifier {
+    constructor(ownerId: string) {
+        super(
+            {
+                id: 'place-long-word',
+                // TODO Reformulation
+                name: `Former un mot de ${WORD_SIZE} lettres ou plus`,
+                score: 20,
+            },
+            ownerId,
+        );
     }
 
-    notifyPlacement(validationResponse: ValidationResponse): void {
+    static generate(ownerId: string): Goal {
+        return new PlaceLongWord(ownerId);
+    }
+
+    notifyPlacement(validationResponse: ValidationResponse, id: string): void {
         if (!validationResponse.isSuccess || this.isCompleted) {
             return;
         }
 
         for (const word of validationResponse.words) {
             if (word.letters.length > WORD_SIZE) {
-                this.data.status = GoalStatus.Succeeded;
+                this.successId = id;
                 return;
             }
         }

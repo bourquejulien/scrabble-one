@@ -1,24 +1,32 @@
 import { PlacementNotifier } from '@app/classes/goal/goals/notifiers/placement-notifier';
 import { ValidationResponse } from '@app/classes/validation/validation-response';
-import { Goal } from '@app/classes/goal/goal';
-import { GoalStatus, Vec2 } from '@common';
+import { BaseGoal, Goal } from '@app/classes/goal/base-goal';
+import { Vec2 } from '@common';
 import { Config } from '@app/config';
+import { goalGenerator } from '@app/classes/goal/goals/goal.decorator';
 
-export class PlaceCorner extends Goal implements PlacementNotifier {
-    constructor() {
-        super({
-            id: 'place-corner',
-            name: 'Placer une lettre dans un coin',
-            score: 20,
-            status: GoalStatus.Pending,
-        });
+@goalGenerator
+export class PlaceCorner extends BaseGoal implements PlacementNotifier {
+    private constructor(ownerId: string) {
+        super(
+            {
+                id: 'place-corner',
+                name: 'Placer une lettre dans un coin',
+                score: 20,
+            },
+            ownerId,
+        );
+    }
+
+    static generate(ownerId: string): Goal {
+        return new PlaceCorner(ownerId);
     }
 
     private static isOnEdge(position: Vec2): boolean {
-        return position.x % Config.GRID.GRID_SIZE === 0 && position.y % Config.GRID.GRID_SIZE == 0;
+        return position.x % Config.GRID.GRID_SIZE === 0 && position.y % Config.GRID.GRID_SIZE === 0;
     }
 
-    notifyPlacement(validationResponse: ValidationResponse): void {
+    notifyPlacement(validationResponse: ValidationResponse, id: string): void {
         if (!validationResponse.isSuccess || this.isCompleted) {
             return;
         }
@@ -29,6 +37,6 @@ export class PlaceCorner extends Goal implements PlacementNotifier {
             return;
         }
 
-        this.data.status = GoalStatus.Succeeded;
+        this.successId = id;
     }
 }

@@ -2,45 +2,55 @@ import { ExchangeNotifier } from '@app/classes/goal/goals/notifiers/exchange-not
 import { PlacementNotifier } from '@app/classes/goal/goals/notifiers/placement-notifier';
 import { SkipNotifier } from '@app/classes/goal/goals/notifiers/skip-notifier';
 import { ValidationResponse } from '@app/classes/validation/validation-response';
-import { GoalStatus } from '@common';
-import { Goal } from '@app/classes/goal/goal';
+import { BaseGoal, Goal } from '@app/classes/goal/base-goal';
+import { goalGenerator } from '@app/classes/goal/goals/goal.decorator';
 
 const REWARDED_PLACEMENT_SIZE = 5;
 const REWARDED_CONSECUTIVE_TURN = 3;
 
-export class ManyLettersInRow extends Goal implements PlacementNotifier, ExchangeNotifier, SkipNotifier {
-    private consecutiveTurnCount: number;
+@goalGenerator
+export class ManyLettersInRow extends BaseGoal implements PlacementNotifier, ExchangeNotifier, SkipNotifier {
+    private consecutiveTurnCount: Map<string, number>;
 
-    constructor() {
-        super({
-            id: 'many-letters-in-row',
-            name: `Placer ${REWARDED_PLACEMENT_SIZE} lettres du chevalet ou plus lors de ${REWARDED_CONSECUTIVE_TURN} tours consécutifs`,
-            score: 50,
-            status: GoalStatus.Pending,
-        });
+    constructor(ownerId: string) {
+        super(
+            {
+                id: 'many-letters-in-row',
+                name: `Placer ${REWARDED_PLACEMENT_SIZE} lettres du chevalet ou plus lors de ${REWARDED_CONSECUTIVE_TURN} tours consécutifs`,
+                score: 50,
+            },
+            ownerId,
+        );
 
-        this.consecutiveTurnCount = 0;
+        this.consecutiveTurnCount = new Map<string, number>();
     }
 
-    notifyExchange(): void {
-        this.consecutiveTurnCount = 0;
+    static generate(ownerId: string): Goal {
+        return new ManyLettersInRow(ownerId);
     }
 
-    notifyPlacement(validationResponse: ValidationResponse): void {
+    notifyExchange(id: string): void {
+        this.consecutiveTurnCount.set(id, 0);
+    }
+
+    notifyPlacement(validationResponse: ValidationResponse, id: string): void {
         if (!validationResponse.isSuccess || this.isCompleted) {
             return;
         }
 
-        this.consecutiveTurnCount = validationResponse.placements.length > REWARDED_PLACEMENT_SIZE ? this.consecutiveTurnCount + 1 : 0;
+        let currentTurnCount = this.consecutiveTurnCount.get(id) ?? 0;
+        currentTurnCount = validationResponse.placements.length > REWARDED_PLACEMENT_SIZE ? currentTurnCount + 1 : 0;
 
-        if (this.consecutiveTurnCount < REWARDED_CONSECUTIVE_TURN) {
+        if (currentTurnCount < REWARDED_CONSECUTIVE_TURN) {
+            this.consecutiveTurnCount.set(id, currentTurnCount);
             return;
         }
 
-        this.data.status = GoalStatus.Succeeded;
+        this.consecutiveTurnCount.clear();
+        this.successId = id;
     }
 
-    notifySkip(): void {
-        this.consecutiveTurnCount = 0;
+    notifySkip(id: string): void {
+        this.consecutiveTurnCount.set(id, 0);
     }
 }
