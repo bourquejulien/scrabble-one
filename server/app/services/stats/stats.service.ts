@@ -22,8 +22,15 @@ export class StatsService {
             return;
         }
 
-        const newBestPlayerScore: Score = { name: [playerWinner.playerInfo.name], scoreValue: playerWinner.stats.points };
-        this.scoreService.updateScoreboard(newBestPlayerScore, collectionName);
+        const playersNewBestScore: Score = { name: [playerWinner.playerInfo.name], scoreValue: playerWinner.stats.points };
+
+        // check if same score as another player TO DO: Not sure abt this structure... maybe separating the check from the update would be best? idk
+        if (await this.scoreService.updateNamesWithSameScore(playersNewBestScore, collectionName)) {
+            return;
+        }
+
+        // if score unique, update the whole score board
+        this.scoreService.updateScoreboard(playersNewBestScore, collectionName);
     }
 
     async isNewScoreGreater(playerWinner: Player, collectionName: string): Promise<boolean> {
