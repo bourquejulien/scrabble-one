@@ -31,7 +31,7 @@ export class ScoreService {
             return false;
         }
 
-        let playersWithSameScore = await this.getPlayerNamesByScore(score.scoreValue, collectionName);
+        const playersWithSameScore = await this.getPlayerNamesByScore(score.scoreValue, collectionName);
         playersWithSameScore.push(score.name[0]);
         this.getCollection(collectionName).findOneAndUpdate({ scoreValue: score.scoreValue }, { $set: { name: playersWithSameScore } });
 
@@ -66,9 +66,11 @@ export class ScoreService {
     }
 
     private async getPlayerNamesByScore(scoreVal: number, collectionName: string): Promise<string[]> {
-        return this.getCollection(collectionName).findOne({ scoreValue: scoreVal }).then((score) => {
-            return score === null ? [''] : score.name;
-        });
+        return this.getCollection(collectionName)
+            .findOne({ scoreValue: scoreVal })
+            .then((score) => {
+                return score === null ? [''] : score.name;
+            });
     }
 
     private getCollection(collectionName: string): Collection<Score> {

@@ -120,8 +120,4 @@ export class GamePageComponent implements OnDestroy {
             this.router.navigate(['home']);
         });
     }
-
-    addElementInDb(): void {
-        this.socketClientService.send('add element in db');
-    }
 }

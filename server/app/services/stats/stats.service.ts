@@ -33,6 +33,14 @@ export class StatsService {
         this.scoreService.updateScoreboard(playersNewBestScore, collectionName);
     }
 
+    async getScoreboardClassic(): Promise<Score[]> {
+        return this.scoreService.getScoreboardClassic();
+    }
+
+    async getScoreBoardLog(): Promise<Score[]> {
+        return this.scoreService.getScoreboardLog();
+    }
+
     private async isNewScoreGreater(playerWinner: Player, collectionName: string): Promise<boolean> {
         const isInScoreboard = await this.scoreService.isPlayerInScoreboard(playerWinner.playerInfo.name, collectionName);
 
@@ -43,13 +51,5 @@ export class StatsService {
             }
         }
         return true;
-    }
-
-    async getScoreboardClassic(): Promise<Score[]> {
-        return this.scoreService.getScoreboardClassic();
-    }
-
-    async getScoreBoardLog(): Promise<Score[]> {
-        return this.scoreService.getScoreboardLog();
     }
 }

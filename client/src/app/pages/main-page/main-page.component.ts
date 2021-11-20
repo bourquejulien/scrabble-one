@@ -9,7 +9,7 @@ import { BestScoresComponent } from '@app/components/best-scores/best-scores.com
 })
 export class MainPageComponent {
     readonly developers: string[];
-    //dialog: any;
+    // dialog: any;
 
     constructor(public dialog: MatDialog) {
         this.developers = [

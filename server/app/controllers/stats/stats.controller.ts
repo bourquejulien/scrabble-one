@@ -1,7 +1,8 @@
-import { Constants } from '@app/constants';
-import { StatsService } from "@app/services/stats/stats.service";
-import { Response, Router } from 'express';
-import { Service } from "typedi";
+import { StatsService } from '@app/services/stats/stats.service';
+import { Score } from '@common';
+import { Request, Response, Router } from 'express';
+import { Service } from 'typedi';
+
 @Service()
 export class StatsController {
     router: Router;
@@ -13,47 +14,14 @@ export class StatsController {
     private configureRouter(): void {
         this.router = Router();
 
-        this.router.get('/classic', async (res: Response) => {
-            const scoreboard = await this.statsService.getScoreboardClassic();
-
-            if (scoreboard === null) {
-                res.sendStatus(Constants.HTTP_STATUS.BAD_REQUEST);
-            }
-
-            this.statsService
-                .getScoreboardClassic()
-                .then((stats) => {
-                    res.json(stats);
-                })
+        this.router.get('/classic', async (req: Request, res: Response) => {
+            const scores: Score[] = await this.statsService.getScoreboardClassic();
+            res.json(scores);
         });
 
-
-        this.router.get('/log', async (res: Response) => {
-            const scoreboard = await this.statsService.getScoreBoardLog();
-
-            if (scoreboard === null) {
-                res.sendStatus(Constants.HTTP_STATUS.BAD_REQUEST);
-            }
-
-            this.statsService
-                .getScoreBoardLog()
-                .then((stats) => {
-                    res.json(stats);
-                })
+        this.router.get('/log', async (req: Request, res: Response) => {
+            const scores: Score[] = await this.statsService.getScoreBoardLog();
+            res.json(scores);
         });
     }
 }
-
-/**
- *         this.router.put('/score/classic', async (res: Response) => {
-            this.statsService
-                .getScoreboardClassic()
-                .then((stats) => {
-                    res.json(stats);
-                })
-                .catch(() => {
-                    res.sendStatus(Constants.HTTP_STATUS.NOT_FOUND);
-                });
-        });
-
- */

@@ -1,5 +1,4 @@
-import { Component } from '@angular/core';
-import { MatDialog } from '@angular/material/dialog';
+import { Component, OnInit } from '@angular/core';
 import { ScoreboardService } from '@app/services/scoreboard/scoreboard.service';
 import { Score } from '@common';
 
@@ -9,15 +8,18 @@ const COLLECTION_NAME_LOG = 'log';
 @Component({
     selector: 'app-best-scores',
     templateUrl: './best-scores.component.html',
-    styleUrls: ['./best-scores.component.scss']
+    styleUrls: ['./best-scores.component.scss'],
 })
-export class BestScoresComponent {
+export class BestScoresComponent implements OnInit {
     classicBoardData: Score[];
     logBoardData: Score[];
 
-    constructor(public dialog: MatDialog, private scoreboardService: ScoreboardService) {
+    constructor(private scoreboardService: ScoreboardService) {
+        // this.initBoards();
+    }
+
+    ngOnInit() {
         this.initBoards();
-        console.log(this.classicBoardData[0].name[0]);
     }
 
     async initBoards(): Promise<void> {
