@@ -50,7 +50,9 @@ export class SessionHandler {
         this.timer = setInterval(() => this.timerTick(), Config.SESSION.REFRESH_INTERVAL_MS);
 
         this.refresh();
+        this.statsHandler.start();
         this.playerHandler.start();
+
         logger.info(`Game ${this.sessionInfo.id} started`);
     }
 
@@ -116,8 +118,6 @@ export class SessionHandler {
     }
 
     private refresh(): void {
-        this.socketHandler.sendData('stats', this.statsHandler.getStats(this.players[0].id), this.players[0].id);
-        this.socketHandler.sendData('stats', this.statsHandler.getStats(this.players[1].id), this.players[1].id);
         this.socketHandler.sendData('board', this.boardHandler.immutableBoard.boardData);
         this.socketHandler.sendData('reserve', this.reserveHandler.reserve);
     }

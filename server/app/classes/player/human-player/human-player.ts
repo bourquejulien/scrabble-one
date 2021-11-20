@@ -95,9 +95,7 @@ export class HumanPlayer extends Player {
             return { isSuccess: false, body: '' };
         }
 
-        lettersToExchange.forEach(() => {
-            this.rack.push(this.reserveHandler.drawLetter());
-        });
+        lettersToExchange.forEach(() => this.rack.push(this.reserveHandler.drawLetter()));
 
         for (const letter of lettersToExchange) {
             this.reserveHandler.putBackLetter(letter);
@@ -156,6 +154,7 @@ export class HumanPlayer extends Player {
             }
             this.rack.splice(letterIndex, 1);
         }
+        this.statsNotifier.notifyRackUpdate(this.rack);
     }
 
     private areLettersInRack(lettersToPlace: string[]): boolean {

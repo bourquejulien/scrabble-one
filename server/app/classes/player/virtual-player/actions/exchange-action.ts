@@ -10,7 +10,7 @@ export class ExchangeAction implements Action {
     constructor(
         private readonly reserve: ReserveHandler,
         private readonly socketHandler: SocketHandler,
-        private readonly statsHandler: PlayerStatsNotifier,
+        private readonly statsNotifier: PlayerStatsNotifier,
         private readonly rack: string[],
         private readonly isRandom: boolean,
     ) {}
@@ -18,7 +18,7 @@ export class ExchangeAction implements Action {
     execute(): Action | null {
         if (this.reserve.length === 0) {
             logger.debug('Reserve empty - Skip');
-            return new SkipAction(this.statsHandler, this.socketHandler);
+            return new SkipAction(this.statsNotifier, this.socketHandler);
         }
 
         const exchangeCount = this.exchangeSize;
@@ -36,7 +36,8 @@ export class ExchangeAction implements Action {
         // Put back letters in reserve
         lettersToExchange.forEach((letter) => this.reserve.putBackLetter(letter));
 
-        this.statsHandler.notifyExchange();
+        this.statsNotifier.notifyExchange();
+        this.statsNotifier.notifyRackUpdate(this.rack);
         this.socketHandler.sendMessage({ title: '', body: `${exchangeCount} lettres échangées`, messageType: MessageType.Message });
 
         return null;

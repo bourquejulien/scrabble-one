@@ -17,33 +17,30 @@ export class SessionStatsHandler {
     ) {
         this.subscriptions = [];
         this.playerStatsHandlers = [];
+        this.subscriptions.push(goalHandler.onUpdate.subscribe(() => this.onUpdatedBonus()));
     }
 
-    generatePlayerStatsHandler(rack: string[], id: string): PlayerStatsHandler {
-        const handler = new PlayerStatsHandler(this.goalHandler, rack, id);
+    generatePlayerStatsHandler(id: string): PlayerStatsHandler {
+        const handler = new PlayerStatsHandler(this.goalHandler, id);
         this.playerStatsHandlers.push(handler);
-
+        this.subscriptions.push(handler.onUpdate.subscribe(() => this.onUpdatedStats()));
         return handler;
     }
 
-    endGame(): void {
-        this.playerStatsHandlers.forEach((p) => (p.scoreAdjustment -= p.rackPoints()));
-        if (this.reserveHandler.length === 0 && this.rackEmptied) {
-            this.playerStatsHandlers[0].scoreAdjustment += this.playerStatsHandlers[1].rackPoints();
-            this.playerStatsHandlers[1].scoreAdjustment += this.playerStatsHandlers[0].rackPoints();
-        }
+    start() {
+        const ids = this.playerStatsHandlers.map((p) => p.id);
+        this.goalHandler.start(ids);
     }
 
-    getStats(id: string): SessionStats | null {
-        const index = this.playerStatsHandlers.findIndex((p) => p.id === id);
-        const firstPlayer = this.playerStatsHandlers[index];
-        const secondPlayer = this.playerStatsHandlers[1 - index];
-
-        if (firstPlayer == null || secondPlayer == null) {
-            return null;
+    end(): void {
+        this.playerStatsHandlers.forEach((p) => (p.scoreAdjustment -= p.rackScore));
+        if (this.reserveHandler.length === 0 && this.rackEmptied) {
+            this.playerStatsHandlers[0].scoreAdjustment += this.playerStatsHandlers[1].rackScore;
+            this.playerStatsHandlers[1].scoreAdjustment += this.playerStatsHandlers[0].rackScore;
         }
+        this.onUpdatedStats();
 
-        return { localStats: firstPlayer.stats, remoteStats: secondPlayer.stats };
+        this.subscriptions.forEach((s) => s.unsubscribe());
     }
 
     get isEndGame(): boolean {
@@ -57,6 +54,27 @@ export class SessionStatsHandler {
         return this.playerStatsHandlers.reduce((winner, player) => (player.stats.points > winner.stats.points ? player : winner)).id;
     }
 
+    private onUpdatedStats() {
+        this.playerStatsHandlers.map((ps) => ps.id).forEach((id) => this.socketHandler.sendData('stats', this.getStats(id), id));
+    }
+
+    private onUpdatedBonus() {
+        this.onUpdatedStats();
+        this.playerStatsHandlers.map((ps) => ps.id).forEach((id) => this.socketHandler.sendData('goals', this.goalHandler.getGoalsData(id), id));
+    }
+
+    private getStats(id: string): SessionStats | null {
+        const index = this.playerStatsHandlers.findIndex((p) => p.id === id);
+        const firstPlayer = this.playerStatsHandlers[index];
+        const secondPlayer = this.playerStatsHandlers[1 - index];
+
+        if (firstPlayer == null || secondPlayer == null) {
+            return null;
+        }
+
+        return { localStats: firstPlayer.stats, remoteStats: secondPlayer.stats };
+    }
+
     private get isOverSkipLimit(): boolean {
         for (const playerHandler of this.playerStatsHandlers) {
             if (playerHandler.skippedTurns <= Config.MAX_SKIP_TURN) {
@@ -67,6 +85,6 @@ export class SessionStatsHandler {
     }
 
     private get rackEmptied(): boolean {
-        return this.playerStatsHandlers.map((p) => p.rack.length === 0).reduce((acc, isEmpty) => acc || isEmpty);
+        return this.playerStatsHandlers.map((p) => p.rackSize === 0).reduce((acc, isEmpty) => acc || isEmpty);
     }
 }

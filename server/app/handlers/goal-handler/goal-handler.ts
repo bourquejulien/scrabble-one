@@ -23,6 +23,7 @@ export abstract class GoalHandler implements PlacementNotifier, ExchangeNotifier
         return this.updateSubject.asObservable();
     }
 
+    abstract start(ids: string[]): void;
     abstract notifyPlacement(validationResponse: ValidationResponse, id: string): void;
     abstract notifyExchange(id: string): void;
     abstract notifySkip(id: string): void;

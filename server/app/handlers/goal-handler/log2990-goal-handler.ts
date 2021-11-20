@@ -5,6 +5,10 @@ import { SkipNotifier } from '@app/classes/goal/goals/notifiers/skip-notifier';
 import { ExchangeNotifier } from '@app/classes/goal/goals/notifiers/exchange-notifier';
 
 export class Log2990GoalHandler extends GoalHandler {
+    start(ids: string[]): void {
+        // TODO
+    }
+
     notifyExchange(id: string): void {
         this.goals
             .map((g) => g as ExchangeNotifier)

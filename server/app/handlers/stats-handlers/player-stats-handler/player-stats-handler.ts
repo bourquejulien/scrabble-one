@@ -2,18 +2,36 @@ import { ValidationResponse } from '@app/classes/validation/validation-response'
 import { LETTER_DEFINITIONS, PlayerStats } from '@common';
 import { GoalHandler } from '@app/handlers/goal-handler/goal-handler';
 import { PlayerStatsNotifier } from '@app/handlers/stats-handlers/player-stats-handler/player-stats-notifier';
+import { Observable, Subject } from 'rxjs';
 
 export class PlayerStatsHandler implements PlayerStatsNotifier {
     baseScore: number;
     scoreAdjustment: number;
     skippedTurns: number;
-    // TODO gros hack
-    rack: string[];
+    rackScore: number;
+    rackSize: number;
 
-    constructor(private readonly goalHandler: GoalHandler, rack: string[], readonly id: string) {
+    private readonly updateSubject: Subject<void>;
+
+    constructor(private readonly goalHandler: GoalHandler, readonly id: string) {
         this.baseScore = 0;
         this.scoreAdjustment = 0;
         this.skippedTurns = 0;
+        this.rackScore = 0;
+        this.rackSize = 0;
+
+        this.updateSubject = new Subject<void>();
+    }
+
+    private static computeRackScore(rack: string[]): number {
+        let playerPoint = 0;
+
+        for (const letter of rack) {
+            const currentLetterData = LETTER_DEFINITIONS.get(letter.toLowerCase());
+            playerPoint += currentLetterData?.points ?? 0;
+        }
+
+        return playerPoint;
     }
 
     notifyPlacement(validationData: ValidationResponse): void {
@@ -24,6 +42,7 @@ export class PlayerStatsHandler implements PlayerStatsNotifier {
         this.baseScore += validationData.score;
         this.skippedTurns = 0;
 
+        this.updateSubject.next();
         this.goalHandler.notifyPlacement(validationData, this.id);
     }
 
@@ -37,17 +56,17 @@ export class PlayerStatsHandler implements PlayerStatsNotifier {
         this.goalHandler.notifyExchange(this.id);
     }
 
-    rackPoints(): number {
-        let playerPoint = 0;
-        for (const letter of this.rack) {
-            const currentLetterData = LETTER_DEFINITIONS.get(letter.toLowerCase());
-            playerPoint += currentLetterData?.points ?? 0;
-        }
+    notifyRackUpdate(rack: string[]): void {
+        this.rackSize = rack.length;
+        this.rackScore = PlayerStatsHandler.computeRackScore(rack);
+        this.updateSubject.next();
+    }
 
-        return playerPoint;
+    get onUpdate(): Observable<void> {
+        return this.updateSubject.asObservable();
     }
 
     get stats(): PlayerStats {
-        return { points: Math.max(0, this.baseScore + this.scoreAdjustment), rackSize: this.rack.length };
+        return { points: Math.max(0, this.baseScore + this.scoreAdjustment), rackSize: this.rackSize };
     }
 }

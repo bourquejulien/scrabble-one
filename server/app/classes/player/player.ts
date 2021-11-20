@@ -26,13 +26,14 @@ export abstract class Player {
         this.boardHandler = boardHandler;
         this.reserveHandler = reserveHandler;
         this.socketHandler = socketHandler;
-        this.statsNotifier = gameStatsHandler.generatePlayerStatsHandler(this.rack, this.id);
+        this.statsNotifier = gameStatsHandler.generatePlayerStatsHandler(this.id);
     }
 
     fillRack(): void {
         while (this.reserveHandler.length > 0 && this.rack.length < Config.RACK_SIZE) {
             this.rack.push(this.reserveHandler.drawLetter());
         }
+        this.statsNotifier.notifyRackUpdate(this.rack);
     }
 
     onTurn(): Observable<string> {
