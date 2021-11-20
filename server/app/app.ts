@@ -1,6 +1,7 @@
 import { HttpException } from '@app/classes/http.exception';
 import { BoardController } from '@app/controllers/board/board.controller';
 import { GameController } from '@app/controllers/game/game.controller';
+import { PlayerController } from '@app/controllers/player/player.controller';
 import { ReserveController } from '@app/controllers/reserve/reserve.controller';
 import { StatsController } from '@app/controllers/stats/stats.controller';
 import { DictionaryService } from '@app/services/dictionary/dictionary.service';
@@ -11,7 +12,6 @@ import { StatusCodes } from 'http-status-codes';
 import morgan from 'morgan';
 import { Service } from 'typedi';
 import * as logger from 'winston';
-import { PlayerController } from './controllers/player/player.controller';
 
 @Service()
 export class Application {
@@ -39,7 +39,7 @@ export class Application {
         this.app.use('/api/board', this.boardController.router);
         this.app.use('/api/player', this.playerController.router);
         this.app.use('/api/reserve', this.reserveController.router);
-        this.app.use('api/score', this.statsController.router);
+        this.app.use('/api/score', this.statsController.router);
         this.errorHandling();
     }
 

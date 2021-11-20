@@ -6,7 +6,7 @@
             <p>Choix du mode de jeu</p>
             <div class="button-group">
                 <div class="dropdown">
-                    <button class="button1" mat-raised-button routerLink="/settings">Scrabble Classique</button>
+                    <button class="button1" mat-raised-button routerLink="/settings">Scrabble classique</button>
                     <div class="dropdown-content1">
                         <h3>
                             Rien de mieux qu'une bonne vieille partie de Scrabble<br />
@@ -21,13 +21,13 @@
                         <h3>
                             Une variante amusante et plus active de Scrabble<br />
                             - Jouer contre un joueur virtuel ou un ami<br />
-                            - Ajout d'objectif qui pimente la partie<br />
+                            - Ajout d'objectifs qui pimentent la partie<br />
                         </h3>
                     </div>
                 </div>
             </div>
         </section>
-        <button class="button1" mat-raised-button>Meilleur Score</button>
+        <button class="button1" mat-raised-button (click)="openScoresDialog()">Meilleurs scores</button>
         <div class="dropup">
             <button mat-mini-fab color="white" class="dropbtn">
                 <mat-icon>group</mat-icon>

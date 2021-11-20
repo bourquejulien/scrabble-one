@@ -1,7 +1,7 @@
 import { Player } from '@app/classes/player/player';
-import { Score } from '@app/classes/score';
 import { PlayerHandler } from '@app/handlers/player-handler/player-handler';
 import { ScoreService } from '@app/services/score/score.service';
+import { Score } from '@common';
 import { Service } from 'typedi';
 
 @Service()

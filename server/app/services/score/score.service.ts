@@ -1,8 +1,7 @@
-import { Score } from '@app/classes/score';
 import { DatabaseService } from '@app/services/database/database.service';
+import { Score } from '@common';
 import { Collection } from 'mongodb';
 import { Service } from 'typedi';
-import logger from 'winston';
 
 const DATABASE_COLLECTION_CLASSIC = 'classicScoreboard';
 const DATABASE_COLLECTION_LOG = 'logScoreboard';
@@ -27,16 +26,12 @@ export class ScoreService {
     }
 
     async updateNamesWithSameScore(score: Score, collectionName: string): Promise<boolean> {
-        logger.info('about to check if unique score');
         // if score is unique, we want to use updateboard
         if (await this.isScoreUnique(score.scoreValue, collectionName)) {
-            let isUnique = await this.isScoreUnique(score.scoreValue, collectionName);
-            logger.info(`isUnique? ${isUnique}`);
             return false;
         }
 
         let playersWithSameScore = await this.getPlayerNamesByScore(score.scoreValue, collectionName);
-        logger.info(`players with same score: ${playersWithSameScore[0]}`);
         playersWithSameScore.push(score.name[0]);
         this.getCollection(collectionName).findOneAndUpdate({ scoreValue: score.scoreValue }, { $set: { name: playersWithSameScore } });
 
@@ -51,7 +46,7 @@ export class ScoreService {
         return this.getCollection(collectionName)
             .findOne({ name: playerName })
             .then((score) => {
-                return score === undefined ? -1 : score!.scoreValue;
+                return score === null ? -1 : score.scoreValue;
             });
     }
 
@@ -71,15 +66,8 @@ export class ScoreService {
     }
 
     private async getPlayerNamesByScore(scoreVal: number, collectionName: string): Promise<string[]> {
-        let playerName = this.getCollection(collectionName).findOne({ scoreValue: scoreVal }).then((score) => {
-            return score === undefined ? [''] : score!.name;
-        });
-
-        logger.info(`playerName array: ${playerName[0]}`);
-
-        // TO DO: Do we rlly want to return empty string if undefined? we dont want to display that tho...
         return this.getCollection(collectionName).findOne({ scoreValue: scoreVal }).then((score) => {
-            return score === undefined ? [''] : score!.name;
+            return score === null ? [''] : score.name;
         });
     }
 

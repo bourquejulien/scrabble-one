@@ -1,4 +1,4 @@
-import { Score } from '@app/classes/score';
+import { Score } from '@common';
 import { Db, MongoClient } from 'mongodb';
 import { Service } from 'typedi';
 import logger from 'winston';
