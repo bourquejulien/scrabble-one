@@ -10,6 +10,7 @@ import { SocketService } from '@app/services/socket/socket-service';
 import { ServerConfig } from '@common';
 import { Subscription } from 'rxjs';
 import * as logger from 'winston';
+import { SessionStatsHandler } from '@app/handlers/stats-handlers/session-stats-handler/session-stats-handler';
 
 export class SessionHandler {
     sessionData: SessionData;
@@ -23,6 +24,7 @@ export class SessionHandler {
         public boardHandler: BoardHandler,
         public reserveHandler: ReserveHandler,
         private playerHandler: PlayerHandler,
+        private statsHandler: SessionStatsHandler,
         socketService: SocketService,
     ) {
         this.socketHandler = socketService.generate(sessionInfo.id);
@@ -63,7 +65,7 @@ export class SessionHandler {
     }
 
     addPlayer(player: Player): void {
-        player.init(this.boardHandler, this.reserveHandler, this.socketHandler);
+        player.init(this.boardHandler, this.reserveHandler, this.socketHandler, this.statsHandler);
         this.playerHandler.addPlayer(player);
     }
 
@@ -83,14 +85,10 @@ export class SessionHandler {
     private endGame(): void {
         logger.debug(`SessionHandler - EndGame - Id: ${this.sessionInfo.id}`);
 
-        this.players.forEach((p) => (p.playerData.scoreAdjustment -= p.rackPoints()));
-        if (this.reserveHandler.length === 0 && this.playerHandler.rackEmptied) {
-            this.players[0].playerData.scoreAdjustment += this.players[1].rackPoints();
-            this.players[1].playerData.scoreAdjustment += this.players[0].rackPoints();
-        }
+        const winner = this.statsHandler.winner;
+        this.socketHandler.sendData('endGame', winner);
+        logger.debug(`winner: ${winner}`);
 
-        this.socketHandler.sendData('endGame', this.playerHandler.winner);
-        logger.debug(`winner: ${this.playerHandler.winner}`);
         this.dispose();
     }
 
@@ -108,7 +106,7 @@ export class SessionHandler {
     }
 
     private onTurn(id: string): void {
-        if (this.isEndGame) {
+        if (this.statsHandler.isEndGame) {
             this.endGame();
             return;
         }
@@ -120,13 +118,9 @@ export class SessionHandler {
     }
 
     private refresh(): void {
-        this.socketHandler.sendData('stats', this.playerHandler.getStats(this.players[0].id), this.players[0].id);
-        this.socketHandler.sendData('stats', this.playerHandler.getStats(this.players[1].id), this.players[1].id);
+        this.socketHandler.sendData('stats', this.statsHandler.getStats(this.players[0].id), this.players[0].id);
+        this.socketHandler.sendData('stats', this.statsHandler.getStats(this.players[1].id), this.players[1].id);
         this.socketHandler.sendData('board', this.boardHandler.immutableBoard.boardData);
         this.socketHandler.sendData('reserve', this.reserveHandler.reserve);
-    }
-
-    private get isEndGame(): boolean {
-        return this.playerHandler.isOverSkipLimit || (this.reserveHandler.length === 0 && this.playerHandler.rackEmptied);
     }
 }

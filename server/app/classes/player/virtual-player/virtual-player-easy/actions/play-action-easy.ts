@@ -9,13 +9,13 @@ import { Action } from '@app/classes/player/virtual-player/actions/action';
 import { PlaceAction } from '@app/classes/player/virtual-player/actions/place-action';
 import { PlayAction } from '@app/classes/player/virtual-player/actions/play-action';
 import { Play } from '@app/classes/virtual-player/play';
-import { PlayerStatsHandler } from '@app/handlers/stats-handlers/player-stats-handler/player-stats-handler';
+import { PlayerStatsNotifier } from '@app/handlers/stats-handlers/player-stats-handler/player-stats-notifier';
 
 export class PlayActionEasy extends PlayAction {
     constructor(
         private readonly boardHandler: BoardHandler,
         private readonly playGenerator: PlayGenerator,
-        private readonly statsHandler: PlayerStatsHandler,
+        private readonly statsNotifier: PlayerStatsNotifier,
         private readonly socketHandler: SocketHandler,
         private readonly rack: string[],
     ) {
@@ -46,7 +46,7 @@ export class PlayActionEasy extends PlayAction {
 
         if (filteredPlays.length === 0) {
             logger.debug('No play generated - Skipping');
-            return new SkipAction(this.statsHandler, this.socketHandler);
+            return new SkipAction(this.statsNotifier, this.socketHandler);
         }
 
         const chosenPlay = Math.floor(Math.random() * filteredPlays.length);
@@ -61,6 +61,6 @@ export class PlayActionEasy extends PlayAction {
         this.socketHandler.sendMessage({ title: 'Mot placé', body: this.formatPlay(play), messageType: MessageType.Message });
         this.socketHandler.sendMessage({ title: 'Mot alternatifs', body: this.formatPlays(alternatives), messageType: MessageType.Log });
 
-        return new PlaceAction(this.boardHandler, this.statsHandler, this.rack, play);
+        return new PlaceAction(this.boardHandler, this.statsNotifier, this.rack, play);
     }
 }

@@ -1,12 +1,12 @@
 import { Play } from '@app/classes/virtual-player/play';
 import { BoardHandler } from '@app/handlers/board-handler/board-handler';
 import { Action } from './action';
-import { PlayerStatsHandler } from '@app/handlers/stats-handlers/player-stats-handler/player-stats-handler';
+import { PlayerStatsNotifier } from '@app/handlers/stats-handlers/player-stats-handler/player-stats-notifier';
 
 export class PlaceAction implements Action {
     constructor(
         private readonly boardHandler: BoardHandler,
-        private readonly statsHandler: PlayerStatsHandler,
+        private readonly statsNotifier: PlayerStatsNotifier,
         private readonly rack: string[],
         private readonly play: Play,
     ) {}
@@ -14,7 +14,7 @@ export class PlaceAction implements Action {
     execute(): Action | null {
         this.boardHandler.placeLetters(this.play.placements);
         this.play.placements.forEach((placement) => this.rack.splice(this.rack.findIndex((rackLetter) => placement.letter === rackLetter)));
-        this.statsHandler.onPlace(this.play);
+        this.statsNotifier.notifyPlacement(this.play);
 
         return null;
     }

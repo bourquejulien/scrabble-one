@@ -15,6 +15,6 @@ export class VirtualPlayerExpert extends VirtualPlayer {
         logger.debug(`VirtualPlayerExpert: ${this.id} - PlayAction`);
         const playGenerator = new PlayGenerator(this.dictionaryService, this.boardHandler, this.rack);
 
-        return new PlayActionExpert(this.boardHandler, playGenerator, this.rack, this.statsHandler, this.socketHandler, this.reserveHandler);
+        return new PlayActionExpert(this.boardHandler, playGenerator, this.rack, this.statsNotifier, this.socketHandler, this.reserveHandler);
     }
 }

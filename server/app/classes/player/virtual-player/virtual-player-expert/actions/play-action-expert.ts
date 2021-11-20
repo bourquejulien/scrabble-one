@@ -9,14 +9,14 @@ import { PlaceAction } from '@app/classes/player/virtual-player/actions/place-ac
 import { ExchangeAction } from '@app/classes/player/virtual-player/actions/exchange-action';
 import { ReserveHandler } from '@app/handlers/reserve-handler/reserve-handler';
 import { PlayAction } from '@app/classes/player/virtual-player/actions/play-action';
-import { PlayerStatsHandler } from '@app/handlers/stats-handlers/player-stats-handler/player-stats-handler';
+import { PlayerStatsNotifier } from '@app/handlers/stats-handlers/player-stats-handler/player-stats-notifier';
 
 export class PlayActionExpert extends PlayAction {
     constructor(
         private readonly boardHandler: BoardHandler,
         private readonly playGenerator: PlayGenerator,
         private readonly rack: string[],
-        private readonly statsHandler: PlayerStatsHandler,
+        private readonly statsNotifier: PlayerStatsNotifier,
         private readonly socketHandler: SocketHandler,
         private readonly reserveHandler: ReserveHandler,
     ) {
@@ -32,7 +32,7 @@ export class PlayActionExpert extends PlayAction {
 
         if (orderedPlays.length === 0) {
             logger.debug('No play generated - Exchange');
-            return new ExchangeAction(this.reserveHandler, this.socketHandler, this.statsHandler, this.rack, false);
+            return new ExchangeAction(this.reserveHandler, this.socketHandler, this.statsNotifier, this.rack, false);
         }
 
         const play = orderedPlays[0];
@@ -44,6 +44,6 @@ export class PlayActionExpert extends PlayAction {
             messageType: MessageType.Log,
         });
 
-        return new PlaceAction(this.boardHandler, this.statsHandler, this.rack, play);
+        return new PlaceAction(this.boardHandler, this.statsNotifier, this.rack, play);
     }
 }

@@ -19,18 +19,18 @@ export class VirtualPlayerEasy extends VirtualPlayer {
 
         if (random < Config.VIRTUAL_PLAYER.EXCHANGE_PERCENTAGE) {
             logger.debug(`VirtualPlayerEasy: ${this.id} - ExchangeAction`);
-            return new ExchangeAction(this.reserveHandler, this.socketHandler, this.statsHandler, this.rack, true);
+            return new ExchangeAction(this.reserveHandler, this.socketHandler, this.statsNotifier, this.rack, true);
         }
         random -= Config.VIRTUAL_PLAYER.EXCHANGE_PERCENTAGE;
 
         if (random < Config.VIRTUAL_PLAYER.SKIP_PERCENTAGE) {
             logger.debug(`VirtualPlayerEasy: ${this.id} - SkipAction`);
-            return new SkipAction(this.statsHandler, this.socketHandler);
+            return new SkipAction(this.statsNotifier, this.socketHandler);
         }
 
         logger.debug(`VirtualPlayerEasy: ${this.id} - PlayAction`);
         const playGenerator = new PlayGenerator(this.dictionaryService, this.boardHandler, this.rack);
 
-        return new PlayActionEasy(this.boardHandler, playGenerator, this.statsHandler, this.socketHandler, this.rack);
+        return new PlayActionEasy(this.boardHandler, playGenerator, this.statsNotifier, this.socketHandler, this.rack);
     }
 }

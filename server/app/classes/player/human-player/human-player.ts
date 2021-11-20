@@ -52,7 +52,7 @@ export class HumanPlayer extends Player {
             return { isSuccess: false, body: '' };
         }
 
-        this.statsHandler.onPlace(validationData);
+        this.statsNotifier.notifyPlacement(validationData);
 
         this.updateRack(lettersToPlace);
         this.fillRack();
@@ -104,7 +104,7 @@ export class HumanPlayer extends Player {
         }
 
         this.updateRack(lettersToExchange);
-        this.statsHandler.onExchange();
+        this.statsNotifier.notifyExchange();
         this.endTurn();
 
         this.socketHandler.sendMessage(
@@ -120,7 +120,7 @@ export class HumanPlayer extends Player {
     }
 
     skipTurn(): Answer {
-        this.statsHandler.onSkip();
+        this.statsNotifier.notifySkip();
         this.endTurn();
 
         this.socketHandler.sendMessage(

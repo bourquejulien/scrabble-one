@@ -3,9 +3,9 @@ import { Config } from '@app/config';
 import { BoardHandler } from '@app/handlers/board-handler/board-handler';
 import { ReserveHandler } from '@app/handlers/reserve-handler/reserve-handler';
 import { SocketHandler } from '@app/handlers/socket-handler/socket-handler';
-import { LETTER_DEFINITIONS, PlayerStats } from '@common';
 import { Observable, Subject } from 'rxjs';
-import { PlayerStatsHandler } from '@app/handlers/stats-handlers/player-stats-handler/player-stats-handler';
+import { SessionStatsHandler } from '@app/handlers/stats-handlers/session-stats-handler/session-stats-handler';
+import { PlayerStatsNotifier } from '@app/handlers/stats-handlers/player-stats-handler/player-stats-notifier';
 
 export abstract class Player {
     isTurn: boolean;
@@ -15,18 +15,18 @@ export abstract class Player {
     protected boardHandler: BoardHandler;
     protected reserveHandler: ReserveHandler;
     protected socketHandler: SocketHandler;
-    protected statsHandler: PlayerStatsHandler;
+    protected statsNotifier: PlayerStatsNotifier;
 
     protected constructor(public playerInfo: PlayerInfo) {
         this.rack = [];
         this.turnEnded = new Subject<string>();
     }
 
-    init(boardHandler: BoardHandler, reserveHandler: ReserveHandler, socketHandler: SocketHandler, playerStatsHandler: PlayerStatsHandler): void {
+    init(boardHandler: BoardHandler, reserveHandler: ReserveHandler, socketHandler: SocketHandler, gameStatsHandler: SessionStatsHandler): void {
         this.boardHandler = boardHandler;
         this.reserveHandler = reserveHandler;
         this.socketHandler = socketHandler;
-        this.statsHandler = playerStatsHandler;
+        this.statsNotifier = gameStatsHandler.generatePlayerStatsHandler(this.rack, this.id);
     }
 
     fillRack(): void {
@@ -39,23 +39,8 @@ export abstract class Player {
         return this.turnEnded.asObservable();
     }
 
-    rackPoints(): number {
-        let playerPoint = 0;
-        for (const letter of this.rack) {
-            const currentLetterData = LETTER_DEFINITIONS.get(letter.toLowerCase());
-            playerPoint += currentLetterData?.points ?? 0;
-        }
-
-        return playerPoint;
-    }
-
     get id(): string {
         return this.playerInfo.id;
-    }
-
-    get stats(): PlayerStats {
-        const points = this.statsHandler.points;
-        return { points, rackSize: this.rack.length };
     }
 
     protected endTurn(): void {

@@ -1,7 +1,5 @@
 import { Player } from '@app/classes/player/player';
 import { Observable, Subject, Subscription } from 'rxjs';
-import { Config } from '@app/config';
-import { SessionStats } from '@common';
 
 export class PlayerHandler {
     players: Player[];
@@ -43,33 +41,6 @@ export class PlayerHandler {
 
     onTurn(): Observable<string> {
         return this.nextTurn.asObservable();
-    }
-
-    getStats(id: string): SessionStats | null {
-        const index = this.players.findIndex((p) => p.id === id);
-        const firstPlayer = this.players[index];
-        const secondPlayer = this.players[1 - index];
-
-        if (firstPlayer == null || secondPlayer == null) {
-            return null;
-        }
-
-        return { localStats: firstPlayer.stats, remoteStats: secondPlayer.stats };
-    }
-
-    get isOverSkipLimit(): boolean {
-        return this.players.map((p) => p.playerData.skippedTurns > Config.MAX_SKIP_TURN).reduce((acc, isMaxSkip) => acc && isMaxSkip);
-    }
-
-    get rackEmptied(): boolean {
-        return this.players.map((p) => p.rack.length === 0).reduce((acc, isEmpty) => acc || isEmpty);
-    }
-
-    get winner(): string {
-        if (this.players[0].stats.points === this.players[1].stats.points) {
-            return '';
-        }
-        return this.players.reduce((winner, player) => (player.stats.points > winner.stats.points ? player : winner)).id;
     }
 
     private initialTurn(): void {
