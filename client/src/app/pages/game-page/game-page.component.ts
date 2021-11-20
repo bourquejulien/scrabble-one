@@ -3,15 +3,16 @@ import { Component, ElementRef, OnDestroy, ViewChild } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { MatDrawer } from '@angular/material/sidenav';
 import { Router } from '@angular/router';
+import { EndGameWinner } from '@app/classes/end-game-winner';
 import { PlayerType } from '@app/classes/player/player-type';
 import { ConfirmQuitDialogComponent } from '@app/components/confirm-quit-dialog/confirm-quit-dialog.component';
 import { EndGameComponent } from '@app/components/end-game/end-game.component';
+import { CommandsService } from '@app/services/commands/commands.service';
 import { GameService } from '@app/services/game/game.service';
 import { ReserveService } from '@app/services/reserve/reserve.service';
 import { SessionService } from '@app/services/session/session.service';
+import { SocketClientService } from '@app/services/socket-client/socket-client.service';
 import { Subscription } from 'rxjs';
-import { EndGameWinner } from '@app/classes/end-game-winner';
-import { CommandsService } from '@app/services/commands/commands.service';
 
 export enum Icon {
     Logout = 'exit_to_app',
@@ -46,6 +47,7 @@ export class GamePageComponent implements OnDestroy {
         readonly sessionService: SessionService,
         readonly reserveService: ReserveService,
         readonly commandService: CommandsService,
+        readonly socketClientService: SocketClientService,
         private readonly dialog: MatDialog,
         private readonly router: Router,
         location: LocationStrategy,
@@ -117,5 +119,9 @@ export class GamePageComponent implements OnDestroy {
             this.gameService.reset();
             this.router.navigate(['home']);
         });
+    }
+
+    addElementInDb(): void {
+        this.socketClientService.send('add element in db');
     }
 }

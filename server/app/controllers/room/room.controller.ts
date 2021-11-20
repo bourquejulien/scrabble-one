@@ -97,11 +97,12 @@ export class RoomController {
             });
 
             socket.on('add element in db', async () => {
-                const scoreBidon: Score = { name: ['James Charlse'], scoreValue: 152 };
+                const scoreBidon: Score = { name: ['James Charles'], scoreValue: 152 };
                 this.stats.scoreService.updateScoreboard(scoreBidon, 'classicScoreboard');
 
-                logger.info(await this.stats.getScoreboardClassic()[0]);
-                // logger.info(this.stats.getScoreboardClassic[0].scoreValue);
+                const scoreBidon_: Score = { name: ['Tanguy'], scoreValue: 152 };
+                logger.info('before inserting tanguy');
+                this.stats.scoreService.updateNamesWithSameScore(scoreBidon_, 'classicScoreboard');
             });
 
             socket.on('joinRoom', async (playerId: string) => {

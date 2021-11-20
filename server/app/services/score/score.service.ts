@@ -51,7 +51,7 @@ export class ScoreService {
         return this.getCollection(collectionName)
             .findOne({ name: playerName })
             .then((score) => {
-                return score === undefined ? -1 : score.scoreValue;
+                return score === undefined ? -1 : score!.scoreValue;
             });
     }
 
@@ -71,15 +71,15 @@ export class ScoreService {
     }
 
     private async getPlayerNamesByScore(scoreVal: number, collectionName: string): Promise<string[]> {
-        let playerName = this.getCollection(collectionName).findOne({ score: scoreVal }).then((score) => {
-            return score === undefined ? [''] : score.name;
+        let playerName = this.getCollection(collectionName).findOne({ scoreValue: scoreVal }).then((score) => {
+            return score === undefined ? [''] : score!.name;
         });
 
         logger.info(`playerName array: ${playerName[0]}`);
 
         // TO DO: Do we rlly want to return empty string if undefined? we dont want to display that tho...
-        return this.getCollection(collectionName).findOne({ score: scoreVal }).then((score) => {
-            return score === undefined ? [''] : score.name;
+        return this.getCollection(collectionName).findOne({ scoreValue: scoreVal }).then((score) => {
+            return score === undefined ? [''] : score!.name;
         });
     }
 
