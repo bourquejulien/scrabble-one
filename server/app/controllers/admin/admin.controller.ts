@@ -9,7 +9,7 @@ interface Playernames {
     experts: string[];
     beginners: string[];
 }
-const UPLOAD_DIR = process.env.UPLOAD_DIR ?? tmpdir();
+const UPLOAD_DIR = /* process.env.UPLOAD_DIR ?? */ tmpdir();
 @Service()
 export class AdminController {
     readonly defaultBotNames: Playernames = {
@@ -29,21 +29,27 @@ export class AdminController {
 
         this.router.post('/dictionary/upload', (req: Request, res: Response) => {
             const form = new IncomingForm({ multiples: false, uploadDir: UPLOAD_DIR });
-            form.on('file', (formName, file) => {
+            form.parse(req, (err: Error) => {
+                if (err) {
+                    logger.error(`Upload Error Caught - ${err}`);
+                    return;
+                }
+            });
+            form.on('file', async (formName, file) => {
                 if (file.mimetype !== 'application/json') {
                     logger.error('Dictionary Upload Failed: non-JSON data received');
                     res.sendStatus(Constants.HTTP_STATUS.BAD_REQUEST);
                     return;
                 }
-                logger.debug(`Dictionary downloaded : ${file.filepath}`);
-                if (this.dictionaryService.parse(file.filepath)) {
+                logger.debug(`Dictionary uploaded : ${file.filepath}`);
+                if (await this.dictionaryService.parse(file.filepath)) {
+                    logger.debug(`Dictionary parsed : ${file.filepath}`);
                     res.sendStatus(Constants.HTTP_STATUS.OK);
                 } else {
                     res.json({ erreur: 'Format du dictionnaire invalide' });
                     res.sendStatus(Constants.HTTP_STATUS.BAD_REQUEST);
                 }
             });
-            res.sendStatus(Constants.HTTP_STATUS.BAD_REQUEST);
         });
 
         this.router.get('/dictionary', (req: Request, res: Response) => {

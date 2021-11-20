@@ -79,10 +79,10 @@ describe('DictionaryService', () => {
         expect(service.dictionaries.length).to.equal(1);
     });
 
-    it('should get words properly', () => {
-        let words = service.getWords(defaultDictionary);
+    it('should get words properly', async () => {
+        let words = await service.getWords(defaultDictionary);
         expect(words.length).to.equal(0);
-        words = service.getWords(dictionary);
+        words = await service.getWords(dictionary);
         expect(words.length).to.equal(0);
     });
 });

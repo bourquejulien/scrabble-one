@@ -94,34 +94,26 @@ export class DictionaryService {
         // TODO:
     }
 
-    parse(filepath: string): boolean {
-        let result = false;
-        promises
-            .readFile(filepath, 'utf8')
-            .then((data) => {
-                if (this.validate(data)) {
-                    logger.debug(`Parsing well-formatted file ${filepath}`);
-                    let json: JsonDictionary;
-                    try {
-                        json = JSON.parse(data) as JsonDictionary;
-                        const metadata: DictionaryMetadata = {
-                            title: json.title,
-                            description: json.description,
-                            id: generateId(),
-                            nbWords: json.words.length,
-                        };
-                        this.dictionaryMetadata.push(metadata);
-                        result = true;
-                    } catch (err) {
-                        logger.debug('JSON.parse returned an error');
-                    }
-                    logger.debug('Dictionary parsing successful');
-                }
-            })
-            .catch((err) => {
-                logger.error(err.stack);
-            });
-        return result;
+    async parse(filepath: string): Promise<boolean> {
+        const data = await promises.readFile(filepath, 'utf8');
+        if (this.validate(data)) {
+            let json: JsonDictionary;
+            try {
+                json = JSON.parse(data) as JsonDictionary;
+                const metadata: DictionaryMetadata = {
+                    title: json.title,
+                    description: json.description,
+                    id: generateId(),
+                    nbWords: json.words.length,
+                };
+                this.dictionaryMetadata.push(metadata);
+                return true;
+            } catch (err) {
+                logger.debug('JSON.parse() cant parse the content of that dictionary');
+            }
+            logger.debug('Dictionary parsing successful');
+        }
+        return false;
     }
 
     validate(data: string) {
