@@ -47,21 +47,6 @@ export class ScoreService {
         return this.getCollection(collectionName).findOne({ name: playerName }) === null ? false : true;
     }
 
-    private async isScoreUnique(scoreVal: number, collectionName: string): Promise<boolean> {
-        // if find() doesnt find a matching result, returns null; so if null, then score is unique
-        return this.getCollection(collectionName).findOne({ scoreValue: scoreVal }) === null;
-    }
-
-    async getPlayerNamesByScore(scoreVal: number, collectionName: string): Promise<string[]> {
-        let playerName = this.getCollection(collectionName).findOne({ score: scoreVal }).then((score) => {
-            return score === undefined ? [''] : score.name;
-        });
-        logger.info(`playerName array: ${playerName[0]}`);
-        return this.getCollection(collectionName).findOne({ score: scoreVal }).then((score) => {
-            return score === undefined ? [''] : score.name;
-        });
-    }
-
     async getPlayerScore(playerName: string, collectionName: string): Promise<number> {
         return this.getCollection(collectionName)
             .findOne({ name: playerName })
@@ -78,6 +63,24 @@ export class ScoreService {
     // for display client-side
     async getScoreboardLog(): Promise<Score[]> {
         return this.logScoreboard.find().toArray();
+    }
+
+    private async isScoreUnique(scoreVal: number, collectionName: string): Promise<boolean> {
+        // if find() doesnt find a matching result, returns null; so if null, then score is unique
+        return this.getCollection(collectionName).findOne({ scoreValue: scoreVal }) === null;
+    }
+
+    private async getPlayerNamesByScore(scoreVal: number, collectionName: string): Promise<string[]> {
+        let playerName = this.getCollection(collectionName).findOne({ score: scoreVal }).then((score) => {
+            return score === undefined ? [''] : score.name;
+        });
+
+        logger.info(`playerName array: ${playerName[0]}`);
+
+        // TO DO: Do we rlly want to return empty string if undefined? we dont want to display that tho...
+        return this.getCollection(collectionName).findOne({ score: scoreVal }).then((score) => {
+            return score === undefined ? [''] : score.name;
+        });
     }
 
     private getCollection(collectionName: string): Collection<Score> {

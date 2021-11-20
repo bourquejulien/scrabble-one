@@ -33,7 +33,7 @@ export class StatsService {
         this.scoreService.updateScoreboard(playersNewBestScore, collectionName);
     }
 
-    async isNewScoreGreater(playerWinner: Player, collectionName: string): Promise<boolean> {
+    private async isNewScoreGreater(playerWinner: Player, collectionName: string): Promise<boolean> {
         const isInScoreboard = await this.scoreService.isPlayerInScoreboard(playerWinner.playerInfo.name, collectionName);
 
         if (isInScoreboard) {
