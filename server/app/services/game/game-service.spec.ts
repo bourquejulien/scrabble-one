@@ -13,7 +13,7 @@ import { DictionaryService } from '@app/services/dictionary/dictionary.service';
 import { GameService } from '@app/services/game/game.service';
 import { SessionHandlingService } from '@app/services/sessionHandling/session-handling.service';
 import { SocketService } from '@app/services/socket/socket-service';
-import { ConvertConfig, GameType, MultiplayerCreateConfig, MultiplayerJoinConfig, ServerConfig, SinglePlayerConfig } from '@common';
+import { ConvertConfig, GameMode, GameType, MultiplayerCreateConfig, MultiplayerJoinConfig, ServerConfig, SinglePlayerConfig } from '@common';
 import { expect } from 'chai';
 import Sinon, { assert, createStubInstance, stub } from 'sinon';
 
@@ -45,6 +45,7 @@ class StubSessionHandler {
         return {
             id,
             startId: '',
+            gameMode: GameMode.Classic,
             gameType: GameType.SinglePlayer,
             playTimeMs: 0,
             firstPlayerName: '',
@@ -62,6 +63,7 @@ class StubSessionHandler {
 
 const singlePlayerConfig: SinglePlayerConfig = {
     gameType: GameType.SinglePlayer,
+    gameMode: GameMode.Classic,
     playTimeMs: 0,
     playerName: 'test1',
     virtualPlayerName: 'test2',
@@ -70,6 +72,7 @@ const singlePlayerConfig: SinglePlayerConfig = {
 
 const multiplayerCreateConfig: MultiplayerCreateConfig = {
     gameType: GameType.SinglePlayer,
+    gameMode: GameMode.Classic,
     playTimeMs: 0,
     playerName: 'test1',
     isRandomBonus: true,

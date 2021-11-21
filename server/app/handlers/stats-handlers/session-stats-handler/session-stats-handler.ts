@@ -70,10 +70,10 @@ export class SessionStatsHandler {
             .map((ps) => ps.id)
             .forEach((id) =>
                 this.socketHandler.sendMessage({
-                    title: 'Bonuses',
+                    title: 'Bonus - POUR TESTER SEULEMENT!!', // TODO
                     body: this.goalHandler
                         .getGoalsData(id)
-                        .map((g) => `score:${g.score} - name:${g.name} - status:${g.status} - isGlobal:${g.isGlobal}`)
+                        .map((g) => `name:${g.name} - status:${g.status} - isGlobal:${g.isGlobal} - score:${g.score}`)
                         .join('\n'),
                     messageType: MessageType.System,
                 }),

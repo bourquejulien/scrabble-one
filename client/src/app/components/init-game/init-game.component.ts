@@ -116,7 +116,6 @@ export class InitGameComponent implements OnInit {
     }
 
     private async initMultiplayer(): Promise<void> {
-        console.log(this.data.gameMode)
         const multiplayerConfig: MultiplayerCreateConfig = {
             gameType: GameType.Multiplayer,
             gameMode: this.data.gameMode,

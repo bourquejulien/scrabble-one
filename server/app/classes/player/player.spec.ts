@@ -6,6 +6,8 @@ import { expect } from 'chai';
 import { Observable } from 'rxjs';
 import { createStubInstance } from 'sinon';
 import { Player } from './player';
+import { SessionStatsHandler } from '@app/handlers/stats-handlers/session-stats-handler/session-stats-handler';
+import { PlayerStatsHandler } from '@app/handlers/stats-handlers/player-stats-handler/player-stats-handler';
 
 const LETTERS = ['a', 'b', 'c', 'd', 'e', 'f', 'g'];
 
@@ -23,14 +25,24 @@ describe('Player', () => {
     const service = new PlayerTester();
     const boardHandler = createStubInstance(BoardHandler);
     const reserveHandler = createStubInstance(ReserveHandler);
+    const statsHandler = createStubInstance(SessionStatsHandler);
+    const playerStatsHandler = createStubInstance(PlayerStatsHandler);
+
+    statsHandler.generatePlayerStatsHandler.returns(playerStatsHandler as unknown as PlayerStatsHandler);
+
     reserveHandler.drawLetter.returns('a');
     reserveHandler['reserve'] = LETTERS;
     const socketHandler = createStubInstance(SocketHandler);
 
     beforeEach(() => {
         reserveHandler['reserve'] = [];
-        service.playerData.rack = [];
-        service.init(boardHandler as unknown as BoardHandler, reserveHandler as unknown as ReserveHandler, socketHandler as unknown as SocketHandler);
+        service.rack = [];
+        service.init(
+            boardHandler as unknown as BoardHandler,
+            reserveHandler as unknown as ReserveHandler,
+            socketHandler as unknown as SocketHandler,
+            statsHandler as unknown as SessionStatsHandler,
+        );
     });
 
     it('should be created', () => {
@@ -46,38 +58,22 @@ describe('Player', () => {
     it('fill rack should fill rack', () => {
         reserveHandler['reserve'] = LETTERS;
         service.fillRack();
-        expect(service.playerData.rack.length).to.not.eql(0);
+        expect(service.rack.length).to.not.eql(0);
     });
 
     it('should not fill rack if reserve.length <= 0', () => {
         service.fillRack();
-        expect(service.playerData.rack.length).to.eql(0);
+        expect(service.rack.length).to.eql(0);
     });
 
     it('should not fill rack if rack has 7 letters', () => {
-        service.playerData.rack = LETTERS;
+        service.rack = LETTERS;
         service.fillRack();
-        expect(service.playerData.rack).to.eql(LETTERS);
+        expect(service.rack).to.eql(LETTERS);
     });
 
     it('onTurn should return turnEnded as observable', () => {
         const returnValue = service.onTurn();
         expect(typeof returnValue).to.eql(typeof new Observable<string>());
-    });
-
-    it('should count points', () => {
-        service.playerData.rack = LETTERS;
-        expect(service.rackPoints()).to.be.greaterThan(0);
-    });
-
-    it('getting stats should return good stats', () => {
-        service.playerData = { baseScore: 0, scoreAdjustment: 0, skippedTurns: 0, rack: LETTERS };
-        expect(service.stats).to.eql({ points: 0, rackSize: 7 });
-    });
-
-    it('should support letter points not found', () => {
-        service.playerData = { baseScore: 0, scoreAdjustment: 0, skippedTurns: 0, rack: ['['] };
-        service.rackPoints();
-        expect(service.stats).to.eql({ points: 0, rackSize: 1 });
     });
 });

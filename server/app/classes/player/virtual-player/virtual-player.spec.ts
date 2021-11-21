@@ -12,6 +12,8 @@ import { ExchangeAction } from './actions/exchange-action';
 import { SkipAction } from './actions/skip-action';
 import { PlaceAction } from './actions/place-action';
 import { VirtualPlayer } from '@app/classes/player/virtual-player/virtual-player';
+import { SessionStatsHandler } from '@app/handlers/stats-handlers/session-stats-handler/session-stats-handler';
+import { PlayerStatsHandler } from '@app/handlers/stats-handlers/player-stats-handler/player-stats-handler';
 
 class TestAction implements Action {
     maxCallCount = 3;
@@ -58,6 +60,8 @@ describe('VirtualPlayer', () => {
     let placeAction: Sinon.SinonStubbedInstance<PlaceAction>;
     let socketHandler: Sinon.SinonStubbedInstance<SocketHandler>;
     let boardHandler: Sinon.SinonStubbedInstance<BoardHandler>;
+    let statsHandler: Sinon.SinonStubbedInstance<SessionStatsHandler>;
+    let playerStatsHandler: Sinon.SinonStubbedInstance<PlayerStatsHandler>;
     let sandboxTimer: SinonSandbox;
     let sandboxNext: SinonSandbox;
 
@@ -69,10 +73,19 @@ describe('VirtualPlayer', () => {
         placeAction = createStubInstance(PlaceAction);
         socketHandler = createStubInstance(SocketHandler);
         boardHandler = createStubInstance(BoardHandler);
+        statsHandler = createStubInstance(SessionStatsHandler);
+        playerStatsHandler = createStubInstance(PlayerStatsHandler);
+
+        statsHandler.generatePlayerStatsHandler.returns(playerStatsHandler as unknown as PlayerStatsHandler);
 
         actionRunner = new ActionRunner();
         service = new VirtualPlayerTester(actionRunner);
-        service.init(boardHandler as unknown as BoardHandler, reserveHandler, socketHandler as unknown as SocketHandler);
+        service.init(
+            boardHandler as unknown as BoardHandler,
+            reserveHandler,
+            socketHandler as unknown as SocketHandler,
+            statsHandler as unknown as SessionStatsHandler,
+        );
 
         reserveHandler['reserve'] = [];
 

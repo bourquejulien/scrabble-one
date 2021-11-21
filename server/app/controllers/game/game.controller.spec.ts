@@ -5,7 +5,7 @@
 import { Application } from '@app/app';
 import { Constants } from '@app/constants';
 import { GameService } from '@app/services/game/game.service';
-import { GameType, MultiplayerCreateConfig, ServerConfig, SinglePlayerConfig } from '@common';
+import { GameMode, GameType, MultiplayerCreateConfig, ServerConfig, SinglePlayerConfig } from '@common';
 import { expect } from 'chai';
 import { createStubInstance, SinonStubbedInstance } from 'sinon';
 import request from 'supertest';
@@ -19,6 +19,7 @@ describe('GameController', () => {
 
     const singlePlayerConfig: SinglePlayerConfig = {
         gameType: GameType.SinglePlayer,
+        gameMode: GameMode.Classic,
         playTimeMs: 120 * 1000,
         playerName: 'Claudette',
         virtualPlayerName: 'Alphonse',
@@ -27,6 +28,7 @@ describe('GameController', () => {
 
     const multiplayerCreateConfig: MultiplayerCreateConfig = {
         gameType: GameType.SinglePlayer,
+        gameMode: GameMode.Classic,
         playTimeMs: 120 * 1000,
         playerName: 'Claudette',
         isRandomBonus: true,
@@ -36,6 +38,7 @@ describe('GameController', () => {
         firstPlayerName: 'Alphonse',
         secondPlayerName: 'Monique',
         gameType: GameType.Multiplayer,
+        gameMode: GameMode.Classic,
         id: '1234567890',
         playTimeMs: 120 * 1000,
         startId: 'startId',

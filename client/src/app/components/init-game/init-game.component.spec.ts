@@ -132,12 +132,5 @@ describe('InitGameComponent', () => {
         expect(component.seconds).not.toEqual(THIRTY_SECONDS);
     }));
 
-    it('should not init when pressing something else than enter ', fakeAsync(() => {
-        const keyEvent = new KeyboardEvent('keypress', { key: 'y', cancelable: true });
-        const spy = spyOn(component, 'init').and.callThrough();
-        component.buttonDetect(keyEvent);
-        expect(spy).not.toHaveBeenCalled();
-    }));
-
     afterAll(() => cleanStyles());
 });
