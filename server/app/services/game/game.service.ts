@@ -34,14 +34,13 @@ export class GameService {
             id: generateId(),
             playTimeMs: gameConfig.playTimeMs,
             gameType: gameConfig.gameType,
-            gameMode: gameConfig.gameMode,
         };
 
         // TODO add a construction service?
         const boardHandler = this.boardGeneratorService.generateBoardHandler(gameConfig.isRandomBonus);
         const reserveHandler = new ReserveHandler();
         const socketHandler = this.socketService.generate(sessionInfo.id);
-        const statsHandler = new SessionStatsHandler(socketHandler, reserveHandler, this.getGoalHandler(sessionInfo.gameMode));
+        const statsHandler = new SessionStatsHandler(socketHandler, reserveHandler, this.getGoalHandler(gameConfig.gameMode));
 
         const sessionHandler = new SessionHandler(sessionInfo, boardHandler, reserveHandler, new PlayerHandler(), socketHandler, statsHandler);
 
@@ -73,14 +72,13 @@ export class GameService {
             id: generateId(),
             playTimeMs: gameConfig.playTimeMs,
             gameType: gameConfig.gameType,
-            gameMode: gameConfig.gameMode,
         };
 
         // TODO add a construction service?
         const boardHandler = this.boardGeneratorService.generateBoardHandler(gameConfig.isRandomBonus);
         const reserveHandler = new ReserveHandler();
         const socketHandler = this.socketService.generate(sessionInfo.id);
-        const statsHandler = new SessionStatsHandler(socketHandler, reserveHandler, this.getGoalHandler(sessionInfo.gameMode));
+        const statsHandler = new SessionStatsHandler(socketHandler, reserveHandler, this.getGoalHandler(gameConfig.gameMode));
 
         const sessionHandler = new SessionHandler(sessionInfo, boardHandler, reserveHandler, new PlayerHandler(), socketHandler, statsHandler);
 
@@ -186,6 +184,6 @@ export class GameService {
     }
 
     private getGoalHandler(gameMode: GameMode): GoalHandler {
-        return gameMode === GameMode.Standard ? new DisabledGoalHandler() : new Log2990GoalHandler();
+        return gameMode === GameMode.Classic ? new DisabledGoalHandler() : new Log2990GoalHandler();
     }
 }

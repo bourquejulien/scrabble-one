@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { GameMode } from '@common';
 
 @Component({
     selector: 'app-main-page',
@@ -6,6 +7,7 @@ import { Component } from '@angular/core';
     styleUrls: ['./main-page.component.scss'],
 })
 export class MainPageComponent {
+    gameMode = GameMode;
     readonly developers: string[];
 
     constructor() {

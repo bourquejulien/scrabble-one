@@ -47,7 +47,7 @@
     </div>
 </div>
 
-<button mat-raised-button color="primary" mat-button routerLink="/settings" (click)="reset()" class="exit-button">
+<button mat-raised-button color="primary" mat-button [routerLink]="['/settings', gameMode]" (click)="reset()" class="exit-button">
     Retourner à la selection des modes de jeu
 </button>
 

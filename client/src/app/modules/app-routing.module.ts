@@ -10,9 +10,9 @@ const routes: Routes = [
     { path: '', redirectTo: '/home', pathMatch: 'full' },
     { path: 'home', component: MainPageComponent },
     { path: 'game', component: GamePageComponent },
-    { path: 'settings', component: GameModePageComponent },
+    { path: 'settings/:game-mode', component: GameModePageComponent },
     { path: 'waiting-room', component: WaitingRoomPageComponent },
-    { path: 'room-list', component: RoomListComponent },
+    { path: 'room-list/:game-mode', component: RoomListComponent },
     { path: '**', redirectTo: '/home' },
 ];
 

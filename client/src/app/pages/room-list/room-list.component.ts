@@ -1,11 +1,11 @@
-import { Component, AfterViewInit, OnDestroy, TemplateRef, ViewChild } from '@angular/core';
+import { Component, AfterViewInit, OnDestroy, TemplateRef, ViewChild, OnInit } from '@angular/core';
 import { RoomService } from '@app/services/room/room.service';
 import { Subscription } from 'rxjs';
-import { AvailableGameConfig, MultiplayerJoinConfig } from '@common';
+import { AvailableGameConfig, GameMode, MultiplayerJoinConfig } from '@common';
 import { trigger, style, animate, transition } from '@angular/animations';
 import { NameValidator } from '@app/classes/form-validation/name-validator';
 import { MatDialog } from '@angular/material/dialog';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
     selector: 'app-room-list',
@@ -25,8 +25,9 @@ import { Router } from '@angular/router';
     templateUrl: './room-list.component.html',
     styleUrls: ['./room-list.component.scss'],
 })
-export class RoomListComponent implements AfterViewInit, OnDestroy {
+export class RoomListComponent implements AfterViewInit, OnInit, OnDestroy {
     @ViewChild('alertDialog') alertDialog: TemplateRef<unknown>;
+    gameMode: GameMode;
 
     availableGameConfigs: AvailableGameConfig[];
     selectedConfig: AvailableGameConfig | null;
@@ -35,11 +36,15 @@ export class RoomListComponent implements AfterViewInit, OnDestroy {
 
     private roomSubscription: Subscription;
 
-    constructor(readonly roomService: RoomService, private readonly router: Router, readonly dialog: MatDialog) {
+    constructor(readonly roomService: RoomService, private readonly router: Router, private route: ActivatedRoute, readonly dialog: MatDialog) {
         this.availableGameConfigs = [];
         this.selectedConfig = null;
         this.errorsList = [];
         this.nameValidator = new NameValidator();
+    }
+
+    ngOnInit() {
+        this.gameMode = GameMode[this.route.snapshot.paramMap.get('game-mode') as keyof typeof GameMode] ?? GameMode.Classic;
     }
 
     ngAfterViewInit(): void {
@@ -96,7 +101,7 @@ export class RoomListComponent implements AfterViewInit, OnDestroy {
     }
 
     private refreshConfig(availableGameConfigs: AvailableGameConfig[]) {
-        this.availableGameConfigs = availableGameConfigs;
+        this.availableGameConfigs = availableGameConfigs.filter((c) => c.gameMode === this.gameMode);
 
         if (this.selectedConfig !== null && this.availableGameConfigs.findIndex((c) => c.id === this.selectedConfig?.id) === -1) {
             this.reset();

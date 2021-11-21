@@ -64,7 +64,7 @@ describe('InitGameComponent', () => {
                 { provide: Router, useValue: routerMock },
                 { provide: GameService, useClass: GameServiceStub },
                 { provide: MatDialogRef, useClass: MatDialogStub },
-                { provide: MAT_DIALOG_DATA, useValue: { gameModeType: GameType.SinglePlayer } },
+                { provide: MAT_DIALOG_DATA, useValue: { gameType: GameType.SinglePlayer } },
             ],
         }).compileComponents();
     });

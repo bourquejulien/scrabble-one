@@ -1,27 +1,27 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { InitGameComponent } from '@app/components/init-game/init-game.component';
-import { SocketClientService } from '@app/services/socket-client/socket-client.service';
-import { GameType } from '@common';
+import { GameMode, GameType } from '@common';
+import { ActivatedRoute } from '@angular/router';
 
 @Component({
     selector: 'app-game-mode-page',
     templateUrl: './game-mode-page.component.html',
     styleUrls: ['./game-mode-page.component.scss'],
 })
-export class GameModePageComponent {
-    gameType;
-    constructor(public dialog: MatDialog, private readonly socket: SocketClientService) {
-        this.gameType = GameType;
+export class GameModePageComponent implements OnInit {
+    typeOfGameType: typeof GameType;
+    gameMode: GameMode;
+
+    constructor(public dialog: MatDialog, private route: ActivatedRoute) {
+        this.typeOfGameType = GameType;
     }
 
-    openDialog(type: GameType): void {
-        const dialogRef = this.dialog.open(InitGameComponent, { panelClass: 'init-game-dialog', data: { gameModeType: type } });
-        dialogRef.afterClosed().subscribe();
+    ngOnInit() {
+        this.gameMode = GameMode[this.route.snapshot.paramMap.get('game-mode') as keyof typeof GameMode] ?? GameMode.Classic;
     }
 
-    createOnlineGame(): void {
-        this.openDialog(GameType.Multiplayer);
-        this.socket.send('newOnlineGame');
+    openDialog(gameType: GameType): void {
+        this.dialog.open(InitGameComponent, { panelClass: 'init-game-dialog', data: { gameType, gameMode: this.gameMode } });
     }
 }

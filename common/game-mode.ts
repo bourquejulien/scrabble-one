@@ -1,4 +1,4 @@
 export enum GameMode {
-    Standard = 'standard',
-    Log2990 = 'log2990',
+    Classic = 'Classic',
+    Log2990 = 'Log2990',
 }

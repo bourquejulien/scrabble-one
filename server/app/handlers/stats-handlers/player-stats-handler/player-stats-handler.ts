@@ -67,6 +67,7 @@ export class PlayerStatsHandler implements PlayerStatsNotifier {
     }
 
     get stats(): PlayerStats {
-        return { points: Math.max(0, this.baseScore + this.scoreAdjustment), rackSize: this.rackSize };
+        const score = this.baseScore + this.scoreAdjustment + this.goalHandler.getScore(this.id);
+        return { points: Math.max(0, score), rackSize: this.rackSize };
     }
 }

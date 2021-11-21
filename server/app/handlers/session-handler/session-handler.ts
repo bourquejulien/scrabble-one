@@ -6,7 +6,7 @@ import { BoardHandler } from '@app/handlers/board-handler/board-handler';
 import { PlayerHandler } from '@app/handlers/player-handler/player-handler';
 import { ReserveHandler } from '@app/handlers/reserve-handler/reserve-handler';
 import { SocketHandler } from '@app/handlers/socket-handler/socket-handler';
-import { ServerConfig } from '@common';
+import { GameMode, ServerConfig } from '@common';
 import { Subscription } from 'rxjs';
 import * as logger from 'winston';
 import { SessionStatsHandler } from '@app/handlers/stats-handlers/session-stats-handler/session-stats-handler';
@@ -37,7 +37,7 @@ export class SessionHandler {
             id: firstPlayer.id,
             startId: this.players.filter((p) => p.isTurn).map((p) => p.id)[0] ?? '',
             gameType: this.sessionInfo.gameType,
-            gameMode: this.sessionInfo.gameMode,
+            gameMode: this.gameMode,
             playTimeMs: this.sessionInfo.playTimeMs,
             firstPlayerName: firstPlayer.playerInfo.name,
             secondPlayerName: secondPlayer.playerInfo.name,
@@ -94,6 +94,10 @@ export class SessionHandler {
 
     get players(): Player[] {
         return this.playerHandler.players;
+    }
+
+    get gameMode(): GameMode {
+        return this.statsHandler.gameMode;
     }
 
     private timerTick(): void {

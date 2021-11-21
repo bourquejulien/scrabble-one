@@ -30,6 +30,7 @@ export interface ConvertConfig {
 
 export interface AvailableGameConfig {
     id: string;
+    gameMode: GameMode;
     playTimeMs: number;
     waitingPlayerName: string;
     isRandomBonus: boolean;

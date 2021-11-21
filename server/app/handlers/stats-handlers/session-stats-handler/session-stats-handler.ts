@@ -4,7 +4,8 @@ import { SocketHandler } from '@app/handlers/socket-handler/socket-handler';
 import { ReserveHandler } from '@app/handlers/reserve-handler/reserve-handler';
 import { Subscription } from 'rxjs';
 import { GoalHandler } from '@app/handlers/goal-handler/goal-handler';
-import { SessionStats } from '@common';
+import { GameMode, SessionStats } from '@common';
+import { Log2990GoalHandler } from '@app/handlers/goal-handler/log2990-goal-handler';
 
 export class SessionStatsHandler {
     subscriptions: Subscription[];
@@ -52,6 +53,10 @@ export class SessionStatsHandler {
             return '';
         }
         return this.playerStatsHandlers.reduce((winner, player) => (player.stats.points > winner.stats.points ? player : winner)).id;
+    }
+
+    get gameMode(): GameMode {
+        return this.goalHandler instanceof Log2990GoalHandler ? GameMode.Log2990 : GameMode.Classic;
     }
 
     private onUpdatedStats() {

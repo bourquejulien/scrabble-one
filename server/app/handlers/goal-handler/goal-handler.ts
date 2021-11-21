@@ -19,6 +19,12 @@ export abstract class GoalHandler implements PlacementNotifier, ExchangeNotifier
         return this.goals.filter((g) => g.isOwner(id)).map((g) => g.getGoalData(id));
     }
 
+    getScore(id: string): number {
+        return this.getGoalsData(id)
+            .map((d) => d.score)
+            .reduce((prev, cur) => prev + cur, 0);
+    }
+
     get onUpdate(): Observable<void> {
         return this.updateSubject.asObservable();
     }
