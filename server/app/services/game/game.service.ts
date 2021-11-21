@@ -52,7 +52,7 @@ export class GameService {
         this.addVirtualPlayer(virtualPlayerInfo, sessionHandler);
         this.sessionHandlingService.addHandler(sessionHandler);
 
-        sessionHandler.start();
+        sessionHandler.sessionData.isActive = true;
 
         logger.info(`Single player game: ${sessionHandler.sessionInfo.id} initialised`);
 
@@ -102,9 +102,9 @@ export class GameService {
 
         const humanPlayer = this.addHumanPlayer(humanPlayerInfo, sessionHandler);
         this.sessionHandlingService.updateEntries(sessionHandler);
-        sessionHandler.start();
+        sessionHandler.sessionData.isActive = true;
 
-        this.socketService.send('onJoin', sessionHandler.sessionInfo.id, sessionHandler.getServerConfig(waitingPlayer.id));
+        this.socketService.send('onJoin', waitingPlayer.id, sessionHandler.getServerConfig(waitingPlayer.id));
 
         logger.info(`Multiplayer game: ${sessionHandler.sessionInfo.id} joined by ${humanPlayerInfo.id}`);
 

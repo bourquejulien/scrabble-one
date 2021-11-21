@@ -1,6 +1,7 @@
 import { Player } from '@app/classes/player/player';
 import { Observable, Subject, Subscription } from 'rxjs';
 import { Config } from '@app/config';
+import { SessionStats } from '@common';
 
 export class PlayerHandler {
     players: Player[];
@@ -42,6 +43,18 @@ export class PlayerHandler {
 
     onTurn(): Observable<string> {
         return this.nextTurn.asObservable();
+    }
+
+    getStats(id: string): SessionStats | null {
+        const index = this.players.findIndex((p) => p.id === id);
+        const firstPlayer = this.players[index];
+        const secondPlayer = this.players[1 - index];
+
+        if (firstPlayer == null || secondPlayer == null) {
+            return null;
+        }
+
+        return { localStats: firstPlayer.stats, remoteStats: secondPlayer.stats };
     }
 
     get isOverSkipLimit(): boolean {
