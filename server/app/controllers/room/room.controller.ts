@@ -1,7 +1,7 @@
 import { Timer } from '@app/classes/delay';
 import { Config } from '@app/config';
 import { GameService } from '@app/services/game/game.service';
-import { SessionHandlingService } from '@app/services/sessionHandling/session-handling.service';
+import { SessionHandlingService } from '@app/services/session-handling/session-handling.service';
 import { SocketService } from '@app/services/socket/socket-service';
 import { AvailableGameConfig, Message, MessageType } from '@common';
 import { Socket } from 'socket.io';
