@@ -135,6 +135,20 @@ export class HumanPlayer extends Player {
         return { isSuccess: true, body: '' };
     }
 
+    fillRack() {
+        super.fillRack();
+        this.refresh();
+    }
+
+    protected endTurn() {
+        super.endTurn();
+        this.refresh();
+    }
+
+    private refresh(): void {
+        this.socketHandler.sendData('rack', this.playerData.rack, this.id);
+    }
+
     private updateRack(lettersToPlace: string[]): void {
         for (const letter of lettersToPlace) {
             const letterIndex = this.playerData.rack.indexOf(letter);

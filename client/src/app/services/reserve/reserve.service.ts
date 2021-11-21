@@ -1,9 +1,5 @@
-import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { SessionService } from '@app/services/session/session.service';
-import { environmentExt } from '@environment-ext';
-
-const localUrl = (call: string, id: string) => `${environmentExt.apiUrl}reserve/${call}/${id}`;
+import { SocketClientService } from '@app/services/socket-client/socket-client.service';
 
 @Injectable({
     providedIn: 'root',
@@ -11,12 +7,9 @@ const localUrl = (call: string, id: string) => `${environmentExt.apiUrl}reserve/
 export class ReserveService {
     private reserve: string[];
 
-    constructor(private readonly httpClient: HttpClient, private readonly sessionService: SessionService) {
+    constructor(private readonly socketService: SocketClientService) {
         this.reset();
-    }
-
-    async refresh(): Promise<void> {
-        this.reserve = await this.httpClient.get<string[]>(localUrl('retrieve', this.sessionService.id)).toPromise();
+        this.socketService.on('reserve', (reserve: string[]) => this.refresh(reserve));
     }
 
     reset(): void {
@@ -37,5 +30,9 @@ export class ReserveService {
 
     get length(): number {
         return this.reserve.length;
+    }
+
+    private refresh(reserve: string[]): void {
+        this.reserve = reserve;
     }
 }
