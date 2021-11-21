@@ -7,8 +7,12 @@ import { Container } from 'typedi';
 import winston, * as logger from 'winston';
 import { Server } from './server';
 
-const logFormat = winston.format.printf(({ level, message, timestamp }) => {
-    return `${timestamp} - ${level} - ${message}`;
+const logFormat = winston.format.printf(({ level, message, timestamp, stack }) => {
+    let format = `${timestamp} - ${level} - ${message}`;
+    if (stack !== undefined) {
+        format += ` - ${stack}`;
+    }
+    return format;
 });
 
 logger.configure({
@@ -16,16 +20,24 @@ logger.configure({
     transports: [
         new logger.transports.Console({
             format: winston.format.combine(
+                winston.format.errors({ stack: true }),
+
                 winston.format.colorize(),
                 winston.format.simple(),
                 winston.format.timestamp({ format: 'HH:mm:ss' }),
                 logFormat,
             ),
-            silent: process.env.NODE_ENV === 'test',
+            handleExceptions: true,
         }),
     ],
+    exitOnError: false,
+});
+
+process.on('unhandledRejection', (reason: Error) => {
+    throw reason;
 });
 
 dotenv.config();
+
 const server: Server = Container.get(Server);
 server.init();

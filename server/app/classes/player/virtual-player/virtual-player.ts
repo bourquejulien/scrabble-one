@@ -17,11 +17,15 @@ export abstract class VirtualPlayer extends Player {
         this.isTurn = true;
         this.socketHandler.sendData('onTurn', this.id);
 
-        await Timer.delay(MIN_PLAYTIME_MILLISECONDS);
+        try {
+            await Timer.delay(MIN_PLAYTIME_MILLISECONDS);
 
-        let action = this.runAction(this.nextAction());
-        while (action) {
-            action = this.runAction(action);
+            let action = this.runAction(this.nextAction());
+            while (action) {
+                action = this.runAction(action);
+            }
+        } catch (e) {
+            logger.error('VirtualPlayer abnormally stopped', e);
         }
 
         logger.debug(`VirtualPlayer: ${this.id} - EndTurn`);
