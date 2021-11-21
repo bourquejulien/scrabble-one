@@ -1,6 +1,6 @@
-import { ExchangeNotifier } from '@app/classes/goal/goals/notifiers/exchange-notifier';
-import { SkipNotifier } from '@app/classes/goal/goals/notifiers/skip-notifier';
-import { PlacementNotifier } from '@app/classes/goal/goals/notifiers/placement-notifier';
+import { ExchangeNotifier } from '@app/classes/goal/notifiers/exchange-notifier';
+import { SkipNotifier } from '@app/classes/goal/notifiers/skip-notifier';
+import { PlacementNotifier } from '@app/classes/goal/notifiers/placement-notifier';
 import { GoalDescription } from '@app/classes/goal/goal-description';
 import { GoalData, GoalStatus } from '@common';
 

@@ -6,6 +6,7 @@ import { PlacePalindrome } from '@app/classes/goal/goals/place-palindrome/place-
 import { PlaceLetterTwice } from '@app/classes/goal/goals/place-letter-twice/place-letter-twice';
 import { PlaceLongWord } from '@app/classes/goal/goals/place-long-word/place-long-word';
 import { ShortWordHighScore } from '@app/classes/goal/goals/short-word-over-15/short-word-high-score';
+import { BingoWithoutExchange } from '@app/classes/goal/goals/bingo-without-exchange/bingo-without-exchange';
 
 export type GoalGenerator = { generate(ownerId: string): Goal };
 
@@ -17,4 +18,5 @@ export const GOAL_GENERATORS: GoalGenerator[] = [
     PlaceOnBorder,
     PlacePalindrome,
     ShortWordHighScore,
+    BingoWithoutExchange,
 ];

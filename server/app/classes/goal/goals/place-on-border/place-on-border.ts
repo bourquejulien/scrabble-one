@@ -1,4 +1,4 @@
-import { PlacementNotifier } from '@app/classes/goal/goals/notifiers/placement-notifier';
+import { PlacementNotifier } from '@app/classes/goal/notifiers/placement-notifier';
 import { ValidatedWord, ValidationResponse } from '@app/classes/validation/validation-response';
 import { BaseGoal, Goal } from '@app/classes/goal/base-goal';
 import { Config } from '@app/config';

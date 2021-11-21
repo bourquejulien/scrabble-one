@@ -1,6 +1,6 @@
-import { ExchangeNotifier } from '@app/classes/goal/goals/notifiers/exchange-notifier';
-import { PlacementNotifier } from '@app/classes/goal/goals/notifiers/placement-notifier';
-import { SkipNotifier } from '@app/classes/goal/goals/notifiers/skip-notifier';
+import { ExchangeNotifier } from '@app/classes/goal/notifiers/exchange-notifier';
+import { PlacementNotifier } from '@app/classes/goal/notifiers/placement-notifier';
+import { SkipNotifier } from '@app/classes/goal/notifiers/skip-notifier';
 import { ValidationResponse } from '@app/classes/validation/validation-response';
 import { BaseGoal, Goal } from '@app/classes/goal/base-goal';
 
