@@ -2,9 +2,7 @@ import { PlacementNotifier } from '@app/classes/goal/goals/notifiers/placement-n
 import { ValidatedWord, ValidationResponse } from '@app/classes/validation/validation-response';
 import { BaseGoal, Goal } from '@app/classes/goal/base-goal';
 import { Config } from '@app/config';
-import { goalGenerator } from '@app/classes/goal/goals/goal.decorator';
 
-@goalGenerator
 export class PlaceOnBorder extends BaseGoal implements PlacementNotifier {
     constructor(ownerId: string) {
         super(

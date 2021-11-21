@@ -1,12 +1,10 @@
 import { PlacementNotifier } from '@app/classes/goal/goals/notifiers/placement-notifier';
 import { ValidatedLetter, ValidationResponse } from '@app/classes/validation/validation-response';
 import { BaseGoal, Goal } from '@app/classes/goal/base-goal';
-import { goalGenerator } from '@app/classes/goal/goals/goal.decorator';
 
 const MIN_WORD_SIZE = 3;
 const SCORE_MULTIPLIER = 3;
 
-@goalGenerator
 export class PlacePalindrome extends BaseGoal implements PlacementNotifier {
     constructor(ownerId: string) {
         super(
@@ -25,7 +23,7 @@ export class PlacePalindrome extends BaseGoal implements PlacementNotifier {
 
     private static isPalindrome(letters: ValidatedLetter[]): boolean {
         for (let i = 0; i < letters.length / 2; i++) {
-            if (letters[i] !== letters[letters.length - i]) {
+            if (letters[i].placement.letter !== letters[letters.length - i].placement.letter) {
                 return false;
             }
         }

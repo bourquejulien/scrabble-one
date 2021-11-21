@@ -8,7 +8,9 @@ export type Goal = BaseGoal & (ExchangeNotifier | SkipNotifier | PlacementNotifi
 
 export abstract class BaseGoal {
     protected successId: string;
-    protected constructor(readonly data: GoalDescription, protected readonly ownerId: string) {}
+    protected constructor(readonly data: GoalDescription, protected readonly ownerId: string) {
+        this.successId = '';
+    }
 
     isOwner(id: string) {
         return this.ownerId === '' || this.ownerId === id;

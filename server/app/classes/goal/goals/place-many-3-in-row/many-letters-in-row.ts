@@ -3,12 +3,10 @@ import { PlacementNotifier } from '@app/classes/goal/goals/notifiers/placement-n
 import { SkipNotifier } from '@app/classes/goal/goals/notifiers/skip-notifier';
 import { ValidationResponse } from '@app/classes/validation/validation-response';
 import { BaseGoal, Goal } from '@app/classes/goal/base-goal';
-import { goalGenerator } from '@app/classes/goal/goals/goal.decorator';
 
 const REWARDED_PLACEMENT_SIZE = 5;
 const REWARDED_CONSECUTIVE_TURN = 3;
 
-@goalGenerator
 export class ManyLettersInRow extends BaseGoal implements PlacementNotifier, ExchangeNotifier, SkipNotifier {
     private consecutiveTurnCount: Map<string, number>;
 

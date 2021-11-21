@@ -4,7 +4,7 @@ import { SkipNotifier } from '@app/classes/goal/goals/notifiers/skip-notifier';
 import { ValidationResponse } from '@app/classes/validation/validation-response';
 import { Goal } from '@app/classes/goal/base-goal';
 import { Observable, Subject } from 'rxjs';
-import { GoalData } from '@common';
+import { GoalData, GoalStatus } from '@common';
 
 export abstract class GoalHandler implements PlacementNotifier, ExchangeNotifier, SkipNotifier {
     readonly goals: Goal[];
@@ -21,6 +21,7 @@ export abstract class GoalHandler implements PlacementNotifier, ExchangeNotifier
 
     getScore(id: string): number {
         return this.getGoalsData(id)
+            .filter((d) => d.status === GoalStatus.Succeeded)
             .map((d) => d.score)
             .reduce((prev, cur) => prev + cur, 0);
     }

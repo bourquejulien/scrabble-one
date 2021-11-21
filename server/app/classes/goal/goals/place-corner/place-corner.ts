@@ -3,9 +3,7 @@ import { ValidationResponse } from '@app/classes/validation/validation-response'
 import { BaseGoal, Goal } from '@app/classes/goal/base-goal';
 import { Vec2 } from '@common';
 import { Config } from '@app/config';
-import { goalGenerator } from '@app/classes/goal/goals/goal.decorator';
 
-@goalGenerator
 export class PlaceCorner extends BaseGoal implements PlacementNotifier {
     private constructor(ownerId: string) {
         super(

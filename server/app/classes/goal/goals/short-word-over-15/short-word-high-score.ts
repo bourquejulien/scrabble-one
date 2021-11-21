@@ -1,13 +1,11 @@
 import { PlacementNotifier } from '@app/classes/goal/goals/notifiers/placement-notifier';
 import { ValidationResponse } from '@app/classes/validation/validation-response';
 import { BaseGoal, Goal } from '@app/classes/goal/base-goal';
-import { goalGenerator } from '@app/classes/goal/goals/goal.decorator';
 
 const MIN_SCORE = 15;
 const MIN_LETTER_COUNT = 4;
 const SCORE_MULTIPLIER = 2;
 
-@goalGenerator
 export class ShortWordHighScore extends BaseGoal implements PlacementNotifier {
     constructor(ownerId: string) {
         super(

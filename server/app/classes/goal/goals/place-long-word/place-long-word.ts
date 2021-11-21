@@ -1,11 +1,9 @@
 import { PlacementNotifier } from '@app/classes/goal/goals/notifiers/placement-notifier';
 import { ValidationResponse } from '@app/classes/validation/validation-response';
 import { BaseGoal, Goal } from '@app/classes/goal/base-goal';
-import { goalGenerator } from '@app/classes/goal/goals/goal.decorator';
 
 const WORD_SIZE = 8;
 
-@goalGenerator
 export class PlaceLongWord extends BaseGoal implements PlacementNotifier {
     constructor(ownerId: string) {
         super(
