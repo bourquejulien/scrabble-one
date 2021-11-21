@@ -13,7 +13,12 @@ export class PlaceAction implements Action {
 
     execute(): Action | null {
         this.boardHandler.placeLetters(this.play.placements);
-        this.play.placements.forEach((placement) => this.rack.splice(this.rack.findIndex((rackLetter) => placement.letter === rackLetter)));
+        this.play.placements.forEach((placement) =>
+            this.rack.splice(
+                this.rack.findIndex((rackLetter) => placement.letter === rackLetter),
+                1,
+            ),
+        );
 
         this.statsNotifier.notifyPlacement(this.play);
         this.statsNotifier.notifyRackUpdate(this.rack);
