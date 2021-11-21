@@ -12,6 +12,7 @@ const COLLECTION_NAME_LOG = 'log';
 export class BestScoresComponent {
     classicBoardData: Score[];
     logBoardData: Score[];
+    displayedColumns: string[] = ['name', 'score'];
 
     constructor(private scoreboardService: ScoreboardService) {
         this.initBoards();
