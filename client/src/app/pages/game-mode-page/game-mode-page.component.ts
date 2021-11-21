@@ -11,10 +11,12 @@ import { ActivatedRoute } from '@angular/router';
 })
 export class GameModePageComponent implements OnInit {
     typeOfGameType: typeof GameType;
+    typeOfGameMode: typeof GameMode;
     gameMode: GameMode;
 
     constructor(public dialog: MatDialog, private route: ActivatedRoute) {
         this.typeOfGameType = GameType;
+        this.typeOfGameMode = GameMode;
     }
 
     ngOnInit() {

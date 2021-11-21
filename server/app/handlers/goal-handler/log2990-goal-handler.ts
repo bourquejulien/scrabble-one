@@ -1,9 +1,9 @@
 import { GoalHandler } from '@app/handlers/goal-handler/goal-handler';
 import { ValidationResponse } from '@app/classes/validation/validation-response';
-import { PlacementNotifier } from '@app/classes/goal/goals/notifiers/placement-notifier';
-import { SkipNotifier } from '@app/classes/goal/goals/notifiers/skip-notifier';
-import { ExchangeNotifier } from '@app/classes/goal/goals/notifiers/exchange-notifier';
-import { GOAL_GENERATORS, GoalGenerator } from '@app/classes/goal/goals/goal-generator-list';
+import { PlacementNotifier } from '@app/classes/goal/notifiers/placement-notifier';
+import { SkipNotifier } from '@app/classes/goal/notifiers/skip-notifier';
+import { ExchangeNotifier } from '@app/classes/goal/notifiers/exchange-notifier';
+import { GOAL_GENERATORS, GoalGenerator } from '@app/classes/goal/goal-generator-list';
 
 const PRIVATE_GOAL_COUNT = 1;
 const PUBLIC_GOAL_COUNT = 2;

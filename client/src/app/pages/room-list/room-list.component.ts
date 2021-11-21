@@ -27,6 +27,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 })
 export class RoomListComponent implements AfterViewInit, OnInit, OnDestroy {
     @ViewChild('alertDialog') alertDialog: TemplateRef<unknown>;
+    gameModeType: typeof GameMode;
     gameMode: GameMode;
 
     availableGameConfigs: AvailableGameConfig[];
@@ -37,6 +38,8 @@ export class RoomListComponent implements AfterViewInit, OnInit, OnDestroy {
     private roomSubscription: Subscription;
 
     constructor(readonly roomService: RoomService, private readonly router: Router, private route: ActivatedRoute, readonly dialog: MatDialog) {
+        this.gameModeType = GameMode;
+
         this.availableGameConfigs = [];
         this.selectedConfig = null;
         this.errorsList = [];
