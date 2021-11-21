@@ -27,7 +27,7 @@ export class PlaceLongWord extends BaseGoal implements PlacementNotifier {
         }
 
         for (const word of validationResponse.words) {
-            if (word.letters.length > WORD_SIZE) {
+            if (word.letters.length >= WORD_SIZE) {
                 this.successId = id;
                 return;
             }

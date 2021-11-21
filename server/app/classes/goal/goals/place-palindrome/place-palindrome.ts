@@ -23,7 +23,7 @@ export class PlacePalindrome extends BaseGoal implements PlacementNotifier {
 
     private static isPalindrome(letters: ValidatedLetter[]): boolean {
         for (let i = 0; i < letters.length / 2; i++) {
-            if (letters[i].placement.letter !== letters[letters.length - i].placement.letter) {
+            if (letters[i].placement.letter !== letters[letters.length - (i + 1)].placement.letter) {
                 return false;
             }
         }

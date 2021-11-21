@@ -4,6 +4,8 @@ import { BaseGoal, Goal } from '@app/classes/goal/base-goal';
 import { Vec2 } from '@common';
 import { Config } from '@app/config';
 
+const GRID_MAX_POSITION = Config.GRID.GRID_SIZE - 1;
+
 export class PlaceCorner extends BaseGoal implements PlacementNotifier {
     private constructor(ownerId: string) {
         super(
@@ -21,7 +23,7 @@ export class PlaceCorner extends BaseGoal implements PlacementNotifier {
     }
 
     private static isOnEdge(position: Vec2): boolean {
-        return position.x % Config.GRID.GRID_SIZE === 0 && position.y % Config.GRID.GRID_SIZE === 0;
+        return position.x % GRID_MAX_POSITION === 0 && position.y % GRID_MAX_POSITION === 0;
     }
 
     notifyPlacement(validationResponse: ValidationResponse, id: string): void {

@@ -3,6 +3,8 @@ import { ValidatedWord, ValidationResponse } from '@app/classes/validation/valid
 import { BaseGoal, Goal } from '@app/classes/goal/base-goal';
 import { Config } from '@app/config';
 
+const GRID_MAX_POSITION = Config.GRID.GRID_SIZE - 1;
+
 export class PlaceOnBorder extends BaseGoal implements PlacementNotifier {
     constructor(ownerId: string) {
         super(
@@ -24,8 +26,8 @@ export class PlaceOnBorder extends BaseGoal implements PlacementNotifier {
         let isVertical = true;
 
         for (const { placement } of word.letters) {
-            isHorizontal &&= placement.position.y % Config.GRID.GRID_SIZE === 0;
-            isVertical &&= placement.position.x % Config.GRID.GRID_SIZE === 0;
+            isHorizontal &&= placement.position.y % GRID_MAX_POSITION === 0;
+            isVertical &&= placement.position.x % GRID_MAX_POSITION === 0;
         }
 
         return isHorizontal || isVertical;
