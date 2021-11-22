@@ -7,7 +7,7 @@ import { PlayerHandler } from '@app/handlers/player-handler/player-handler';
 import { ReserveHandler } from '@app/handlers/reserve-handler/reserve-handler';
 import { SocketHandler } from '@app/handlers/socket-handler/socket-handler';
 import { SocketService } from '@app/services/socket/socket-service';
-import { ServerConfig, SessionStats } from '@common';
+import { ServerConfig } from '@common';
 import { Subscription } from 'rxjs';
 import * as logger from 'winston';
 
@@ -48,7 +48,10 @@ export class SessionHandler {
         this.sessionData.isActive = true;
         this.sessionData.isStarted = true;
         this.timer = setInterval(() => this.timerTick(), Config.SESSION.REFRESH_INTERVAL_MS);
+
+        this.refresh();
         this.playerHandler.start();
+        logger.info(`Game ${this.sessionInfo.id} started`);
     }
 
     dispose(): void {
@@ -66,18 +69,6 @@ export class SessionHandler {
 
     removePlayer(id: string): Player | null {
         return this.playerHandler.removePlayer(id);
-    }
-
-    getStats(id: string): SessionStats | null {
-        const index = this.players.findIndex((p) => p.id === id);
-        const firstPlayer = this.players[index];
-        const secondPlayer = this.players[1 - index];
-
-        if (firstPlayer == null || secondPlayer == null) {
-            return null;
-        }
-
-        return { localStats: firstPlayer.stats, remoteStats: secondPlayer.stats };
     }
 
     abandonGame(playerId: string): void {
@@ -122,8 +113,17 @@ export class SessionHandler {
             return;
         }
 
+        this.refresh();
+
         this.players.find((p) => p.id === id)?.startTurn();
         this.sessionData.timeLimitEpoch = new Date().getTime() + this.sessionInfo.playTimeMs;
+    }
+
+    private refresh() {
+        this.socketHandler.sendData('stats', this.playerHandler.getStats(this.players[0].id), this.players[0].id);
+        this.socketHandler.sendData('stats', this.playerHandler.getStats(this.players[1].id), this.players[1].id);
+        this.socketHandler.sendData('board', this.boardHandler.immutableBoard.boardData);
+        this.socketHandler.sendData('reserve', this.reserveHandler.reserve);
     }
 
     private get isEndGame(): boolean {

@@ -23,45 +23,23 @@ export class PlayerService {
         const positionToPlace = this.boardService.retrievePlacements(word, position, direction);
 
         try {
-            const answer = await this.boardService.placeLetters(positionToPlace);
-
-            if (!answer.isSuccess) {
-                return false;
-            }
+            const answer = await this.httpClient.post<Answer>(localUrl('place', this.sessionService.id), positionToPlace).toPromise();
+            return answer.isSuccess;
         } catch (err) {
             return false;
         }
-
-        await this.refresh();
-        return true;
     }
 
     async exchangeLetters(lettersToExchange: string): Promise<boolean> {
         const letterArray = lettersToExchange.split('');
         const answer = await this.httpClient.post<Answer>(localUrl('exchange', this.sessionService.id), letterArray).toPromise();
 
-        if (!answer.isSuccess) {
-            return false;
-        }
-
-        await this.refresh();
-        return true;
+        return answer.isSuccess;
     }
 
     async skipTurn(): Promise<boolean> {
         const answer = await this.httpClient.post<Answer>(localUrl('skip', this.sessionService.id), this.sessionService.id).toPromise();
-
-        if (!answer.isSuccess) {
-            return false;
-        }
-
-        await this.refresh();
-        return true;
-    }
-
-    async refresh(): Promise<void> {
-        await this.reserveService.refresh();
-        await this.boardService.refresh();
+        return answer.isSuccess;
     }
 
     reset(): void {

@@ -36,10 +36,10 @@ export class SocketMock {
         this.callbacks.set(event, callback);
     }
 
-    triggerEndpoint(event: string, ...params: any) {
+    async triggerEndpoint(event: string, ...params: any) {
         const callback = this.callbacks.get(event);
         if (callback) {
-            callback(...params);
+            await callback(...params);
         }
     }
 

@@ -7,6 +7,7 @@ import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/compiler';
 import { NO_ERRORS_SCHEMA, SimpleChange } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { cleanStyles } from '@app/classes/helpers/cleanup.helper';
 import { PlayerType } from '@app/classes/player/player-type';
 import { Constants } from '@app/constants/global.constants';
 import { AppMaterialModule } from '@app/modules/material.module';
@@ -15,8 +16,9 @@ import { GameService } from '@app/services/game/game.service';
 import { GridService } from '@app/services/grid/grid.service';
 import { PlaceLetterService } from '@app/services/place-letter/place-letter.service';
 import { RackService } from '@app/services/rack/rack.service';
-import { Vec2 } from '@common';
+import { BoardData, Vec2 } from '@common';
 import { BoardComponent } from './board.component';
+import { BehaviorSubject, Observable } from 'rxjs';
 
 class GridServiceStub {
     letterFontFace = { font: 'red', size: 0 };
@@ -69,62 +71,20 @@ class GridServiceStub {
     }
 }
 
-// @Injectable({
-//     providedIn: 'root',
-// })
-// class PlaceLetterServiceMock {
-//     inGridResult: boolean;
-//     isInit: boolean;
-//     gridPosition: Vec2 | undefined = undefined;
-//     isLastSquare = false;
-//     tempRack = ['e', 's', 't'];
-//     myRack = [];
-//     positionInit = { x: 7, y: 8 };
-//     isHorizontal = true;
-
-//     samePosition(): void {
-//         this.myRack = [];
-//     }
-
-//     inGrid(): boolean {
-//         return true;
-//     }
-
-//     backSpaceOperation(): void {
-//         this.tempRack.pop();
-//         this.myRack.pop();
-//     }
-
-//     escapeOperation(): void {
-//         this.gridPosition = this.positionInit;
-//     }
-
-//     nextAvailableSquare(): void {
-//         this.gridPosition = { x: 9, y: 8 };
-//     }
-
-//     enterOperation(): void {
-//         this.myRack = [];
-//         this.tempRack = [];
-//     }
-
-//     backSpaceEnable(): boolean {
-//         return true;
-//     }
-
-//     isPositionInit(): boolean {
-//         return this.isInit;
-//     }
-// }
-
 class BoardServiceMock {
     iteration = 0;
+    readonly boardSubject: BehaviorSubject<BoardData> = new BehaviorSubject<BoardData>({} as BoardData);
+
     isPositionAvailable() {
         return true;
     }
 
     getLetter() {
         return 'a';
+    }
+
+    get boardUpdated(): Observable<BoardData> {
+        return this.boardSubject.asObservable();
     }
 }
 
@@ -191,7 +151,6 @@ describe('BoardComponent', () => {
         fixture = TestBed.createComponent(BoardComponent);
         gridServiceStub = TestBed.inject(GridService) as unknown as GridServiceStub;
         component = fixture.componentInstance;
-        fixture.detectChanges();
     });
 
     it('should create', () => {
@@ -368,7 +327,7 @@ describe('BoardComponent', () => {
         expect(component.isLetter).toBeFalse();
     });
 
-    it('put à is disable in myRack when onKeyDown', () => {
+    it('put "à" is disable in myRack when onKeyDown', () => {
         component.squareSelected = true;
         component.placeLetterService.positionInit = { x: 8, y: 9 };
         component.placeLetterService.gridPosition = { x: 14, y: 9 };
@@ -444,5 +403,5 @@ describe('BoardComponent', () => {
         expect(spy).toHaveBeenCalled();
     });
 
-    // afterAll(() => cleanStyles());
+    afterAll(() => cleanStyles());
 });
