@@ -50,6 +50,7 @@ export class AdminService {
     finishUpload() {
         this.uploadSub.unsubscribe();
         this.uploadProgress = 0;
+        this.retrieveDictionnaries();
     }
 
     async retrieveDictionnaries() {

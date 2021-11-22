@@ -35,21 +35,15 @@ export class DictionaryService {
 
     async getWords(metadata: DictionaryMetadata): Promise<string[]> {
         let result: string[] = [];
-        await promises
-            .readFile(this.getFilepath(metadata), 'utf8')
-            .then((data) => {
-                let json: JsonDictionary;
-                try {
-                    json = JSON.parse(data) as JsonDictionary;
-                    result = json.words;
-                    logger.debug(`Parsed words ${result.length} in the dictionary`);
-                } catch (err) {
-                    logger.error(`JSON.parse returned an error ${err.stack}`);
-                }
-            })
-            .catch((err) => {
-                logger.error(`${err.stack}`);
-            });
+        const data = await promises.readFile(this.getFilepath(metadata), 'utf8');
+        let json: JsonDictionary;
+        try {
+            json = JSON.parse(data) as JsonDictionary;
+            result = json.words;
+            logger.debug(`Parsed words ${result.length} in the dictionary`);
+        } catch (err) {
+            logger.error(`JSON.parse returned an error ${err.stack}`);
+        }
         if (result.length < Constants.MIN_DICTIONARY_SIZE) {
             throw new Error('Not enough words in the chosen dictionary');
         }
@@ -85,31 +79,29 @@ export class DictionaryService {
         }
     }
 
-    add(metadata: DictionaryMetadata) {
-        this.cleanDuplicates();
-        this.dictionaryMetadata.push(metadata);
-    }
-
-    cleanDuplicates() {
-        // TODO:
+    add(json: JsonDictionary): boolean {
+        const metadata: DictionaryMetadata = {
+            title: json.title,
+            description: json.description,
+            id: generateId(),
+            nbWords: json.words.length,
+        };
+        if (!this.dictionaryMetadata.find((m) => m.id === metadata.id)) {
+            this.dictionaryMetadata.push(metadata);
+            return false;
+        }
+        logger.debug('Dictionary was not added because there was a duplicate');
+        return false;
     }
 
     async parse(filepath: string): Promise<boolean> {
         const data = await promises.readFile(filepath, 'utf8');
         if (this.validate(data)) {
-            let json: JsonDictionary;
             try {
-                json = JSON.parse(data) as JsonDictionary;
-                const metadata: DictionaryMetadata = {
-                    title: json.title,
-                    description: json.description,
-                    id: generateId(),
-                    nbWords: json.words.length,
-                };
-                this.dictionaryMetadata.push(metadata);
-                return true;
+                const json: JsonDictionary = JSON.parse(data) as JsonDictionary;
+                return this.add(json);
             } catch (err) {
-                logger.debug('JSON.parse() cant parse the content of that dictionary');
+                logger.error('JSON.parse() cant parse the content of that dictionary');
             }
             logger.debug('Dictionary parsing successful');
         }

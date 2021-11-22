@@ -42,12 +42,13 @@ export class AdminController {
                     return;
                 }
                 logger.debug(`Dictionary uploaded : ${file.filepath}`);
-                if (await this.dictionaryService.parse(file.filepath)) {
+                try {
+                    await this.dictionaryService.parse(file.filepath);
                     logger.debug(`Dictionary parsed : ${file.filepath}`);
                     res.sendStatus(Constants.HTTP_STATUS.OK);
-                } else {
-                    res.json({ erreur: 'Format du dictionnaire invalide' });
-                    res.sendStatus(Constants.HTTP_STATUS.BAD_REQUEST);
+                } catch (err) {
+                    res.json(err);
+                    res.sendStatus(Constants.HTTP_STATUS.NOT_FOUND);
                 }
             });
         });
