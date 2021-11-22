@@ -12,8 +12,8 @@ export class BingoWithoutExchange extends BaseGoal implements PlacementNotifier,
         super(
             {
                 id: 'bingo-without-exchange',
-                name: "Réaliser un Bingo sans avoir fait d'échange de lettre au préalable",
-                score: 15,
+                name: 'Réaliser un Bingo sans avoir échangé de lettre au préalable',
+                score: 30,
             },
             ownerId,
         );

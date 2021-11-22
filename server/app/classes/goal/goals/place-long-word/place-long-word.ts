@@ -9,8 +9,7 @@ export class PlaceLongWord extends BaseGoal implements PlacementNotifier {
         super(
             {
                 id: 'place-long-word',
-                // TODO Reformulation
-                name: `Former un mot de ${WORD_SIZE} lettres ou plus`,
+                name: `Former un mot composé de ${WORD_SIZE} lettres ou plus`,
                 score: 20,
             },
             ownerId,

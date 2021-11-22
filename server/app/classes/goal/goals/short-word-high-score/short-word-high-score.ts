@@ -11,7 +11,7 @@ export class ShortWordHighScore extends BaseGoal implements PlacementNotifier {
         super(
             {
                 id: 'short-word-high-score',
-                name: `Obtenir ${MIN_SCORE} points et plus en plaçant ${MIN_LETTER_COUNT} lettres ou moins en 1 tour`,
+                name: `Obtenir ${MIN_SCORE} points ou plus en plaçant ${MIN_LETTER_COUNT} lettres ou moins dans un même tour`,
                 score: -1,
             },
             ownerId,
