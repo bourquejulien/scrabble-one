@@ -13,8 +13,8 @@ mat-drawer-container {
 .scoreboard.player-one-open {
     background-color: var(--game-green);
     margin-left: 85%;
-    left: 0rem;
-    top: 16.75rem;
+    right: 15rem;
+    top: 8rem;
     width: 7.5rem;
     height: 5rem;
     transition: 0.45s;
@@ -23,8 +23,8 @@ mat-drawer-container {
 .scoreboard.player-one-closed {
     background-color: var(--game-green);
     margin-left: 85%;
-    left: 0rem;
-    top: 16.75rem;
+    right: 15rem;
+    top: 8rem;
     width: 7.5rem;
     height: 5rem;
     transition: 0.45s;
@@ -36,8 +36,8 @@ mat-drawer-container {
     background-color: #3f51b5;
     text-align: center;
     margin-left: 85%;
-    left: 0rem;
-    top: 24.775rem;
+    right: 9.5rem;
+    top: 18rem;
     width: 7.5rem;
     height: 5rem;
     transition: 0.45s;
@@ -49,8 +49,8 @@ mat-drawer-container {
     background-color: #3f51b5;
     text-align: center;
     margin-left: 85%;
-    left: 0rem;
-    top: 24.775rem;
+    right: 9.5rem;
+    top: 18rem;
     width: 7.5rem;
     height: 5rem;
     transition: 0.45s;
@@ -59,7 +59,7 @@ mat-drawer-container {
 .scoreboard.player-two-open {
     margin-left: 85%;
     left: 0rem;
-    top: 32.75rem;
+    top: 8rem;
     width: 7.5rem;
     height: 5rem;
     transition: 0.45s;
@@ -68,7 +68,7 @@ mat-drawer-container {
 .scoreboard.player-two-closed {
     margin-left: 85%;
     left: 0rem;
-    top: 32.75rem;
+    top: 8rem;
     width: 7.5rem;
     height: 5rem;
     transition: 0.45s;
@@ -140,4 +140,8 @@ mat-drawer-container {
 
 #tools-container {
     display: flex;
+}
+
+#objectives {
+
 }
