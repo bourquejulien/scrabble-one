@@ -2,6 +2,7 @@ import { DatabaseService } from '@app/services/database/database.service';
 import { Score } from '@common';
 import { Collection } from 'mongodb';
 import { Service } from 'typedi';
+import logger from 'winston';
 
 const DATABASE_COLLECTION_CLASSIC = 'classicScoreboard';
 const DATABASE_COLLECTION_LOG = 'logScoreboard';
@@ -19,8 +20,9 @@ export class ScoreService {
         this.getCollection(collectionName).insertOne(score);
 
         // removed the limit... not necessary in this function i think
-        const sortedScores = await this.getCollection(collectionName).find().sort({ 'score.scoreValue': -1 }).toArray();
+        const sortedScores = await this.getCollection(collectionName).find().sort({ scoreValue: -1 }).toArray();
         const lastScore = sortedScores.pop();
+        logger.info(lastScore?.scoreValue);
 
         this.getCollection(collectionName).deleteOne({ scoreValue: lastScore?.scoreValue });
     }
