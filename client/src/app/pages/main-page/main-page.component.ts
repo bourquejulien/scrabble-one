@@ -23,6 +23,6 @@ export class MainPageComponent {
     }
 
     openScoresDialog(): void {
-        this.dialog.open(BestScoresComponent, { panelClass: 'init-game-dialog' });
+        this.dialog.open(BestScoresComponent, { panelClass: 'init-game-dialog', autoFocus: false });
     }
 }

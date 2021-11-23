@@ -1,18 +1,18 @@
 import { generateId } from '@app/classes/id';
-import { Service } from 'typedi';
-import { ReserveHandler } from '@app/handlers/reserve-handler/reserve-handler';
 import { PlayerInfo } from '@app/classes/player-info';
 import { HumanPlayer } from '@app/classes/player/human-player/human-player';
 import { Action } from '@app/classes/player/virtual-player/actions/action';
 import { VirtualPlayer } from '@app/classes/player/virtual-player/virtual-player';
+import { VirtualPlayerExpert } from '@app/classes/player/virtual-player/virtual-player-expert/virtual-player-expert';
 import { PlayerHandler } from '@app/handlers/player-handler/player-handler';
+import { ReserveHandler } from '@app/handlers/reserve-handler/reserve-handler';
 import { SessionHandler } from '@app/handlers/session-handler/session-handler';
 import { BoardGeneratorService } from '@app/services/board/board-generator.service';
 import { DictionaryService } from '@app/services/dictionary/dictionary.service';
 import { SessionHandlingService } from '@app/services/session-handling/session-handling.service';
 import { SocketService } from '@app/services/socket/socket-service';
 import { ConvertConfig, GameType, MultiplayerCreateConfig, MultiplayerJoinConfig, ServerConfig, SinglePlayerConfig } from '@common';
-import { VirtualPlayerExpert } from '@app/classes/player/virtual-player/virtual-player-expert/virtual-player-expert';
+import { Service } from 'typedi';
 import * as logger from 'winston';
 
 @Service()
