@@ -41,6 +41,12 @@ export class PlaceLetterService {
     }
 
     backSpaceOperation(tempContext: CanvasRenderingContext2D): void {
+        if (this.gridPosition.x > Constants.GRID.GRID_SIZE) {
+            this.gridPosition.x = 15;
+        }
+        if (this.gridPosition.y > Constants.GRID.GRID_SIZE) {
+            this.gridPosition.x = 15;
+        }
         this.gridService.clearSquare(tempContext, this.gridPosition);
         if (this.isHorizontal) {
             this.gridService.cleanInsideSquare(tempContext, { x: this.gridPosition.x - 1, y: this.gridPosition.y });
