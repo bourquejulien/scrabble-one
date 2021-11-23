@@ -1,47 +1,3 @@
-<<<<<<< HEAD
-/* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable dot-notation */
-/* eslint-disable @typescript-eslint/no-empty-function */
-/* eslint-disable @typescript-eslint/no-useless-constructor */
-/* eslint-disable @typescript-eslint/no-magic-numbers */
-/* eslint-disable no-unused-expressions */
-/* eslint-disable @typescript-eslint/no-unused-expressions */
-import { PlayerData } from '@app/classes/player-data';
-import { PlayerInfo } from '@app/classes/player-info';
-import { Player } from '@app/classes/player/player';
-import { SessionInfo } from '@app/classes/session-info';
-import { Config } from '@app/config';
-import { BoardHandler } from '@app/handlers/board-handler/board-handler';
-import { PlayerHandler } from '@app/handlers/player-handler/player-handler';
-import { ReserveHandler } from '@app/handlers/reserve-handler/reserve-handler';
-import { SocketHandler } from '@app/handlers/socket-handler/socket-handler';
-import { SocketService } from '@app/services/socket/socket-service';
-import { GameType, ServerConfig } from '@common';
-import { expect } from 'chai';
-import { Subject } from 'rxjs';
-import { createSandbox, createStubInstance } from 'sinon';
-import { SessionHandler } from './session-handler';
-const TIME_MS = 120 * 1000;
-const PLAYER_INFO_A: PlayerInfo = { id: '0', name: 'tester1', isHuman: true };
-const PLAYER_INFO_B: PlayerInfo = { id: '1', name: 'tester2', isHuman: false };
-const PLAYER_DATA_DEFAULT: PlayerData = { baseScore: 0, scoreAdjustment: 2, skippedTurns: 4, rack: ['a', 'b', 'c', 'd', 'e', 'f', 'g'] };
-class PlayerTester extends Player {
-    constructor(playerInfo: PlayerInfo) {
-        super(playerInfo);
-    }
-    async startTurn(): Promise<void> {
-        // Does Nothing
-        return new Promise<void>(() => {});
-    }
-}
-describe('SessionHandler', () => {
-    const sessionInfo: SessionInfo = {
-        id: '0',
-        playTimeMs: 120 * 1000,
-        gameType: GameType.SinglePlayer,
-    };
-    const turnSubject = new Subject<string>();
-=======
 // /* eslint-disable @typescript-eslint/no-explicit-any */
 // /* eslint-disable dot-notation */
 // /* eslint-disable @typescript-eslint/no-empty-function */
@@ -84,7 +40,6 @@ describe('SessionHandler', () => {
 //         gameType: GameType.SinglePlayer,
 //     };
 //     const turnSubject = new Subject<string>();
->>>>>>> da583c428e7f0c4fb642404ed41b6eeca8f287c3
 
 //     const stubBoardHandler = createStubInstance(BoardHandler);
 //     const stubReserveHandler = createStubInstance(ReserveHandler);
