@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, ElementRef, HostListener, Input, OnChanges, SimpleChanges, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, HostListener, OnDestroy, ViewChild } from '@angular/core';
 import { PlayerType } from '@app/classes/player/player-type';
 import { SPECIAL_CHARACTERS } from '@app/classes/special-character';
 import { Constants } from '@app/constants/global.constants';
@@ -9,15 +9,14 @@ import { MouseHandlingService } from '@app/services/mouse-handling/mouse-handlin
 import { PlaceLetterService } from '@app/services/place-letter/place-letter.service';
 import { RackService } from '@app/services/rack/rack.service';
 import FontFaceObserver from 'fontfaceobserver';
+import { Subscription } from 'rxjs';
 
 @Component({
     selector: 'app-board',
     templateUrl: './board.component.html',
     styleUrls: ['./board.component.scss'],
 })
-export class BoardComponent implements OnChanges, AfterViewInit {
-    @Input() playerType: PlayerType;
-
+export class BoardComponent implements OnDestroy, AfterViewInit {
     @ViewChild('gridCanvas', { static: false }) private gridCanvas!: ElementRef<HTMLCanvasElement>;
     @ViewChild('squareCanvas', { static: false }) private squareCanvas!: ElementRef<HTMLCanvasElement>;
     @ViewChild('tempCanvas', { static: false }) private tempCanvas!: ElementRef<HTMLCanvasElement>;
@@ -31,6 +30,8 @@ export class BoardComponent implements OnChanges, AfterViewInit {
     private gridContext: CanvasRenderingContext2D;
     private squareContext: CanvasRenderingContext2D;
     private tempContext: CanvasRenderingContext2D;
+
+    private boardSubscription: Subscription;
 
     constructor(
         readonly gridService: GridService,
@@ -120,6 +121,8 @@ export class BoardComponent implements OnChanges, AfterViewInit {
         this.squareContext = this.squareCanvas.nativeElement.getContext('2d') as CanvasRenderingContext2D;
         this.tempContext = this.tempCanvas.nativeElement.getContext('2d') as CanvasRenderingContext2D;
 
+        this.boardSubscription = this.boardService.boardUpdated.subscribe(() => this.refresh());
+
         this.scale();
 
         new FontFaceObserver(this.gridService.letterFontFace.font).load().then(() => {
@@ -129,13 +132,8 @@ export class BoardComponent implements OnChanges, AfterViewInit {
         });
     }
 
-    ngOnChanges(changes: SimpleChanges): void {
-        if (!changes.playerType.isFirstChange() && changes.playerType.currentValue !== changes.playerType.previousValue) {
-            this.gridService.resetCanvas(this.tempContext);
-            this.gridService.drawSquares(this.squareContext);
-            this.placeLetterService.myRack = [];
-            this.placeLetterService.tempRack = [];
-        }
+    ngOnDestroy(): void {
+        this.boardSubscription?.unsubscribe();
     }
 
     updateFontSize(size: number): void {
@@ -163,6 +161,17 @@ export class BoardComponent implements OnChanges, AfterViewInit {
 
     get height(): number {
         return Constants.GRID.CANVAS_SIZE.y;
+    }
+
+    private refresh(): void {
+        this.gridService.resetCanvas(this.tempContext);
+
+        // TODO This only needs to be done once per game
+        this.gridService.drawGrid(this.gridContext);
+
+        this.gridService.drawSquares(this.squareContext);
+        this.placeLetterService.myRack = [];
+        this.placeLetterService.tempRack = [];
     }
 
     private scale(): void {

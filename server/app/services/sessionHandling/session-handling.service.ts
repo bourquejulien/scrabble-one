@@ -56,6 +56,6 @@ export class SessionHandlingService {
     }
 
     getAvailableSessions(): SessionHandler[] {
-        return this.sessionHandlers.filter((e) => !e.sessionData.isStarted);
+        return this.sessionHandlers.filter((e) => !e.sessionData.isStarted && !e.sessionData.isActive);
     }
 }
