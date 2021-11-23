@@ -1,8 +1,8 @@
 <body>
     <mat-toolbar class="toolbar" color="primary">
         <marquee width="65%" direction="left" height="40px">
-            Voici une liste de toutes les parties prête à joindre. Si aucune partie n'est disponible, nous vous proposons d'aller vous trouver un ami
-            avec qui jouer.
+            Voici une liste de toutes les parties prêtent à être rejoint. Si aucune partie n'est disponible, nous vous proposons d'aller vous trouver
+            un ami avec qui jouer.
         </marquee>
     </mat-toolbar>
     <div>
@@ -33,7 +33,7 @@
             </div>
         </mat-card>
 
-        <div class="room-info" *ngIf="selectedConfig !== null" [@slideAnimation] (click)="$event.stopPropagation()" color="#eae7dc">
+        <div class="room-info" *ngIf="selectedConfig !== null" [@slideAnimation] (click)="$event.stopPropagation()" color="#eae7dc" z-index="1">
             <mat-card class="room-info-bg">
                 <div class="info-card" color="#eae7dc">
                     <mat-icon matListIcon>infos</mat-icon>
