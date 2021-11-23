@@ -68,7 +68,7 @@ export class DictionaryService {
                     logger.error(err.stack);
                 });
         } else {
-            logger.error('Attempted to delete the default dictionary-handler :o');
+            logger.error('Attempted to delete the default dictionary :o');
         }
     }
 
