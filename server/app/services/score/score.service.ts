@@ -52,12 +52,12 @@ export class ScoreService {
 
     // for display client-side
     async getScoreboardClassic(): Promise<Score[]> {
-        return this.classicScoreboard.find().toArray();
+        return this.classicScoreboard.find().sort({ scoreValue: -1 }).toArray();
     }
 
     // for display client-side
     async getScoreboardLog(): Promise<Score[]> {
-        return this.logScoreboard.find().toArray();
+        return this.logScoreboard.find().sort({ scoreValue: -1 }).toArray();
     }
 
     private async isScoreUnique(scoreVal: number, collectionName: string): Promise<boolean> {

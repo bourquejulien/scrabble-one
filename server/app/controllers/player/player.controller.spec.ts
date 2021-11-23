@@ -11,18 +11,18 @@ import { createStubInstance, SinonStubbedInstance } from 'sinon';
 import request from 'supertest';
 import { Container } from 'typedi';
 import { HumanPlayer } from '@app/classes/player/human-player/human-player';
-import { SessionStats } from '@common';
+import { Answer, Placement } from '@common';
 
 describe('PlayerController', () => {
     let stubSessionHandlingService: SinonStubbedInstance<SessionHandlingService>;
     let expressApp: Express.Application;
-    const sessionStats: SessionStats = { localStats: { points: 100, rackSize: 5 }, remoteStats: { points: 200, rackSize: 1 } };
     const exchangeLettersResponse = 'ExchangeLetterResponse';
+    const placeLettersAnswer: Answer = { isSuccess: true, body: 'Not your turn' };
     const rack = ['m', 'e', 't', 'a'];
+
     beforeEach(async () => {
         stubSessionHandlingService = createStubInstance(SessionHandlingService);
         const stubSessionHandler = createStubInstance(SessionHandler);
-        stubSessionHandler.getStats.returns(sessionStats);
 
         const player1: Player = {
             id: '1',
@@ -42,6 +42,9 @@ describe('PlayerController', () => {
             exchangeLetters: () => {
                 return exchangeLettersResponse;
             },
+            placeLetters: () => {
+                return placeLettersAnswer;
+            },
         } as unknown as HumanPlayer;
         const player3: Player = { id: '1', isTurn: false, playerInfo: { id: '3', isHuman: false, name: 'Alphonse' } } as Player;
         const stubPlayerHandler = createStubInstance(PlayerHandler) as unknown as PlayerHandler;
@@ -53,6 +56,26 @@ describe('PlayerController', () => {
         const app = Container.get(Application);
         Object.defineProperty(app['playerController'], 'sessionHandlingService', { value: stubSessionHandlingService });
         expressApp = app.app;
+    });
+
+    it('POST /place/123 without valid user', async () => {
+        const placement: Placement[] = [{ letter: 'A', position: { x: 8, y: 8 } }];
+        return request(expressApp)
+            .post('/api/player/place/123')
+            .send(placement)
+            .then((response) => {
+                expect(response.status).to.be.equal(Constants.HTTP_STATUS.BAD_REQUEST);
+            });
+    });
+
+    it('POST /place/2 with valid user', async () => {
+        const placement: Placement[] = [{ letter: 'A', position: { x: 8, y: 8 } }];
+        return request(expressApp)
+            .post('/api/player/place/2')
+            .send(placement)
+            .then((response) => {
+                expect(response.status).to.be.equal(Constants.HTTP_STATUS.OK);
+            });
     });
 
     it('POST /api/player/exchange/2   ', async () => {
@@ -93,51 +116,6 @@ describe('PlayerController', () => {
             .then((response) => {
                 expect(response.status).to.be.equal(Constants.HTTP_STATUS.BAD_REQUEST);
                 expect(response.body).to.deep.equal({});
-            });
-    });
-
-    it('GET /api/player/rack/3 not get rack for non-human player ', async () => {
-        return request(expressApp)
-            .get('/api/player/rack/3')
-            .then((response) => {
-                expect(response.status).to.be.equal(Constants.HTTP_STATUS.BAD_REQUEST);
-                expect(response.body).to.deep.equal({});
-            });
-    });
-
-    it('GET /api/player/rack/2 should return rack of human player ', async () => {
-        return request(expressApp)
-            .get('/api/player/rack/2')
-            .then((response) => {
-                expect(response.status).to.be.equal(Constants.HTTP_STATUS.OK);
-                expect(response.body).to.deep.equal(rack);
-            });
-    });
-
-    it('GET /api/player/rack/1 should return the rack of a non-human player', async () => {
-        return request(expressApp)
-            .get('/api/player/rack/1')
-            .then((response) => {
-                expect(response.status).to.be.equal(Constants.HTTP_STATUS.OK);
-                expect(response.body).to.deep.equal(rack);
-            });
-    });
-
-    it('GET /api/player/stats/2 should return the correct rack info of a human player ', async () => {
-        return request(expressApp)
-            .get('/api/player/stats/2')
-            .then((response) => {
-                expect(response.status).to.be.equal(Constants.HTTP_STATUS.OK);
-                expect(response.body).to.deep.equal(sessionStats);
-            });
-    });
-
-    it('GET /api/player/stats/123 should error out  ', async () => {
-        stubSessionHandlingService.getHandlerByPlayerId.returns(null);
-        return request(expressApp)
-            .get('/api/player/stats/123')
-            .then((response) => {
-                expect(response.status).to.be.equal(Constants.HTTP_STATUS.BAD_REQUEST);
             });
     });
 });

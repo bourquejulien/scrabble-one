@@ -1,8 +1,6 @@
 import { HttpException } from '@app/classes/http.exception';
-import { BoardController } from '@app/controllers/board/board.controller';
 import { GameController } from '@app/controllers/game/game.controller';
 import { PlayerController } from '@app/controllers/player/player.controller';
-import { ReserveController } from '@app/controllers/reserve/reserve.controller';
 import { StatsController } from '@app/controllers/stats/stats.controller';
 import { DictionaryService } from '@app/services/dictionary/dictionary.service';
 import cookieParser from 'cookie-parser';
@@ -20,9 +18,7 @@ export class Application {
 
     constructor(
         private readonly gameController: GameController,
-        private readonly boardController: BoardController,
         private readonly playerController: PlayerController,
-        private readonly reserveController: ReserveController,
         private readonly statsController: StatsController,
         dictionaryService: DictionaryService,
     ) {
@@ -36,9 +32,7 @@ export class Application {
 
     private bindRoutes(): void {
         this.app.use('/api/game', this.gameController.router);
-        this.app.use('/api/board', this.boardController.router);
         this.app.use('/api/player', this.playerController.router);
-        this.app.use('/api/reserve', this.reserveController.router);
         this.app.use('/api/score', this.statsController.router);
         this.errorHandling();
     }
@@ -56,7 +50,7 @@ export class Application {
 
     private config(): void {
         // Middlewares configuration
-        if (process.env.NODE_ENV === 'test') {
+        if (process.env.NODE_ENV !== 'test') {
             this.app.use(morgan('dev'));
         }
         this.app.use(express.json());

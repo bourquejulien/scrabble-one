@@ -1,0 +1,44 @@
+.title {
+    margin-top: 0;
+    margin-bottom: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.close-button {
+    outline: none;
+    box-shadow: none;
+    float: right;
+    height: 4vh;
+}
+
+.close-icon {
+    padding-bottom: 1.5vh;
+}
+
+#best-scores {
+    display: flex;
+    width: 100vh;
+    height: 50vh;
+}
+
+#header {
+    padding-top: 1.5vh;
+    padding-bottom: 1.5vh;
+    background: powderblue;
+}
+
+table {
+    margin-top: 0;
+    padding-top: 0;
+    width: 50vh;
+    height: 100%;
+    background-color: rgb(182, 208, 226, 0.12);
+}
+
+td.mat-cell,
+th.mat-header-cell {
+    text-align: center;
+    justify-content: center;
+}

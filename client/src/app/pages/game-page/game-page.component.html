@@ -40,8 +40,7 @@
             </div>
         </div>
         <section [ngClass]="isOpen ? 'play-area-container-open' : 'play-area-container-closed'">
-            <app-play-area class="play-area" [playerType]="playerType"></app-play-area>
+            <app-play-area class="play-area"></app-play-area>
         </section>
     </div>
-    <button (click)="addElementInDb()">Click to add element in db</button>
 </mat-drawer-container>

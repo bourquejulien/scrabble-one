@@ -31,83 +31,99 @@ export class RoomController {
         return roomSockets.length >= maxPlayers;
     }
 
-    async handleSockets(): Promise<void> {
-        this.socketService.socketServer.on('connection', (socket) => {
-            logger.info(`Connection with user id: ${socket.id}`);
+    handleSockets(): void {
+        this.socketService.socketServer.on('connection', (socket) => this.onConnection(socket));
+    }
 
-            socket.on('disconnect', async (reason) => {
-                logger.info(`User disconnect: ${socket.id} - Reason: ${reason}`);
-                const playerId = this.socketIdToPlayerId.get(socket.id);
+    private onConnection(socket: Socket) {
+        logger.info(`Connection with user id: ${socket.id}`);
 
-                if (playerId === undefined) {
-                    return;
-                }
+        socket.on('disconnect', async (reason) => this.onDisconnect(socket, reason));
+        socket.on('exit', () => this.onExit(socket));
+        socket.on('joinRoom', async (playerId: string) => this.onRoomJoined(socket, playerId));
+        socket.on('message', (message: Message) => this.onMessage(socket, message));
+        socket.on('getRooms', () => this.onGetRooms(socket));
+    }
 
-                await Timer.delay(END_GAME_DELAY_MS);
-                await this.abandonCreatedGame(socket, playerId);
+    private async onDisconnect<T>(socket: Socket, reason: T) {
+        logger.info(`User disconnect: ${socket.id} - Reason: ${reason}`);
+        const playerId = this.socketIdToPlayerId.get(socket.id);
 
-                this.socketService.socketServer.emit('availableRooms', this.sessionInfos);
-            });
+        if (playerId === undefined) {
+            return;
+        }
 
-            socket.on('exit', () => {
-                logger.info(`User exited: ${socket.id}`);
+        await Timer.delay(END_GAME_DELAY_MS);
+        await this.abandonCreatedGame(socket, playerId);
 
-                const playerId = this.socketIdToPlayerId.get(socket.id);
+        this.socketService.socketServer.emit('availableRooms', this.sessionInfos);
+    }
 
-                if (playerId === undefined) {
-                    return;
-                }
+    private onExit(socket: Socket) {
+        logger.info(`User exited: ${socket.id}`);
 
-                this.abandonCreatedGame(socket, playerId);
-            });
+        const playerId = this.socketIdToPlayerId.get(socket.id);
 
-            socket.on('message', (message: Message) => {
-                logger.debug(`Socket: ${socket.id} sent ${message.messageType}`);
+        if (playerId === undefined) {
+            return;
+        }
 
-                const playerId = this.socketIdToPlayerId.get(socket.id) ?? '';
-                const sessionHandler = this.sessionHandlingService.getHandlerByPlayerId(playerId);
+        this.abandonCreatedGame(socket, playerId);
+    }
 
-                if (playerId == null || sessionHandler == null) {
-                    logger.warn(`Invalid socket id: ${socket.id}`);
-                    return;
-                }
+    private async onRoomJoined(socket: Socket, playerId: string) {
+        const sessionHandler = this.sessionHandlingService.getHandlerByPlayerId(playerId);
+        if (sessionHandler === null) {
+            logger.info(`Invalid room ID provided: ${sessionHandler}`);
+            return;
+        }
 
-                const otherPlayerId = sessionHandler.players.find((p) => p.id !== playerId)?.id ?? '';
+        if (await RoomController.isRoomFull(socket, sessionHandler.sessionInfo.id)) {
+            logger.info(`Room is full: ${sessionHandler.sessionInfo.id}`);
+            return;
+        }
 
-                switch (message.messageType) {
-                    case MessageType.Message:
-                        this.socketService.socketServer.in(sessionHandler.sessionInfo.id).emit('message', message);
-                        break;
-                    case MessageType.RemoteMessage:
-                        this.socketService.socketServer.in(otherPlayerId).emit('message', message);
-                        break;
-                    default:
-                        this.socketService.socketServer.to(socket.id).emit('message', message);
-                }
+        await socket.join([sessionHandler.sessionInfo.id, playerId]);
+        this.socketIdToPlayerId.set(socket.id, playerId);
 
-                logger.info(`Message sent on behalf of ${socket.id}`);
-            });
+        if (sessionHandler.sessionData.isActive && !sessionHandler.sessionData.isStarted) {
+            sessionHandler.start();
+        }
 
-            socket.on('getRooms', () => {
-                const sessionInfo = this.sessionInfos;
-                socket.emit('availableRooms', sessionInfo);
-            });
+        logger.info(`Joined room: ${sessionHandler.sessionInfo.id}`);
+        this.socketService.socketServer.emit('availableRooms', this.sessionInfos);
+    }
 
-            socket.on('joinRoom', async (playerId: string) => {
-                const sessionId = this.sessionHandlingService.getSessionId(playerId);
+    private onMessage(socket: Socket, message: Message) {
+        logger.debug(`Socket: ${socket.id} sent ${message.messageType}`);
 
-                if (sessionId !== '') {
-                    if (!(await RoomController.isRoomFull(socket, sessionId))) {
-                        socket.join([sessionId, playerId]);
-                        this.socketIdToPlayerId.set(socket.id, playerId);
-                        logger.info(`Joined room: ${sessionId}`);
-                    }
-                    this.socketService.socketServer.emit('availableRooms', this.sessionInfos);
-                } else {
-                    logger.info(`Invalid room ID provided: ${sessionId}`);
-                }
-            });
-        });
+        const playerId = this.socketIdToPlayerId.get(socket.id) ?? '';
+        const sessionHandler = this.sessionHandlingService.getHandlerByPlayerId(playerId);
+
+        if (playerId == null || sessionHandler == null) {
+            logger.warn(`Invalid socket id: ${socket.id}`);
+            return;
+        }
+
+        const otherPlayerId = sessionHandler.players.find((p) => p.id !== playerId)?.id ?? '';
+
+        switch (message.messageType) {
+            case MessageType.Message:
+                this.socketService.socketServer.in(sessionHandler.sessionInfo.id).emit('message', message);
+                break;
+            case MessageType.RemoteMessage:
+                this.socketService.socketServer.in(otherPlayerId).emit('message', message);
+                break;
+            default:
+                this.socketService.socketServer.to(socket.id).emit('message', message);
+        }
+
+        logger.info(`Message sent on behalf of ${socket.id}`);
+    }
+
+    private onGetRooms(socket: Socket) {
+        const sessionInfo = this.sessionInfos;
+        socket.emit('availableRooms', sessionInfo);
     }
 
     private get sessionInfos(): AvailableGameConfig[] {

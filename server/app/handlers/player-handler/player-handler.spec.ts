@@ -46,6 +46,7 @@ describe('PlayerHandler', () => {
     afterEach(() => {
         handler = new PlayerHandler();
     });
+
     it('should be created', () => {
         expect(handler).to.be.ok;
     });
@@ -76,9 +77,11 @@ describe('PlayerHandler', () => {
     it('overSkippedLimits should return true if one of the two players is over skipped turns', () => {
         expect(handler.isOverSkipLimit).to.be.true;
     });
+
     it('rack emptied should return false because both players have filled rack', () => {
         expect(handler.rackEmptied).to.be.false;
     });
+
     it('dispose should call unsubscribe', () => {
         const map = new Map<string, Subscription>();
         map.set('0', new Subscription());
@@ -88,21 +91,25 @@ describe('PlayerHandler', () => {
         expect(handler['playerSubscriptions'].get('0')?.closed).to.be.true;
         expect(handler['playerSubscriptions'].get('1')?.closed).to.be.true;
     });
+
     it('removeplayers should return null if id does not exist', () => {
         expect(handler.removePlayer('2')).to.be.null;
     });
+
     it('start should call initial turn', () => {
         const sandbox = createSandbox();
         const stubInit = sandbox.stub(handler, 'initialTurn' as any);
         handler.start();
         sandbox.assert.calledOnce(stubInit);
     });
+
     it('initial Turn should call  switch turn', () => {
         const sandbox = createSandbox();
         const stubSwitch = sandbox.stub(handler, 'switchTurn' as any);
         handler['initialTurn']();
         sandbox.assert.calledOnce(stubSwitch);
     });
+
     it('switchTurn should call next', () => {
         const sandbox = createSandbox();
         const stubNext = sandbox.stub(handler['nextTurn'], 'next');
@@ -110,6 +117,7 @@ describe('PlayerHandler', () => {
         sandbox.assert.calledOnce(stubNext);
         sandbox.restore();
     });
+
     it('removePlayer should unsubscribe playerSubscriptions if needed', () => {
         handler.removePlayer('0');
         expect(
@@ -118,6 +126,7 @@ describe('PlayerHandler', () => {
             }),
         ).to.eql(-1);
     });
+
     it('switchTurn should call next on nothing if lastId is not valid', () => {
         const sandbox = createSandbox();
         const stubNext = sandbox.stub(handler['nextTurn'], 'next');
@@ -125,6 +134,7 @@ describe('PlayerHandler', () => {
         handler['switchTurn']('0');
         sandbox.assert.calledWith(stubNext, '');
     });
+
     it('should get winning firstplayer', () => {
         const turnSubject = new Subject<string>();
         handler = new PlayerHandler();
@@ -141,6 +151,7 @@ describe('PlayerHandler', () => {
         handler.addPlayer(playerB as unknown as VirtualPlayerEasy);
         expect(handler.winner).to.eql('0');
     });
+
     it('should get winning secondplayer', () => {
         const turnSubject = new Subject<string>();
         handler = new PlayerHandler();
@@ -156,5 +167,20 @@ describe('PlayerHandler', () => {
         handler.addPlayer(playerA as unknown as HumanPlayer);
         handler.addPlayer(playerB as unknown as VirtualPlayerEasy);
         expect(handler.winner).to.eql('1');
+    });
+
+    it('should return stats if players are found', () => {
+        const returnValue = handler.getStats('0');
+        expect(returnValue).to.be.not.null;
+    });
+
+    it('should return null if id is wrong', () => {
+        const returnValue = handler.getStats('2');
+        expect(returnValue).to.be.null;
+    });
+
+    it('should return null if players are not found', () => {
+        const returnValue = handler.getStats('2');
+        expect(returnValue).to.be.null;
     });
 });
