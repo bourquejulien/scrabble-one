@@ -52,7 +52,11 @@ export class ScoreService {
 
     // for display client-side
     async getScoreboardClassic(): Promise<Score[]> {
+<<<<<<< HEAD
         return (await this.classicScoreboard.find().sort({ scoreValue: -1 }).toArray());
+=======
+        return this.classicScoreboard.find().sort({ scoreValue: -1 }).toArray();
+>>>>>>> da583c428e7f0c4fb642404ed41b6eeca8f287c3
     }
 
     // for display client-side
