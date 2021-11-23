@@ -14,6 +14,7 @@ import { SocketService } from '@app/services/socket/socket-service';
 import { ConvertConfig, GameType, MultiplayerCreateConfig, MultiplayerJoinConfig, ServerConfig, SinglePlayerConfig } from '@common';
 import { Service } from 'typedi';
 import * as logger from 'winston';
+import { StatsService } from '../stats/stats.service';
 
 @Service()
 export class GameService {
@@ -21,6 +22,7 @@ export class GameService {
         private readonly boardGeneratorService: BoardGeneratorService,
         private readonly sessionHandlingService: SessionHandlingService,
         private readonly dictionnaryService: DictionaryService,
+        private statsService: StatsService,
         private readonly socketService: SocketService,
     ) {}
 
@@ -34,7 +36,7 @@ export class GameService {
         const boardHandler = this.boardGeneratorService.generateBoardHandler(gameConfig.isRandomBonus);
         const reserveHandler = new ReserveHandler();
 
-        const sessionHandler = new SessionHandler(sessionInfo, boardHandler, reserveHandler, new PlayerHandler(), this.socketService);
+        const sessionHandler = new SessionHandler(sessionInfo, boardHandler, reserveHandler, new PlayerHandler(), this.statsService, this.socketService);
 
         const humanPlayerInfo: PlayerInfo = {
             id: generateId(),
@@ -69,7 +71,7 @@ export class GameService {
         const boardHandler = this.boardGeneratorService.generateBoardHandler(gameConfig.isRandomBonus);
         const reserveHandler = new ReserveHandler();
 
-        const sessionHandler = new SessionHandler(sessionInfo, boardHandler, reserveHandler, new PlayerHandler(), this.socketService);
+        const sessionHandler = new SessionHandler(sessionInfo, boardHandler, reserveHandler, new PlayerHandler(), this.statsService, this.socketService);
 
         const humanPlayerInfo: PlayerInfo = {
             id: generateId(),

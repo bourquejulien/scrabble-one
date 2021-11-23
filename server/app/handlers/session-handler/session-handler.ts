@@ -7,10 +7,13 @@ import { PlayerHandler } from '@app/handlers/player-handler/player-handler';
 import { ReserveHandler } from '@app/handlers/reserve-handler/reserve-handler';
 import { SocketHandler } from '@app/handlers/socket-handler/socket-handler';
 import { SocketService } from '@app/services/socket/socket-service';
+import { StatsService } from '@app/services/stats/stats.service';
 import { ServerConfig } from '@common';
 import { Subscription } from 'rxjs';
 import * as logger from 'winston';
 
+const DATABASE_COLLECTION_CLASSIC = 'classicScoreboard';
+//const DATABASE_COLLECTION_LOG = 'logScoreboard';
 export class SessionHandler {
     sessionData: SessionData;
     private timer: NodeJS.Timer;
@@ -23,6 +26,7 @@ export class SessionHandler {
         public boardHandler: BoardHandler,
         public reserveHandler: ReserveHandler,
         private playerHandler: PlayerHandler,
+        private statsService: StatsService,
         socketService: SocketService,
     ) {
         this.socketHandler = socketService.generate(sessionInfo.id);
@@ -91,6 +95,7 @@ export class SessionHandler {
 
         this.socketHandler.sendData('endGame', this.playerHandler.winner);
         logger.debug(`winner: ${this.playerHandler.winner}`);
+        this.statsService.updateScoreboards(this.playerHandler, DATABASE_COLLECTION_CLASSIC);
         this.dispose();
     }
 
