@@ -75,7 +75,13 @@ export class GameService {
             gameType: gameConfig.gameType,
         };
 
-        const words = await this.dictionaryService.getWords(gameConfig.dictionary);
+        let words: string[] = [];
+        try {
+            words = await this.dictionaryService.getWords(gameConfig.dictionary);
+        } catch (err) {
+            logger.error(`${err.stack}`);
+            return Promise.reject(`${err}`);
+        }
         const dictionaryHandler = new DictionaryHandler(words, gameConfig.dictionary);
         const boardHandler = this.boardGeneratorService.generateBoardHandler(gameConfig.isRandomBonus, dictionaryHandler);
         const reserveHandler = new ReserveHandler();
@@ -194,7 +200,7 @@ export class GameService {
 
     private addVirtualPlayer(playerInfo: PlayerInfo, sessionHandler: SessionHandler, playerData?: PlayerData): VirtualPlayer {
         const actionCallback = (action: Action): Action | null => action.execute();
-        const virtualPlayer = new VirtualPlayerExpert(this.dictionnaryService, playerInfo, actionCallback);
+        const virtualPlayer = new VirtualPlayerExpert(sessionHandler.boardHandler.dictionaryHandler, playerInfo, actionCallback);
         if (playerData) {
             virtualPlayer.playerData = playerData;
         }

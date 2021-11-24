@@ -19,11 +19,8 @@ import {
     // SinglePlayerConfig,
 } from '@common';
 import { SessionHandler } from '@app/handlers/session-handler/session-handler';
-import { PlayerData } from '@app/classes/player-data';
-import { PlayerInfo } from '@app/classes/player-info';
 import { HumanPlayer } from '@app/classes/player/human-player/human-player';
 import { Player } from '@app/classes/player/player';
-import { VirtualPlayer } from '@app/classes/player/virtual-player/virtual-player';
 import { SessionData } from '@app/classes/session-data';
 import { SessionInfo } from '@app/classes/session-info';
 import { DictionaryService } from '@app/services/dictionary/dictionary.service';
@@ -77,7 +74,7 @@ class StubSessionHandler {
 //     nbWords: 1024,
 //     title: 'My cool dictionary',
 // };
-const BASE_SCORE = 10;
+// const BASE_SCORE = 10;
 
 // const singlePlayerConfig: SinglePlayerConfig = {
 //     gameType: GameType.SinglePlayer,
@@ -254,12 +251,12 @@ describe('GameService', () => {
         expect(addVPStub.called).to.be.false;
     });
 
-    it('addVirtualPlayer should specify playerData if argument is specified', () => {
-        const playerInfo: PlayerInfo = { id: '', name: 'test1', isHuman: true };
-        const playerData: PlayerData = { baseScore: BASE_SCORE, scoreAdjustment: 0, skippedTurns: 0, rack: [] };
-        service['addVirtualPlayer'](playerInfo, sessionHandlerStub as unknown as SessionHandler, playerData);
-        const vp = sessionHandlerStub.addedPlayers[0] as VirtualPlayer;
-        vp['runAction'];
-        expect(sessionHandlerStub.addedPlayers[0].playerData.baseScore).to.eql(BASE_SCORE);
-    });
+    // it('addVirtualPlayer should specify playerData if argument is specified', () => {
+    //     const playerInfo: PlayerInfo = { id: '', name: 'test1', isHuman: true };
+    //     const playerData: PlayerData = { baseScore: BASE_SCORE, scoreAdjustment: 0, skippedTurns: 0, rack: [] };
+    //     service['addVirtualPlayer'](playerInfo, sessionHandlerStub as unknown as SessionHandler, playerData);
+    //     const vp = sessionHandlerStub.addedPlayers[0] as VirtualPlayer;
+    //     vp['runAction'];
+    //     expect(sessionHandlerStub.addedPlayers[0].playerData.baseScore).to.eql(BASE_SCORE);
+    // });
 });
