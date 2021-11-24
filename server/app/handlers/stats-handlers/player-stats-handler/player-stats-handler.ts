@@ -39,6 +39,8 @@ export class PlayerStatsHandler implements PlayerStatsNotifier {
             return;
         }
 
+        this.goalHandler.notifyStats(this.stats, this.id);
+
         this.baseScore += validationData.score;
         this.skippedTurns = 0;
 
@@ -47,11 +49,15 @@ export class PlayerStatsHandler implements PlayerStatsNotifier {
     }
 
     notifySkip(): void {
+        this.goalHandler.notifyStats(this.stats, this.id);
+
         this.skippedTurns++;
         this.goalHandler.notifySkip(this.id);
     }
 
     notifyExchange(): void {
+        this.goalHandler.notifyStats(this.stats, this.id);
+
         this.skippedTurns = 0;
         this.goalHandler.notifyExchange(this.id);
     }

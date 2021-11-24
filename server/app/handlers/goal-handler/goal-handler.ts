@@ -4,9 +4,10 @@ import { SkipNotifier } from '@app/classes/goal/notifiers/skip-notifier';
 import { ValidationResponse } from '@app/classes/validation/validation-response';
 import { Goal } from '@app/classes/goal/base-goal';
 import { Observable, Subject } from 'rxjs';
-import { GoalData, GoalStatus } from '@common';
+import { GoalData, GoalStatus, PlayerStats } from '@common';
+import { StatsNotifier } from '@app/classes/goal/notifiers/stats-notifier';
 
-export abstract class GoalHandler implements PlacementNotifier, ExchangeNotifier, SkipNotifier {
+export abstract class GoalHandler implements PlacementNotifier, ExchangeNotifier, SkipNotifier, StatsNotifier {
     readonly goals: Goal[];
     protected readonly updateSubject: Subject<void>;
 
@@ -34,4 +35,5 @@ export abstract class GoalHandler implements PlacementNotifier, ExchangeNotifier
     abstract notifyPlacement(validationResponse: ValidationResponse, id: string): void;
     abstract notifyExchange(id: string): void;
     abstract notifySkip(id: string): void;
+    abstract notifyStats(stats: PlayerStats, id: string): void;
 }

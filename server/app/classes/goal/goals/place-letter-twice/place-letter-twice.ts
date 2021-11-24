@@ -1,5 +1,5 @@
 import { PlacementNotifier } from '@app/classes/goal/notifiers/placement-notifier';
-import { ValidationResponse } from '@app/classes/validation/validation-response';
+import { ValidatedLetter, ValidationResponse } from '@app/classes/validation/validation-response';
 import { BaseGoal, Goal } from '@app/classes/goal/base-goal';
 
 export class PlaceLetterTwice extends BaseGoal implements PlacementNotifier {
@@ -7,7 +7,7 @@ export class PlaceLetterTwice extends BaseGoal implements PlacementNotifier {
         super(
             {
                 id: 'place-letter-twice',
-                name: 'Placer deux fois la même lettre en un tour',
+                name: 'Placer un mot contenant 2 fois la même lettre',
                 score: 10,
             },
             ownerId,
@@ -18,20 +18,30 @@ export class PlaceLetterTwice extends BaseGoal implements PlacementNotifier {
         return new PlaceLetterTwice(ownerId);
     }
 
+    private static isLetterDuplication(validatedLetters: ValidatedLetter[]): boolean {
+        const letters = new Set<string>();
+
+        for (const { placement } of validatedLetters) {
+            if (letters.has(placement.letter)) {
+                return true;
+            }
+
+            letters.add(placement.letter);
+        }
+
+        return false;
+    }
+
     notifyPlacement(validationResponse: ValidationResponse, id: string): void {
         if (!validationResponse.isSuccess || this.isCompleted) {
             return;
         }
 
-        const letters = new Set<string>();
-
-        for (const { letter } of validationResponse.placements) {
-            if (letters.has(letter)) {
+        for (const { letters } of validationResponse.words) {
+            if (PlaceLetterTwice.isLetterDuplication(letters)) {
                 this.successId = id;
                 return;
             }
-
-            letters.add(letter);
         }
     }
 }

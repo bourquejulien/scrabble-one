@@ -3,8 +3,9 @@ import { SkipNotifier } from '@app/classes/goal/notifiers/skip-notifier';
 import { PlacementNotifier } from '@app/classes/goal/notifiers/placement-notifier';
 import { GoalDescription } from '@app/classes/goal/goal-description';
 import { GoalData, GoalStatus } from '@common';
+import { StatsNotifier } from '@app/classes/goal/notifiers/stats-notifier';
 
-export type Goal = BaseGoal & (ExchangeNotifier | SkipNotifier | PlacementNotifier);
+export type Goal = BaseGoal & (ExchangeNotifier | SkipNotifier | PlacementNotifier | StatsNotifier);
 
 export abstract class BaseGoal {
     protected successId: string;

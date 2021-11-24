@@ -4,6 +4,8 @@ import { PlacementNotifier } from '@app/classes/goal/notifiers/placement-notifie
 import { SkipNotifier } from '@app/classes/goal/notifiers/skip-notifier';
 import { ExchangeNotifier } from '@app/classes/goal/notifiers/exchange-notifier';
 import { GOAL_GENERATORS, GoalGenerator } from '@app/classes/goal/goal-generator-list';
+import { PlayerStats } from '@common';
+import { StatsNotifier } from '@app/classes/goal/notifiers/stats-notifier';
 
 const PRIVATE_GOAL_COUNT = 1;
 const PUBLIC_GOAL_COUNT = 2;
@@ -51,6 +53,15 @@ export class Log2990GoalHandler extends GoalHandler {
             .map((g) => g as SkipNotifier)
             .filter((n) => n.notifySkip !== undefined)
             .forEach((n) => n.notifySkip(id));
+
+        this.updateSubject.next();
+    }
+
+    notifyStats(stats: PlayerStats, id: string): void {
+        this.goals
+            .map((g) => g as StatsNotifier)
+            .filter((n) => n.notifyStats !== undefined)
+            .forEach((n) => n.notifyStats(stats, id));
 
         this.updateSubject.next();
     }
