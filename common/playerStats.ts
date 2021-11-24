@@ -1,9 +1,9 @@
 export interface PlayerStats {
-    points: number,
-    rackSize: number
+    points: number;
+    rackSize: number;
 }
 
 export interface SessionStats {
-    localStats: PlayerStats,
-    remoteStats: PlayerStats
+    localStats: PlayerStats;
+    remoteStats: PlayerStats;
 }

@@ -1,6 +1,7 @@
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="test client" type="JavaScriptTestRunnerKarma">
     <config-file value="$PROJECT_DIR$/client/karma.conf.js" />
+    <karma-options value="--browsers ChromeHeadless" />
     <karma-package-dir value="$PROJECT_DIR$/client/node_modules/@angular/cli" />
     <working-directory value="$PROJECT_DIR$/client" />
     <node-interpreter value="project" />
