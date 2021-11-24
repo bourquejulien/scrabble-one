@@ -1,8 +1,8 @@
-import { Action } from './actions/action';
-import { Player } from '@app/classes/player/player';
-import { PlayerInfo } from '@app/classes/player-info';
-import * as logger from 'winston';
 import { Timer } from '@app/classes/delay';
+import { PlayerInfo } from '@app/classes/player-info';
+import { Player } from '@app/classes/player/player';
+import * as logger from 'winston';
+import { Action } from './actions/action';
 
 const MIN_PLAYTIME_MILLISECONDS = 3000;
 

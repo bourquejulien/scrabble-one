@@ -76,6 +76,6 @@ export class Server {
         const addr = this.server.address() as AddressInfo;
         const bind: string = typeof addr === 'string' ? `pipe ${addr}` : `port ${addr.port}`;
         // eslint-disable-next-line no-console
-        console.log(`Listening on ${bind}`);
+        logger.debug(`Listening on ${bind}`);
     }
 }

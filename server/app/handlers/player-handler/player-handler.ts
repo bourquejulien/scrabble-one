@@ -1,7 +1,7 @@
 import { Player } from '@app/classes/player/player';
-import { Observable, Subject, Subscription } from 'rxjs';
 import { Config } from '@app/config';
 import { SessionStats } from '@common';
+import { Observable, Subject, Subscription } from 'rxjs';
 
 export class PlayerHandler {
     players: Player[];
@@ -24,7 +24,10 @@ export class PlayerHandler {
     }
 
     addPlayer(player: Player): void {
-        this.playerSubscriptions[player.id] = player.onTurn().subscribe((lastId) => this.switchTurn(lastId));
+        this.playerSubscriptions.set(
+            player.id,
+            player.onTurn().subscribe((lastId) => this.switchTurn(lastId)),
+        );
         this.players.push(player);
     }
 

@@ -7,6 +7,7 @@ import { EndGameWinner } from '@app/classes/end-game-winner';
 import { PlayerType } from '@app/classes/player/player-type';
 import { ConfirmQuitDialogComponent } from '@app/components/confirm-quit-dialog/confirm-quit-dialog.component';
 import { EndGameComponent } from '@app/components/end-game/end-game.component';
+import { OpponentQuitComponent } from '@app/components/opponent-quit/opponent-quit.component';
 import { CommandsService } from '@app/services/commands/commands.service';
 import { GameService } from '@app/services/game/game.service';
 import { ReserveService } from '@app/services/reserve/reserve.service';
@@ -42,6 +43,7 @@ export class GamePageComponent implements OnDestroy {
 
     private onTurnSubscription: Subscription;
     private gameEndingSubscription: Subscription;
+    private opponentQuitSubscription: Subscription;
     constructor(
         readonly gameService: GameService,
         readonly sessionService: SessionService,
@@ -85,7 +87,7 @@ export class GamePageComponent implements OnDestroy {
                 action: async () => this.commandService.parseInput('!passer'),
             },
         ];
-
+        this.opponentQuitSubscription = gameService.opponentQuiting.subscribe(() => this.opponentQuit());
         this.gameEndingSubscription = gameService.gameEnding.subscribe((winner) => this.endGame(winner));
         this.onTurnSubscription = gameService.onTurn.subscribe((e) => (this.playerType = e));
     }
@@ -93,6 +95,7 @@ export class GamePageComponent implements OnDestroy {
     ngOnDestroy(): void {
         this.gameEndingSubscription.unsubscribe();
         this.onTurnSubscription.unsubscribe();
+        this.opponentQuitSubscription.unsubscribe();
     }
 
     toggleDrawer(): void {
@@ -107,6 +110,10 @@ export class GamePageComponent implements OnDestroy {
                 this.gameService.reset();
             }
         });
+    }
+
+    opponentQuit() {
+        this.dialog.open(OpponentQuitComponent);
     }
 
     private confirmQuit(): void {

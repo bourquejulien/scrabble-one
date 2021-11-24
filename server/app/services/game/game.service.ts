@@ -1,9 +1,11 @@
 import { generateId } from '@app/classes/id';
+import { PlayerData } from '@app/classes/player-data';
 import { PlayerInfo } from '@app/classes/player-info';
 import { HumanPlayer } from '@app/classes/player/human-player/human-player';
 import { Action } from '@app/classes/player/virtual-player/actions/action';
 import { VirtualPlayer } from '@app/classes/player/virtual-player/virtual-player';
 import { VirtualPlayerExpert } from '@app/classes/player/virtual-player/virtual-player-expert/virtual-player-expert';
+import { DictionaryHandler } from '@app/handlers/dictionary-handler/dictionary-handler';
 import { PlayerHandler } from '@app/handlers/player-handler/player-handler';
 import { ReserveHandler } from '@app/handlers/reserve-handler/reserve-handler';
 import { SessionHandler } from '@app/handlers/session-handler/session-handler';
@@ -11,18 +13,18 @@ import { BoardGeneratorService } from '@app/services/board/board-generator.servi
 import { DictionaryService } from '@app/services/dictionary/dictionary.service';
 import { SessionHandlingService } from '@app/services/session-handling/session-handling.service';
 import { SocketService } from '@app/services/socket/socket-service';
+import { StatsService } from '@app/services/stats/stats.service';
 import { ConvertConfig, GameType, MultiplayerCreateConfig, MultiplayerJoinConfig, ServerConfig, SinglePlayerConfig } from '@common';
 import { Service } from 'typedi';
 import * as logger from 'winston';
-import { StatsService } from '../stats/stats.service';
 
 @Service()
 export class GameService {
     constructor(
         private readonly boardGeneratorService: BoardGeneratorService,
         private readonly sessionHandlingService: SessionHandlingService,
-        private readonly dictionnaryService: DictionaryService,
-        private statsService: StatsService,
+        private readonly dictionaryService: DictionaryService,
+        private readonly statsService: StatsService,
         private readonly socketService: SocketService,
     ) {}
 
@@ -32,11 +34,25 @@ export class GameService {
             playTimeMs: gameConfig.playTimeMs,
             gameType: gameConfig.gameType,
         };
-
-        const boardHandler = this.boardGeneratorService.generateBoardHandler(gameConfig.isRandomBonus);
+        let words: string[] = [];
+        try {
+            words = await this.dictionaryService.getWords(gameConfig.dictionary);
+        } catch (err) {
+            logger.error(`${err.stack}`);
+            return Promise.reject(`${err}`);
+        }
+        const dictionaryHandler = new DictionaryHandler(words, gameConfig.dictionary);
+        const boardHandler = this.boardGeneratorService.generateBoardHandler(gameConfig.isRandomBonus, dictionaryHandler);
         const reserveHandler = new ReserveHandler();
 
-        const sessionHandler = new SessionHandler(sessionInfo, boardHandler, reserveHandler, new PlayerHandler(), this.statsService, this.socketService);
+        const sessionHandler = new SessionHandler(
+            sessionInfo,
+            boardHandler,
+            reserveHandler,
+            new PlayerHandler(),
+            this.statsService,
+            this.socketService,
+        );
 
         const humanPlayerInfo: PlayerInfo = {
             id: generateId(),
@@ -68,10 +84,25 @@ export class GameService {
             gameType: gameConfig.gameType,
         };
 
-        const boardHandler = this.boardGeneratorService.generateBoardHandler(gameConfig.isRandomBonus);
+        let words: string[] = [];
+        try {
+            words = await this.dictionaryService.getWords(gameConfig.dictionary);
+        } catch (err) {
+            logger.error(`${err.stack}`);
+            return Promise.reject(`${err}`);
+        }
+        const dictionaryHandler = new DictionaryHandler(words, gameConfig.dictionary);
+        const boardHandler = this.boardGeneratorService.generateBoardHandler(gameConfig.isRandomBonus, dictionaryHandler);
         const reserveHandler = new ReserveHandler();
 
-        const sessionHandler = new SessionHandler(sessionInfo, boardHandler, reserveHandler, new PlayerHandler(), this.statsService, this.socketService);
+        const sessionHandler = new SessionHandler(
+            sessionInfo,
+            boardHandler,
+            reserveHandler,
+            new PlayerHandler(),
+            this.statsService,
+            this.socketService,
+        );
 
         const humanPlayerInfo: PlayerInfo = {
             id: generateId(),
@@ -116,7 +147,7 @@ export class GameService {
     async convert(convertConfig: ConvertConfig): Promise<ServerConfig | null> {
         const handler = this.sessionHandlingService.getHandlerByPlayerId(convertConfig.id);
 
-        if (handler == null || handler.sessionData.isStarted || handler.sessionInfo.gameType !== GameType.Multiplayer) {
+        if (handler == null) {
             logger.warn(`Cannot convert game to single player mode - playerId: ${convertConfig.id}`);
             return null;
         }
@@ -140,15 +171,13 @@ export class GameService {
 
     async abandon(id: string): Promise<boolean> {
         const handler = this.sessionHandlingService.getHandlerByPlayerId(id);
-
         if (handler == null) {
             logger.warn(`Failed to stop game: ${id}`);
             return false;
         }
 
-        if (handler.sessionInfo.gameType === GameType.Multiplayer && handler.sessionData.isActive) {
-            handler.abandonGame(id);
-            logger.info(`Game abandoned: ${id}`);
+        if (handler.sessionData.isStarted && handler.sessionInfo.gameType === GameType.Multiplayer) {
+            this.humanToVirtualPlayer(handler, id);
         } else {
             handler.dispose();
             this.sessionHandlingService.removeHandler(id);
@@ -158,6 +187,26 @@ export class GameService {
         return true;
     }
 
+    private humanToVirtualPlayer(handler: SessionHandler, playerId: string): boolean {
+        const player = handler.players.find((p) => p.id === playerId) as HumanPlayer;
+        if (player) {
+            player.skipTurn();
+            const newName = player.playerInfo.name + ' Virtuel';
+            handler.abandonGame(playerId);
+            this.socketService.send('opponentQuit', handler.sessionInfo.id);
+            const virtualPlayerInfo: PlayerInfo = {
+                id: generateId(),
+                name: newName,
+                isHuman: false,
+            };
+            this.addVirtualPlayer(virtualPlayerInfo, handler, player.playerData);
+            logger.info(`Game abandoned: ${playerId}`);
+        } else {
+            logger.warn(`Failed to convert player after abandon: ${playerId}`);
+            return false;
+        }
+        return true;
+    }
     private addHumanPlayer(playerInfo: PlayerInfo, sessionHandler: SessionHandler): HumanPlayer {
         const humanPlayer = new HumanPlayer(playerInfo);
         sessionHandler.addPlayer(humanPlayer);
@@ -165,10 +214,12 @@ export class GameService {
         return humanPlayer;
     }
 
-    private addVirtualPlayer(playerInfo: PlayerInfo, sessionHandler: SessionHandler): VirtualPlayer {
+    private addVirtualPlayer(playerInfo: PlayerInfo, sessionHandler: SessionHandler, playerData?: PlayerData): VirtualPlayer {
         const actionCallback = (action: Action): Action | null => action.execute();
-        const virtualPlayer = new VirtualPlayerExpert(this.dictionnaryService, playerInfo, actionCallback);
-
+        const virtualPlayer = new VirtualPlayerExpert(sessionHandler.boardHandler.dictionaryHandler, playerInfo, actionCallback);
+        if (playerData) {
+            virtualPlayer.playerData = playerData;
+        }
         sessionHandler.addPlayer(virtualPlayer);
 
         return virtualPlayer;

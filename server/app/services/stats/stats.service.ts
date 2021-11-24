@@ -21,7 +21,7 @@ export class StatsService {
         }
 
         // check if already in board and if score in board greater than current score; if not, treat it as if it were a whole new player
-        let isScoreGreater = await this.isNewScoreGreater(playerWinner, collectionName);
+        const isScoreGreater = await this.isNewScoreGreater(playerWinner, collectionName);
         logger.info(`isScoreGreater: ${isScoreGreater}`);
         if (!(await this.isNewScoreGreater(playerWinner, collectionName))) {
             return;
@@ -29,7 +29,7 @@ export class StatsService {
 
         const playersNewBestScore: Score = { name: [playerWinner.playerInfo.name], scoreValue: playerWinner.stats.points };
 
-        let isUpdateSameNames = await this.scoreService.updateNamesWithSameScore(playersNewBestScore, collectionName);
+        const isUpdateSameNames = await this.scoreService.updateNamesWithSameScore(playersNewBestScore, collectionName);
         logger.info(`isUpdateSameNames: ${isUpdateSameNames}`);
         // check if same score as another player TO DO: Not sure abt this structure... maybe separating the check from the update would be best? idk
         if (await this.scoreService.updateNamesWithSameScore(playersNewBestScore, collectionName)) {

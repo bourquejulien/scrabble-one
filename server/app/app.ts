@@ -1,3 +1,4 @@
+import { AdminController } from '@app//controllers/admin/admin.controller';
 import { HttpException } from '@app/classes/http.exception';
 import { GameController } from '@app/controllers/game/game.controller';
 import { PlayerController } from '@app/controllers/player/player.controller';
@@ -21,8 +22,8 @@ export class Application {
         private readonly playerController: PlayerController,
         private readonly statsController: StatsController,
         dictionaryService: DictionaryService,
+        private readonly adminController: AdminController,
     ) {
-        dictionaryService.retrieveDictionary();
         this.internalError = StatusCodes.INTERNAL_SERVER_ERROR;
         this.app = express();
         this.validateEnv();
@@ -34,6 +35,7 @@ export class Application {
         this.app.use('/api/game', this.gameController.router);
         this.app.use('/api/player', this.playerController.router);
         this.app.use('/api/score', this.statsController.router);
+        this.app.use('/api/admin', this.adminController.router);
         this.errorHandling();
     }
 
