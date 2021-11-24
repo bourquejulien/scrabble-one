@@ -1,3 +1,4 @@
+/* eslint-disable dot-notation,@typescript-eslint/no-unused-expressions,no-unused-expressions,max-classes-per-file */
 /* eslint-disable dot-notation */
 /* eslint-disable no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
@@ -10,6 +11,7 @@ import { Timer } from '@app/classes/delay';
 import { PlayerInfo } from '@app/classes/player-info';
 import { VirtualPlayer } from '@app/classes/player/virtual-player/virtual-player';
 import { BoardHandler } from '@app/handlers/board-handler/board-handler';
+/* import { BoardHandler } from '@app/handlers/board-handler/board-handler';
 import { ReserveHandler } from '@app/handlers/reserve-handler/reserve-handler';
 import { SocketHandler } from '@app/handlers/socket-handler/socket-handler';
 import { DictionaryService } from '@app/services/dictionary/dictionary.service';
@@ -22,6 +24,8 @@ import { ExchangeAction } from './actions/exchange-action';
 import { PlaceAction } from './actions/place-action';
 import { PlayAction } from './actions/play-action';
 import { SkipAction } from './actions/skip-action';
+import { DictionaryHandler } from '@app/handlers/dictionary-handler/dictionary-handler-handler';
+import { VirtualPlayer } from '@app/classes/player/virtual-player/virtual-player';
 
 class TestAction implements Action {
     maxCallCount = 3;
@@ -128,6 +132,17 @@ describe('VirtualPlayer', () => {
 
         service = new VirtualPlayer(playerInfo, dictionaryService as unknown as DictionaryService, actionRunner);
         service.init(boardHandler as unknown as BoardHandler, reserveHandler, socketHandler as unknown as SocketHandler);
+        let callCount = 0;
+        const actionRunner = (action: Action): null | Action => {
+            callCount++;
+            return testAction.execute();
+        };
+        sandboxRandom.stub(Math, 'random').returns(SKIP_PERCENTAGE);
+
+        const dictionaryHandler = createStubInstance(DictionaryHandler) as unknown as DictionaryHandler;
+        service = new VirtualPlayer(dictionaryHandler, playerInfo, actionRunner);
+        service.init(boardHandler as unknown as BoardHandler, reserveHandler, socketHandler as unknown as SocketHandler);
+        service.actionToReturn = testAction;
         sandboxTimer.stub(Timer, 'delay').returns(Promise.resolve());
         await service['startTurn']();
         expect(callCount).to.be.equal(testAction.maxCallCount);

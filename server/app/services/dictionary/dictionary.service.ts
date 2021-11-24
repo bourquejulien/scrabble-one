@@ -1,53 +1,123 @@
-import { Dictionary } from '@app/classes/dictionary/dictionary';
-import { JsonDictionary } from '@app/classes/dictionary/json-dictionary';
-import { Trie } from '@app/classes/trie/trie';
-import { Config } from '@app/config';
-import fs from 'fs';
+import { DictionaryMetadata, JsonDictionary } from '@common';
+import { generateId } from '@app/classes/id';
+import { promises } from 'fs';
 import { Service } from 'typedi';
+import * as logger from 'winston';
+import path from 'path';
+import { Validator } from 'jsonschema';
+import { Constants } from '@app/constants';
+
+const defaultDictionary: DictionaryMetadata = {
+    id: 'dictionary.json',
+    description: 'Default Dictionary',
+    title: 'Dictionnaire du serveur',
+    nbWords: 402503,
+};
+const schema = {
+    title: 'string',
+    description: 'string',
+    words: ['string'],
+    required: ['title', 'description', 'words'],
+};
+const dictionaryPath = /* process.env.DICTIONARIES_FOLDER ??*/ process.cwd() + '/assets/';
 
 @Service()
-export class DictionaryService implements Dictionary {
-    private readonly dictionary: Trie;
-    private readonly reverseDictionary: Trie;
+export class DictionaryService {
+    private dictionaryMetadata: DictionaryMetadata[];
 
     constructor() {
-        this.dictionary = new Trie();
-        this.reverseDictionary = new Trie();
+        this.dictionaryMetadata = [defaultDictionary];
     }
 
-    private static flipWord(word: string): string {
-        let flippedWord = '';
+    getFilepath(metadata: DictionaryMetadata): string {
+        return path.join(dictionaryPath, metadata.id);
+    }
 
-        for (const char of word) {
-            flippedWord = char + flippedWord;
+    async getWords(metadata: DictionaryMetadata): Promise<string[]> {
+        let result: string[] = [];
+        const data = await promises.readFile(this.getFilepath(metadata), 'utf8');
+        let json: JsonDictionary;
+        try {
+            json = JSON.parse(data) as JsonDictionary;
+            result = json.words;
+            logger.debug(`Parsed words ${result.length} in the dictionary`);
+        } catch (err) {
+            logger.error(`JSON.parse returned an error ${err.stack}`);
         }
-
-        return flippedWord;
-    }
-
-    lookup(word: string): boolean {
-        return this.dictionary.contains(word);
-    }
-
-    lookUpStart(word: string): { isWord: boolean; isOther: boolean } {
-        return this.dictionary.startsWith(word);
-    }
-
-    lookUpEnd(word: string): boolean {
-        return this.reverseDictionary.startsWith(DictionaryService.flipWord(word)).isOther;
-    }
-
-    retrieveDictionary(): void {
-        fs.readFile(Config.DICTIONARY_PATH, 'utf8', (_error, jsonData) => {
-            const jsonDictionary = JSON.parse(jsonData) as JsonDictionary;
-            this.insertWords(jsonDictionary.words);
-        });
-    }
-
-    private insertWords(words: string[]) {
-        for (const word of words) {
-            this.dictionary.insert(word);
-            this.reverseDictionary.insert(DictionaryService.flipWord(word));
+        if (result.length < Constants.MIN_DICTIONARY_SIZE) {
+            throw new Error('Not enough words in the chosen dictionary');
         }
+        return result;
+    }
+
+    reset() {
+        this.dictionaryMetadata = [];
+        this.parse(this.getFilepath(defaultDictionary));
+    }
+
+    remove(metadata: DictionaryMetadata) {
+        const filepath = this.getFilepath(metadata);
+        if (metadata !== defaultDictionary) {
+            this.dictionaryMetadata.splice(this.dictionaryMetadata.indexOf(metadata), 1);
+            promises
+                .rm(filepath)
+                .then(() => {
+                    logger.debug(`Successful Deletion: ${filepath}`);
+                })
+                .catch((err) => {
+                    logger.error(err.stack);
+                });
+        } else {
+            logger.error('Attempted to delete the default dictionary :o');
+        }
+    }
+
+    update(metadata: DictionaryMetadata[]) {
+        if (!this.dictionaryMetadata.find((m) => m === defaultDictionary) && metadata) {
+            this.dictionaryMetadata = metadata;
+            this.dictionaryMetadata.push(defaultDictionary);
+        }
+    }
+
+    add(json: JsonDictionary): boolean {
+        const metadata: DictionaryMetadata = {
+            title: json.title,
+            description: json.description,
+            id: generateId(),
+            nbWords: json.words.length,
+        };
+        if (!this.dictionaryMetadata.find((m) => m.id === metadata.id)) {
+            this.dictionaryMetadata.push(metadata);
+            return false;
+        }
+        logger.debug('Dictionary was not added because there was a duplicate');
+        return false;
+    }
+
+    async parse(filepath: string): Promise<boolean> {
+        const data = await promises.readFile(filepath, 'utf8');
+        if (this.validate(data)) {
+            try {
+                const json: JsonDictionary = JSON.parse(data) as JsonDictionary;
+                return this.add(json);
+            } catch (err) {
+                logger.error('JSON.parse() cant parse the content of that dictionary');
+            }
+            logger.debug('Dictionary parsing successful');
+        }
+        return false;
+    }
+
+    validate(data: string) {
+        const validator = new Validator();
+        return validator.validate(data, schema);
+    }
+
+    getMetadata(id: string) {
+        return this.dictionaryMetadata.find((m) => m.id === id);
+    }
+
+    get dictionaries() {
+        return this.dictionaryMetadata;
     }
 }

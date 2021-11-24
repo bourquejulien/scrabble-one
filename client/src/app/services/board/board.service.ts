@@ -1,31 +1,23 @@
-import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Constants } from '@app/constants/global.constants';
-import { SessionService } from '@app/services/session/session.service';
-import { Answer, BoardData, Bonus, Direction, Placement, Square, Vec2 } from '@common';
-import { environmentExt } from '@environment-ext';
+import { BoardData, Bonus, Direction, Placement, Square, Vec2 } from '@common';
+import { SocketClientService } from '@app/services/socket-client/socket-client.service';
+import { BehaviorSubject, Observable } from 'rxjs';
 
-const localUrl = (call: string, id: string) => `${environmentExt.apiUrl}board/${call}/${id}`;
 @Injectable({
     providedIn: 'root',
 })
 export class BoardService {
     private boardData: BoardData;
+    private readonly boardSubject: BehaviorSubject<BoardData>;
 
-    constructor(private readonly httpClient: HttpClient, private readonly sessionService: SessionService) {
+    constructor(private readonly socketService: SocketClientService) {
         this.reset();
+        this.socketService.on('board', (boardData: BoardData) => this.refresh(boardData));
+        this.boardSubject = new BehaviorSubject<BoardData>(this.boardData);
     }
 
     get gameBoard(): BoardData {
-        return this.boardData;
-    }
-
-    async placeLetters(letters: Placement[]): Promise<Answer> {
-        return await this.httpClient.post<Answer>(localUrl('place', this.sessionService.id), letters).toPromise();
-    }
-
-    async refresh(): Promise<BoardData | null> {
-        this.boardData = await this.httpClient.get<BoardData>(localUrl('retrieve', this.sessionService.id)).toPromise();
         return this.boardData;
     }
 
@@ -70,5 +62,14 @@ export class BoardService {
 
     getLetter(position: Vec2): string {
         return this.boardData.board[position.x - 1][position.y - 1].letter;
+    }
+
+    get boardUpdated(): Observable<BoardData> {
+        return this.boardSubject.asObservable();
+    }
+
+    private refresh(boardData: BoardData): void {
+        this.boardData = boardData;
+        this.boardSubject.next(boardData);
     }
 }

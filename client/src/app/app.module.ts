@@ -23,6 +23,7 @@ import { ToolbarComponent } from './components/toolbar/toolbar.component';
 import { GameModePageComponent } from './pages/game-mode-page/game-mode-page.component';
 import { RoomListComponent } from './pages/room-list/room-list.component';
 import { WaitingRoomPageComponent } from './pages/waiting-room-page/waiting-room-page.component';
+import { AdminPageComponent } from './pages/admin-page/admin-page.component';
 
 /**
  * Main module that is used in main.ts.
@@ -49,6 +50,7 @@ import { WaitingRoomPageComponent } from './pages/waiting-room-page/waiting-room
         InitGameComponent,
         BoardComponent,
         ToolbarComponent,
+        AdminPageComponent,
         OpponentQuitComponent,
         ObjectivesComponent,
     ],

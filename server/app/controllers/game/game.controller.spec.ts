@@ -5,7 +5,7 @@
 import { Application } from '@app/app';
 import { Constants } from '@app/constants';
 import { GameService } from '@app/services/game/game.service';
-import { GameType, MultiplayerCreateConfig, ServerConfig, SinglePlayerConfig } from '@common';
+import { DictionaryMetadata, GameType, MultiplayerCreateConfig, ServerConfig, SinglePlayerConfig } from '@common';
 import { expect } from 'chai';
 import { createStubInstance, SinonStubbedInstance } from 'sinon';
 import request from 'supertest';
@@ -15,6 +15,13 @@ describe('GameController', () => {
     let gameService: SinonStubbedInstance<GameService>;
     let expressApp: Express.Application;
 
+    const dictionary: DictionaryMetadata = {
+        description: 'Blablabla',
+        id: 'dictionary.json',
+        nbWords: 1024,
+        title: 'My cool dictionary',
+    };
+
     const multiplayerConfig = 'multiplayerConfig';
 
     const singlePlayerConfig: SinglePlayerConfig = {
@@ -23,6 +30,7 @@ describe('GameController', () => {
         playerName: 'Claudette',
         virtualPlayerName: 'Alphonse',
         isRandomBonus: true,
+        dictionary,
     };
 
     const multiplayerCreateConfig: MultiplayerCreateConfig = {
@@ -30,6 +38,7 @@ describe('GameController', () => {
         playTimeMs: 120 * 1000,
         playerName: 'Claudette',
         isRandomBonus: true,
+        dictionary,
     };
 
     const serverConfig: ServerConfig = {

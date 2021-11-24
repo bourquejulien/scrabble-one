@@ -3,6 +3,7 @@ import { Service } from 'typedi';
 import { Constants } from '@app/constants';
 import { SessionHandlingService } from '@app/services/sessionHandling/session-handling.service';
 import { HumanPlayer } from '@app/classes/player/human-player/human-player';
+import { Placement } from '@common';
 
 @Service()
 export class PlayerController {
@@ -14,6 +15,19 @@ export class PlayerController {
 
     private configureRouter(): void {
         this.router = Router();
+
+        this.router.post('/place/:id', async (req: Request, res: Response) => {
+            const humanPlayer = this.getHumanPlayer(req.params.id);
+            const placements: Placement[] = req.body;
+
+            if (humanPlayer === null) {
+                res.sendStatus(Constants.HTTP_STATUS.BAD_REQUEST);
+                return;
+            }
+
+            const response = await humanPlayer.placeLetters(placements);
+            res.json(response);
+        });
 
         this.router.post('/exchange/:id', async (req: Request, res: Response) => {
             const humanPlayer = this.getHumanPlayer(req.params.id);
@@ -38,28 +52,6 @@ export class PlayerController {
 
             const response = humanPlayer.skipTurn();
             res.json(response);
-        });
-
-        this.router.get('/rack/:id', (req: Request, res: Response) => {
-            const humanPlayer = this.getHumanPlayer(req.params.id);
-
-            if (humanPlayer === null) {
-                res.sendStatus(Constants.HTTP_STATUS.BAD_REQUEST);
-                return;
-            }
-
-            res.json(humanPlayer.playerData.rack);
-        });
-
-        this.router.get('/stats/:id', (req: Request, res: Response) => {
-            const stats = this.sessionHandlingService.getHandlerByPlayerId(req.params.id)?.getStats(req.params.id);
-
-            if (stats == null) {
-                res.sendStatus(Constants.HTTP_STATUS.BAD_REQUEST);
-                return;
-            }
-
-            res.json(stats);
         });
     }
 
