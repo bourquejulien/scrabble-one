@@ -6,7 +6,7 @@ import { BoardHandler } from '@app/handlers/board-handler/board-handler';
 import { PlayerHandler } from '@app/handlers/player-handler/player-handler';
 import { ReserveHandler } from '@app/handlers/reserve-handler/reserve-handler';
 import { SocketHandler } from '@app/handlers/socket-handler/socket-handler';
-import { GameMode, ServerConfig } from '@common';
+import { GameMode, GameType, ServerConfig } from '@common';
 import { Subscription } from 'rxjs';
 import * as logger from 'winston';
 import { SessionStatsHandler } from '@app/handlers/stats-handlers/session-stats-handler/session-stats-handler';
@@ -75,11 +75,8 @@ export class SessionHandler {
 
     abandonGame(playerId: string): void {
         logger.debug(`SessionHandler - Abandon - PlayerId: ${playerId}`);
-
-        const winner = this.players.find((p) => p.id !== playerId)?.id ?? '';
-
-        this.socketHandler.sendData('endGame', winner);
-        this.dispose();
+        this.sessionInfo.gameType = GameType.SinglePlayer;
+        this.removePlayer(playerId);
     }
 
     private endGame(): void {

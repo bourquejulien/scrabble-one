@@ -22,7 +22,10 @@ export class PlayerHandler {
     }
 
     addPlayer(player: Player): void {
-        this.playerSubscriptions[player.id] = player.onTurn().subscribe((lastId) => this.switchTurn(lastId));
+        this.playerSubscriptions.set(
+            player.id,
+            player.onTurn().subscribe((lastId) => this.switchTurn(lastId)),
+        );
         this.players.push(player);
     }
 

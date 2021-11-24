@@ -249,17 +249,9 @@ describe('SessionHandler', () => {
         }, Config.SESSION.REFRESH_INTERVAL_MS);
     });
 
-    it('abandon should call dispose', () => {
-        const stubDispose = createSandbox().stub(handler, 'dispose' as any);
+    it('abandon should call removePlayer', () => {
         handler.abandonGame('0');
-        expect(stubDispose.called).to.be.true;
-    });
-
-    it('abandon should call dispose but with unavailable player', () => {
-        const stubDispose = createSandbox().stub(handler, 'dispose' as any);
-        handler['playerHandler'].players = [playerA];
-        handler.abandonGame('0');
-        expect(stubDispose.called).to.be.true;
+        expect(handler.sessionInfo.gameType).to.eql(GameType.SinglePlayer);
     });
 
     it('callback in timer should be called', () => {

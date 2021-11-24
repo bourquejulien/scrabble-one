@@ -21,6 +21,7 @@ export class GameService {
     currentTurn: PlayerType = PlayerType.Local;
     onTurn: BehaviorSubject<PlayerType>;
     gameEnding: Subject<EndGameWinner>;
+    opponentQuiting: Subject<boolean>;
 
     private gameRunning: boolean = false;
 
@@ -39,7 +40,8 @@ export class GameService {
 
         this.onTurn = new BehaviorSubject<PlayerType>(PlayerType.Local);
         this.gameEnding = new Subject<EndGameWinner>();
-
+        this.opponentQuiting = new Subject<boolean>();
+        this.socketService.on('opponentQuit', () => this.opponentQuiting.next(true));
         this.socketService.on('onTurn', async (id: string) => this.onNextTurn(id));
         this.socketService.on('endGame', async (winnerId: string) => this.endGame(winnerId));
         this.socketService.on('stats', (sessionStats: SessionStats) => this.refresh(sessionStats));
