@@ -17,6 +17,8 @@ export abstract class VirtualPlayer extends Player {
         this.isTurn = true;
         this.socketHandler.sendData('onTurn', this.id);
 
+        this.fillRack();
+
         try {
             await Timer.delay(MIN_PLAYTIME_MILLISECONDS);
 

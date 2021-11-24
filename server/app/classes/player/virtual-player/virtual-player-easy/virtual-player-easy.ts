@@ -2,15 +2,15 @@ import { Config } from '@app/config';
 import { SkipAction } from '@app/classes/player/virtual-player/actions/skip-action';
 import { ExchangeAction } from '@app/classes/player/virtual-player/actions/exchange-action';
 import { PlayGenerator } from '@app/classes/virtual-player/play-generator';
-import { DictionaryService } from '@app/services/dictionary/dictionary.service';
 import { PlayActionEasy } from '@app/classes/player/virtual-player/virtual-player-easy/actions/play-action-easy';
 import { Action } from '@app/classes/player/virtual-player/actions/action';
 import { PlayerInfo } from '@app/classes/player-info';
 import * as logger from 'winston';
 import { VirtualPlayer } from '@app/classes/player/virtual-player/virtual-player';
+import { DictionaryHandler } from '@app/handlers/dictionary-handler/dictionary-handler';
 
 export class VirtualPlayerEasy extends VirtualPlayer {
-    constructor(private readonly dictionaryService: DictionaryService, playerInfo: PlayerInfo, runAction: (action: Action) => Action | null) {
+    constructor(private readonly dictionaryHandler: DictionaryHandler, playerInfo: PlayerInfo, runAction: (action: Action) => Action | null) {
         super(runAction, playerInfo);
     }
 
@@ -29,7 +29,7 @@ export class VirtualPlayerEasy extends VirtualPlayer {
         }
 
         logger.debug(`VirtualPlayerEasy: ${this.id} - PlayAction`);
-        const playGenerator = new PlayGenerator(this.dictionaryService, this.boardHandler, this.rack);
+        const playGenerator = new PlayGenerator(this.dictionaryHandler, this.boardHandler, this.rack);
 
         return new PlayActionEasy(this.boardHandler, playGenerator, this.statsNotifier, this.socketHandler, this.rack);
     }

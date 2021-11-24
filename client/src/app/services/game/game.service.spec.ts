@@ -14,8 +14,15 @@ import { PlayerService } from '@app/services/player/player.service';
 import { RackService } from '@app/services/rack/rack.service';
 import { SessionService } from '@app/services/session/session.service';
 import { SocketClientService } from '@app/services/socket-client/socket-client.service';
-import { GameMode, GameType, ServerConfig, SessionStats } from '@common';
+import { GameMode, GameType, ServerConfig, SessionStats, DictionaryMetadata } from '@common';
 import { Observable, Subject } from 'rxjs';
+
+const dictionary: DictionaryMetadata = {
+    id: 'dictionary.json',
+    title: 'dict',
+    description: 'Dictionary',
+    nbWords: 1024,
+};
 
 @Injectable({
     providedIn: 'root',
@@ -109,6 +116,7 @@ describe('GameService', () => {
             playerName: 'Monique',
             virtualPlayerName: 'Alphonse',
             isRandomBonus: false,
+            dictionary,
         };
 
         serverConfigObservableSpyObj.toPromise.and.resolveTo(config);

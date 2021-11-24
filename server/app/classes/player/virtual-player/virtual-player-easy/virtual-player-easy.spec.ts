@@ -4,7 +4,6 @@ import { VirtualPlayerEasy } from '@app/classes/player/virtual-player/virtual-pl
 import { BoardHandler } from '@app/handlers/board-handler/board-handler';
 import { ReserveHandler } from '@app/handlers/reserve-handler/reserve-handler';
 import { SocketHandler } from '@app/handlers/socket-handler/socket-handler';
-import { DictionaryService } from '@app/services/dictionary/dictionary.service';
 import { expect } from 'chai';
 import Sinon, { createSandbox, createStubInstance, SinonSandbox } from 'sinon';
 import { Board } from '@app/classes/board/board';
@@ -12,6 +11,7 @@ import { SkipAction } from '@app/classes/player/virtual-player/actions/skip-acti
 import { ExchangeAction } from '@app/classes/player/virtual-player/actions/exchange-action';
 import { PlayActionEasy } from '@app/classes/player/virtual-player/virtual-player-easy/actions/play-action-easy';
 import { Action } from '@app/classes/player/virtual-player/actions/action';
+import { DictionaryHandler } from '@app/handlers/dictionary-handler/dictionary-handler';
 import { SessionStatsHandler } from '@app/handlers/stats-handlers/session-stats-handler/session-stats-handler';
 
 const RANDOM_RETURN_EXCHANGE = 0.09;
@@ -24,7 +24,7 @@ describe('VirtualPlayerEasy', () => {
     let service: VirtualPlayerEasy;
 
     let reserveHandler: Sinon.SinonStubbedInstance<ReserveHandler>;
-    let dictionaryService: Sinon.SinonStubbedInstance<DictionaryService>;
+    let dictionaryHandler: Sinon.SinonStubbedInstance<DictionaryHandler>;
     let socketHandler: Sinon.SinonStubbedInstance<SocketHandler>;
     let boardHandler: Sinon.SinonStubbedInstance<BoardHandler>;
     let statsHandler: Sinon.SinonStubbedInstance<SessionStatsHandler>;
@@ -35,7 +35,7 @@ describe('VirtualPlayerEasy', () => {
 
     beforeEach(() => {
         reserveHandler = createStubInstance(ReserveHandler);
-        dictionaryService = createStubInstance(DictionaryService);
+        dictionaryHandler = createStubInstance(DictionaryHandler);
         socketHandler = createStubInstance(SocketHandler);
         boardHandler = createStubInstance(BoardHandler);
         statsHandler = createStubInstance(SessionStatsHandler);
@@ -43,7 +43,7 @@ describe('VirtualPlayerEasy', () => {
         playerInfo = { id: 'test', name: 'mauricetest', isHuman: false };
         runAction = () => null;
 
-        service = new VirtualPlayerEasy(dictionaryService as unknown as DictionaryService, playerInfo, runAction);
+        service = new VirtualPlayerEasy(dictionaryHandler as unknown as DictionaryHandler, playerInfo, runAction);
 
         service.init(
             boardHandler as unknown as BoardHandler,

@@ -1,3 +1,4 @@
+import { DictionaryMetadata } from './dictionary-metadata';
 import { GameType } from './game-type';
 import { GameMode } from './game-mode';
 
@@ -8,6 +9,7 @@ export interface SinglePlayerConfig {
     playerName: string;
     virtualPlayerName: string;
     isRandomBonus: boolean;
+    dictionary: DictionaryMetadata;
 }
 
 export interface MultiplayerCreateConfig {
@@ -16,6 +18,7 @@ export interface MultiplayerCreateConfig {
     playTimeMs: number;
     playerName: string;
     isRandomBonus: boolean;
+    dictionary: DictionaryMetadata;
 }
 
 export interface MultiplayerJoinConfig {

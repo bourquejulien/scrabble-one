@@ -13,7 +13,6 @@ import { SessionStatsHandler } from '@app/handlers/stats-handlers/session-stats-
 import { PlayerInfo } from '@app/classes/player-info';
 import { Action } from '@app/classes/player/virtual-player/actions/action';
 import { VirtualPlayerExpert } from '@app/classes/player/virtual-player/virtual-player-expert/virtual-player-expert';
-import { DictionaryService } from '@app/services/dictionary/dictionary.service';
 
 export class SessionHandler {
     sessionData: SessionData;
@@ -73,8 +72,7 @@ export class SessionHandler {
         this.playerHandler.addPlayer(player);
     }
 
-    // TODO Replace DictionaryService with DictionaryHandler
-    convertWhileRunning(playerId: string, dictionnaryService: DictionaryService): void {
+    convertWhileRunning(playerId: string): void {
         logger.debug(`SessionHandler - convert - PlayerId: ${playerId}`);
 
         const removedPlayer = this.playerHandler.removePlayer(playerId);
@@ -92,7 +90,7 @@ export class SessionHandler {
         };
 
         const actionCallback = (action: Action): Action | null => action.execute();
-        const virtualPlayer = new VirtualPlayerExpert(dictionnaryService, virtualPlayerInfo, actionCallback);
+        const virtualPlayer = new VirtualPlayerExpert(this.boardHandler.dictionaryHandler, virtualPlayerInfo, actionCallback);
 
         this.addPlayer(virtualPlayer);
         this.socketHandler.sendData('opponentQuit');

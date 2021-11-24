@@ -7,7 +7,6 @@ import { PlayerHandler } from '@app/handlers/player-handler/player-handler';
 import { ReserveHandler } from '@app/handlers/reserve-handler/reserve-handler';
 import { SessionHandler } from '@app/handlers/session-handler/session-handler';
 import { BoardGeneratorService } from '@app/services/board/board-generator.service';
-import { DictionaryService } from '@app/services/dictionary/dictionary.service';
 import { SessionHandlingService } from '@app/services/sessionHandling/session-handling.service';
 import { SocketService } from '@app/services/socket/socket-service';
 import { Service } from 'typedi';
@@ -19,13 +18,15 @@ import { GoalHandler } from '@app/handlers/goal-handler/goal-handler';
 import { DisabledGoalHandler } from '@app/handlers/goal-handler/disabled-goal-handler';
 import { Log2990GoalHandler } from '@app/handlers/goal-handler/log2990-goal-handler';
 import { SessionStatsHandler } from '@app/handlers/stats-handlers/session-stats-handler/session-stats-handler';
+import { DictionaryService } from '@app/services/dictionary/dictionary.service';
+import { DictionaryHandler } from '@app/handlers/dictionary-handler/dictionary-handler';
 
 @Service()
 export class GameService {
     constructor(
         private readonly boardGeneratorService: BoardGeneratorService,
         private readonly sessionHandlingService: SessionHandlingService,
-        private readonly dictionnaryService: DictionaryService,
+        private readonly dictionaryService: DictionaryService,
         private readonly socketService: SocketService,
     ) {}
 
@@ -36,8 +37,17 @@ export class GameService {
             gameType: gameConfig.gameType,
         };
 
+        let words: string[] = [];
+        try {
+            words = await this.dictionaryService.getWords(gameConfig.dictionary);
+        } catch (err) {
+            logger.error(`${err.stack}`);
+            return Promise.reject(`${err}`);
+        }
+
         // TODO add a construction service?
-        const boardHandler = this.boardGeneratorService.generateBoardHandler(gameConfig.isRandomBonus);
+        const dictionaryHandler = new DictionaryHandler(words, gameConfig.dictionary);
+        const boardHandler = this.boardGeneratorService.generateBoardHandler(gameConfig.isRandomBonus, dictionaryHandler);
         const reserveHandler = new ReserveHandler();
         const socketHandler = this.socketService.generate(sessionInfo.id);
         const statsHandler = new SessionStatsHandler(socketHandler, reserveHandler, this.getGoalHandler(gameConfig.gameMode));
@@ -74,8 +84,17 @@ export class GameService {
             gameType: gameConfig.gameType,
         };
 
+        let words: string[] = [];
+        try {
+            words = await this.dictionaryService.getWords(gameConfig.dictionary);
+        } catch (err) {
+            logger.error(`${err.stack}`);
+            return Promise.reject(`${err}`);
+        }
+
         // TODO add a construction service?
-        const boardHandler = this.boardGeneratorService.generateBoardHandler(gameConfig.isRandomBonus);
+        const dictionaryHandler = new DictionaryHandler(words, gameConfig.dictionary);
+        const boardHandler = this.boardGeneratorService.generateBoardHandler(gameConfig.isRandomBonus, dictionaryHandler);
         const reserveHandler = new ReserveHandler();
         const socketHandler = this.socketService.generate(sessionInfo.id);
         const statsHandler = new SessionStatsHandler(socketHandler, reserveHandler, this.getGoalHandler(gameConfig.gameMode));
@@ -158,7 +177,7 @@ export class GameService {
 
         if (handler.sessionData.isStarted && handler.sessionData.isActive && handler.sessionInfo.gameType === GameType.Multiplayer) {
             logger.info(`Converting player: ${id}`);
-            handler.convertWhileRunning(id, this.dictionnaryService);
+            handler.convertWhileRunning(id);
         } else {
             handler.dispose();
             this.sessionHandlingService.removeHandler(id);
@@ -177,7 +196,7 @@ export class GameService {
 
     private addVirtualPlayer(playerInfo: PlayerInfo, sessionHandler: SessionHandler): VirtualPlayer {
         const actionCallback = (action: Action): Action | null => action.execute();
-        const virtualPlayer = new VirtualPlayerExpert(this.dictionnaryService, playerInfo, actionCallback);
+        const virtualPlayer = new VirtualPlayerExpert(sessionHandler.boardHandler.dictionaryHandler, playerInfo, actionCallback);
 
         sessionHandler.addPlayer(virtualPlayer);
 

@@ -1,4 +1,4 @@
-/* eslint-disable dot-notation */
+/* eslint-disable dot-notation,@typescript-eslint/no-empty-function */
 /* eslint-disable no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable no-unused-expressions */
@@ -20,6 +20,8 @@ import { Observable } from 'rxjs';
 import { ValidationFailed, ValidationResponse } from '@app/classes/validation/validation-response';
 import { SessionStatsHandler } from '@app/handlers/stats-handlers/session-stats-handler/session-stats-handler';
 import { PlayerStatsHandler } from '@app/handlers/stats-handlers/player-stats-handler/player-stats-handler';
+import { DictionaryHandler } from '@app/handlers/dictionary-handler/dictionary-handler';
+
 const LETTERS = ['a', 'b', 'c', 'd', 'e', 'f', 'g'];
 const RACK = ['a', '*', 'c', 'd', 'e', 'f', 'g'];
 const NOT_FILLED_RACK = ['a', 'b', 'c', 'd', 'e'];
@@ -35,27 +37,18 @@ const VALID_PLACEMENT: Placement[] = [
     { letter: 'c', position: { x: 0, y: 2 } },
 ];
 
-// const ARBITRARY_SCORE = 40;
-// const ARBITRARY_SKIPPED_TURN = 40;
 export class SocketHandlerMock extends SocketHandler {
-    sendData<T>(event: string, data?: T): void {
-        // Does nothing
-    }
+    sendData<T>(event: string, data?: T): void {}
 
-    sendMessage(message: Message): void {
-        // Does nothing
-    }
+    sendMessage(message: Message): void {}
 }
 
 export class SocketServiceMock extends SocketService {
-    init(server: http.Server): void {
-        // Does nothing
-    }
+    init(server: http.Server): void {}
 
-    send<T>(event: string, roomId: string, message?: T) {
-        // Does nothing
-    }
+    send<T>(event: string, roomId: string, message?: T) {}
 }
+
 export class BoardHandlerMock extends BoardHandler {
     lookupLetters(letters: Placement[]): ValidationResponse {
         if (letters === VALID_PLACEMENT) return { isSuccess: true, score: 0, placements: [], words: [] };
@@ -70,6 +63,7 @@ export class BoardHandlerMock extends BoardHandler {
         return placements;
     }
 }
+
 describe('HumanPlayer', () => {
     let playerInfo: PlayerInfo;
     let service: HumanPlayer;
@@ -77,6 +71,7 @@ describe('HumanPlayer', () => {
     let boardValidator: BoardValidator;
     let statsHandlerStub: Sinon.SinonStubbedInstance<SessionStatsHandler>;
     let playerStatsHandlerStub: Sinon.SinonStubbedInstance<PlayerStatsHandler>;
+    let dictionaryHandler: Sinon.SinonStubbedInstance<DictionaryHandler>;
     let boardHandler: BoardHandlerMock;
     let reserveHandler: ReserveHandler;
     let socketServiceMock: SocketServiceMock;
@@ -90,7 +85,8 @@ describe('HumanPlayer', () => {
         boardValidator = createStubInstance(BoardValidator) as unknown as BoardValidator;
         statsHandlerStub = createStubInstance(SessionStatsHandler);
         playerStatsHandlerStub = createStubInstance(PlayerStatsHandler);
-        boardHandler = new BoardHandlerMock(board, boardValidator, false);
+        dictionaryHandler = createStubInstance(DictionaryHandler);
+        boardHandler = new BoardHandlerMock(board, boardValidator, false, dictionaryHandler as unknown as DictionaryHandler);
         reserveHandler = new ReserveHandler();
         socketServiceMock = new SocketServiceMock();
         socketHandlerMock = new SocketHandlerMock(socketServiceMock, '0');

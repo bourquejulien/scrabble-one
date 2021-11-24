@@ -1,12 +1,11 @@
 import { Board, ImmutableBoard } from '@app/classes/board/board';
-import { Dictionary } from '@app/classes/dictionary/dictionary';
 import { Config } from '@app/config';
 import { Bonus, Direction, getBonusDetails, Placement, reverseDirection, Square, Vec2 } from '@common';
+import { Dictionary } from '@app/classes/dictionary/dictionary';
 import { ValidatedLetter, ValidatedWord, ValidationFailed, ValidationResponse } from './validation-response';
 
 export class BoardValidator {
     constructor(private readonly board: ImmutableBoard, private readonly dictionary: Dictionary, private letterPoints: { [key: string]: number }) {}
-
     private static validateSquare(square: Square | null): boolean {
         return square != null && square.letter !== '';
     }
