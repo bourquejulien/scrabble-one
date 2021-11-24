@@ -23,7 +23,7 @@ export class ShortWordHighScore extends BaseGoal implements PlacementNotifier {
     }
 
     notifyPlacement(validationResponse: ValidationResponse, id: string): void {
-        if (!validationResponse.isSuccess || this.isCompleted) {
+        if (!validationResponse.isSuccess || this.guard(id)) {
             return;
         }
 

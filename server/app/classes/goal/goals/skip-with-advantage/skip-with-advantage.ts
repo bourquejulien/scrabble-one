@@ -26,7 +26,7 @@ export class SkipWithAdvantage extends BaseGoal implements SkipNotifier, StatsNo
     }
 
     notifySkip(id: string): void {
-        if (this.successId !== '') {
+        if (this.guard(id)) {
             return;
         }
 
@@ -40,7 +40,7 @@ export class SkipWithAdvantage extends BaseGoal implements SkipNotifier, StatsNo
     notifyStats(stats: PlayerStats, id: string): void {
         this.lastStats.set(id, stats);
 
-        if (this.successId !== '' || !this.isEligible.has(id) || !this.isInAdvance(id)) {
+        if (this.guard(id) || !this.isEligible.has(id) || !this.isInAdvance(id)) {
             this.isEligible.delete(id);
             return;
         }

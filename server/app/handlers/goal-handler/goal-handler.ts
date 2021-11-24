@@ -17,7 +17,7 @@ export abstract class GoalHandler implements PlacementNotifier, ExchangeNotifier
     }
 
     getGoalsData(id: string): GoalData[] {
-        return this.goals.filter((g) => g.isOwner(id)).map((g) => g.getGoalData(id));
+        return this.goals.filter((g) => g.shouldBeDisplayed(id)).map((g) => g.getGoalData(id));
     }
 
     getScore(id: string): number {

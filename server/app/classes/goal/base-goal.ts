@@ -13,21 +13,25 @@ export abstract class BaseGoal {
         this.successId = '';
     }
 
-    isOwner(id: string) {
-        return this.ownerId === '' || this.ownerId === id;
+    shouldBeDisplayed(id: string) {
+        return this.isOwner(id) || this.isCompleted;
     }
 
     getGoalData(id: string): GoalData {
         return {
             id: this.data.id,
-            isGlobal: this.ownerId === '',
             name: this.data.name,
             score: this.data.score,
+            isGlobal: this.ownerId === '',
             status: this.getStatus(id),
         };
     }
 
-    get isCompleted(): boolean {
+    protected guard(id: string) {
+        return !this.isOwner(id) || this.isCompleted;
+    }
+
+    private get isCompleted(): boolean {
         return this.successId !== '';
     }
 
@@ -37,5 +41,9 @@ export abstract class BaseGoal {
         }
 
         return id === this.successId ? GoalStatus.Succeeded : GoalStatus.Failed;
+    }
+
+    private isOwner(id: string) {
+        return this.ownerId === '' || this.ownerId === id;
     }
 }
