@@ -5,21 +5,22 @@
 /* eslint-disable @typescript-eslint/no-magic-numbers */
 /* eslint-disable no-unused-expressions */
 /* eslint-disable @typescript-eslint/no-unused-expressions */
-import { SessionInfo } from '@app/classes/session-info';
-import { GameType, ServerConfig } from '@common';
-import { expect } from 'chai';
-import { createSandbox, createStubInstance } from 'sinon';
-import { BoardHandler } from '@app/handlers/board-handler/board-handler';
-import { ReserveHandler } from '@app/handlers/reserve-handler/reserve-handler';
-import { SessionHandler } from './session-handler';
-import { Player } from '@app/classes/player/player';
+
 import { PlayerData } from '@app/classes/player-data';
 import { PlayerInfo } from '@app/classes/player-info';
-import { Subject } from 'rxjs';
-import { PlayerHandler } from '@app/handlers/player-handler/player-handler';
+import { Player } from '@app/classes/player/player';
+import { SessionInfo } from '@app/classes/session-info';
 import { Config } from '@app/config';
-import { SocketService } from '@app/services/socket/socket-service';
+import { BoardHandler } from '@app/handlers/board-handler/board-handler';
+import { PlayerHandler } from '@app/handlers/player-handler/player-handler';
+import { ReserveHandler } from '@app/handlers/reserve-handler/reserve-handler';
 import { SocketHandler } from '@app/handlers/socket-handler/socket-handler';
+import { SocketService } from '@app/services/socket/socket-service';
+import { GameType, ServerConfig } from '@common';
+import { expect } from 'chai';
+import { Subject } from 'rxjs';
+import { createSandbox, createStubInstance } from 'sinon';
+import { SessionHandler } from './session-handler';
 
 const TIME_MS = 120 * 1000;
 const PLAYER_INFO_A: PlayerInfo = { id: '0', name: 'tester1', isHuman: true };
@@ -228,17 +229,9 @@ describe('SessionHandler', () => {
         }, Config.SESSION.REFRESH_INTERVAL_MS);
     });
 
-    it('abandon should call dispose', () => {
-        const stubDispose = createSandbox().stub(handler, 'dispose' as any);
+    it('abandon should call removePlayer', () => {
         handler.abandonGame('0');
-        expect(stubDispose.called).to.be.true;
-    });
-
-    it('abandon should call dispose but with unavailable player', () => {
-        const stubDispose = createSandbox().stub(handler, 'dispose' as any);
-        handler['playerHandler'].players = [playerA];
-        handler.abandonGame('0');
-        expect(stubDispose.called).to.be.true;
+        expect(handler.sessionInfo.gameType).to.eql(GameType.SinglePlayer);
     });
 
     it('callback in timer should be called', () => {
