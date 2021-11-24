@@ -18,6 +18,7 @@ import { BoardValidator } from '@app/classes/validation/board-validator';
 import { ReserveHandler } from '@app/handlers/reserve-handler/reserve-handler';
 import { Observable } from 'rxjs';
 import { ValidationFailed, ValidationResponse } from '@app/classes/validation/validation-response';
+import { DictionaryHandler } from '@app/handlers/dictionary-handler/dictionary-handler';
 const LETTERS = ['a', 'b', 'c', 'd', 'e', 'f', 'g'];
 const RACK = ['a', '*', 'c', 'd', 'e', 'f', 'g'];
 const NOT_FILLED_RACK = ['a', 'b', 'c', 'd', 'e'];
@@ -71,7 +72,8 @@ export class BoardHandlerMock extends BoardHandler {
 describe('HumanPlayer', () => {
     const board = new Board(SIZE);
     const boardValidator = createStubInstance(BoardValidator) as unknown as BoardValidator;
-    const boardHandler = new BoardHandlerMock(board, boardValidator, false);
+    const dictionaryHandler = createStubInstance(DictionaryHandler) as unknown as DictionaryHandler;
+    const boardHandler = new BoardHandlerMock(board, boardValidator, false, dictionaryHandler);
     let reserveHandler = new ReserveHandler();
     const socketServiceMock = new SocketServiceMock();
     const socketHandlerMock = new SocketHandlerMock(socketServiceMock, '0');

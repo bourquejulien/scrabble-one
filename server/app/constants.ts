@@ -12,4 +12,5 @@ export const Constants = {
         BAD_REQUEST: 400,
         NOT_FOUND: 404,
     },
+    MIN_DICTIONARY_SIZE: 1,
 };

@@ -21,6 +21,7 @@ import { expect } from 'chai';
 import { Subject } from 'rxjs';
 import { createSandbox, createStubInstance } from 'sinon';
 import { SessionHandler } from './session-handler';
+
 const TIME_MS = 120 * 1000;
 const PLAYER_INFO_A: PlayerInfo = { id: '0', name: 'tester1', isHuman: true };
 const PLAYER_INFO_B: PlayerInfo = { id: '1', name: 'tester2', isHuman: false };

@@ -3,10 +3,11 @@ import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 import { TimeSpan } from '@app/classes/time/timespan';
 import { GameService } from '@app/services/game/game.service';
-import { GameType, MultiplayerCreateConfig, SinglePlayerConfig } from '@common';
+import { DictionaryMetadata, GameType, MultiplayerCreateConfig, SinglePlayerConfig } from '@common';
 import { RoomService } from '@app/services/room/room.service';
 import { Constants } from '@app/constants/global.constants';
 import { NameValidator } from '@app/classes/form-validation/name-validator';
+import { AdminService } from '@app/services/admin/admin.service';
 
 interface FormConfig {
     gameType: string;
@@ -34,6 +35,7 @@ export class InitGameComponent implements OnInit {
     minutesList;
     secondsList;
     gameType;
+    dictionary: DictionaryMetadata;
     nameValidator: NameValidator;
     minutes: number;
     seconds: number;
@@ -43,11 +45,12 @@ export class InitGameComponent implements OnInit {
         readonly gameService: GameService,
         private readonly router: Router,
         private readonly roomService: RoomService,
+        public adminService: AdminService,
         readonly dialogRef: MatDialogRef<InitGameComponent>,
         @Inject(MAT_DIALOG_DATA) readonly data: { gameModeType: GameType },
     ) {
         this.gameTypesList = Constants.GAME_TYPES_LIST;
-        this.botNames = Constants.BOT_NAMES;
+        this.botNames = adminService.virtualPlayerNames.beginners;
         this.minutesList = TURN_LENGTH_MINUTES;
         this.secondsList = TURN_LENGTH_SECONDS;
         this.gameType = GameType;
@@ -111,6 +114,7 @@ export class InitGameComponent implements OnInit {
             playerName: this.formConfig.firstPlayerName,
             virtualPlayerName: this.formConfig.secondPlayerName,
             isRandomBonus: this.formConfig.isRandomBonus,
+            dictionary: this.dictionary,
         };
 
         await this.gameService.startSinglePlayer(singlePlayerConfig);
@@ -123,6 +127,7 @@ export class InitGameComponent implements OnInit {
             playTimeMs: this.formConfig.playTime.totalMilliseconds,
             playerName: this.formConfig.firstPlayerName,
             isRandomBonus: this.formConfig.isRandomBonus,
+            dictionary: this.dictionary,
         };
 
         await this.router.navigate(['waiting-room']);

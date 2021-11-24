@@ -1,12 +1,12 @@
 import { HttpException } from '@app/classes/http.exception';
 import { GameController } from '@app/controllers/game/game.controller';
-import { DictionaryService } from '@app/services/dictionary/dictionary.service';
 import cookieParser from 'cookie-parser';
 import cors from 'cors';
 import express from 'express';
 import { StatusCodes } from 'http-status-codes';
 import morgan from 'morgan';
 import { Service } from 'typedi';
+import { AdminController } from './controllers/admin/admin.controller';
 import { PlayerController } from './controllers/player/player.controller';
 import * as logger from 'winston';
 
@@ -18,9 +18,8 @@ export class Application {
     constructor(
         private readonly gameController: GameController,
         private readonly playerController: PlayerController,
-        dictionaryService: DictionaryService,
+        private readonly adminController: AdminController,
     ) {
-        dictionaryService.retrieveDictionary();
         this.internalError = StatusCodes.INTERNAL_SERVER_ERROR;
         this.app = express();
         this.validateEnv();
@@ -31,6 +30,7 @@ export class Application {
     private bindRoutes(): void {
         this.app.use('/api/game', this.gameController.router);
         this.app.use('/api/player', this.playerController.router);
+        this.app.use('/api/admin', this.adminController.router);
         this.errorHandling();
     }
 
