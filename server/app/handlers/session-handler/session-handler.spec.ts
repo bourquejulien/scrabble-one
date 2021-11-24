@@ -168,11 +168,6 @@ describe('SessionHandler', () => {
         // expect(stubPlayerHandler.start.calledOnce).to.be.true;
     });
 
-    it('should remove player', () => {
-        handler.removePlayer('0');
-        expect(stubPlayerHandler.removePlayer.calledOnce).to.be.true;
-    });
-
     it('endgame should call dispose and add rack to score adjustement', () => {
         // const sandbox = createSandbox();
         // const stubDispose = sandbox.stub(handler, 'dispose');
@@ -247,11 +242,6 @@ describe('SessionHandler', () => {
             handler.start();
             expect(handler.sessionData.isActive).to.be.true;
         }, Config.SESSION.REFRESH_INTERVAL_MS);
-    });
-
-    it('abandon should call removePlayer', () => {
-        handler.abandonGame('0');
-        expect(handler.sessionInfo.gameType).to.eql(GameType.SinglePlayer);
     });
 
     it('callback in timer should be called', () => {

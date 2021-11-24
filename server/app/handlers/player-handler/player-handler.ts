@@ -39,6 +39,10 @@ export class PlayerHandler {
         (this.playerSubscriptions.get(removedPlayer.id) as Subscription).unsubscribe();
         this.playerSubscriptions.delete(removedPlayer.id);
 
+        if (removedPlayer.isTurn && this.players.length > 0) {
+            this.nextTurn.next(this.players[0].id);
+        }
+
         return removedPlayer;
     }
 

@@ -10,6 +10,10 @@ import { GameMode, GameType, ServerConfig } from '@common';
 import { Subscription } from 'rxjs';
 import * as logger from 'winston';
 import { SessionStatsHandler } from '@app/handlers/stats-handlers/session-stats-handler/session-stats-handler';
+import { PlayerInfo } from '@app/classes/player-info';
+import { Action } from '@app/classes/player/virtual-player/actions/action';
+import { VirtualPlayerExpert } from '@app/classes/player/virtual-player/virtual-player-expert/virtual-player-expert';
+import { DictionaryService } from '@app/services/dictionary/dictionary.service';
 
 export class SessionHandler {
     sessionData: SessionData;
@@ -69,14 +73,31 @@ export class SessionHandler {
         this.playerHandler.addPlayer(player);
     }
 
-    removePlayer(id: string): Player | null {
-        return this.playerHandler.removePlayer(id);
-    }
+    // TODO Replace DictionaryService with DictionaryHandler
+    convert(playerId: string, dictionnaryService: DictionaryService): void {
+        logger.debug(`SessionHandler - convert - PlayerId: ${playerId}`);
 
-    abandonGame(playerId: string): void {
-        logger.debug(`SessionHandler - Abandon - PlayerId: ${playerId}`);
+        const removedPlayer = this.playerHandler.removePlayer(playerId);
+
+        if (removedPlayer == null) {
+            logger.warn(`Failed to convert player (${playerId})`);
+            return;
+        }
+
         this.sessionInfo.gameType = GameType.SinglePlayer;
-        this.removePlayer(playerId);
+        const virtualPlayerInfo: PlayerInfo = {
+            id: removedPlayer.playerInfo.id,
+            name: removedPlayer.playerInfo.name + ' Virtuel',
+            isHuman: false,
+        };
+
+        const actionCallback = (action: Action): Action | null => action.execute();
+        const virtualPlayer = new VirtualPlayerExpert(dictionnaryService, virtualPlayerInfo, actionCallback);
+
+        this.addPlayer(virtualPlayer);
+        this.socketHandler.sendData('opponentQuit');
+
+        logger.info(`Player converted: ${playerId}`);
     }
 
     private endGame(): void {

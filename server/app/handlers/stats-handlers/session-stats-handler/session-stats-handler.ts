@@ -21,8 +21,13 @@ export class SessionStatsHandler {
         this.subscriptions.push(goalHandler.onUpdate.subscribe(() => this.onUpdatedBonus()));
     }
 
-    generatePlayerStatsHandler(id: string): PlayerStatsHandler {
-        const handler = new PlayerStatsHandler(this.goalHandler, id);
+    getPlayerStatsHandler(id: string): PlayerStatsHandler {
+        let handler = this.playerStatsHandlers.find((h) => h.id === id);
+        if (handler !== undefined) {
+            return handler;
+        }
+
+        handler = new PlayerStatsHandler(this.goalHandler, id);
         this.playerStatsHandlers.push(handler);
         this.subscriptions.push(handler.onUpdate.subscribe(() => this.onUpdatedStats()));
         return handler;

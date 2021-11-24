@@ -95,7 +95,7 @@ describe('HumanPlayer', () => {
         socketServiceMock = new SocketServiceMock();
         socketHandlerMock = new SocketHandlerMock(socketServiceMock, '0');
 
-        statsHandlerStub.generatePlayerStatsHandler.returns(playerStatsHandlerStub as unknown as PlayerStatsHandler);
+        statsHandlerStub.getPlayerStatsHandler.returns(playerStatsHandlerStub as unknown as PlayerStatsHandler);
 
         service.isTurn = true;
         service.init(boardHandler, reserveHandler, socketHandlerMock, statsHandlerStub as unknown as SessionStatsHandler);

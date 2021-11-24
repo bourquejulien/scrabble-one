@@ -26,7 +26,7 @@ export abstract class Player {
         this.boardHandler = boardHandler;
         this.reserveHandler = reserveHandler;
         this.socketHandler = socketHandler;
-        this.statsNotifier = gameStatsHandler.generatePlayerStatsHandler(this.id);
+        this.statsNotifier = gameStatsHandler.getPlayerStatsHandler(this.id);
     }
 
     fillRack(): void {

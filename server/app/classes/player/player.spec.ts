@@ -28,7 +28,7 @@ describe('Player', () => {
     const statsHandler = createStubInstance(SessionStatsHandler);
     const playerStatsHandler = createStubInstance(PlayerStatsHandler);
 
-    statsHandler.generatePlayerStatsHandler.returns(playerStatsHandler as unknown as PlayerStatsHandler);
+    statsHandler.getPlayerStatsHandler.returns(playerStatsHandler as unknown as PlayerStatsHandler);
 
     reserveHandler.drawLetter.returns('a');
     reserveHandler['reserve'] = LETTERS;

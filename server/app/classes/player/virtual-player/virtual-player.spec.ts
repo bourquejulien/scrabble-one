@@ -76,7 +76,7 @@ describe('VirtualPlayer', () => {
         statsHandler = createStubInstance(SessionStatsHandler);
         playerStatsHandler = createStubInstance(PlayerStatsHandler);
 
-        statsHandler.generatePlayerStatsHandler.returns(playerStatsHandler as unknown as PlayerStatsHandler);
+        statsHandler.getPlayerStatsHandler.returns(playerStatsHandler as unknown as PlayerStatsHandler);
 
         actionRunner = new ActionRunner();
         service = new VirtualPlayerTester(actionRunner);
