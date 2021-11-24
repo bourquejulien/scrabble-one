@@ -61,7 +61,6 @@ export class BoardService {
     }
 
     isPositionAvailable(position: Vec2): boolean {
-        console.log(position);
         if (position.x === this.boardData.board.length + 1 || position.y === this.boardData.board.length + 1) {
             return true;
         }

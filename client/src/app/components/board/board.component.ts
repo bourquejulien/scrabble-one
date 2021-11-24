@@ -65,8 +65,6 @@ export class BoardComponent implements OnChanges, AfterViewInit {
         } else {
             this.handleKeyPress(event.key);
             const validKey: boolean = this.squareSelected && this.isLetter && this.placeLetterService.inGrid(this.placeLetterService.gridPosition);
-            console.log(this.placeLetterService.gridPosition);
-            console.log(lastSquare);
             if (validKey && !lastSquare) {
                 this.handleKeyDown(lastSquare);
             }
