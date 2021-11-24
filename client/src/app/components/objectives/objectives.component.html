@@ -1,4 +1,4 @@
-<mat-table [dataSource]="publicObjectives" class="table mat-elevation-z8">
+<mat-table [dataSource]="this.goalService.publicObjectives" class="table mat-elevation-z8" #tablePublic>
     <ng-container matColumnDef="objectives">
         <mat-header-cell *matHeaderCellDef class="header"> Objectifs Publics </mat-header-cell>
         <mat-cell
@@ -45,7 +45,7 @@
     <mat-row *matRowDef="let row; columns: displayedColumns"></mat-row>
 </mat-table>
 
-<mat-table [dataSource]="privateObjectives" class="table mat-elevation-z8">
+<mat-table [dataSource]="this.goalService.privateObjectives" class="table mat-elevation-z8" #tablePrivate>
     <ng-container matColumnDef="objectives">
         <mat-header-cell *matHeaderCellDef class="header"> Objectifs Privés </mat-header-cell>
         <mat-cell
