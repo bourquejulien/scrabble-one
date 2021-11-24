@@ -113,7 +113,7 @@ describe('VirtualPlayer', () => {
         const stubFill = sandbox.stub(service, 'fillRack');
         sandboxTimer.stub(Timer, 'delay').returns(Promise.resolve());
         await service.startTurn();
-        sandbox.assert.calledOnce(stubFill);
+        sandbox.assert.calledTwice(stubFill);
     });
 
     it('starting turn should eventually end turn', async () => {
