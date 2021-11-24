@@ -53,7 +53,7 @@ class StubSessionHandler {
 
     dispose() {}
 
-    convert(playerId: string, dictionnaryService: DictionaryService): void {
+    convertWhileRunning(playerId: string, dictionnaryService: DictionaryService): void {
         this.convertCalled = true;
     }
 }
@@ -198,7 +198,7 @@ describe('GameService', () => {
         expect(answer).to.be.true;
     });
 
-    it('abandon should call convertGame when game is multiplayer and started', async () => {
+    it('abandon should call convertWhileRunning when game is multiplayer and started', async () => {
         const playerStub = createStubInstance(HumanPlayer);
         stub(playerStub, 'id').get(() => {
             return '';

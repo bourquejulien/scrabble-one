@@ -158,7 +158,7 @@ export class GameService {
 
         if (handler.sessionData.isStarted && handler.sessionData.isActive && handler.sessionInfo.gameType === GameType.Multiplayer) {
             logger.info(`Converting player: ${id}`);
-            handler.convert(id, this.dictionnaryService);
+            handler.convertWhileRunning(id, this.dictionnaryService);
         } else {
             handler.dispose();
             this.sessionHandlingService.removeHandler(id);

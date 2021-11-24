@@ -74,7 +74,7 @@ export class SessionHandler {
     }
 
     // TODO Replace DictionaryService with DictionaryHandler
-    convert(playerId: string, dictionnaryService: DictionaryService): void {
+    convertWhileRunning(playerId: string, dictionnaryService: DictionaryService): void {
         logger.debug(`SessionHandler - convert - PlayerId: ${playerId}`);
 
         const removedPlayer = this.playerHandler.removePlayer(playerId);
