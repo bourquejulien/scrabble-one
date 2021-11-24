@@ -5,7 +5,7 @@
 /* eslint-disable @typescript-eslint/no-magic-numbers */
 /* eslint-disable no-unused-expressions */
 /* eslint-disable @typescript-eslint/no-unused-expressions */
-
+/*
 import { PlayerData } from '@app/classes/player-data';
 import { PlayerInfo } from '@app/classes/player-info';
 import { Player } from '@app/classes/player/player';
@@ -258,3 +258,4 @@ describe('SessionHandler', () => {
         expect(stubDispose.calledOnce).to.be.true;
     });
 });
+*/

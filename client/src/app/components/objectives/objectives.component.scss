@@ -1,8 +1,34 @@
-#container {
-    font-size: large;
-    color: #fff;
-    background-color: #3f51b5;
-    text-align: center;
-    display: flex;
-    width: 20rem;
+.table {
+    width: 22.5rem;
+    background-color: #3F51B5;
+    margin-top: 2rem;
+}
+
+.row-pending {
+    background-color: chocolate;
+    color: white;
+}
+
+.row-succeeded {
+    background-color: #45CB85;
+    color: white;
+}
+
+.row-failed {
+    background-color: #F44336;
+    color: white;
+}
+
+.mat-column-objectives {
+    flex: 9rem;
+    min-width: 9rem;
+}
+
+.mat-column-succeeded {
+    flex: 3rem;
+    max-width: 3rem;
+}
+
+.header {
+    color: white;
 }
