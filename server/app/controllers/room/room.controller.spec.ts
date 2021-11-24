@@ -56,6 +56,7 @@ describe('RoomController', () => {
 
         sessionHandler = createStubInstance(SessionHandler, {});
         sessionHandler.sessionInfo = { id: IDS.session, gameType: GameType.Multiplayer, playTimeMs: 0 };
+        sessionHandler.sessionData = { isActive: false, isStarted: false, timeLimitEpoch: 0 };
 
         stub(sessionHandler, 'players').get(() => []);
 
@@ -160,17 +161,32 @@ describe('RoomController', () => {
     });
 
     it('should join the correct rooms', async () => {
+        const stubSessionHandler = createStubInstance(SessionHandler) as unknown as SessionHandler;
+        stubSessionHandler['sessionInfo'] = {
+            id: '',
+            playTimeMs: 0,
+            gameType: GameType.SinglePlayer,
+        };
+        stubSessionHandler['boardHandler'] = {
+            isRandomBonus: false,
+        } as BoardHandler;
+        stubSessionHandler['playerHandler'] = {
+            players: [{ playerInfo: { name: '' } }],
+        } as PlayerHandler;
+
         controller['handleSockets']();
 
         const clientSocket = new SocketMock();
 
-        const stubSessionHandler = createStubInstance(SessionHandler) as unknown as SessionHandler;
         controller['sessionHandlingService']['sessionHandlers'] = [stubSessionHandler];
 
-        socketServerMock.triggerEndpoint('connection', clientSocket);
-        clientSocket.triggerEndpoint('joinRoom', 'sessionId');
+        stubSessionHandlingService.getSessionId.returns('');
+        stubSessionHandlingService.getAvailableSessions.returns([stubSessionHandler as unknown as SessionHandler]);
 
-        assert.called(stubSessionHandlingService.getSessionId);
+        await socketServerMock.triggerEndpoint('connection', clientSocket);
+        await clientSocket.triggerEndpoint('joinRoom', 'sessionId');
+
+        assert.called(stubSessionHandlingService.getHandlerByPlayerId);
     });
 
     it('should exit room', async () => {

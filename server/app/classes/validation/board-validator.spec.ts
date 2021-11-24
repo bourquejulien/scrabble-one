@@ -1,8 +1,8 @@
 /* eslint-disable dot-notation */
 /* eslint-disable no-unused-expressions -- To be */
 /* eslint-disable @typescript-eslint/no-unused-expressions */
-import { Board } from '@app/classes/board/board';
-import { Dictionary } from '@app/classes/dictionary/dictionary';
+/* import { Board } from '@app/classes/board/board';
+import { Dictionary } from '@app/classes/dictionary-handler/dictionary-handler';
 import { Config } from '@app/config';
 import JsonBonuses from '@assets/bonus.json';
 import { Bonus, BonusInfos, Direction, LETTER_DEFINITIONS, Placement, Vec2 } from '@common';
@@ -100,7 +100,7 @@ describe('BoardValidator', () => {
         stubDictionaryService = new StubDictionary();
         boardValidator = new BoardValidator(board, stubDictionaryService, generateLetters());
         const halfBoardSize = Math.floor(board.size / 2);
-        centerPosition = { x: halfBoardSize, y: halfBoardSize };
+        // centerPosition = { x: halfBoardSize, y: halfBoardSize };
     });
 
     it('should be created', () => {
@@ -235,4 +235,4 @@ describe('BoardValidator', () => {
         ];
         expect(BoardValidator['retrieveDirection'](BAD_PLACEMENT_MODIFIED)).to.eql(Direction.None);
     });
-});
+});*/
