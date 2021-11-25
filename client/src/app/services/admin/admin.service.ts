@@ -3,7 +3,7 @@ import { Injectable } from '@angular/core';
 import { environmentExt } from '@environment-ext';
 import { finalize } from 'rxjs/operators';
 import { Subscription } from 'rxjs';
-import { DictionaryMetadata } from '@common';
+import { DictionaryMetadata, VirtualPlayerLevel } from '@common';
 
 const localUrl = (call: string, id: string) => `${environmentExt.apiUrl}admin/${call}/${id}`;
 interface Playernames {
@@ -93,6 +93,10 @@ export class AdminService {
 
     async resetSettings(): Promise<void> {
         await this.httpClient.get<string[]>(localUrl('reset', '')).toPromise();
+    }
+
+    getVirtualPlayerNamesByLevel(virtualPlayerLevel: VirtualPlayerLevel) {
+        return (virtualPlayerLevel === VirtualPlayerLevel.Easy ? this.virtualPlayerNames.beginners : this.virtualPlayerNames.experts).slice();
     }
 
     get defaultDictionary(): DictionaryMetadata | null {
