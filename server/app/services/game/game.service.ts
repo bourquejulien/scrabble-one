@@ -16,12 +16,21 @@ import { SessionHandler } from '@app/handlers/session-handler/session-handler';
 import { SessionStatsHandler } from '@app/handlers/stats-handlers/session-stats-handler/session-stats-handler';
 import { BoardGeneratorService } from '@app/services/board/board-generator.service';
 import { DictionaryService } from '@app/services/dictionary/dictionary.service';
+import { SessionHandlingService } from '@app/services/session-handling/session-handling.service';
 import { SocketService } from '@app/services/socket/socket-service';
 import { StatsService } from '@app/services/stats/stats.service';
-import { ConvertConfig, GameMode, GameType, MultiplayerCreateConfig, MultiplayerJoinConfig, ServerConfig, SinglePlayerConfig, VirtualPlayerLevel } from '@common';
+import {
+    ConvertConfig,
+    GameMode,
+    GameType,
+    MultiplayerCreateConfig,
+    MultiplayerJoinConfig,
+    ServerConfig,
+    SinglePlayerConfig,
+    VirtualPlayerLevel,
+} from '@common';
 import { Service } from 'typedi';
 import * as logger from 'winston';
-import { SessionHandlingService } from '../session-handling/session-handling.service';
 
 @Service()
 export class GameService {

@@ -26,13 +26,6 @@ export class StatsController {
                     logger.warn('', e);
                     res.sendStatus(Constants.HTTP_STATUS.NOT_FOUND);
                 });
-            this.statsService
-                .scoreToDisplay(DATABASE_COLLECTION_CLASSIC)
-                .then((scores) => {
-                    for (let score of scores.values()) {
-                        logger.debug(score);
-                    }
-                });
         });
 
         this.router.get('/log', (req: Request, res: Response) => {
@@ -42,15 +35,6 @@ export class StatsController {
                 .catch((e) => {
                     logger.warn('', e);
                     res.sendStatus(Constants.HTTP_STATUS.NOT_FOUND);
-                });
-            this.statsService
-                .scoreToDisplay(DATABASE_COLLECTION_LOG)
-                .then((scores) => {
-                    for (let score of scores.values()) {
-
-                        logger.debug(score);
-                    }
-
                 });
         });
     }

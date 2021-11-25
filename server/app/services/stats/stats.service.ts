@@ -5,6 +5,8 @@ import { Service } from 'typedi';
 
 const DATABASE_COLLECTION_CLASSIC = 'classicScoreboard';
 const DATABASE_COLLECTION_LOG = 'logScoreboard';
+const MAX_DOCUMENTS = 5;
+
 @Service()
 export class StatsService {
     constructor(readonly scoreService: ScoreService) {}
@@ -33,25 +35,27 @@ export class StatsService {
     }
 
     async scoreToDisplay(collectionName: string): Promise<Score[]> {
-        let currentScores = await this.groupedScores(collectionName);
+        const currentScores = await this.groupedScores(collectionName);
 
-        let sortedScores = Array.from(currentScores).sort((a: [number, string[]], b: [number, string[]]) => { return (b[0] - a[0]) });
-        sortedScores.splice(5);
+        const sortedScores = Array.from(currentScores).sort((a: [number, string[]], b: [number, string[]]) => {
+            return b[0] - a[0];
+        });
+        sortedScores.splice(MAX_DOCUMENTS);
 
-        let bestScores: Score[] = [];
-        for (let score of sortedScores) {
-            let names = score[1].join(' - ');
-            bestScores.push({ name: names, scoreValue: score[0] })
+        const bestScores: Score[] = [];
+        for (const score of sortedScores) {
+            const names = score[1].join(' - ');
+            bestScores.push({ name: names, scoreValue: score[0] });
         }
         return bestScores;
     }
 
     private async groupedScores(collectionName: string): Promise<Map<number, string[]>> {
-        let scores = collectionName === DATABASE_COLLECTION_CLASSIC ? await this.getScoreboardClassic() : await this.getScoreBoardLog();
-        let scoresToDisplay = new Map<number, string[]>();
+        const scores = collectionName === DATABASE_COLLECTION_CLASSIC ? await this.getScoreboardClassic() : await this.getScoreBoardLog();
+        const scoresToDisplay = new Map<number, string[]>();
 
-        for (let score of scores) {
-            let names = scoresToDisplay.get(score.scoreValue)
+        for (const score of scores) {
+            const names = scoresToDisplay.get(score.scoreValue);
             if (names !== undefined) {
                 names.push(score.name);
                 continue;
