@@ -9,6 +9,10 @@ services:
         <<: *default
         image: mongo
         hostname: mongo
+        environment:
+            - MONGO_INITDB_ROOT_USERNAME=local
+            - MONGO_INITDB_ROOT_PASSWORD=lacol
+            - MONGO_INITDB_DATABASE=default
         volumes:
             - mongo_data:/data/db
 
@@ -19,6 +23,10 @@ services:
             context: ..
             dockerfile: Dockerfile
             target: final
+        environment:
+            - DB_HOST=@mongo/default?retryWrites=true&w=majority
+            - DB_USER=local
+            - DB_PASSWORD=lacol
         hostname: server
         depends_on:
             - mongo

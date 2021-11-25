@@ -6,6 +6,7 @@ import { AppMaterialModule } from '@app/modules/material.module';
 import { GameType } from '@common';
 import { of } from 'rxjs';
 import { GameModePageComponent } from './game-mode-page.component';
+import { RouterTestingModule } from '@angular/router/testing';
 
 @Component({
     selector: 'app-init-game',
@@ -20,7 +21,7 @@ describe('GameModePageComponent', () => {
     beforeEach(async () => {
         await TestBed.configureTestingModule({
             declarations: [GameModePageComponent, StubInitGameComponent],
-            imports: [AppMaterialModule],
+            imports: [AppMaterialModule, RouterTestingModule],
             schemas: [CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA],
             providers: [{ provide: MatDialogRef, useValue: {} }],
         }).compileComponents();
@@ -43,12 +44,6 @@ describe('GameModePageComponent', () => {
         } as MatDialogRef<typeof component>);
         component.openDialog(type);
 
-        expect(spy).toHaveBeenCalled();
-    });
-
-    it('should prompt user for info when new online game created', () => {
-        const spy = spyOn(component, 'openDialog');
-        component.createOnlineGame();
         expect(spy).toHaveBeenCalled();
     });
 

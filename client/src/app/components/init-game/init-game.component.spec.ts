@@ -64,7 +64,7 @@ describe('InitGameComponent', () => {
                 { provide: Router, useValue: routerMock },
                 { provide: GameService, useClass: GameServiceStub },
                 { provide: MatDialogRef, useClass: MatDialogStub },
-                { provide: MAT_DIALOG_DATA, useValue: { gameModeType: GameType.SinglePlayer } },
+                { provide: MAT_DIALOG_DATA, useValue: { gameType: GameType.SinglePlayer } },
             ],
         }).compileComponents();
     });
@@ -130,13 +130,6 @@ describe('InitGameComponent', () => {
         component.manageTimeLimits();
 
         expect(component.seconds).not.toEqual(THIRTY_SECONDS);
-    }));
-
-    it('should not init when pressing something else than enter ', fakeAsync(() => {
-        const keyEvent = new KeyboardEvent('keypress', { key: 'y', cancelable: true });
-        const spy = spyOn(component, 'init').and.callThrough();
-        component.buttonDetect(keyEvent);
-        expect(spy).not.toHaveBeenCalled();
     }));
 
     afterAll(() => cleanStyles());

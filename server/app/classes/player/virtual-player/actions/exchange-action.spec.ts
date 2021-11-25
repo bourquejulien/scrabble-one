@@ -1,21 +1,33 @@
 /* eslint-disable no-unused-expressions */
 /* eslint-disable @typescript-eslint/no-unused-expressions */
-import { PlayerData } from '@app/classes/player-data';
+/* eslint-disable dot-notation */
 import { ReserveHandler } from '@app/handlers/reserve-handler/reserve-handler';
 import { SocketHandler } from '@app/handlers/socket-handler/socket-handler';
 import { expect } from 'chai';
-import { createStubInstance } from 'sinon';
+import Sinon, { createStubInstance } from 'sinon';
 import { ExchangeAction } from './exchange-action';
+import { PlayerStatsHandler } from '@app/handlers/stats-handlers/player-stats-handler/player-stats-handler';
 
 const LETTERS = ['a', 'b', 'c', 'd', 'e', 'f', 'g'];
-/* eslint-disable dot-notation */
+
 describe('Exchange Action', () => {
-    const reserve: ReserveHandler = new ReserveHandler();
-    const socketHandler = createStubInstance(SocketHandler) as unknown as SocketHandler;
-    const playerData: PlayerData = { baseScore: 0, scoreAdjustment: 0, skippedTurns: 0, rack: [] };
-    let action = new ExchangeAction(reserve, socketHandler, playerData, true);
+    let reserveHandler: Sinon.SinonStubbedInstance<ReserveHandler>;
+    let socketHandler: Sinon.SinonStubbedInstance<SocketHandler>;
+    let statsHandler: Sinon.SinonStubbedInstance<PlayerStatsHandler>;
+    let rack: string[];
+    let action: ExchangeAction;
+
     beforeEach(() => {
-        LETTERS.forEach((l) => playerData.rack.push(l));
+        reserveHandler = createStubInstance(ReserveHandler);
+        socketHandler = createStubInstance(SocketHandler);
+        statsHandler = createStubInstance(PlayerStatsHandler);
+
+        reserveHandler.reserve = ['a', 'b', 'c'];
+        rack = [];
+
+        action = new ExchangeAction(reserveHandler, socketHandler as unknown as SocketHandler, statsHandler, rack, true);
+
+        LETTERS.forEach((l) => rack.push(l));
     });
 
     it('should create action', () => {
@@ -23,8 +35,8 @@ describe('Exchange Action', () => {
     });
 
     it('execute should change letters', () => {
-        action = new ExchangeAction(reserve, socketHandler, playerData, true);
+        action = new ExchangeAction(reserveHandler, socketHandler as unknown as SocketHandler, statsHandler, rack, true);
         action.execute();
-        expect(playerData.rack).to.not.eql(LETTERS);
+        expect(rack).to.not.eql(LETTERS);
     });
 });

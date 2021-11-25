@@ -47,9 +47,13 @@ export class Application {
 
     private config(): void {
         // Middlewares configuration
-        if (process.env.NODE_ENV !== 'test') {
-            this.app.use(morgan('dev'));
-        }
+        this.app.use(
+            morgan('dev', {
+                stream: {
+                    write: (msg) => logger.http(msg.slice(0, -1)),
+                },
+            }),
+        );
         this.app.use(express.json());
         this.app.use(express.urlencoded({ extended: true }));
         this.app.use(cookieParser());

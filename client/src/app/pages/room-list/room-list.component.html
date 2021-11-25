@@ -28,6 +28,7 @@
                 <mat-label>Partie classique</mat-label>
                 <h3 matLine>Nom : {{ selectedConfig.waitingPlayerName }}</h3>
                 <h3 matLine>Durée des tours : {{ selectedConfig.playTimeMs | date: 'mm:ss' }}</h3>
+                <h3 matLine>Mode de jeu : {{ selectedConfig.gameMode === gameModeType.Classic ? 'Classique' : 'LOG2990' }}</h3>
                 <h3 matLine>Type de bonus : {{ selectedConfig.isRandomBonus ? 'Aléatoires' : 'Standards' }}</h3>
             </div>
         </mat-card>
@@ -47,7 +48,7 @@
     </div>
 </div>
 
-<button mat-raised-button color="primary" mat-button routerLink="/settings" (click)="reset()" class="exit-button">
+<button mat-raised-button color="primary" mat-button [routerLink]="['/settings', gameMode]" (click)="reset()" class="exit-button">
     Retourner à la selection des modes de jeu
 </button>
 
