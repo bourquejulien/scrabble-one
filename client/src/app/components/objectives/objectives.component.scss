@@ -20,11 +20,13 @@
 }
 
 .mat-column-objectives {
+    height: auto;
     flex: 9rem;
     min-width: 9rem;
 }
 
 .mat-column-succeeded {
+    height: auto;
     flex: 3rem;
     max-width: 3rem;
 }

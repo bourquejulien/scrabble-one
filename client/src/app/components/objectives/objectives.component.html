@@ -37,7 +37,9 @@
                 'row-succeeded': goal.status === 0
             }"
         >
-            {{ goal.status }}
+            <div *ngIf="goal.status === goalStatus.Pending">En cours</div>
+            <div *ngIf="goal.status === goalStatus.Failed">Échoué</div>
+            <div *ngIf="goal.status === goalStatus.Succeeded">Réussi</div>
         </mat-cell>
     </ng-container>
 
@@ -84,7 +86,9 @@
                 'row-succeeded': goal.status === 0
             }"
         >
-            {{ goal.status }}
+            <div *ngIf="goal.status === goalStatus.Pending">En cours</div>
+            <div *ngIf="goal.status === goalStatus.Failed">Échoué</div>
+            <div *ngIf="goal.status === goalStatus.Succeeded">Réussi</div>
         </mat-cell>
     </ng-container>
 

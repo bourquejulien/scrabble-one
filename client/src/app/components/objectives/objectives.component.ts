@@ -1,25 +1,31 @@
-import { Component, OnInit } from '@angular/core';
-import { GoalService, GoalStatus } from '@app/services/goal/goal.service';
-
-export interface GoalData {
-    id: string;
-    isGlobal: boolean;
-    name: string;
-    score: number;
-    status: GoalStatus;
-}
+import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { MatTable } from '@angular/material/table';
+import { GoalService } from '@app/services/goal/goal.service';
+import { GoalStatus } from '@common';
 
 @Component({
     selector: 'app-objectives',
     templateUrl: './objectives.component.html',
     styleUrls: ['./objectives.component.scss'],
 })
-export class ObjectivesComponent implements OnInit {
-    // @ViewChild('tablePublic', { static: false }) private tablePublic!: ElementRef<MatTable<Element>>;
-    // @ViewChild('tablePrivate', { static: false }) private tablePrivate!: ElementRef<MatTable<Element>>;
+export class ObjectivesComponent implements OnInit, OnDestroy {
+    @ViewChild('tablePublic', { static: false }) private tablePublic!: ElementRef<MatTable<Element>>;
+    @ViewChild('tablePrivate', { static: false }) private tablePrivate!: ElementRef<MatTable<Element>>;
     displayedColumns: string[] = ['objectives', 'points', 'succeeded'];
+
     constructor(readonly goalService: GoalService) {}
     ngOnInit() {
-        this.goalService.updateObjectives();
+        this.goalService.goalData.subscribe(() => this.updateTables());
+    }
+    updateTables() {
+        this.tablePublic.nativeElement.renderRows();
+        this.tablePrivate.nativeElement.renderRows();
+    }
+    ngOnDestroy() {
+        this.goalService.goalData.unsubscribe();
+    }
+
+    get goalStatus(): typeof GoalStatus {
+        return GoalStatus;
     }
 }

@@ -1,17 +1,8 @@
 import { Injectable } from '@angular/core';
-import { GoalData } from '@app/components/objectives/objectives.component';
-
-export enum GoalStatus {
-    Succeeded,
-    Failed,
-    Pending,
-}
-
-const GOAL_LIST_TEST: GoalData[] = [
-    { id: 'goal1', isGlobal: true, name: 'ceci est le test dun objectif 1', score: 20, status: GoalStatus.Pending },
-    { id: 'goal2', isGlobal: true, name: 'ceci est le test dun objectif 2', score: 30, status: GoalStatus.Succeeded },
-    { id: 'goal3', isGlobal: false, name: 'ceci est le test dun objectif 3', score: 20, status: GoalStatus.Failed },
-];
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { GoalData, GoalStatus } from '@common';
+import { Subject } from 'rxjs';
+import { SocketClientService } from '../socket-client/socket-client.service';
 
 @Injectable({
     providedIn: 'root',
@@ -19,18 +10,30 @@ const GOAL_LIST_TEST: GoalData[] = [
 export class GoalService {
     publicObjectives: GoalData[];
     privateObjectives: GoalData[];
-    constructor() {
+    goalData: Subject<GoalData[]>;
+    sentSnackBar: string[];
+    constructor(socketService: SocketClientService, private snackBar: MatSnackBar) {
         this.publicObjectives = [];
         this.privateObjectives = [];
+        this.sentSnackBar = [];
+        socketService.on('goals', (goals: GoalData[]) => this.updateObjectives(goals));
     }
 
-    updateObjectives() {
+    updateObjectives(goals: GoalData[]) {
         this.publicObjectives = [];
         this.privateObjectives = [];
-        for (const goal of GOAL_LIST_TEST) {
-            if (goal.isGlobal) {
+        for (const goal of goals) {
+            if (this.isOpponentSucceeded(goal)) {
+                this.sentSnackBar.push(goal.id);
+                const message = `Votre adversaire a complété l'objectif: ${goal.name} lui rapportant un total de ${goal.score}`;
+                this.snackBar.open(message, "D'accord");
+            } else if (goal.isGlobal) {
                 this.publicObjectives.push(goal);
             } else this.privateObjectives.push(goal);
         }
+    }
+
+    private isOpponentSucceeded(goal: GoalData): boolean {
+        return !goal.isGlobal && goal.status === GoalStatus.Failed && !this.sentSnackBar.includes(goal.id);
     }
 }
