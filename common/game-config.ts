@@ -1,8 +1,12 @@
 import { DictionaryMetadata } from './dictionary-metadata';
 import { GameType } from './game-type';
+import { GameMode } from './game-mode';
+import { VirtualPlayerLevel } from './virtual-player-level';
 
 export interface SinglePlayerConfig {
     gameType: GameType;
+    gameMode: GameMode;
+    virtualPlayerLevel: VirtualPlayerLevel;
     playTimeMs: number;
     playerName: string;
     virtualPlayerName: string;
@@ -12,6 +16,7 @@ export interface SinglePlayerConfig {
 
 export interface MultiplayerCreateConfig {
     gameType: GameType;
+    gameMode: GameMode;
     playTimeMs: number;
     playerName: string;
     isRandomBonus: boolean;
@@ -26,20 +31,23 @@ export interface MultiplayerJoinConfig {
 export interface ConvertConfig {
     id: string;
     virtualPlayerName: string;
+    virtualPlayerLevel: VirtualPlayerLevel;
 }
 
 export interface AvailableGameConfig {
     id: string;
+    gameMode: GameMode;
     playTimeMs: number;
-    waitingPlayerName: string,
-    isRandomBonus: boolean,
+    waitingPlayerName: string;
+    isRandomBonus: boolean;
 }
 
 export interface ServerConfig {
-    id: string,
-    startId: string,
-    gameType: GameType,
-    playTimeMs: number,
-    firstPlayerName: string,
-    secondPlayerName: string,
+    id: string;
+    startId: string;
+    gameType: GameType;
+    gameMode: GameMode;
+    playTimeMs: number;
+    firstPlayerName: string;
+    secondPlayerName: string;
 }

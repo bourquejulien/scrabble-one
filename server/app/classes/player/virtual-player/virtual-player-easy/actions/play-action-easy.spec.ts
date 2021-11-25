@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/no-unused-expressions,no-unused-expressions,dot-notation */
-import { PlayerData } from '@app/classes/player-data';
 import { BoardHandler } from '@app/handlers/board-handler/board-handler';
 import { Placement } from '@common';
 import { expect } from 'chai';
@@ -11,6 +10,7 @@ import { Config } from '@app/config';
 import { SocketHandler } from '@app/handlers/socket-handler/socket-handler';
 import { PlaceAction } from '@app/classes/player/virtual-player/actions/place-action';
 import { SkipAction } from '@app/classes/player/virtual-player/actions/skip-action';
+import { PlayerStatsHandler } from '@app/handlers/stats-handlers/player-stats-handler/player-stats-handler';
 
 const VALID_PLACEMENT: Placement[] = [
     { letter: 'B', position: { x: 0, y: 0 } },
@@ -29,11 +29,12 @@ const LETTERS = ['a', 'b', 'c', 'd', 'e', 'f', 'g'];
 describe('PlayActionEasy', () => {
     let boardHandler: Sinon.SinonStubbedInstance<BoardHandler>;
     let socketHandler: Sinon.SinonStubbedInstance<SocketHandler>;
+    let statsHandler: Sinon.SinonStubbedInstance<PlayerStatsHandler>;
     let playGeneratorA: Sinon.SinonStubbedInstance<PlayGenerator>;
     let playGeneratorB: Sinon.SinonStubbedInstance<PlayGenerator>;
     let sandboxRandom: SinonSandbox;
-    let playerData: PlayerData;
     let action: PlayActionEasy;
+    let rack: string[];
 
     beforeEach(() => {
         socketHandler = createStubInstance(SocketHandler);
@@ -43,12 +44,14 @@ describe('PlayActionEasy', () => {
         boardHandler.placeLetters.returns({ isSuccess: false, description: '' });
         boardHandler.retrieveNewLetters.returns(VALID_PLACEMENT);
 
+        statsHandler = createStubInstance(PlayerStatsHandler);
+
         playGeneratorA = createStubInstance(PlayGenerator);
         playGeneratorA.generateNext.returns(false);
         playGeneratorB = createStubInstance(PlayGenerator);
         playGeneratorB.generateNext.returns(false);
 
-        playerData = { baseScore: 0, scoreAdjustment: 0, skippedTurns: 0, rack: [] };
+        rack = [];
 
         stub(playGeneratorA, 'orderedPlays').get(() => {
             return PLAY;
@@ -60,11 +63,12 @@ describe('PlayActionEasy', () => {
         action = new PlayActionEasy(
             boardHandler as unknown as BoardHandler,
             playGeneratorA as unknown as PlayGenerator,
-            playerData,
+            statsHandler,
             socketHandler as unknown as SocketHandler,
+            rack,
         );
 
-        LETTERS.forEach((l) => playerData.rack.push(l));
+        LETTERS.forEach((l) => rack.push(l));
         sandboxRandom = createSandbox();
     });
 
@@ -86,8 +90,9 @@ describe('PlayActionEasy', () => {
         action = new PlayActionEasy(
             boardHandler as unknown as BoardHandler,
             playGeneratorB as unknown as PlayGenerator,
-            playerData,
+            statsHandler,
             socketHandler as unknown as SocketHandler,
+            [],
         );
         const returnValue = action.execute();
         expect(returnValue).to.be.instanceof(SkipAction);
@@ -102,8 +107,9 @@ describe('PlayActionEasy', () => {
         action = new PlayActionEasy(
             boardHandler as unknown as BoardHandler,
             playGeneratorMock as unknown as PlayGenerator,
-            playerData,
+            statsHandler,
             socketHandler as unknown as SocketHandler,
+            [],
         );
         sandboxRandom.stub(Math, 'random').returns(0);
         const returnValue = action.execute();

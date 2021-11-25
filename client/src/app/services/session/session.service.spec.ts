@@ -3,7 +3,7 @@
 import { TestBed } from '@angular/core/testing';
 import { TimeSpan } from '@app/classes/time/timespan';
 import { SessionService } from '@app/services/session/session.service';
-import { GameType } from '@common';
+import { GameMode, GameType } from '@common';
 
 describe('SessionService', () => {
     let service: SessionService;
@@ -30,6 +30,7 @@ describe('SessionService', () => {
         const serverConfig = {
             id: '1',
             startId: '2',
+            gameMode: GameMode.Classic,
             gameType: GameType.Multiplayer,
             playTimeMs: 5,
             firstPlayerName: 'Ligma',

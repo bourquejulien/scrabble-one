@@ -6,6 +6,8 @@ import { AppMaterialModule } from '@app/modules/material.module';
 import { GameType } from '@common';
 import { of } from 'rxjs';
 import { GameModePageComponent } from './game-mode-page.component';
+import { RouterTestingModule } from '@angular/router/testing';
+import { AdminService } from '@app/services/admin/admin.service';
 
 @Component({
     selector: 'app-init-game',
@@ -18,11 +20,16 @@ describe('GameModePageComponent', () => {
     let fixture: ComponentFixture<GameModePageComponent>;
 
     beforeEach(async () => {
+        const stubbedAdminService = jasmine.createSpyObj('AdminService', ['retrieveDictionaries', 'retrieveUsernames'], { defaultDictionary: {} });
+
         await TestBed.configureTestingModule({
             declarations: [GameModePageComponent, StubInitGameComponent],
-            imports: [AppMaterialModule],
+            imports: [AppMaterialModule, RouterTestingModule],
             schemas: [CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA],
-            providers: [{ provide: MatDialogRef, useValue: {} }],
+            providers: [
+                { provide: MatDialogRef, useValue: {} },
+                { provide: AdminService, useValue: stubbedAdminService },
+            ],
         }).compileComponents();
     });
 
@@ -36,19 +43,13 @@ describe('GameModePageComponent', () => {
         expect(component).toBeTruthy();
     });
 
-    it('should open dialog window when new online game created', () => {
+    it('should open dialog window when new online game created', async () => {
         const type = GameType.Multiplayer;
         const spy = spyOn(component.dialog, 'open').and.returnValue({
             afterClosed: () => of(true),
         } as MatDialogRef<typeof component>);
-        component.openDialog(type);
+        await component.openDialog(type);
 
-        expect(spy).toHaveBeenCalled();
-    });
-
-    it('should prompt user for info when new online game created', () => {
-        const spy = spyOn(component, 'openDialog');
-        component.createOnlineGame();
         expect(spy).toHaveBeenCalled();
     });
 

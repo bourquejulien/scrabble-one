@@ -1,34 +1,26 @@
-/* eslint-disable @typescript-eslint/no-useless-constructor */
+/* eslint-disable @typescript-eslint/no-useless-constructor,no-unused-vars,@typescript-eslint/no-empty-function */
 /* eslint-disable dot-notation */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable no-unused-expressions -- Needed for chai library assertions */
 /* eslint-disable @typescript-eslint/no-unused-expressions */
-import { expect } from 'chai';
-import Sinon, { assert, createSandbox, createStubInstance, stub } from 'sinon';
-import { GameService } from '@app/services/game/game.service';
 import { BoardGeneratorService } from '@app/services/board/board-generator.service';
-import { SessionHandlingService } from '@app/services/sessionHandling/session-handling.service';
-import { SocketService } from '@app/services/socket/socket-service';
-import {
-    ConvertConfig,
-    // DictionaryMetadata,
-    GameType,
-    // MultiplayerCreateConfig,
-    MultiplayerJoinConfig,
-    ServerConfig,
-    // SinglePlayerConfig,
-} from '@common';
 import { SessionHandler } from '@app/handlers/session-handler/session-handler';
 import { HumanPlayer } from '@app/classes/player/human-player/human-player';
 import { Player } from '@app/classes/player/player';
 import { SessionData } from '@app/classes/session-data';
 import { SessionInfo } from '@app/classes/session-info';
 import { DictionaryService } from '@app/services/dictionary/dictionary.service';
+import { GameService } from '@app/services/game/game.service';
+import { SessionHandlingService } from '@app/services/sessionHandling/session-handling.service';
+import { SocketService } from '@app/services/socket/socket-service';
+import { ConvertConfig, GameMode, GameType, MultiplayerJoinConfig, ServerConfig, VirtualPlayerLevel } from '@common';
+import { expect } from 'chai';
+import Sinon, { assert, createStubInstance, stub } from 'sinon';
 
 class StubSessionHandler {
     players: Player[] = [];
     addedPlayers: Player[] = [];
-    abandonCalled: boolean = false;
+    convertCalled: boolean = false;
     sessionData: SessionData = {
         isActive: false,
         isStarted: false,
@@ -45,14 +37,13 @@ class StubSessionHandler {
         this.addedPlayers.push(player);
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-empty-function
     start() {}
 
-    // eslint-disable-next-line no-unused-vars
     getServerConfig(id: string): ServerConfig {
         return {
             id,
             startId: '',
+            gameMode: GameMode.Classic,
             gameType: GameType.SinglePlayer,
             playTimeMs: 0,
             firstPlayerName: '',
@@ -60,37 +51,28 @@ class StubSessionHandler {
         };
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-empty-function
     dispose() {}
 
-    abandonGame() {
-        this.abandonCalled = true;
+    convertWhileRunning(playerId: string, dictionnaryService: DictionaryService): void {
+        this.convertCalled = true;
     }
 }
 
-// const dictionary: DictionaryMetadata = {
-//     description: 'Blablabla',
-//     id: 'dictionary.json',
-//     nbWords: 1024,
-//     title: 'My cool dictionary',
-// };
-// const BASE_SCORE = 10;
-
 // const singlePlayerConfig: SinglePlayerConfig = {
 //     gameType: GameType.SinglePlayer,
+//     gameMode: GameMode.Classic,
 //     playTimeMs: 0,
 //     playerName: 'test1',
 //     virtualPlayerName: 'test2',
 //     isRandomBonus: true,
-//     dictionary,
 // };
 //
 // const multiplayerCreateConfig: MultiplayerCreateConfig = {
 //     gameType: GameType.SinglePlayer,
+//     gameMode: GameMode.Classic,
 //     playTimeMs: 0,
 //     playerName: 'test1',
 //     isRandomBonus: true,
-//     dictionary,
 // };
 
 const multiplayerJoinConfig: MultiplayerJoinConfig = {
@@ -100,6 +82,7 @@ const multiplayerJoinConfig: MultiplayerJoinConfig = {
 
 const convertConfig: ConvertConfig = {
     id: '438f98gser89dg',
+    virtualPlayerLevel: VirtualPlayerLevel.Easy,
     virtualPlayerName: 'test1',
 };
 
@@ -216,7 +199,7 @@ describe('GameService', () => {
         expect(answer).to.be.true;
     });
 
-    it('abandon should call humanToVirtual when game is multiplayer and started', async () => {
+    it('abandon should call convertWhileRunning when game is multiplayer and started', async () => {
         const playerStub = createStubInstance(HumanPlayer);
         stub(playerStub, 'id').get(() => {
             return '';
@@ -226,29 +209,8 @@ describe('GameService', () => {
         sessionHandlerStub.sessionData.isActive = true;
         sessionHandlerStub.sessionData.isStarted = true;
         sessionHandlingStub.getHandlerByPlayerId.returns(sessionHandlerStub as unknown as SessionHandler);
-        const stubHumanToVirtual = createSandbox().stub(service, 'humanToVirtualPlayer' as any);
         await service.abandon('');
-        expect(stubHumanToVirtual.called).to.be.true;
-    });
-
-    it('humanToVirtual should call addVirtualPlayer if player is found', () => {
-        const playerStub = createStubInstance(HumanPlayer);
-        playerStub.skipTurn.returns({ isSuccess: true, body: '' });
-        playerStub.playerInfo = { id: '', name: 'test1', isHuman: true };
-        sessionHandlerStub.players = [playerStub as unknown as HumanPlayer];
-        const addVPStub = createSandbox().stub(service, 'addVirtualPlayer' as any);
-        service['humanToVirtualPlayer'](sessionHandlerStub as unknown as SessionHandler, playerStub.id);
-        expect(addVPStub.called).to.be.true;
-    });
-
-    it('humanToVirtual should not call addVirtualPlayer if player is found', () => {
-        const playerStub = createStubInstance(HumanPlayer);
-        playerStub.skipTurn.returns({ isSuccess: true, body: '' });
-        playerStub.playerInfo = { id: '', name: 'test1', isHuman: true };
-        sessionHandlerStub.players = [playerStub as unknown as HumanPlayer];
-        const addVPStub = createSandbox().stub(service, 'addVirtualPlayer' as any);
-        service['humanToVirtualPlayer'](sessionHandlerStub as unknown as SessionHandler, 'Failing Test');
-        expect(addVPStub.called).to.be.false;
+        expect(sessionHandlerStub.convertCalled).to.be.true;
     });
 
     // it('addVirtualPlayer should specify playerData if argument is specified', () => {

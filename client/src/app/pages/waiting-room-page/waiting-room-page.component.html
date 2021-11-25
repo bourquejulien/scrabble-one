@@ -2,8 +2,8 @@
     <div class="selector">
         <mat-form-field class="difficulty-selector">
             <mat-label>Profil du JV</mat-label>
-            <mat-select [ngModel]="gameTypesList[0]">
-                <mat-option *ngFor="let gameType of gameTypesList" [value]="gameType">{{ gameType }}</mat-option>
+            <mat-select [(ngModel)]="virtualPlayerLevelName">
+                <mat-option *ngFor="let gameType of virtualPlayerLevelNames" [value]="gameType">{{ gameType }}</mat-option>
             </mat-select>
         </mat-form-field>
         <button mat-button class="convertion" (click)="convertToSoloMode()">Convertir en partie solo</button>

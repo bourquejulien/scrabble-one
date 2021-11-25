@@ -28,7 +28,7 @@ describe('PlayerController', () => {
             id: '1',
             isTurn: false,
             playerInfo: { id: '1', isHuman: true, name: 'Monique' },
-            playerData: { rack },
+            rack,
         } as Player;
         const player2: HumanPlayer = {
             id: '2',

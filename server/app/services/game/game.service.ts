@@ -1,21 +1,35 @@
 import { generateId } from '@app/classes/id';
-import { PlayerData } from '@app/classes/player-data';
 import { PlayerInfo } from '@app/classes/player-info';
 import { HumanPlayer } from '@app/classes/player/human-player/human-player';
 import { Action } from '@app/classes/player/virtual-player/actions/action';
 import { VirtualPlayer } from '@app/classes/player/virtual-player/virtual-player';
-import { VirtualPlayerExpert } from '@app/classes/player/virtual-player/virtual-player-expert/virtual-player-expert';
 import { PlayerHandler } from '@app/handlers/player-handler/player-handler';
 import { ReserveHandler } from '@app/handlers/reserve-handler/reserve-handler';
 import { SessionHandler } from '@app/handlers/session-handler/session-handler';
 import { BoardGeneratorService } from '@app/services/board/board-generator.service';
 import { SessionHandlingService } from '@app/services/sessionHandling/session-handling.service';
 import { SocketService } from '@app/services/socket/socket-service';
-import { ConvertConfig, GameType, MultiplayerCreateConfig, MultiplayerJoinConfig, ServerConfig, SinglePlayerConfig } from '@common';
 import { Service } from 'typedi';
+import {
+    ConvertConfig,
+    GameMode,
+    GameType,
+    MultiplayerCreateConfig,
+    MultiplayerJoinConfig,
+    ServerConfig,
+    SinglePlayerConfig,
+    VirtualPlayerLevel,
+} from '@common';
+import { VirtualPlayerExpert } from '@app/classes/player/virtual-player/virtual-player-expert/virtual-player-expert';
 import * as logger from 'winston';
+import { SessionInfo } from '@app/classes/session-info';
+import { GoalHandler } from '@app/handlers/goal-handler/goal-handler';
+import { DisabledGoalHandler } from '@app/handlers/goal-handler/disabled-goal-handler';
+import { Log2990GoalHandler } from '@app/handlers/goal-handler/log2990-goal-handler';
+import { SessionStatsHandler } from '@app/handlers/stats-handlers/session-stats-handler/session-stats-handler';
 import { DictionaryService } from '@app/services/dictionary/dictionary.service';
 import { DictionaryHandler } from '@app/handlers/dictionary-handler/dictionary-handler';
+import { VirtualPlayerEasy } from '@app/classes/player/virtual-player/virtual-player-easy/virtual-player-easy';
 
 @Service()
 export class GameService {
@@ -27,11 +41,12 @@ export class GameService {
     ) {}
 
     async initSinglePlayer(gameConfig: SinglePlayerConfig): Promise<ServerConfig> {
-        const sessionInfo = {
+        const sessionInfo: SessionInfo = {
             id: generateId(),
             playTimeMs: gameConfig.playTimeMs,
             gameType: gameConfig.gameType,
         };
+
         let words: string[] = [];
         try {
             words = await this.dictionaryService.getWords(gameConfig.dictionary);
@@ -39,11 +54,15 @@ export class GameService {
             logger.error(`${err.stack}`);
             return Promise.reject(`${err}`);
         }
+
+        // TODO add a construction service?
         const dictionaryHandler = new DictionaryHandler(words, gameConfig.dictionary);
         const boardHandler = this.boardGeneratorService.generateBoardHandler(gameConfig.isRandomBonus, dictionaryHandler);
         const reserveHandler = new ReserveHandler();
+        const socketHandler = this.socketService.generate(sessionInfo.id);
+        const statsHandler = new SessionStatsHandler(socketHandler, reserveHandler, this.getGoalHandler(gameConfig.gameMode));
 
-        const sessionHandler = new SessionHandler(sessionInfo, boardHandler, reserveHandler, new PlayerHandler(), this.socketService);
+        const sessionHandler = new SessionHandler(sessionInfo, boardHandler, reserveHandler, new PlayerHandler(), socketHandler, statsHandler);
 
         const humanPlayerInfo: PlayerInfo = {
             id: generateId(),
@@ -58,7 +77,7 @@ export class GameService {
         };
 
         const humanPlayer = this.addHumanPlayer(humanPlayerInfo, sessionHandler);
-        this.addVirtualPlayer(virtualPlayerInfo, sessionHandler);
+        this.addVirtualPlayer(gameConfig.virtualPlayerLevel, virtualPlayerInfo, sessionHandler);
         this.sessionHandlingService.addHandler(sessionHandler);
 
         sessionHandler.sessionData.isActive = true;
@@ -69,7 +88,7 @@ export class GameService {
     }
 
     async initMultiplayer(gameConfig: MultiplayerCreateConfig): Promise<string> {
-        const sessionInfo = {
+        const sessionInfo: SessionInfo = {
             id: generateId(),
             playTimeMs: gameConfig.playTimeMs,
             gameType: gameConfig.gameType,
@@ -82,11 +101,15 @@ export class GameService {
             logger.error(`${err.stack}`);
             return Promise.reject(`${err}`);
         }
+
+        // TODO add a construction service?
         const dictionaryHandler = new DictionaryHandler(words, gameConfig.dictionary);
         const boardHandler = this.boardGeneratorService.generateBoardHandler(gameConfig.isRandomBonus, dictionaryHandler);
         const reserveHandler = new ReserveHandler();
+        const socketHandler = this.socketService.generate(sessionInfo.id);
+        const statsHandler = new SessionStatsHandler(socketHandler, reserveHandler, this.getGoalHandler(gameConfig.gameMode));
 
-        const sessionHandler = new SessionHandler(sessionInfo, boardHandler, reserveHandler, new PlayerHandler(), this.socketService);
+        const sessionHandler = new SessionHandler(sessionInfo, boardHandler, reserveHandler, new PlayerHandler(), socketHandler, statsHandler);
 
         const humanPlayerInfo: PlayerInfo = {
             id: generateId(),
@@ -131,7 +154,7 @@ export class GameService {
     async convert(convertConfig: ConvertConfig): Promise<ServerConfig | null> {
         const handler = this.sessionHandlingService.getHandlerByPlayerId(convertConfig.id);
 
-        if (handler == null) {
+        if (handler == null || handler.sessionInfo.gameType !== GameType.Multiplayer) {
             logger.warn(`Cannot convert game to single player mode - playerId: ${convertConfig.id}`);
             return null;
         }
@@ -143,7 +166,7 @@ export class GameService {
         };
 
         handler.sessionInfo.gameType = GameType.SinglePlayer;
-        this.addVirtualPlayer(virtualPlayerInfo, handler);
+        this.addVirtualPlayer(convertConfig.virtualPlayerLevel, virtualPlayerInfo, handler);
         this.sessionHandlingService.updateEntries(handler);
 
         handler.start();
@@ -154,14 +177,17 @@ export class GameService {
     }
 
     async abandon(id: string): Promise<boolean> {
+        logger.debug(`Abandon - PlayerId: ${id}`);
         const handler = this.sessionHandlingService.getHandlerByPlayerId(id);
+
         if (handler == null) {
-            logger.warn(`Failed to stop game: ${id}`);
+            logger.warn(`Failed to abandon game: ${id}`);
             return false;
         }
 
-        if (handler.sessionData.isStarted && handler.sessionInfo.gameType === GameType.Multiplayer) {
-            this.humanToVirtualPlayer(handler, id);
+        if (handler.sessionData.isStarted && handler.sessionData.isActive && handler.sessionInfo.gameType === GameType.Multiplayer) {
+            logger.info(`Converting player: ${id}`);
+            handler.convertWhileRunning(id);
         } else {
             handler.dispose();
             this.sessionHandlingService.removeHandler(id);
@@ -171,26 +197,6 @@ export class GameService {
         return true;
     }
 
-    private humanToVirtualPlayer(handler: SessionHandler, playerId: string): boolean {
-        const player = handler.players.find((p) => p.id === playerId) as HumanPlayer;
-        if (player) {
-            player.skipTurn();
-            const newName = player.playerInfo.name + ' Virtuel';
-            handler.abandonGame(playerId);
-            this.socketService.send('opponentQuit', handler.sessionInfo.id);
-            const virtualPlayerInfo: PlayerInfo = {
-                id: generateId(),
-                name: newName,
-                isHuman: false,
-            };
-            this.addVirtualPlayer(virtualPlayerInfo, handler, player.playerData);
-            logger.info(`Game abandoned: ${playerId}`);
-        } else {
-            logger.warn(`Failed to convert player after abandon: ${playerId}`);
-            return false;
-        }
-        return true;
-    }
     private addHumanPlayer(playerInfo: PlayerInfo, sessionHandler: SessionHandler): HumanPlayer {
         const humanPlayer = new HumanPlayer(playerInfo);
         sessionHandler.addPlayer(humanPlayer);
@@ -198,14 +204,20 @@ export class GameService {
         return humanPlayer;
     }
 
-    private addVirtualPlayer(playerInfo: PlayerInfo, sessionHandler: SessionHandler, playerData?: PlayerData): VirtualPlayer {
+    private addVirtualPlayer(virtualPlayerLevel: VirtualPlayerLevel, playerInfo: PlayerInfo, sessionHandler: SessionHandler): VirtualPlayer {
         const actionCallback = (action: Action): Action | null => action.execute();
-        const virtualPlayer = new VirtualPlayerExpert(sessionHandler.boardHandler.dictionaryHandler, playerInfo, actionCallback);
-        if (playerData) {
-            virtualPlayer.playerData = playerData;
-        }
+
+        const virtualPlayer =
+            virtualPlayerLevel === VirtualPlayerLevel.Easy
+                ? new VirtualPlayerEasy(sessionHandler.boardHandler.dictionaryHandler, playerInfo, actionCallback)
+                : new VirtualPlayerExpert(sessionHandler.boardHandler.dictionaryHandler, playerInfo, actionCallback);
+
         sessionHandler.addPlayer(virtualPlayer);
 
         return virtualPlayer;
+    }
+
+    private getGoalHandler(gameMode: GameMode): GoalHandler {
+        return gameMode === GameMode.Classic ? new DisabledGoalHandler() : new Log2990GoalHandler();
     }
 }

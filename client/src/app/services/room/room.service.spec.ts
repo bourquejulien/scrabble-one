@@ -5,7 +5,7 @@ import { HttpClientTestingModule, HttpTestingController } from '@angular/common/
 import { TestBed } from '@angular/core/testing';
 import { GameService } from '@app/services/game/game.service';
 import { SocketClientService } from '@app/services/socket-client/socket-client.service';
-import { GameType, MultiplayerJoinConfig, ServerConfig } from '@common';
+import { GameType, MultiplayerJoinConfig, ServerConfig, VirtualPlayerLevel } from '@common';
 import { Observable } from 'rxjs';
 import { RoomService } from './room.service';
 import { environmentExt } from '@environment-ext';
@@ -106,11 +106,11 @@ describe('RoomService', () => {
         serverConfigObservableSpyObj.toPromise.and.resolveTo(config);
 
         service['pendingRoomId'] = '';
-        await service['toSinglePlayer']();
+        await service['toSinglePlayer'](VirtualPlayerLevel.Easy);
         expect(socketClientSpyObj.reset).not.toHaveBeenCalled();
 
         service['pendingRoomId'] = 'pendingRoomId';
-        service['toSinglePlayer']().then(() => {
+        service['toSinglePlayer'](VirtualPlayerLevel.Expert).then(() => {
             expect(gameServiceSpyObj.start).toHaveBeenCalled();
             expect(service['pendingRoomId']).toBe('');
         });

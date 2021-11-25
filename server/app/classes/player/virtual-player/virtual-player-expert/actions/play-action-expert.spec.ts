@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/no-unused-expressions,no-unused-expressions */
-import { PlayerData } from '@app/classes/player-data';
 import { BoardHandler } from '@app/handlers/board-handler/board-handler';
 import { Placement } from '@common';
 import { expect } from 'chai';
@@ -11,6 +10,7 @@ import { PlaceAction } from '@app/classes/player/virtual-player/actions/place-ac
 import { PlayActionExpert } from '@app/classes/player/virtual-player/virtual-player-expert/actions/play-action-expert';
 import { ReserveHandler } from '@app/handlers/reserve-handler/reserve-handler';
 import { ExchangeAction } from '@app/classes/player/virtual-player/actions/exchange-action';
+import { PlayerStatsHandler } from '@app/handlers/stats-handlers/player-stats-handler/player-stats-handler';
 
 const VALID_PLACEMENT: Placement[] = [
     { letter: 'B', position: { x: 0, y: 0 } },
@@ -23,11 +23,12 @@ const LETTERS = ['a', 'b', 'c', 'd', 'e', 'f', 'g'];
 describe('PlayActionExpert', () => {
     let boardHandler: Sinon.SinonStubbedInstance<BoardHandler>;
     let socketHandler: Sinon.SinonStubbedInstance<SocketHandler>;
+    let statsHandler: Sinon.SinonStubbedInstance<PlayerStatsHandler>;
     let reserveHandler: ReserveHandler;
     let playGeneratorA: Sinon.SinonStubbedInstance<PlayGenerator>;
     let playGeneratorB: Sinon.SinonStubbedInstance<PlayGenerator>;
     let sandboxRandom: SinonSandbox;
-    let playerData: PlayerData;
+    let rack: string[];
     let action: PlayActionExpert;
 
     beforeEach(() => {
@@ -40,12 +41,14 @@ describe('PlayActionExpert', () => {
 
         reserveHandler = createStubInstance(ReserveHandler);
 
+        statsHandler = createStubInstance(PlayerStatsHandler);
+
         playGeneratorA = createStubInstance(PlayGenerator);
         playGeneratorA.generateNext.returns(false);
         playGeneratorB = createStubInstance(PlayGenerator);
         playGeneratorB.generateNext.returns(false);
 
-        playerData = { baseScore: 0, scoreAdjustment: 0, skippedTurns: 0, rack: [] };
+        rack = [];
 
         stub(playGeneratorA, 'orderedPlays').get(() => {
             return PLAY;
@@ -57,12 +60,13 @@ describe('PlayActionExpert', () => {
         action = new PlayActionExpert(
             boardHandler as unknown as BoardHandler,
             playGeneratorA as unknown as PlayGenerator,
-            playerData,
+            rack,
+            statsHandler,
             socketHandler as unknown as SocketHandler,
             reserveHandler as unknown as ReserveHandler,
         );
 
-        LETTERS.forEach((l) => playerData.rack.push(l));
+        LETTERS.forEach((l) => rack.push(l));
         sandboxRandom = createSandbox();
     });
 
@@ -84,7 +88,8 @@ describe('PlayActionExpert', () => {
         action = new PlayActionExpert(
             boardHandler as unknown as BoardHandler,
             playGeneratorB as unknown as PlayGenerator,
-            playerData,
+            rack,
+            statsHandler,
             socketHandler as unknown as SocketHandler,
             reserveHandler as unknown as ReserveHandler,
         );
@@ -101,7 +106,8 @@ describe('PlayActionExpert', () => {
         action = new PlayActionExpert(
             boardHandler as unknown as BoardHandler,
             playGeneratorA as unknown as PlayGenerator,
-            playerData,
+            rack,
+            statsHandler,
             socketHandler as unknown as SocketHandler,
             reserveHandler as unknown as ReserveHandler,
         );
