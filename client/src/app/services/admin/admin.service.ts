@@ -27,7 +27,7 @@ export class AdminService {
         this.dictionaries = [];
         this.virtualPlayerNames = { experts: [], beginners: [] };
         this.retrieveUsernames();
-        this.retrieveDictionnaries();
+        this.retrieveDictionaries();
     }
 
     uploadFile(file: File) {
@@ -53,10 +53,10 @@ export class AdminService {
     finishUpload() {
         this.uploadSub.unsubscribe();
         this.uploadProgress = 0;
-        this.retrieveDictionnaries();
+        this.retrieveDictionaries();
     }
 
-    async retrieveDictionnaries() {
+    async retrieveDictionaries() {
         this.dictionaries = await this.httpClient.get<DictionaryMetadata[]>(localUrl('dictionary', '')).toPromise();
     }
 

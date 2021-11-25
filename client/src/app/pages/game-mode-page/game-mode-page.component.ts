@@ -26,7 +26,7 @@ export class GameModePageComponent implements OnInit {
 
     async openDialog(gameType: GameType): Promise<void> {
         await this.adminService.retrieveUsernames();
-        await this.adminService.retrieveDictionnaries();
+        await this.adminService.retrieveDictionaries();
 
         if (this.adminService.defaultDictionary === null) {
             throw new Error('Cannot retrieve default dictionnary');
