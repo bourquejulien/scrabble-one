@@ -3,7 +3,7 @@ import { Db, MongoClient } from 'mongodb';
 import { Service } from 'typedi';
 import logger from 'winston';
 
-const DATABASE_URL = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWORD}@${process.env.DB_HOST}`;
+const DATABASE_URL = `mongodb://${process.env.DB_USER}:${process.env.DB_PASSWORD}@${process.env.DB_HOST}`;
 const DATABASE_NAME = 'Scrabble';
 const DATABASE_COLLECTION_CLASSIC = 'classicScoreboard';
 const DATABASE_COLLECTION_LOG = 'logScoreboard';
@@ -26,15 +26,16 @@ export class DatabaseService {
             const countLog = await this.scrabbleDb.collection(DATABASE_COLLECTION_LOG).countDocuments();
 
             if (!countClassic) {
-                this.scrabbleDb.createCollection(DATABASE_COLLECTION_CLASSIC);
+                await this.scrabbleDb.createCollection(DATABASE_COLLECTION_CLASSIC);
                 await this.fillClassicBoardWithDefault();
             }
             if (!countLog) {
-                this.scrabbleDb.createCollection(DATABASE_COLLECTION_LOG);
+                await this.scrabbleDb.createCollection(DATABASE_COLLECTION_LOG);
                 await this.fillLogBoardWithDefault();
             }
-        } catch {
+        } catch (e) {
             await this.client.close();
+            throw e;
         }
     }
 

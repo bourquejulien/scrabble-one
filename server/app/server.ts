@@ -45,8 +45,8 @@ export class Server {
         try {
             await this.databaseService.run();
             logger.info('Successful connection to database');
-        } catch {
-            logger.info('Failed connection to database');
+        } catch (e) {
+            logger.error('Failed connection to database', e);
             process.exit(1);
         }
     }

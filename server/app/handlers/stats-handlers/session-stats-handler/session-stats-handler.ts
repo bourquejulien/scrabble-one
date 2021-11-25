@@ -8,7 +8,8 @@ import { GameMode, MessageType, SessionStats } from '@common';
 import { Log2990GoalHandler } from '@app/handlers/goal-handler/log2990-goal-handler';
 
 export class SessionStatsHandler {
-    private readonly playerStatsHandlers: PlayerStatsHandler[];
+    readonly playerStatsHandlers: PlayerStatsHandler[];
+
     private readonly subscriptions: Subscription[];
 
     constructor(
@@ -53,17 +54,11 @@ export class SessionStatsHandler {
         return this.isOverSkipLimit || (this.reserveHandler.length === 0 && this.rackEmptied);
     }
 
-    // TODO Merge under an interface ?
     get winnerId(): string {
         if (this.playerStatsHandlers[0].stats.points === this.playerStatsHandlers[1].stats.points) {
             return '';
         }
         return this.playerStatsHandlers.reduce((winner, player) => (player.stats.points > winner.stats.points ? player : winner)).id;
-    }
-
-    // TODO Merge under an interface ?
-    get winnerScore(): number {
-        return this.playerStatsHandlers.reduce((winner, player) => (player.stats.points > winner.stats.points ? player : winner)).stats.points;
     }
 
     get gameMode(): GameMode {

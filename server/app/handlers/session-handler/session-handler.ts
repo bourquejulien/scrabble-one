@@ -6,13 +6,14 @@ import { BoardHandler } from '@app/handlers/board-handler/board-handler';
 import { PlayerHandler } from '@app/handlers/player-handler/player-handler';
 import { ReserveHandler } from '@app/handlers/reserve-handler/reserve-handler';
 import { SocketHandler } from '@app/handlers/socket-handler/socket-handler';
-import { GameMode, GameType, ServerConfig } from '@common';
+import { GameMode, GameType, Score, ServerConfig } from '@common';
 import { Subscription } from 'rxjs';
 import * as logger from 'winston';
 import { SessionStatsHandler } from '@app/handlers/stats-handlers/session-stats-handler/session-stats-handler';
 import { PlayerInfo } from '@app/classes/player-info';
 import { Action } from '@app/classes/player/virtual-player/actions/action';
 import { VirtualPlayerExpert } from '@app/classes/player/virtual-player/virtual-player-expert/virtual-player-expert';
+import { PlayerStatsHandler } from '@app/handlers/stats-handlers/player-stats-handler/player-stats-handler';
 import { EndGameData } from '@app/classes/end-game-data';
 
 export class SessionHandler {
@@ -148,15 +149,33 @@ export class SessionHandler {
     }
 
     private get endGameData(): EndGameData {
-        const winnerId = this.statsHandler.winnerId;
-        const winners: Player[] = winnerId === '' ? this.players : this.playerHandler.players.filter((p) => p.id === winnerId);
+        const humanPlayers = this.players.filter((p) => p.playerInfo.isHuman);
+        const scoreNamePair = new Map<number, string[]>();
+
+        for (const player of humanPlayers) {
+            const playerStatsHandler = this.statsHandler.playerStatsHandlers.find((s) => s.id === player.id) as PlayerStatsHandler;
+
+            const score = playerStatsHandler.stats.points;
+            const names = scoreNamePair.get(score);
+            if (names !== undefined) {
+                names.push(player.playerInfo.name);
+                continue;
+            }
+
+            scoreNamePair.set(score, [player.playerInfo.name]);
+        }
+
+        const scores: Score[] = [];
+
+        for (const [scoreValue, name] of scoreNamePair) {
+            scores.push({
+                name,
+                scoreValue,
+            });
+        }
 
         return {
-            winnerScore: {
-                name: winners.map((p) => p.playerInfo.name),
-                scoreValue: this.statsHandler.winnerScore,
-            },
-            isWinnerHuman: winners.map((p) => p.playerInfo.isHuman).reduce((prev, curr) => prev || curr, false),
+            scores,
             gameMode: this.gameMode,
         };
     }

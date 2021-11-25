@@ -40,7 +40,7 @@ export class Application {
     }
 
     private validateEnv(): void {
-        const REQUIRED_ENV_VARIABLES = ['DB_HOST', 'DB_USER', 'DB_PASSWORD'];
+        const REQUIRED_ENV_VARIABLES = ['DB_URL'];
 
         for (const envVariable of REQUIRED_ENV_VARIABLES) {
             if (!(envVariable in process.env)) {
