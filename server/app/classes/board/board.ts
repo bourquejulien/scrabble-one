@@ -54,11 +54,12 @@ export class Board implements ImmutableBoard {
         for (const { letter, position } of letters) {
             this.positionGuard(position);
 
-            if (this.board[position.x][position.y].letter !== '') {
-                throw new BoardMergeError(`Letter is already set at position (${position.x},${position.y})`);
+            if (this.board[position.x][position.y].letter === '') {
+                this.setLetter(letter, position);
+                return;
             }
 
-            this.setLetter(letter, position);
+            throw new BoardMergeError(`Letter is already set at position (${position.x},${position.y})`);
         }
     }
 

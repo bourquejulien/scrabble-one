@@ -63,9 +63,10 @@ export class RackService {
             const position = rack.indexOf(this.rack[i]);
             if (position !== -1) {
                 rack.splice(position, 1);
-            } else {
-                this.rack[i] = '';
+                continue;
             }
+
+            this.rack[i] = '';
         }
 
         for (const letter of rack) {

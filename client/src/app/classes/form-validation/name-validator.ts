@@ -23,7 +23,7 @@ export class NameValidator {
         // We make sure that player name is considered as a string
         const playerName = control.value as string;
 
-        if (playerName === undefined || playerName === null || playerName !== '') {
+        if (playerName === undefined || playerName === null || playerName === '') {
             return null;
         }
 

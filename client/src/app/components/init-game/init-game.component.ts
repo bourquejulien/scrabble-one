@@ -53,7 +53,6 @@ export class InitGameComponent implements OnInit {
         this.typeOfGameType = GameType;
 
         this.gameTypesList = Constants.GAME_TYPES_LIST;
-        // TODO
         this.botNames = adminService.virtualPlayerNames.beginners;
         this.minutesList = TURN_LENGTH_MINUTES;
         this.secondsList = TURN_LENGTH_SECONDS;
@@ -62,7 +61,7 @@ export class InitGameComponent implements OnInit {
         this.minutes = DEFAULT_PLAY_TIME.totalMinutes;
         this.seconds = DEFAULT_PLAY_TIME.seconds;
         this.formConfig = {
-            gameType: this.gameTypesList[0],
+            gameType: Constants.GAME_TYPES_LIST[0],
             playTime: DEFAULT_PLAY_TIME,
             isRandomBonus: false,
             firstPlayerName: '',
