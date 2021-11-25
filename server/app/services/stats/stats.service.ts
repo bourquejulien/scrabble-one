@@ -1,33 +1,33 @@
-import { Player } from '@app/classes/player/player';
-import { PlayerHandler } from '@app/handlers/player-handler/player-handler';
 import { ScoreService } from '@app/services/score/score.service';
-import { Score } from '@common';
+import { GameMode, Score } from '@common';
 import { Service } from 'typedi';
 import logger from 'winston';
+import { EndGameData } from '@app/classes/end-game-data';
+
+const DATABASE_COLLECTION_CLASSIC = 'classicScoreboard';
+const DATABASE_COLLECTION_LOG = 'logScoreboard';
 
 @Service()
 export class StatsService {
     constructor(readonly scoreService: ScoreService) {}
 
-    async updateScoreboards(playerHandler: PlayerHandler, collectionName: string): Promise<void> {
-        const winnerId = playerHandler.winner;
-        logger.info(`winnerID: ${winnerId}`);
-        const playerWinner: Player = playerHandler.players[0].id === winnerId ? playerHandler.players[0] : playerHandler.players[1];
+    async updateScoreboards(endGameData: EndGameData): Promise<void> {
+        const collectionName = endGameData.gameMode === GameMode.Classic ? DATABASE_COLLECTION_CLASSIC : DATABASE_COLLECTION_LOG
 
         // check if human player
-        logger.info(`isHuman: ${playerWinner.playerInfo.isHuman}`);
-        if (!playerWinner.playerInfo.isHuman) {
+        logger.info(`isHuman: ${endGameData.isWinnerHuman}`);
+        if (!endGameData.isWinnerHuman) {
             return;
         }
 
         // check if already in board and if score in board greater than current score; if not, treat it as if it were a whole new player
-        const isScoreGreater = await this.isNewScoreGreater(playerWinner, collectionName);
+        const isScoreGreater = await this.isNewScoreGreater(endGameData, collectionName);
         logger.info(`isScoreGreater: ${isScoreGreater}`);
-        if (!(await this.isNewScoreGreater(playerWinner, collectionName))) {
+        if (!(await this.isNewScoreGreater(endGameData, collectionName))) {
             return;
         }
 
-        const playersNewBestScore: Score = { name: [playerWinner.playerInfo.name], scoreValue: playerWinner.stats.points };
+        const playersNewBestScore: Score = endGameData.winnerScore;
 
         const isUpdateSameNames = await this.scoreService.updateNamesWithSameScore(playersNewBestScore, collectionName);
         logger.info(`isUpdateSameNames: ${isUpdateSameNames}`);
@@ -49,12 +49,12 @@ export class StatsService {
         return this.scoreService.getScoreboardLog();
     }
 
-    private async isNewScoreGreater(playerWinner: Player, collectionName: string): Promise<boolean> {
-        const isInScoreboard = await this.scoreService.isPlayerInScoreboard(playerWinner.playerInfo.name, collectionName);
+    private async isNewScoreGreater(winnerData: EndGameData, collectionName: string): Promise<boolean> {
+        const isInScoreboard = await this.scoreService.isPlayerInScoreboard(winnerData.winnerScore.name[0], collectionName);
 
         if (isInScoreboard) {
-            const playerScoreInBoard = await this.scoreService.getPlayerScore(playerWinner.playerInfo.name, collectionName);
-            if (playerScoreInBoard > playerWinner.stats.points) {
+            const playerScoreInBoard = await this.scoreService.getPlayerScore(winnerData.winnerScore.name[0], collectionName);
+            if (playerScoreInBoard > winnerData.winnerScore.scoreValue) {
                 return false;
             }
         }

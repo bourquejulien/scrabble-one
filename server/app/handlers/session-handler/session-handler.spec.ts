@@ -15,7 +15,6 @@ import { ReserveHandler } from '@app/handlers/reserve-handler/reserve-handler';
 import { SessionHandler } from './session-handler';
 import { Player } from '@app/classes/player/player';
 import { PlayerInfo } from '@app/classes/player-info';
-import { StatsService } from '@app/services/stats/stats.service';
 import { Subject } from 'rxjs';
 import { PlayerHandler } from '@app/handlers/player-handler/player-handler';
 import { Config } from '@app/config';
@@ -48,7 +47,6 @@ describe('SessionHandler', () => {
     let stubReserveHandler: Sinon.SinonStubbedInstance<ReserveHandler>;
     let stubSocketHandler: Sinon.SinonStubbedInstance<SocketHandler>;
     let stubPlayerHandler: Sinon.SinonStubbedInstance<PlayerHandler>;
-    let stubStatsService: Sinon.SinonStubbedInstance<StatsService>;
 
     let stubStatsHandler: Sinon.SinonStubbedInstance<SessionStatsHandler>;
     let playerStatsHandler1: Sinon.SinonStubbedInstance<PlayerStatsHandler>;
@@ -69,7 +67,6 @@ describe('SessionHandler', () => {
         stubReserveHandler = createStubInstance(ReserveHandler);
         stubSocketHandler = createStubInstance(SocketHandler);
         stubPlayerHandler = createStubInstance(PlayerHandler);
-        stubStatsService = createStubInstance(StatsService);
 
         stubStatsHandler = createStubInstance(SessionStatsHandler);
         playerStatsHandler1 = createStubInstance(PlayerStatsHandler);
@@ -85,7 +82,6 @@ describe('SessionHandler', () => {
             stubBoardHandler as unknown as BoardHandler,
             stubReserveHandler as unknown as ReserveHandler,
             stubPlayerHandler as unknown as PlayerHandler,
-            stubStatsService as unknown as StatsService,
             stubSocketHandler as unknown as SocketHandler,
             stubStatsHandler as unknown as SessionStatsHandler,
         );

@@ -13,9 +13,7 @@ import { SessionStatsHandler } from '@app/handlers/stats-handlers/session-stats-
 import { PlayerInfo } from '@app/classes/player-info';
 import { Action } from '@app/classes/player/virtual-player/actions/action';
 import { VirtualPlayerExpert } from '@app/classes/player/virtual-player/virtual-player-expert/virtual-player-expert';
-
-const DATABASE_COLLECTION_CLASSIC = 'classicScoreboard';
-// const DATABASE_COLLECTION_LOG = 'logScoreboard';
+import { EndGameData } from '@app/classes/end-game-data';
 
 export class SessionHandler {
     sessionData: SessionData;
@@ -29,7 +27,6 @@ export class SessionHandler {
         public reserveHandler: ReserveHandler,
         private playerHandler: PlayerHandler,
         private socketHandler: SocketHandler,
-        private statsService: StatsService,
         private statsHandler: SessionStatsHandler,
     ) {
         this.sessionData = { isActive: false, isStarted: false, timeLimitEpoch: 0 };
@@ -63,12 +60,14 @@ export class SessionHandler {
         logger.info(`Game ${this.sessionInfo.id} started`);
     }
 
-    dispose(): void {
+    dispose(): EndGameData {
         this.sessionData.isActive = false;
         this.sessionData.timeLimitEpoch = 0;
         this.playerHandler.dispose();
         this.playerSubscription.unsubscribe();
         clearInterval(this.timer);
+
+        return this.endGameData;
     }
 
     addPlayer(player: Player): void {
@@ -105,11 +104,12 @@ export class SessionHandler {
     private endGame(): void {
         logger.debug(`SessionHandler - EndGame - Id: ${this.sessionInfo.id}`);
 
-        const winner = this.statsHandler.winner;
+        this.statsHandler.end();
+
+        const winner = this.statsHandler.winnerId;
         this.socketHandler.sendData('endGame', winner);
         logger.debug(`winner: ${winner}`);
 
-        this.statsService.updateScoreboards(this.playerHandler, this.gameMode);
         this.dispose();
     }
 
@@ -145,5 +145,19 @@ export class SessionHandler {
     private refresh(): void {
         this.socketHandler.sendData('board', this.boardHandler.immutableBoard.boardData);
         this.socketHandler.sendData('reserve', this.reserveHandler.reserve);
+    }
+
+    private get endGameData(): EndGameData {
+        const winnerId = this.statsHandler.winnerId;
+        const winners: Player[] = winnerId === '' ? this.players : this.playerHandler.players.filter((p) => p.id === winnerId);
+
+        return {
+            winnerScore: {
+                name: winners.map((p) => p.playerInfo.name),
+                scoreValue: this.statsHandler.winnerScore,
+            },
+            isWinnerHuman: winners.map((p) => p.playerInfo.isHuman).reduce((prev, curr) => prev || curr, false),
+            gameMode: this.gameMode,
+        };
     }
 }

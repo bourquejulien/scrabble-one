@@ -54,7 +54,7 @@ export class RoomController {
         }
 
         await Timer.delay(END_GAME_DELAY_MS);
-        await this.abandonCreatedGame(socket, playerId);
+        await this.convertOrDispose(socket, playerId);
 
         this.socketService.socketServer.emit('availableRooms', this.sessionInfos);
     }
@@ -68,7 +68,7 @@ export class RoomController {
             return;
         }
 
-        this.abandonCreatedGame(socket, playerId);
+        this.convertOrDispose(socket, playerId);
     }
 
     private async onRoomJoined(socket: Socket, playerId: string) {
@@ -136,9 +136,9 @@ export class RoomController {
         }));
     }
 
-    private async abandonCreatedGame(socket: Socket, playerId: string) {
+    private async convertOrDispose(socket: Socket, playerId: string) {
         this.socketIdToPlayerId.delete(socket.id);
-        await this.gameService.abandon(playerId);
+        await this.gameService.convertOrDispose(playerId);
 
         socket.leave(this.sessionHandlingService.getSessionId(playerId));
         socket.leave(playerId);

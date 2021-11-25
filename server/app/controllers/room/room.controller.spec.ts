@@ -318,7 +318,7 @@ describe('RoomController', () => {
         const playerId = 'id';
         const socket = new SocketStub();
 
-        await controller['abandonCreatedGame'](socket as unknown as Socket, playerId);
+        await controller['convertOrDispose'](socket as unknown as Socket, playerId);
         expect(socket.leaveCallCount).to.equal(2);
     });
 });
