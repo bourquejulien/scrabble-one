@@ -33,6 +33,14 @@ export class Server {
     async init(): Promise<void> {
         this.application.app.set('port', Server.appPort);
 
+        try {
+            await this.databaseService.run();
+            logger.info('Successful connection to database');
+        } catch (e) {
+            logger.error('Failed connection to database', e);
+            process.exit(1);
+        }
+
         this.server = http.createServer(this.application.app);
 
         this.socketService.init(this.server);
@@ -41,14 +49,6 @@ export class Server {
         this.server.listen(Server.appPort);
         this.server.on('error', (error: NodeJS.ErrnoException) => this.onError(error));
         this.server.on('listening', () => this.onListening());
-
-        try {
-            await this.databaseService.run();
-            logger.info('Successful connection to database');
-        } catch (e) {
-            logger.error('Failed connection to database', e);
-            process.exit(1);
-        }
     }
 
     private onError(error: NodeJS.ErrnoException): void {
