@@ -149,6 +149,7 @@ describe('GameService', () => {
 
         const gameConfig = {
             gameType: GameType.Multiplayer,
+            gameMode: GameMode.Classic,
             playTime: TimeSpan.fromMinutesSeconds(1, 0),
             firstPlayerName: 'Alphonse',
             secondPlayerName: 'Monique',
@@ -177,6 +178,7 @@ describe('GameService', () => {
     it('should call gameEnding.next with EndGameWinner.Draw', async () => {
         const gameConfig = {
             gameType: GameType.Multiplayer,
+            gameMode: GameMode.Classic,
             playTime: TimeSpan.fromMinutesSeconds(1, 0),
             firstPlayerName: 'Alphonse',
             secondPlayerName: 'Monique',
@@ -194,6 +196,7 @@ describe('GameService', () => {
     it('should call gameEnding.next with EndGameWinner.Remote', async () => {
         const gameConfig = {
             gameType: GameType.Multiplayer,
+            gameMode: GameMode.Classic,
             playTime: TimeSpan.fromMinutesSeconds(1, 0),
             firstPlayerName: 'Alphonse',
             secondPlayerName: 'Monique',
@@ -212,6 +215,7 @@ describe('GameService', () => {
     it('should not call onTurn.next if currentTurn is equal to playerType', async () => {
         const gameConfig = {
             gameType: GameType.SinglePlayer,
+            gameMode: GameMode.Classic,
             playTime: TimeSpan.fromMinutesSeconds(1, 0),
             firstPlayerName: 'Alphonse',
             secondPlayerName: 'Monique',
