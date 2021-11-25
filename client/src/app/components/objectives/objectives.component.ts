@@ -14,15 +14,16 @@ export class ObjectivesComponent implements OnInit, OnDestroy {
     displayedColumns: string[] = ['objectives', 'points', 'succeeded'];
 
     constructor(readonly goalService: GoalService) {}
+
     ngOnInit() {
         this.goalService.goalData.subscribe(() => this.updateTables());
     }
-    updateTables() {
-        this.tablePublic.nativeElement.renderRows();
-        this.tablePrivate.nativeElement.renderRows();
-    }
     ngOnDestroy() {
         this.goalService.goalData.unsubscribe();
+    }
+    private updateTables() {
+        this.tablePublic.nativeElement.renderRows();
+        this.tablePrivate.nativeElement.renderRows();
     }
 
     get goalStatus(): typeof GoalStatus {

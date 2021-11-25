@@ -4,9 +4,9 @@
         <mat-cell
             *matCellDef="let goal"
             [ngClass]="{
-                'row-pending': goal.status === 2,
-                'row-failed': goal.status === 1,
-                'row-succeeded': goal.status === 0
+                'row-pending': goal.status === goalStatus.Pending,
+                'row-failed': goal.status === goalStatus.Failed,
+                'row-succeeded': goal.status === goalStatus.Succeeded
             }"
         >
             {{ goal.name }}
@@ -18,9 +18,9 @@
         <mat-cell
             *matCellDef="let goal"
             [ngClass]="{
-                'row-pending': goal.status === 2,
-                'row-failed': goal.status === 1,
-                'row-succeeded': goal.status === 0
+                'row-pending': goal.status === goalStatus.Pending,
+                'row-failed': goal.status === goalStatus.Failed,
+                'row-succeeded': goal.status === goalStatus.Succeeded
             }"
         >
             {{ goal.score }}
@@ -32,9 +32,9 @@
         <mat-cell
             *matCellDef="let goal"
             [ngClass]="{
-                'row-pending': goal.status === 2,
-                'row-failed': goal.status === 1,
-                'row-succeeded': goal.status === 0
+                'row-pending': goal.status === goalStatus.Pending,
+                'row-failed': goal.status === goalStatus.Failed,
+                'row-succeeded': goal.status === goalStatus.Succeeded
             }"
         >
             <div *ngIf="goal.status === goalStatus.Pending">En cours</div>
@@ -53,9 +53,9 @@
         <mat-cell
             *matCellDef="let goal"
             [ngClass]="{
-                'row-pending': goal.status === 2,
-                'row-failed': goal.status === 1,
-                'row-succeeded': goal.status === 0
+                'row-pending': goal.status === goalStatus.Pending,
+                'row-failed': goal.status === goalStatus.Failed,
+                'row-succeeded': goal.status === goalStatus.Succeeded
             }"
         >
             {{ goal.name }}
@@ -67,9 +67,9 @@
         <mat-cell
             *matCellDef="let goal"
             [ngClass]="{
-                'row-pending': goal.status === 2,
-                'row-failed': goal.status === 1,
-                'row-succeeded': goal.status === 0
+                'row-pending': goal.status === goalStatus.Pending,
+                'row-failed': goal.status === goalStatus.Failed,
+                'row-succeeded': goal.status === goalStatus.Succeeded
             }"
         >
             {{ goal.score }}
@@ -81,9 +81,9 @@
         <mat-cell
             *matCellDef="let goal"
             [ngClass]="{
-                'row-pending': goal.status === 2,
-                'row-failed': goal.status === 1,
-                'row-succeeded': goal.status === 0
+                'row-pending': goal.status === goalStatus.Pending,
+                'row-failed': goal.status === goalStatus.Failed,
+                'row-succeeded': goal.status === goalStatus.Succeeded
             }"
         >
             <div *ngIf="goal.status === goalStatus.Pending">En cours</div>

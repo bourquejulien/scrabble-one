@@ -22,7 +22,7 @@
             </span>
         </mat-card>
     </div>
-    <app-objectives class="objectives" *ngIf="this.sessionService.gameConfig.gameMode === 'Log2990'"></app-objectives>
+    <app-objectives class="objectives" *ngIf="this.sessionService.gameConfig.gameMode === gameMode.Log2990"></app-objectives>
     <div id="tools-container">
         <div class="comm-box-sidenav-content">
             <div class="button-bar" *ngFor="let config of buttonConfig">
