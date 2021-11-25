@@ -3,13 +3,16 @@ import { Request, Response, Router } from 'express';
 import { Constants } from '@app/constants';
 import { IncomingForm } from 'formidable';
 import { tmpdir } from 'os';
+import md5 from 'md5';
 import * as logger from 'winston';
 import { DictionaryService } from '@app/services/dictionary/dictionary.service';
+import path from 'path';
+import { promises } from 'fs';
 interface Playernames {
     experts: string[];
     beginners: string[];
 }
-const UPLOAD_DIR = /* process.env.UPLOAD_DIR ?? */ tmpdir();
+const UPLOAD_DIR = process.env.UPLOAD_DIR ?? tmpdir();
 @Service()
 export class AdminController {
     readonly defaultBotNames: Playernames = {
@@ -42,13 +45,17 @@ export class AdminController {
                     return;
                 }
                 logger.debug(`Dictionary uploaded : ${file.filepath}`);
+                const id = md5(path.basename(file.filepath));
+                const newFilepath = path.resolve(path.join(UPLOAD_DIR, id));
+                await promises.rename(file.filepath, newFilepath);
+                logger.debug(`Dictionary moved/renamed to ${newFilepath}`);
                 try {
-                    await this.dictionaryService.parse(file.filepath);
+                    const json = await this.dictionaryService.parse(newFilepath);
+                    this.dictionaryService.add(json, id);
                     logger.debug(`Dictionary parsed : ${file.filepath}`);
                     res.sendStatus(Constants.HTTP_STATUS.OK);
                 } catch (err) {
-                    res.json(err);
-                    res.sendStatus(Constants.HTTP_STATUS.NOT_FOUND);
+                    logger.error(`Dictionary parsing : ${err}`);
                 }
             });
         });

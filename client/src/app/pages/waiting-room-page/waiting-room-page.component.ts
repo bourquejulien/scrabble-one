@@ -4,6 +4,7 @@ import { RoomService } from '@app/services/room/room.service';
 import { Subscription } from 'rxjs';
 import { LocationStrategy } from '@angular/common';
 import { Constants } from '@app/constants/global.constants';
+import { VirtualPlayerLevel } from '@common';
 
 @Component({
     selector: 'app-waiting-room-page',
@@ -11,11 +12,13 @@ import { Constants } from '@app/constants/global.constants';
     styleUrls: ['./waiting-room-page.component.scss'],
 })
 export class WaitingRoomPageComponent implements OnDestroy, OnInit {
-    readonly gameTypesList: string[];
+    virtualPlayerLevelName: string;
+    readonly virtualPlayerLevelNames: string[];
     private roomSubscription: Subscription;
 
     constructor(private readonly roomService: RoomService, private readonly router: Router, location: LocationStrategy, elementRef: ElementRef) {
-        this.gameTypesList = Constants.GAME_TYPES_LIST;
+        this.virtualPlayerLevelNames = Constants.VIRTUAL_PLAYERS_LEVELS_NAMES;
+        this.virtualPlayerLevelName = this.virtualPlayerLevelNames[0];
         location.onPopState(() => {
             // Won't test this callback: simply too advanced
             if (elementRef.nativeElement.offsetParent != null) {
@@ -38,7 +41,9 @@ export class WaitingRoomPageComponent implements OnDestroy, OnInit {
     }
 
     async convertToSoloMode() {
-        await this.roomService.toSinglePlayer();
+        await this.roomService.toSinglePlayer(
+            this.virtualPlayerLevelNames[0] === this.virtualPlayerLevelName ? VirtualPlayerLevel.Easy : VirtualPlayerLevel.Expert,
+        );
     }
 
     private async nextPage() {

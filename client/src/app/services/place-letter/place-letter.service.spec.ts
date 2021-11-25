@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable dot-notation -- Need access to private functions and properties*/
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { CanvasTestHelper } from '@app/classes/helpers/canvas-test-helper';
 import { BoardService } from '@app/services/board/board.service';
@@ -8,7 +9,6 @@ import { PlayerService } from '@app/services/player/player.service';
 import { RackService } from '@app/services/rack/rack.service';
 import { Direction } from '@common';
 import { PlaceLetterService } from './place-letter.service';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
 
 class BoardServiceMock {
     iteration = 0;
@@ -97,6 +97,15 @@ describe('PlaceLetterService', () => {
 
         service.backSpaceOperation(ctxStub);
         expect(gridServiceSpy.clearSquare).toHaveBeenCalledWith(ctxStub, service.gridPosition);
+    });
+
+    it('should set gridPosition.x to 16 if bigger than 16 when backSpaceOperation() is called', () => {
+        const expectedPosition = 15;
+        service.isHorizontal = true;
+        service.gridPosition = { x: 17, y: 8 };
+
+        service.backSpaceOperation(ctxStub);
+        expect(service.gridPosition.x).toEqual(expectedPosition);
     });
 
     it('should called clearSquare when backSpaceOperation() is called', () => {
