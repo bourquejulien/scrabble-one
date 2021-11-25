@@ -1,15 +1,15 @@
 /* eslint-disable no-unused-vars */
 /* eslint-disable no-unused-expressions */
 /* eslint-disable @typescript-eslint/no-unused-expressions */
-// import { Board } from '@app/classes/board/board';
-import { PlayerData } from '@app/classes/player-data';
-// import { BoardValidator } from '@app/classes/validation/board-validator';
+/* eslint-disable dot-notation */
 import { BoardHandler } from '@app/handlers/board-handler/board-handler';
 import { Placement } from '@common';
 import { expect } from 'chai';
-import { createSandbox, createStubInstance } from 'sinon';
+import Sinon, { createSandbox, createStubInstance } from 'sinon';
 import { PlaceAction } from './place-action';
 import { Play } from '@app/classes/virtual-player/play';
+import { Action } from '@app/classes/player/virtual-player/actions/action';
+import { PlayerStatsHandler } from '@app/handlers/stats-handlers/player-stats-handler/player-stats-handler';
 
 const VALID_PLACEMENT: Placement[] = [
     { letter: 'B', position: { x: 0, y: 0 } },
@@ -18,26 +18,33 @@ const VALID_PLACEMENT: Placement[] = [
 ];
 
 const LETTERS = ['a', 'b', 'c', 'd', 'e', 'f', 'g'];
-/* eslint-disable dot-notation */
 describe('Place Action', () => {
-    const boardHandler = createStubInstance(BoardHandler);
-    boardHandler.lookupLetters.returns({ isSuccess: true, score: 0, placements: [], words: [] });
-    boardHandler.placeLetters.returns({ isSuccess: false, description: '' });
-    boardHandler.retrieveNewLetters.returns(VALID_PLACEMENT);
-    const play: Play = {
-        isSuccess: true,
-        score: 12,
-        placements: [
-            { letter: 'l', position: { x: 0, y: 0 } },
-            { letter: 'l', position: { x: 0, y: 0 } },
-            { letter: 'l', position: { x: 0, y: 0 } },
-        ],
-        words: [],
-    };
-    const playerData: PlayerData = { baseScore: 0, scoreAdjustment: 0, skippedTurns: 0, rack: [] };
-    const action = new PlaceAction(boardHandler as unknown as BoardHandler, play, playerData);
+    let boardHandler: Sinon.SinonStubbedInstance<BoardHandler>;
+    let statsHandler: Sinon.SinonStubbedInstance<PlayerStatsHandler>;
+    let play: Play;
+    let rack: string[];
+    let action: Action;
+
     beforeEach(() => {
-        LETTERS.forEach((l) => playerData.rack.push(l));
+        boardHandler = createStubInstance(BoardHandler);
+        statsHandler = createStubInstance(PlayerStatsHandler);
+        play = {
+            isSuccess: true,
+            score: 12,
+            placements: [
+                { letter: 'l', position: { x: 0, y: 0 } },
+                { letter: 'l', position: { x: 0, y: 0 } },
+                { letter: 'l', position: { x: 0, y: 0 } },
+            ],
+            words: [],
+        };
+        rack = [];
+        action = new PlaceAction(boardHandler as unknown as BoardHandler, statsHandler, rack, play);
+
+        boardHandler.lookupLetters.returns({ isSuccess: true, score: 0, placements: [], words: [] });
+        boardHandler.placeLetters.returns({ isSuccess: false, description: '' });
+        boardHandler.retrieveNewLetters.returns(VALID_PLACEMENT);
+        LETTERS.forEach((l) => rack.push(l));
     });
 
     it('should create action', () => {
@@ -46,7 +53,7 @@ describe('Place Action', () => {
 
     it('should place letters', () => {
         const sandbox = createSandbox();
-        const stubSplice = sandbox.stub(action['playerData'].rack, 'splice');
+        const stubSplice = sandbox.stub(action['rack'], 'splice');
         const returnValue = action.execute();
         sandbox.assert.calledThrice(stubSplice);
         expect(returnValue).to.be.null;

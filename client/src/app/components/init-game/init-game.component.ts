@@ -1,12 +1,13 @@
-import { Component, HostListener, Inject, OnInit } from '@angular/core';
-import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { Component, Inject, OnInit } from '@angular/core';
+import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 import { TimeSpan } from '@app/classes/time/timespan';
 import { GameService } from '@app/services/game/game.service';
-import { GameType, MultiplayerCreateConfig, SinglePlayerConfig } from '@common';
+import { GameMode, GameType, MultiplayerCreateConfig, SinglePlayerConfig, DictionaryMetadata } from '@common';
 import { RoomService } from '@app/services/room/room.service';
 import { Constants } from '@app/constants/global.constants';
 import { NameValidator } from '@app/classes/form-validation/name-validator';
+import { AdminService } from '@app/services/admin/admin.service';
 
 interface FormConfig {
     gameType: string;
@@ -17,9 +18,9 @@ interface FormConfig {
 }
 
 // eslint-disable-next-line @typescript-eslint/no-magic-numbers -- Lists all option, the list is a constant
-const TURN_LENGTH_MINUTES = [0, 1, 2, 3, 4, 5] as const;
+const TURN_LENGTH_MINUTES = [0, 1, 2, 3, 4, 5];
 // eslint-disable-next-line @typescript-eslint/no-magic-numbers -- Lists all option, the list is a constant
-const TURN_LENGTH_SECONDS = [0, 30] as const;
+const TURN_LENGTH_SECONDS = [0, 30];
 // eslint-disable-next-line @typescript-eslint/no-magic-numbers -- Default play time is readable and immutable
 const DEFAULT_PLAY_TIME = TimeSpan.fromMinutesSeconds(1, 0);
 
@@ -29,11 +30,13 @@ const DEFAULT_PLAY_TIME = TimeSpan.fromMinutesSeconds(1, 0);
     styleUrls: ['./init-game.component.scss'],
 })
 export class InitGameComponent implements OnInit {
-    gameTypesList;
+    typeOfGameType: typeof GameType;
+
+    gameTypesList: string[];
     botNames: string[];
-    minutesList;
-    secondsList;
-    gameType;
+    minutesList: number[];
+    secondsList: number[];
+    dictionary: DictionaryMetadata;
     nameValidator: NameValidator;
     minutes: number;
     seconds: number;
@@ -43,14 +46,18 @@ export class InitGameComponent implements OnInit {
         readonly gameService: GameService,
         private readonly router: Router,
         private readonly roomService: RoomService,
+        public adminService: AdminService,
         readonly dialogRef: MatDialogRef<InitGameComponent>,
-        @Inject(MAT_DIALOG_DATA) readonly data: { gameModeType: GameType },
+        @Inject(MAT_DIALOG_DATA) readonly data: { gameType: GameType; gameMode: GameMode },
     ) {
+        this.typeOfGameType = GameType;
+
         this.gameTypesList = Constants.GAME_TYPES_LIST;
-        this.botNames = Constants.BOT_NAMES;
+        // TODO
+        this.botNames = adminService.virtualPlayerNames.beginners;
         this.minutesList = TURN_LENGTH_MINUTES;
         this.secondsList = TURN_LENGTH_SECONDS;
-        this.gameType = GameType;
+
         this.nameValidator = new NameValidator();
         this.minutes = DEFAULT_PLAY_TIME.totalMinutes;
         this.seconds = DEFAULT_PLAY_TIME.seconds;
@@ -68,13 +75,6 @@ export class InitGameComponent implements OnInit {
         return nameArr[randomIndex];
     }
 
-    @HostListener('keydown', ['$event'])
-    async buttonDetect(event: KeyboardEvent) {
-        if (event.key === 'Enter') {
-            await this.init();
-        }
-    }
-
     async ngOnInit(): Promise<void> {
         this.formConfig.secondPlayerName = InitGameComponent.randomizeBotName(this.botNames);
     }
@@ -85,7 +85,7 @@ export class InitGameComponent implements OnInit {
         if (needsToReroute) {
             this.dialogRef.close();
 
-            if (this.data.gameModeType === GameType.SinglePlayer) {
+            if (this.data.gameType === GameType.SinglePlayer) {
                 await this.initSinglePlayer();
             } else {
                 await this.initMultiplayer();
@@ -107,10 +107,12 @@ export class InitGameComponent implements OnInit {
     private async initSinglePlayer(): Promise<void> {
         const singlePlayerConfig: SinglePlayerConfig = {
             gameType: GameType.SinglePlayer,
+            gameMode: this.data.gameMode,
             playTimeMs: this.formConfig.playTime.totalMilliseconds,
             playerName: this.formConfig.firstPlayerName,
             virtualPlayerName: this.formConfig.secondPlayerName,
             isRandomBonus: this.formConfig.isRandomBonus,
+            dictionary: this.dictionary,
         };
 
         await this.gameService.startSinglePlayer(singlePlayerConfig);
@@ -120,9 +122,11 @@ export class InitGameComponent implements OnInit {
     private async initMultiplayer(): Promise<void> {
         const multiplayerConfig: MultiplayerCreateConfig = {
             gameType: GameType.Multiplayer,
+            gameMode: this.data.gameMode,
             playTimeMs: this.formConfig.playTime.totalMilliseconds,
             playerName: this.formConfig.firstPlayerName,
             isRandomBonus: this.formConfig.isRandomBonus,
+            dictionary: this.dictionary,
         };
 
         await this.router.navigate(['waiting-room']);

@@ -6,6 +6,9 @@
       <excludeFolder url="file://$MODULE_DIR$/.tmp" />
       <excludeFolder url="file://$MODULE_DIR$/tmp" />
       <excludeFolder url="file://$MODULE_DIR$/client/coverage" />
+      <excludeFolder url="file://$MODULE_DIR$/server/.nyc_output" />
+      <excludeFolder url="file://$MODULE_DIR$/server/coverage" />
+      <excludeFolder url="file://$MODULE_DIR$/server/out" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />

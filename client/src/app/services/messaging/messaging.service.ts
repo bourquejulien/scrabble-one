@@ -32,7 +32,7 @@ export class MessagingService {
 
     private handleConnectionError(error: Error) {
         const socketErrorMsg: Message = {
-            title: 'Connection avec le serveur perdue',
+            title: 'Connexion avec le serveur perdue',
             body: `Erreur: ${error.message}`,
             messageType: MessageType.Error,
             fromId: this.sessionService.id,
