@@ -6,6 +6,7 @@ import logger from 'winston';
 
 const DATABASE_COLLECTION_CLASSIC = 'classicScoreboard';
 const DATABASE_COLLECTION_LOG = 'logScoreboard';
+
 @Service()
 export class ScoreService {
     private classicScoreboard: Collection<Score>;
@@ -34,7 +35,7 @@ export class ScoreService {
         }
 
         const playersWithSameScore = await this.getPlayerNamesByScore(score.scoreValue, collectionName);
-        playersWithSameScore.push(score.name[0]);
+        playersWithSameScore.push(...score.name);
         this.getCollection(collectionName).findOneAndUpdate({ scoreValue: score.scoreValue }, { $set: { name: playersWithSameScore } });
 
         return true;
