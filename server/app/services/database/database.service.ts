@@ -26,15 +26,16 @@ export class DatabaseService {
             const countLog = await this.scrabbleDb.collection(DATABASE_COLLECTION_LOG).countDocuments();
 
             if (!countClassic) {
-                this.scrabbleDb.createCollection(DATABASE_COLLECTION_CLASSIC);
+                await this.scrabbleDb.createCollection(DATABASE_COLLECTION_CLASSIC);
                 await this.fillClassicBoardWithDefault();
             }
             if (!countLog) {
-                this.scrabbleDb.createCollection(DATABASE_COLLECTION_LOG);
+                await this.scrabbleDb.createCollection(DATABASE_COLLECTION_LOG);
                 await this.fillLogBoardWithDefault();
             }
-        } finally {
+        } catch (e) {
             await this.client.close();
+            throw e;
         }
     }
 
