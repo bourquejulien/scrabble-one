@@ -6,4 +6,4 @@ logger.configure({
 });
 
 process.env.NODE_ENV = 'test';
-process.env.DB_URL = 'test';
+process.env.DB_URL = 'mongodb://test:test@test';

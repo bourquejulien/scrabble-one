@@ -28,7 +28,7 @@ export class ScoreService {
          *      pop
          *      deleteOne
          */
-        
+
         const lastScore = sortedScores.pop();
         logger.info(lastScore?.scoreValue);
 
@@ -37,7 +37,7 @@ export class ScoreService {
 
     async updateNamesWithSameScore(score: Score, collectionName: string): Promise<boolean> {
         // if score is unique, we want to use updateboard
-        let isUnique = await this.isScoreUnique(score.scoreValue, collectionName);
+        const isUnique = await this.isScoreUnique(score.scoreValue, collectionName);
         logger.info(`isUnique: ${isUnique}`);
         if (await this.isScoreUnique(score.scoreValue, collectionName)) {
             return false;
