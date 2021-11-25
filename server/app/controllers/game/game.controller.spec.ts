@@ -5,7 +5,7 @@
 import { Application } from '@app/app';
 import { Constants } from '@app/constants';
 import { GameService } from '@app/services/game/game.service';
-import { GameMode, GameType, MultiplayerCreateConfig, ServerConfig, SinglePlayerConfig, DictionaryMetadata } from '@common';
+import { DictionaryMetadata, GameMode, GameType, MultiplayerCreateConfig, ServerConfig, SinglePlayerConfig, VirtualPlayerLevel } from '@common';
 import { expect } from 'chai';
 import { createStubInstance, SinonStubbedInstance } from 'sinon';
 import request from 'supertest';
@@ -27,6 +27,7 @@ describe('GameController', () => {
     const singlePlayerConfig: SinglePlayerConfig = {
         gameType: GameType.SinglePlayer,
         gameMode: GameMode.Classic,
+        virtualPlayerLevel: VirtualPlayerLevel.Easy,
         playTimeMs: 120 * 1000,
         playerName: 'Claudette',
         virtualPlayerName: 'Alphonse',

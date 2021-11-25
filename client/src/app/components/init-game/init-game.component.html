@@ -5,8 +5,8 @@
     <p class="inputPresentationText" *ngIf="data.gameType === typeOfGameType.SinglePlayer">Profil du joueur virtuel</p>
     <mat-form-field class="inputs" appearance="fill" *ngIf="data.gameType === typeOfGameType.SinglePlayer">
         <mat-label>Profil</mat-label>
-        <mat-select name="gameTypes" appearance="fill" [(ngModel)]="formConfig.gameType">
-            <mat-option *ngFor="let gameType of gameTypesList" [value]="gameType">{{ gameType }}</mat-option>
+        <mat-select name="gameTypes" appearance="fill" [ngModel]="formConfig.virtualPlayerLevelName" (valueChange)='formConfig.virtualPlayerLevelName=$event;updateVirtualPlayerNames()'>
+            <mat-option *ngFor="let gameType of virtualPlayerLevelNames" [value]="gameType">{{ gameType }}</mat-option>
         </mat-select>
     </mat-form-field>
     <p class="inputPresentationText" *ngIf="data.gameType === typeOfGameType.SinglePlayer || data.gameType === typeOfGameType.Multiplayer">

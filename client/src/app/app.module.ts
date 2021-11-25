@@ -16,6 +16,7 @@ import { CommunicationBoxComponent } from './components/communication-box/commun
 import { ConfirmQuitDialogComponent } from './components/confirm-quit-dialog/confirm-quit-dialog.component';
 import { EndGameComponent } from './components/end-game/end-game.component';
 import { InitGameComponent } from './components/init-game/init-game.component';
+import { ObjectivesComponent } from './components/objectives/objectives.component';
 import { OpponentQuitComponent } from './components/opponent-quit/opponent-quit.component';
 import { RackComponent } from './components/rack/rack.component';
 import { SizeSelectorComponent } from './components/size-selector/size-selector.component';
@@ -53,6 +54,7 @@ import { WaitingRoomPageComponent } from './pages/waiting-room-page/waiting-room
         BestScoresComponent,
         AdminPageComponent,
         OpponentQuitComponent,
+        ObjectivesComponent,
     ],
     imports: [AppMaterialModule, AppRoutingModule, BrowserAnimationsModule, BrowserModule, FormsModule, HttpClientModule],
     providers: [],
