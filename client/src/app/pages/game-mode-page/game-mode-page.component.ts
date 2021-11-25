@@ -3,6 +3,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { InitGameComponent } from '@app/components/init-game/init-game.component';
 import { GameMode, GameType } from '@common';
 import { ActivatedRoute } from '@angular/router';
+import { AdminService } from '@app/services/admin/admin.service';
 
 @Component({
     selector: 'app-game-mode-page',
@@ -14,7 +15,7 @@ export class GameModePageComponent implements OnInit {
     typeOfGameMode: typeof GameMode;
     gameMode: GameMode;
 
-    constructor(public dialog: MatDialog, private route: ActivatedRoute) {
+    constructor(readonly dialog: MatDialog, private readonly route: ActivatedRoute, private readonly adminService: AdminService) {
         this.typeOfGameType = GameType;
         this.typeOfGameMode = GameMode;
     }
@@ -23,7 +24,14 @@ export class GameModePageComponent implements OnInit {
         this.gameMode = GameMode[this.route.snapshot.paramMap.get('game-mode') as keyof typeof GameMode] ?? GameMode.Classic;
     }
 
-    openDialog(gameType: GameType): void {
-        this.dialog.open(InitGameComponent, { panelClass: 'init-game-dialog', data: { gameType, gameMode: this.gameMode } });
+    async openDialog(gameType: GameType): Promise<void> {
+        await this.adminService.retrieveUsernames();
+        await this.adminService.retrieveDictionnaries();
+
+        if (this.adminService.defaultDictionary === null) {
+            throw new Error('Cannot retrieve default dictionnary');
+        }
+
+        await this.dialog.open(InitGameComponent, { panelClass: 'init-game-dialog', data: { gameType, gameMode: this.gameMode } });
     }
 }

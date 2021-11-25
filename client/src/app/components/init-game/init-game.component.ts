@@ -55,6 +55,7 @@ export class InitGameComponent implements OnInit {
         this.gameTypesList = Constants.GAME_TYPES_LIST;
         // TODO
         this.botNames = adminService.virtualPlayerNames.beginners;
+        this.dictionary = adminService.defaultDictionary as DictionaryMetadata;
         this.minutesList = TURN_LENGTH_MINUTES;
         this.secondsList = TURN_LENGTH_SECONDS;
 

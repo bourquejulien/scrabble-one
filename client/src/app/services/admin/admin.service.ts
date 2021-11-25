@@ -10,6 +10,9 @@ interface Playernames {
     experts: string[];
     beginners: string[];
 }
+
+const DEFAULT_DICTIONARY = 'dictionary.json';
+
 @Injectable({
     providedIn: 'root',
 })
@@ -90,5 +93,9 @@ export class AdminService {
 
     async resetSettings(): Promise<void> {
         await this.httpClient.get<string[]>(localUrl('reset', '')).toPromise();
+    }
+
+    get defaultDictionary(): DictionaryMetadata | null {
+        return this.dictionaries.find((d) => d.id === DEFAULT_DICTIONARY) ?? null;
     }
 }
