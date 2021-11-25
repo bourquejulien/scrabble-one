@@ -1,0 +1,36 @@
+.table {
+    width: 22.5rem;
+    background-color: #3F51B5;
+    margin-top: 2rem;
+}
+
+.row-pending {
+    background-color: chocolate;
+    color: white;
+}
+
+.row-succeeded {
+    background-color: #45CB85;
+    color: white;
+}
+
+.row-failed {
+    background-color: #F44336;
+    color: white;
+}
+
+.mat-column-objectives {
+    height: auto;
+    flex: 9rem;
+    min-width: 9rem;
+}
+
+.mat-column-succeeded {
+    height: auto;
+    flex: 3rem;
+    max-width: 3rem;
+}
+
+.header {
+    color: white;
+}

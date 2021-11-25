@@ -20,6 +20,7 @@ describe('SessionService', () => {
     it('should set gameConfig if serverConfig provided', () => {
         const gameConfig = {
             gameType: GameType.SinglePlayer,
+            gameMode: GameMode.Classic,
             playTime: TimeSpan.fromMilliseconds(6),
             firstPlayerName: 'A',
             secondPlayerName: 'B',
