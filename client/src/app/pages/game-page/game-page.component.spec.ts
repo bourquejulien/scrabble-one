@@ -99,6 +99,12 @@ describe('GamePageComponent', () => {
         expect(spy).toHaveBeenCalled();
     });
 
+    it('should change the theme', () => {
+        const spy = spyOn<any>(component, 'toggleDarkMode');
+        component['buttonConfig'][3].action();
+        expect(spy).toHaveBeenCalled();
+    });
+
     it('should call toggleDrawer if second button is clicked', () => {
         const spy = spyOn<any>(component, 'toggleDrawer');
         component['buttonConfig'][1].action();

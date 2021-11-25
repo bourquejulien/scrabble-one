@@ -1,11 +1,11 @@
-import { Component, AfterViewInit, OnDestroy, TemplateRef, ViewChild, OnInit } from '@angular/core';
-import { RoomService } from '@app/services/room/room.service';
-import { Subscription } from 'rxjs';
-import { AvailableGameConfig, GameMode, MultiplayerJoinConfig } from '@common';
-import { trigger, style, animate, transition } from '@angular/animations';
-import { NameValidator } from '@app/classes/form-validation/name-validator';
+import { animate, style, transition, trigger } from '@angular/animations';
+import { AfterViewInit, Component, OnDestroy, OnInit, TemplateRef, ViewChild } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { ActivatedRoute, Router } from '@angular/router';
+import { NameValidator } from '@app/classes/form-validation/name-validator';
+import { RoomService } from '@app/services/room/room.service';
+import { AvailableGameConfig, GameMode, MultiplayerJoinConfig } from '@common';
+import { Subscription } from 'rxjs';
 
 @Component({
     selector: 'app-room-list',

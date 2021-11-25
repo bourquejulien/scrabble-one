@@ -13,7 +13,7 @@ import { DictionaryService } from '@app/services/dictionary/dictionary.service';
 import { GameService } from '@app/services/game/game.service';
 import { SessionHandlingService } from '@app/services/sessionHandling/session-handling.service';
 import { SocketService } from '@app/services/socket/socket-service';
-import { ConvertConfig, GameMode, GameType, MultiplayerJoinConfig, ServerConfig } from '@common';
+import { ConvertConfig, GameMode, GameType, MultiplayerJoinConfig, ServerConfig, VirtualPlayerLevel } from '@common';
 import { expect } from 'chai';
 import Sinon, { assert, createStubInstance, stub } from 'sinon';
 
@@ -82,6 +82,7 @@ const multiplayerJoinConfig: MultiplayerJoinConfig = {
 
 const convertConfig: ConvertConfig = {
     id: '438f98gser89dg',
+    virtualPlayerLevel: VirtualPlayerLevel.Easy,
     virtualPlayerName: 'test1',
 };
 

@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { GameConfig } from '@app/classes/game-config';
 import { TimeSpan } from '@app/classes/time/timespan';
-import { GameType, ServerConfig } from '@common';
+import { GameMode, GameType, ServerConfig } from '@common';
 
 @Injectable({
     providedIn: 'root',
@@ -18,6 +18,7 @@ export class SessionService {
         this._id = '';
         this._gameConfig = {
             gameType: GameType.SinglePlayer,
+            gameMode: GameMode.Classic,
             playTime: TimeSpan.fromMinutesSeconds(1, 0),
             firstPlayerName: '',
             secondPlayerName: '',
@@ -28,6 +29,7 @@ export class SessionService {
         this._id = config.id;
         this._gameConfig = {
             gameType: config.gameType,
+            gameMode: config.gameMode,
             playTime: TimeSpan.fromMilliseconds(config.playTimeMs),
             firstPlayerName: config.firstPlayerName,
             secondPlayerName: config.secondPlayerName,

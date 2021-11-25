@@ -3,14 +3,14 @@ import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 import { TimeSpan } from '@app/classes/time/timespan';
 import { GameService } from '@app/services/game/game.service';
-import { GameMode, GameType, MultiplayerCreateConfig, SinglePlayerConfig, DictionaryMetadata } from '@common';
+import { DictionaryMetadata, GameMode, GameType, MultiplayerCreateConfig, SinglePlayerConfig, VirtualPlayerLevel } from '@common';
 import { RoomService } from '@app/services/room/room.service';
 import { Constants } from '@app/constants/global.constants';
 import { NameValidator } from '@app/classes/form-validation/name-validator';
 import { AdminService } from '@app/services/admin/admin.service';
 
 interface FormConfig {
-    gameType: string;
+    virtualPlayerLevelName: string;
     playTime: TimeSpan;
     isRandomBonus: boolean;
     firstPlayerName: string;
@@ -32,7 +32,7 @@ const DEFAULT_PLAY_TIME = TimeSpan.fromMinutesSeconds(1, 0);
 export class InitGameComponent implements OnInit {
     typeOfGameType: typeof GameType;
 
-    gameTypesList: string[];
+    virtualPlayerLevelNames: string[];
     botNames: string[];
     minutesList: number[];
     secondsList: number[];
@@ -52,8 +52,9 @@ export class InitGameComponent implements OnInit {
     ) {
         this.typeOfGameType = GameType;
 
-        this.gameTypesList = Constants.GAME_TYPES_LIST;
+        this.virtualPlayerLevelNames = Constants.VIRTUAL_PLAYERS_LEVELS_NAMES;
         this.botNames = adminService.virtualPlayerNames.beginners;
+        this.dictionary = adminService.defaultDictionary as DictionaryMetadata;
         this.minutesList = TURN_LENGTH_MINUTES;
         this.secondsList = TURN_LENGTH_SECONDS;
 
@@ -61,7 +62,7 @@ export class InitGameComponent implements OnInit {
         this.minutes = DEFAULT_PLAY_TIME.totalMinutes;
         this.seconds = DEFAULT_PLAY_TIME.seconds;
         this.formConfig = {
-            gameType: Constants.GAME_TYPES_LIST[0],
+            virtualPlayerLevelName: Constants.VIRTUAL_PLAYERS_LEVELS_NAMES[0],
             playTime: DEFAULT_PLAY_TIME,
             isRandomBonus: false,
             firstPlayerName: '',
@@ -74,7 +75,12 @@ export class InitGameComponent implements OnInit {
         return nameArr[randomIndex];
     }
 
-    async ngOnInit(): Promise<void> {
+    ngOnInit(): void {
+        this.updateVirtualPlayerNames();
+    }
+
+    updateVirtualPlayerNames() {
+        this.botNames = this.adminService.getVirtualPlayerNamesByLevel(this.virtualPlayerLevel);
         this.formConfig.secondPlayerName = InitGameComponent.randomizeBotName(this.botNames);
     }
 
@@ -103,10 +109,15 @@ export class InitGameComponent implements OnInit {
         }
     }
 
+    get virtualPlayerLevel(): VirtualPlayerLevel {
+        return this.virtualPlayerLevelNames[0] === this.formConfig.virtualPlayerLevelName ? VirtualPlayerLevel.Easy : VirtualPlayerLevel.Expert;
+    }
+
     private async initSinglePlayer(): Promise<void> {
         const singlePlayerConfig: SinglePlayerConfig = {
             gameType: GameType.SinglePlayer,
             gameMode: this.data.gameMode,
+            virtualPlayerLevel: this.virtualPlayerLevel,
             playTimeMs: this.formConfig.playTime.totalMilliseconds,
             playerName: this.formConfig.firstPlayerName,
             virtualPlayerName: this.formConfig.secondPlayerName,
