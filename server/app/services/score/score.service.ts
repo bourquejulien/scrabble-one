@@ -22,6 +22,13 @@ export class ScoreService {
 
         // removed the limit... not necessary in this function i think
         const sortedScores = await this.getCollection(collectionName).find().sort({ scoreValue: -1 }).toArray();
+        /**
+         * in case 2 players with different scores are added
+         * for countdocuments(7) <= 5
+         *      pop
+         *      deleteOne
+         */
+        
         const lastScore = sortedScores.pop();
         logger.info(lastScore?.scoreValue);
 
@@ -30,19 +37,22 @@ export class ScoreService {
 
     async updateNamesWithSameScore(score: Score, collectionName: string): Promise<boolean> {
         // if score is unique, we want to use updateboard
+        let isUnique = await this.isScoreUnique(score.scoreValue, collectionName);
+        logger.info(`isUnique: ${isUnique}`);
         if (await this.isScoreUnique(score.scoreValue, collectionName)) {
             return false;
         }
 
         const playersWithSameScore = await this.getPlayerNamesByScore(score.scoreValue, collectionName);
         playersWithSameScore.push(...score.name);
-        this.getCollection(collectionName).findOneAndUpdate({ scoreValue: score.scoreValue }, { $set: { name: playersWithSameScore } });
+        await this.getCollection(collectionName).findOneAndUpdate({ scoreValue: score.scoreValue }, { $set: { name: playersWithSameScore } });
 
         return true;
     }
 
     async isPlayerInScoreboard(playerName: string, collectionName: string): Promise<boolean> {
-        return this.getCollection(collectionName).findOne({ name: playerName }) === null ? false : true;
+        const foundPlayer = await this.getCollection(collectionName).findOne({ name: playerName });
+        return foundPlayer === null ? false : true;
     }
 
     async getPlayerScore(playerName: string, collectionName: string): Promise<number> {
@@ -65,7 +75,8 @@ export class ScoreService {
 
     private async isScoreUnique(scoreVal: number, collectionName: string): Promise<boolean> {
         // if find() doesnt find a matching result, returns null; so if null, then score is unique
-        return this.getCollection(collectionName).findOne({ scoreValue: scoreVal }) === null;
+        const scoreFound = await this.getCollection(collectionName).findOne({ scoreValue: scoreVal });
+        return scoreFound === null;
     }
 
     private async getPlayerNamesByScore(scoreVal: number, collectionName: string): Promise<string[]> {
