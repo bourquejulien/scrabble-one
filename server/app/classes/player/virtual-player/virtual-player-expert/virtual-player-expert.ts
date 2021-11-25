@@ -13,8 +13,8 @@ export class VirtualPlayerExpert extends VirtualPlayer {
 
     protected nextAction(): Action {
         logger.debug(`VirtualPlayerExpert: ${this.id} - PlayAction`);
-        const playGenerator = new PlayGenerator(this.dictionaryHandler, this.boardHandler, this.playerData.rack);
+        const playGenerator = new PlayGenerator(this.dictionaryHandler, this.boardHandler, this.rack);
 
-        return new PlayActionExpert(this.boardHandler, playGenerator, this.playerData, this.socketHandler, this.reserveHandler);
+        return new PlayActionExpert(this.boardHandler, playGenerator, this.rack, this.statsNotifier, this.socketHandler, this.reserveHandler);
     }
 }

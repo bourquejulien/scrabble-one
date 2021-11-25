@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { BestScoresComponent } from '@app/components/best-scores/best-scores.component';
+import { GameMode } from '@common';
 
 @Component({
     selector: 'app-main-page',
@@ -8,8 +9,8 @@ import { BestScoresComponent } from '@app/components/best-scores/best-scores.com
     styleUrls: ['./main-page.component.scss'],
 })
 export class MainPageComponent {
+    gameMode = GameMode;
     readonly developers: string[];
-    // dialog: any;
 
     constructor(public dialog: MatDialog) {
         this.developers = [

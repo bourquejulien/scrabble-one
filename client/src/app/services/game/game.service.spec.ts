@@ -14,14 +14,16 @@ import { PlayerService } from '@app/services/player/player.service';
 import { RackService } from '@app/services/rack/rack.service';
 import { SessionService } from '@app/services/session/session.service';
 import { SocketClientService } from '@app/services/socket-client/socket-client.service';
-import { DictionaryMetadata, GameType, ServerConfig, SessionStats } from '@common';
+import { GameMode, GameType, ServerConfig, SessionStats, DictionaryMetadata } from '@common';
 import { Observable, Subject } from 'rxjs';
+
 const dictionary: DictionaryMetadata = {
     id: 'dictionary.json',
     title: 'dict',
     description: 'Dictionary',
     nbWords: 1024,
 };
+
 @Injectable({
     providedIn: 'root',
 })
@@ -109,6 +111,7 @@ describe('GameService', () => {
     it('should start single player', async () => {
         const config = {
             gameType: GameType.SinglePlayer,
+            gameMode: GameMode.Log2990,
             playTimeMs: 1000,
             playerName: 'Monique',
             virtualPlayerName: 'Alphonse',
@@ -153,6 +156,7 @@ describe('GameService', () => {
         const serverConfig = {
             id: '1',
             startId: '2',
+            gameMode: GameMode.Log2990,
             gameType: GameType.Multiplayer,
             playTimeMs: 1000,
             firstPlayerName: 'Monique',
@@ -215,6 +219,7 @@ describe('GameService', () => {
         const serverConfig = {
             id: '1',
             startId: '2',
+            gameMode: GameMode.Log2990,
             gameType: GameType.Multiplayer,
             playTimeMs: 1000,
             firstPlayerName: 'Monique',

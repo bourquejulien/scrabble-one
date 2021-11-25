@@ -12,11 +12,12 @@ import { SessionHandler } from '@app/handlers/session-handler/session-handler';
 import { GameService } from '@app/services/game/game.service';
 import { SessionHandlingService } from '@app/services/session-handling/session-handling.service';
 import { SocketService } from '@app/services/socket/socket-service';
-import { GameType, Message, MessageType } from '@common';
+import { GameMode, GameType, Message, MessageType } from '@common';
 import { expect } from 'chai';
 import { assert, createStubInstance, SinonFakeTimers, SinonStubbedInstance, spy, stub, useFakeTimers } from 'sinon';
 import { Server, Socket } from 'socket.io';
 import { RoomController } from './room.controller';
+import { SessionStatsHandler } from '@app/handlers/stats-handlers/session-stats-handler/session-stats-handler';
 
 const IDS = {
     player: '123',
@@ -143,6 +144,9 @@ describe('RoomController', () => {
             playTimeMs: 0,
             gameType: GameType.SinglePlayer,
         };
+        stubSessionHandler['statsHandler'] = {
+            gameMode: GameMode.Classic,
+        } as unknown as SessionStatsHandler;
         stubSessionHandler['boardHandler'] = {
             isRandomBonus: false,
         } as BoardHandler;
@@ -155,40 +159,43 @@ describe('RoomController', () => {
 
         controller['sessionHandlingService']['sessionHandlers'] = [stubSessionHandler];
 
-        socketServerMock.triggerEndpoint('connection', clientSocket);
-        clientSocket.triggerEndpoint('getRooms');
+        await socketServerMock.triggerEndpoint('connection', clientSocket);
+        await clientSocket.triggerEndpoint('getRooms');
         assert.called(emitSpy);
     });
 
     // TODO : Fix test
-    // it('should join the correct rooms', async () => {
-    //     const stubSessionHandler = createStubInstance(SessionHandler) as unknown as SessionHandler;
-    //     stubSessionHandler['sessionInfo'] = {
-    //         id: '',
-    //         playTimeMs: 0,
-    //         gameType: GameType.SinglePlayer,
-    //     };
-    //     stubSessionHandler['boardHandler'] = {
-    //         isRandomBonus: false,
-    //     } as BoardHandler;
-    //     stubSessionHandler['playerHandler'] = {
-    //         players: [{ playerInfo: { name: '' } }],
-    //     } as PlayerHandler;
+    it('should join the correct rooms', async () => {
+        const stubSessionHandler = createStubInstance(SessionHandler) as unknown as SessionHandler;
+        stubSessionHandler['sessionInfo'] = {
+            id: '',
+            playTimeMs: 0,
+            gameType: GameType.SinglePlayer,
+        };
+        stubSessionHandler['statsHandler'] = {
+            gameMode: GameMode.Classic,
+        } as unknown as SessionStatsHandler;
+        stubSessionHandler['boardHandler'] = {
+            isRandomBonus: false,
+        } as BoardHandler;
+        stubSessionHandler['playerHandler'] = {
+            players: [{ playerInfo: { name: '' } }],
+        } as PlayerHandler;
 
-    //     controller['handleSockets']();
+        controller['handleSockets']();
 
-    //     const clientSocket = new SocketMock();
+        const clientSocket = new SocketMock();
 
-    //     controller['sessionHandlingService']['sessionHandlers'] = [stubSessionHandler];
+        controller['sessionHandlingService']['sessionHandlers'] = [stubSessionHandler];
 
-    //     stubSessionHandlingService.getSessionId.returns('');
-    //     stubSessionHandlingService.getAvailableSessions.returns([stubSessionHandler as unknown as SessionHandler]);
+        stubSessionHandlingService.getSessionId.returns('');
+        stubSessionHandlingService.getAvailableSessions.returns([stubSessionHandler as unknown as SessionHandler]);
 
-    //     await socketServerMock.triggerEndpoint('connection', clientSocket);
-    //     await clientSocket.triggerEndpoint('joinRoom', 'sessionId');
+        await socketServerMock.triggerEndpoint('connection', clientSocket);
+        await clientSocket.triggerEndpoint('joinRoom', 'sessionId');
 
-    //     assert.called(stubSessionHandlingService.getHandlerByPlayerId);
-    // });
+        assert.called(stubSessionHandlingService.getHandlerByPlayerId);
+    });
 
     it('should exit room', async () => {
         controller['handleSockets']();
@@ -296,6 +303,9 @@ describe('RoomController', () => {
             playTimeMs: 0,
             gameType: GameType.SinglePlayer,
         };
+        stubSessionHandler['statsHandler'] = {
+            gameMode: GameMode.Classic,
+        } as unknown as SessionStatsHandler;
         stubSessionHandler['boardHandler'] = {
             isRandomBonus: false,
         } as BoardHandler;

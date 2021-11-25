@@ -129,6 +129,7 @@ export class RoomController {
     private get sessionInfos(): AvailableGameConfig[] {
         return this.sessionHandlingService.getAvailableSessions().map((s) => ({
             id: s.sessionInfo.id,
+            gameMode: s.gameMode,
             playTimeMs: s.sessionInfo.playTimeMs,
             waitingPlayerName: s.players[0].playerInfo.name,
             isRandomBonus: s.boardHandler.isRandomBonus,
