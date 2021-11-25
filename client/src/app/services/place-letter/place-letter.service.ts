@@ -45,7 +45,7 @@ export class PlaceLetterService {
             this.gridPosition.x = 16;
         }
         if (this.gridPosition.y > Constants.GRID.GRID_SIZE) {
-            this.gridPosition.x = 16;
+            this.gridPosition.y = 16;
         }
         this.gridService.clearSquare(tempContext, this.gridPosition);
         if (this.isHorizontal) {
