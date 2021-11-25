@@ -1,4 +1,8 @@
+import { EndGameData } from '@app/classes/end-game-data';
+import { PlayerInfo } from '@app/classes/player-info';
 import { Player } from '@app/classes/player/player';
+import { Action } from '@app/classes/player/virtual-player/actions/action';
+import { VirtualPlayerExpert } from '@app/classes/player/virtual-player/virtual-player-expert/virtual-player-expert';
 import { SessionData } from '@app/classes/session-data';
 import { SessionInfo } from '@app/classes/session-info';
 import { Config } from '@app/config';
@@ -6,15 +10,11 @@ import { BoardHandler } from '@app/handlers/board-handler/board-handler';
 import { PlayerHandler } from '@app/handlers/player-handler/player-handler';
 import { ReserveHandler } from '@app/handlers/reserve-handler/reserve-handler';
 import { SocketHandler } from '@app/handlers/socket-handler/socket-handler';
+import { PlayerStatsHandler } from '@app/handlers/stats-handlers/player-stats-handler/player-stats-handler';
+import { SessionStatsHandler } from '@app/handlers/stats-handlers/session-stats-handler/session-stats-handler';
 import { GameMode, GameType, Score, ServerConfig } from '@common';
 import { Subscription } from 'rxjs';
 import * as logger from 'winston';
-import { SessionStatsHandler } from '@app/handlers/stats-handlers/session-stats-handler/session-stats-handler';
-import { PlayerInfo } from '@app/classes/player-info';
-import { Action } from '@app/classes/player/virtual-player/actions/action';
-import { VirtualPlayerExpert } from '@app/classes/player/virtual-player/virtual-player-expert/virtual-player-expert';
-import { PlayerStatsHandler } from '@app/handlers/stats-handlers/player-stats-handler/player-stats-handler';
-import { EndGameData } from '@app/classes/end-game-data';
 
 export class SessionHandler {
     sessionData: SessionData;
@@ -149,30 +149,14 @@ export class SessionHandler {
     }
 
     private get endGameData(): EndGameData {
-        const humanPlayers = this.players.filter((p) => p.playerInfo.isHuman);
-        const scoreNamePair = new Map<number, string[]>();
+        const scores: Score[] = this.players.filter((p) => p.playerInfo.isHuman).map((p) => {
+            const playerStatsHandler = this.statsHandler.playerStatsHandlers.find((s) => s.id === p.id) as PlayerStatsHandler;
 
-        for (const player of humanPlayers) {
-            const playerStatsHandler = this.statsHandler.playerStatsHandlers.find((s) => s.id === player.id) as PlayerStatsHandler;
-
-            const score = playerStatsHandler.stats.points;
-            const names = scoreNamePair.get(score);
-            if (names !== undefined) {
-                names.push(player.playerInfo.name);
-                continue;
-            }
-
-            scoreNamePair.set(score, [player.playerInfo.name]);
-        }
-
-        const scores: Score[] = [];
-
-        for (const [scoreValue, name] of scoreNamePair) {
-            scores.push({
-                name,
-                scoreValue,
-            });
-        }
+            return {
+                name: p.playerInfo.name,
+                scoreValue: playerStatsHandler.stats.points,
+            };
+        });
 
         return {
             scores,

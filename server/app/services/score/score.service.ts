@@ -5,7 +5,7 @@ import { Service } from 'typedi';
 
 const DATABASE_COLLECTION_CLASSIC = 'classicScoreboard';
 const DATABASE_COLLECTION_LOG = 'logScoreboard';
-const MAX_DOCUMENTS = 5;
+const MAX_DOCUMENTS = 25;
 
 @Service()
 export class ScoreService {
@@ -19,24 +19,6 @@ export class ScoreService {
 
     async updateScoreboard(score: Score[], collectionName: string): Promise<void> {
         this.getCollection(collectionName).insertMany(score);
-        const sortedScores = await this.getCollection(collectionName).find().sort({ scoreValue: -1 }).toArray();
-
-        while ((await this.getCollection(collectionName).countDocuments()) > MAX_DOCUMENTS) {
-            const lastScore = sortedScores.pop();
-            this.getCollection(collectionName).deleteOne({ scoreValue: lastScore?.scoreValue });
-        }
-    }
-
-    async updateNamesWithSameScore(score: Score, collectionName: string): Promise<boolean> {
-        if (await this.isScoreUnique(score.scoreValue, collectionName)) {
-            return false;
-        }
-
-        const playersWithSameScore = await this.getPlayerNamesByScore(score.scoreValue, collectionName);
-        playersWithSameScore.push(...score.name);
-        await this.getCollection(collectionName).findOneAndUpdate({ scoreValue: score.scoreValue }, { $set: { name: playersWithSameScore } });
-
-        return true;
     }
 
     async isPlayerInScoreboard(playerName: string, collectionName: string): Promise<boolean> {
@@ -44,8 +26,13 @@ export class ScoreService {
         return foundPlayer === null ? false : true;
     }
 
-    async deleteElement(score: Score, collectionName: string): Promise<void> {
-        await this.getCollection(collectionName).deleteOne({ name: score.name });
+    async deleteElement(playerName: string, collectionName: string): Promise<void> {
+        await this.getCollection(collectionName).deleteOne({ name: playerName });
+    }
+
+    async isScoreUnique(scoreVal: number, collectionName: string): Promise<boolean> {
+        const scoreFound = await this.getCollection(collectionName).findOne({ scoreValue: scoreVal });
+        return scoreFound === null;
     }
 
     async getPlayerScore(playerName: string, collectionName: string): Promise<number> {
@@ -57,24 +44,11 @@ export class ScoreService {
     }
 
     async getScoreboardClassic(): Promise<Score[]> {
-        return this.classicScoreboard.find().sort({ scoreValue: -1 }).toArray();
+        return this.classicScoreboard.find().limit(MAX_DOCUMENTS).sort({ scoreValue: -1 }).toArray();
     }
 
     async getScoreboardLog(): Promise<Score[]> {
-        return this.logScoreboard.find().sort({ scoreValue: -1 }).toArray();
-    }
-
-    private async isScoreUnique(scoreVal: number, collectionName: string): Promise<boolean> {
-        const scoreFound = await this.getCollection(collectionName).findOne({ scoreValue: scoreVal });
-        return scoreFound === null;
-    }
-
-    private async getPlayerNamesByScore(scoreVal: number, collectionName: string): Promise<string[]> {
-        return this.getCollection(collectionName)
-            .findOne({ scoreValue: scoreVal })
-            .then((score) => {
-                return score === null ? [''] : score.name;
-            });
+        return this.logScoreboard.find().limit(MAX_DOCUMENTS).sort({ scoreValue: -1 }).toArray();
     }
 
     private getCollection(collectionName: string): Collection<Score> {

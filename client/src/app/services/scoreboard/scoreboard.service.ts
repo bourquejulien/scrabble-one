@@ -12,15 +12,6 @@ export class ScoreboardService {
     constructor(private readonly httpClient: HttpClient) {}
 
     async displayScores(collectionName: string): Promise<Score[]> {
-        const currentBestScores = await this.httpClient.get<Score[]>(localUrl(collectionName)).toPromise();
-
-        for (const score of currentBestScores) {
-            const firstName = score.name[0];
-
-            if (firstName === '') {
-                score.name.splice(0, 1);
-            }
-        }
-        return currentBestScores;
+        return await this.httpClient.get<Score[]>(localUrl(collectionName)).toPromise();
     }
 }

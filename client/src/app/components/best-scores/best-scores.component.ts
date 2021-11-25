@@ -10,8 +10,8 @@ const COLLECTION_NAME_LOG = 'log';
     styleUrls: ['./best-scores.component.scss'],
 })
 export class BestScoresComponent {
-    classicBoardData: Score[] = [];
-    logBoardData: Score[] = [];
+    classicBoardData: Score[];
+    logBoardData: Score[];
     displayedColumns: string[] = ['score', 'name'];
 
     constructor(private scoreboardService: ScoreboardService) {
