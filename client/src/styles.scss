@@ -97,6 +97,11 @@ body {
     outline: none;
 }
 
+.mat-success {
+    background-color: green;
+    color: #fff;
+}
+
 $angular-dark-theme: mat.define-dark-theme(
     (
         color: (

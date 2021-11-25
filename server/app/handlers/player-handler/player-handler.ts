@@ -1,6 +1,5 @@
 import { Player } from '@app/classes/player/player';
 import { Observable, Subject, Subscription } from 'rxjs';
-import { Config } from '@app/config';
 
 export class PlayerHandler {
     players: Player[];
@@ -23,7 +22,10 @@ export class PlayerHandler {
     }
 
     addPlayer(player: Player): void {
-        this.playerSubscriptions[player.id] = player.onTurn().subscribe((lastId) => this.switchTurn(lastId));
+        this.playerSubscriptions.set(
+            player.id,
+            player.onTurn().subscribe((lastId) => this.switchTurn(lastId)),
+        );
         this.players.push(player);
     }
 
@@ -37,26 +39,15 @@ export class PlayerHandler {
         (this.playerSubscriptions.get(removedPlayer.id) as Subscription).unsubscribe();
         this.playerSubscriptions.delete(removedPlayer.id);
 
+        if (removedPlayer.isTurn && this.players.length > 0) {
+            this.nextTurn.next(this.players[0].id);
+        }
+
         return removedPlayer;
     }
 
     onTurn(): Observable<string> {
         return this.nextTurn.asObservable();
-    }
-
-    get isOverSkipLimit(): boolean {
-        return this.players.map((p) => p.playerData.skippedTurns > Config.MAX_SKIP_TURN).reduce((acc, isMaxSkip) => acc && isMaxSkip);
-    }
-
-    get rackEmptied(): boolean {
-        return this.players.map((p) => p.playerData.rack.length === 0).reduce((acc, isEmpty) => acc || isEmpty);
-    }
-
-    get winner(): string {
-        if (this.players[0].stats.points === this.players[1].stats.points) {
-            return '';
-        }
-        return this.players.reduce((winner, player) => (player.stats.points > winner.stats.points ? player : winner)).id;
     }
 
     private initialTurn(): void {

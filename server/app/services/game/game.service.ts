@@ -1,40 +1,58 @@
 import { generateId } from '@app/classes/id';
-import { Service } from 'typedi';
-import { ReserveHandler } from '@app/handlers/reserve-handler/reserve-handler';
 import { PlayerInfo } from '@app/classes/player-info';
 import { HumanPlayer } from '@app/classes/player/human-player/human-player';
 import { Action } from '@app/classes/player/virtual-player/actions/action';
 import { VirtualPlayer } from '@app/classes/player/virtual-player/virtual-player';
 import { PlayerHandler } from '@app/handlers/player-handler/player-handler';
+import { ReserveHandler } from '@app/handlers/reserve-handler/reserve-handler';
 import { SessionHandler } from '@app/handlers/session-handler/session-handler';
 import { BoardGeneratorService } from '@app/services/board/board-generator.service';
-import { DictionaryService } from '@app/services/dictionary/dictionary.service';
 import { SessionHandlingService } from '@app/services/sessionHandling/session-handling.service';
 import { SocketService } from '@app/services/socket/socket-service';
-import { ConvertConfig, GameType, MultiplayerCreateConfig, MultiplayerJoinConfig, ServerConfig, SinglePlayerConfig } from '@common';
+import { Service } from 'typedi';
+import { ConvertConfig, GameMode, GameType, MultiplayerCreateConfig, MultiplayerJoinConfig, ServerConfig, SinglePlayerConfig } from '@common';
 import { VirtualPlayerExpert } from '@app/classes/player/virtual-player/virtual-player-expert/virtual-player-expert';
 import * as logger from 'winston';
+import { SessionInfo } from '@app/classes/session-info';
+import { GoalHandler } from '@app/handlers/goal-handler/goal-handler';
+import { DisabledGoalHandler } from '@app/handlers/goal-handler/disabled-goal-handler';
+import { Log2990GoalHandler } from '@app/handlers/goal-handler/log2990-goal-handler';
+import { SessionStatsHandler } from '@app/handlers/stats-handlers/session-stats-handler/session-stats-handler';
+import { DictionaryService } from '@app/services/dictionary/dictionary.service';
+import { DictionaryHandler } from '@app/handlers/dictionary-handler/dictionary-handler';
 
 @Service()
 export class GameService {
     constructor(
         private readonly boardGeneratorService: BoardGeneratorService,
         private readonly sessionHandlingService: SessionHandlingService,
-        private readonly dictionnaryService: DictionaryService,
+        private readonly dictionaryService: DictionaryService,
         private readonly socketService: SocketService,
     ) {}
 
     async initSinglePlayer(gameConfig: SinglePlayerConfig): Promise<ServerConfig> {
-        const sessionInfo = {
+        const sessionInfo: SessionInfo = {
             id: generateId(),
             playTimeMs: gameConfig.playTimeMs,
             gameType: gameConfig.gameType,
         };
 
-        const boardHandler = this.boardGeneratorService.generateBoardHandler(gameConfig.isRandomBonus);
-        const reserveHandler = new ReserveHandler();
+        let words: string[] = [];
+        try {
+            words = await this.dictionaryService.getWords(gameConfig.dictionary);
+        } catch (err) {
+            logger.error(`${err.stack}`);
+            return Promise.reject(`${err}`);
+        }
 
-        const sessionHandler = new SessionHandler(sessionInfo, boardHandler, reserveHandler, new PlayerHandler(), this.socketService);
+        // TODO add a construction service?
+        const dictionaryHandler = new DictionaryHandler(words, gameConfig.dictionary);
+        const boardHandler = this.boardGeneratorService.generateBoardHandler(gameConfig.isRandomBonus, dictionaryHandler);
+        const reserveHandler = new ReserveHandler();
+        const socketHandler = this.socketService.generate(sessionInfo.id);
+        const statsHandler = new SessionStatsHandler(socketHandler, reserveHandler, this.getGoalHandler(gameConfig.gameMode));
+
+        const sessionHandler = new SessionHandler(sessionInfo, boardHandler, reserveHandler, new PlayerHandler(), socketHandler, statsHandler);
 
         const humanPlayerInfo: PlayerInfo = {
             id: generateId(),
@@ -52,7 +70,7 @@ export class GameService {
         this.addVirtualPlayer(virtualPlayerInfo, sessionHandler);
         this.sessionHandlingService.addHandler(sessionHandler);
 
-        sessionHandler.start();
+        sessionHandler.sessionData.isActive = true;
 
         logger.info(`Single player game: ${sessionHandler.sessionInfo.id} initialised`);
 
@@ -60,16 +78,28 @@ export class GameService {
     }
 
     async initMultiplayer(gameConfig: MultiplayerCreateConfig): Promise<string> {
-        const sessionInfo = {
+        const sessionInfo: SessionInfo = {
             id: generateId(),
             playTimeMs: gameConfig.playTimeMs,
             gameType: gameConfig.gameType,
         };
 
-        const boardHandler = this.boardGeneratorService.generateBoardHandler(gameConfig.isRandomBonus);
-        const reserveHandler = new ReserveHandler();
+        let words: string[] = [];
+        try {
+            words = await this.dictionaryService.getWords(gameConfig.dictionary);
+        } catch (err) {
+            logger.error(`${err.stack}`);
+            return Promise.reject(`${err}`);
+        }
 
-        const sessionHandler = new SessionHandler(sessionInfo, boardHandler, reserveHandler, new PlayerHandler(), this.socketService);
+        // TODO add a construction service?
+        const dictionaryHandler = new DictionaryHandler(words, gameConfig.dictionary);
+        const boardHandler = this.boardGeneratorService.generateBoardHandler(gameConfig.isRandomBonus, dictionaryHandler);
+        const reserveHandler = new ReserveHandler();
+        const socketHandler = this.socketService.generate(sessionInfo.id);
+        const statsHandler = new SessionStatsHandler(socketHandler, reserveHandler, this.getGoalHandler(gameConfig.gameMode));
+
+        const sessionHandler = new SessionHandler(sessionInfo, boardHandler, reserveHandler, new PlayerHandler(), socketHandler, statsHandler);
 
         const humanPlayerInfo: PlayerInfo = {
             id: generateId(),
@@ -102,9 +132,9 @@ export class GameService {
 
         const humanPlayer = this.addHumanPlayer(humanPlayerInfo, sessionHandler);
         this.sessionHandlingService.updateEntries(sessionHandler);
-        sessionHandler.start();
+        sessionHandler.sessionData.isActive = true;
 
-        this.socketService.send('onJoin', sessionHandler.sessionInfo.id, sessionHandler.getServerConfig(waitingPlayer.id));
+        this.socketService.send('onJoin', waitingPlayer.id, sessionHandler.getServerConfig(waitingPlayer.id));
 
         logger.info(`Multiplayer game: ${sessionHandler.sessionInfo.id} joined by ${humanPlayerInfo.id}`);
 
@@ -114,7 +144,7 @@ export class GameService {
     async convert(convertConfig: ConvertConfig): Promise<ServerConfig | null> {
         const handler = this.sessionHandlingService.getHandlerByPlayerId(convertConfig.id);
 
-        if (handler == null || handler.sessionData.isStarted || handler.sessionInfo.gameType !== GameType.Multiplayer) {
+        if (handler == null || handler.sessionInfo.gameType !== GameType.Multiplayer) {
             logger.warn(`Cannot convert game to single player mode - playerId: ${convertConfig.id}`);
             return null;
         }
@@ -137,16 +167,17 @@ export class GameService {
     }
 
     async abandon(id: string): Promise<boolean> {
+        logger.debug(`Abandon - PlayerId: ${id}`);
         const handler = this.sessionHandlingService.getHandlerByPlayerId(id);
 
         if (handler == null) {
-            logger.warn(`Failed to stop game: ${id}`);
+            logger.warn(`Failed to abandon game: ${id}`);
             return false;
         }
 
-        if (handler.sessionInfo.gameType === GameType.Multiplayer && handler.sessionData.isActive) {
-            handler.abandonGame(id);
-            logger.info(`Game abandoned: ${id}`);
+        if (handler.sessionData.isStarted && handler.sessionData.isActive && handler.sessionInfo.gameType === GameType.Multiplayer) {
+            logger.info(`Converting player: ${id}`);
+            handler.convertWhileRunning(id);
         } else {
             handler.dispose();
             this.sessionHandlingService.removeHandler(id);
@@ -165,10 +196,14 @@ export class GameService {
 
     private addVirtualPlayer(playerInfo: PlayerInfo, sessionHandler: SessionHandler): VirtualPlayer {
         const actionCallback = (action: Action): Action | null => action.execute();
-        const virtualPlayer = new VirtualPlayerExpert(this.dictionnaryService, playerInfo, actionCallback);
+        const virtualPlayer = new VirtualPlayerExpert(sessionHandler.boardHandler.dictionaryHandler, playerInfo, actionCallback);
 
         sessionHandler.addPlayer(virtualPlayer);
 
         return virtualPlayer;
+    }
+
+    private getGoalHandler(gameMode: GameMode): GoalHandler {
+        return gameMode === GameMode.Classic ? new DisabledGoalHandler() : new Log2990GoalHandler();
     }
 }
