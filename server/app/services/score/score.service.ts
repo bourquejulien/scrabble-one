@@ -44,6 +44,10 @@ export class ScoreService {
         return foundPlayer === null ? false : true;
     }
 
+    async deleteElement(score: Score, collectionName: string): Promise<void> {
+        await this.getCollection(collectionName).deleteOne({ name: score.name });
+    }
+
     async getPlayerScore(playerName: string, collectionName: string): Promise<number> {
         return this.getCollection(collectionName)
             .findOne({ name: playerName })

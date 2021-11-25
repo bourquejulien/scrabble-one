@@ -50,10 +50,14 @@ export class StatsService {
         const isInScoreboard = await this.scoreService.isPlayerInScoreboard(score.name[0], collectionName);
 
         if (isInScoreboard) {
+            // is in scoreboard
             const playerScoreInBoard = await this.scoreService.getPlayerScore(score.name[0], collectionName);
             if (playerScoreInBoard > score.scoreValue) {
+                // score in DB greater; false do nothing
                 return false;
             }
+            // score in DB smaller; delete it
+            this.scoreService.deleteElement(score, collectionName);
         }
         return true;
     }
