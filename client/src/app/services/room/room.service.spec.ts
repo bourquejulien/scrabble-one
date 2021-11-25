@@ -1,21 +1,23 @@
 /* eslint-disable @typescript-eslint/ban-types */
 /* eslint-disable dot-notation */
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { HttpClient } from '@angular/common/http';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { GameService } from '@app/services/game/game.service';
 import { SocketClientService } from '@app/services/socket-client/socket-client.service';
 import { GameType, MultiplayerJoinConfig, ServerConfig } from '@common';
 import { Observable } from 'rxjs';
 import { RoomService } from './room.service';
+import { environmentExt } from '@environment-ext';
+
+const localUrl = (base: string, call: string, id?: string) => `${environmentExt.apiUrl}${base}/${call}${id ? '/' + id : ''}`;
 
 describe('RoomService', () => {
     let service: RoomService;
+    let httpMock: HttpTestingController;
     let socketClientSpyObj: jasmine.SpyObj<SocketClientService>;
     let gameServiceSpyObj: jasmine.SpyObj<GameService>;
     let serverConfigObservableSpyObj: jasmine.SpyObj<Observable<ServerConfig>>;
-    let httpSpyObj: jasmine.SpyObj<HttpClient>;
 
     beforeEach(() => {
         socketClientSpyObj = jasmine.createSpyObj(SocketClientService, ['on', 'send', 'reset', 'join']);
@@ -25,17 +27,16 @@ describe('RoomService', () => {
         socketClientSpyObj.on.and.callFake(callback);
         gameServiceSpyObj = jasmine.createSpyObj(GameService, ['start']);
         serverConfigObservableSpyObj = jasmine.createSpyObj('Observable<ServerConfig>', ['toPromise']);
-        httpSpyObj = jasmine.createSpyObj('HttpModule', ['get', 'put']);
-        httpSpyObj.put.and.returnValue(serverConfigObservableSpyObj);
 
         TestBed.configureTestingModule({
             imports: [HttpClientTestingModule],
             providers: [
-                { provide: HttpClient, useValue: httpSpyObj },
                 { provide: SocketClientService, useValue: socketClientSpyObj },
                 { provide: GameService, useValue: gameServiceSpyObj },
             ],
         });
+
+        httpMock = TestBed.inject(HttpTestingController);
         service = TestBed.inject(RoomService);
     });
 
@@ -48,9 +49,22 @@ describe('RoomService', () => {
             playerName: 'Claudette',
             sessionId: '1',
         };
+
         gameServiceSpyObj.start.and.callThrough();
-        await service.join(config);
-        expect(gameServiceSpyObj.start).toHaveBeenCalled();
+
+        service.join(config).then(() => {
+            expect(gameServiceSpyObj.start).toHaveBeenCalled();
+        });
+
+        const request = httpMock.expectOne(localUrl('game', 'join'));
+        request.flush({
+            id: '',
+            startId: '',
+            gameType: GameType.Multiplayer,
+            playTimeMs: 0,
+            firstPlayerName: '',
+            secondPlayerName: '',
+        });
     });
 
     it('should init correctly', async () => {
@@ -96,9 +110,20 @@ describe('RoomService', () => {
         expect(socketClientSpyObj.reset).not.toHaveBeenCalled();
 
         service['pendingRoomId'] = 'pendingRoomId';
-        await service['toSinglePlayer']();
-        expect(gameServiceSpyObj.start).toHaveBeenCalled();
-        expect(service['pendingRoomId']).toBe('');
+        service['toSinglePlayer']().then(() => {
+            expect(gameServiceSpyObj.start).toHaveBeenCalled();
+            expect(service['pendingRoomId']).toBe('');
+        });
+
+        const request = httpMock.expectOne(localUrl('game', 'convert'));
+        request.flush({
+            id: '',
+            startId: '',
+            gameType: GameType.Multiplayer,
+            playTimeMs: 0,
+            firstPlayerName: '',
+            secondPlayerName: '',
+        });
     });
 
     it('should return observables', () => {
@@ -112,7 +137,6 @@ describe('RoomService', () => {
     });
 
     it('should call roomSubject and onTurn when room is created', () => {
-        new RoomService(socketClientSpyObj, gameServiceSpyObj, httpSpyObj);
         expect(socketClientSpyObj['on']).toHaveBeenCalled();
     });
 });

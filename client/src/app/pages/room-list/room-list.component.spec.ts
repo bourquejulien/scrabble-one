@@ -10,7 +10,7 @@ import { NameValidator } from '@app/classes/form-validation/name-validator';
 import { AppMaterialModule } from '@app/modules/material.module';
 import { GamePageComponent } from '@app/pages/game-page/game-page.component';
 import { RoomService } from '@app/services/room/room.service';
-import { AvailableGameConfig } from '@common';
+import { AvailableGameConfig, GameMode } from '@common';
 import { Subject } from 'rxjs';
 import { RoomListComponent } from './room-list.component';
 
@@ -92,18 +92,18 @@ describe('RoomListComponent', () => {
         component.nameValidator.name = playerName;
         component['selectedConfig'] = null;
         component.join();
-        component['selectedConfig'] = { id: '1', isRandomBonus: true, playTimeMs: 1000, waitingPlayerName: '' };
+        component['selectedConfig'] = { id: '1', gameMode: GameMode.Classic, isRandomBonus: true, playTimeMs: 1000, waitingPlayerName: '' };
         component.join();
 
-        component['selectedConfig'] = { id: '1', isRandomBonus: true, playTimeMs: 1000, waitingPlayerName: playerName };
+        component['selectedConfig'] = { id: '1', gameMode: GameMode.Classic, isRandomBonus: true, playTimeMs: 1000, waitingPlayerName: playerName };
         component.join();
     });
 
     it('should refresh configs', () => {
-        component['selectedConfig'] = { id: '3', isRandomBonus: true, playTimeMs: 1000, waitingPlayerName: playerName };
+        component['selectedConfig'] = { id: '3', gameMode: GameMode.Classic, isRandomBonus: true, playTimeMs: 1000, waitingPlayerName: playerName };
         const availableConfigs: AvailableGameConfig[] = [
-            { id: '1', isRandomBonus: true, playTimeMs: 1000, waitingPlayerName: playerName },
-            { id: '2', isRandomBonus: true, playTimeMs: 1000, waitingPlayerName: 'Alphonse' },
+            { id: '1', gameMode: GameMode.Classic, isRandomBonus: true, playTimeMs: 1000, waitingPlayerName: playerName },
+            { id: '2', gameMode: GameMode.Classic, isRandomBonus: true, playTimeMs: 1000, waitingPlayerName: 'Alphonse' },
         ];
         roomServiceSubject.next(availableConfigs);
 
