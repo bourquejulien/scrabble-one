@@ -4,7 +4,7 @@
 import { CommonModule } from '@angular/common';
 import { HttpClient, HttpHandler } from '@angular/common/http';
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/compiler';
-import { NO_ERRORS_SCHEMA, SimpleChanges } from '@angular/core';
+import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { cleanStyles } from '@app/classes/helpers/cleanup.helper';
@@ -17,8 +17,8 @@ import { GridService } from '@app/services/grid/grid.service';
 import { PlaceLetterService } from '@app/services/place-letter/place-letter.service';
 import { RackService } from '@app/services/rack/rack.service';
 import { BoardData, Vec2 } from '@common';
-import { BoardComponent } from './board.component';
 import { BehaviorSubject, Observable } from 'rxjs';
+import { BoardComponent } from './board.component';
 
 class GridServiceStub {
     letterFontFace = { font: 'red', size: 0 };
@@ -148,42 +148,6 @@ describe('BoardComponent', () => {
 
     it('should create', () => {
         expect(component).toBeTruthy();
-    });
-
-    it('should call ngOnChange', () => {
-        const changes = {
-            playerType: {
-                previousValue: PlayerType.Local,
-                currentValue: PlayerType.Virtual,
-                firstChange: false,
-                isFirstChange: () => {
-                    return changes.playerType.firstChange;
-                },
-            },
-        };
-
-        component.placeLetterService.tempRack = ['e', 's', 't', 'a'];
-        component.ngOnChanges(changes as unknown as SimpleChanges);
-
-        expect(component.placeLetterService.tempRack).toEqual([]);
-    });
-
-    it('should call ngOnChange', () => {
-        const changes = {
-            playerType: {
-                previousValue: PlayerType.Local,
-                currentValue: PlayerType.Virtual,
-                firstChange: true,
-                isFirstChange: () => {
-                    return changes.playerType.firstChange;
-                },
-            },
-        };
-
-        component.placeLetterService.tempRack = ['e', 's', 't', 'a'];
-        component.ngOnChanges(changes as unknown as SimpleChanges);
-
-        expect(component.placeLetterService.tempRack).not.toEqual([]);
     });
 
     it('should return correct width', () => {
