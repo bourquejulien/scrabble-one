@@ -5,7 +5,6 @@ const ERRORS: Map<string, string> = new Map([
     ['maxlength', '*Le nom doit au maximum contenir 16 lettres.\n'],
     ['required', '*Un nom doit être entré.\n'],
     ['containsOnlyLetters', '*Le nom doit seulement être composé de lettres.\n'],
-    ['startsWithLowerLetter', '*Le nom doit débuter par une majuscule.\n'],
 ]);
 
 const MAX_SIZE_NAME = 16;
@@ -23,18 +22,17 @@ export class NameValidator {
     private static validateName(control: FormControl): { [key: string]: boolean } | null {
         // We make sure that player name is considered as a string
         const playerName = control.value as string;
-        if (playerName !== undefined && playerName !== null && playerName !== '') {
-            for (let index = 0; index < playerName.length; index++) {
-                if (!/[a-zA-ZÉéÎîÉéÇçÏï]/.test(playerName.charAt(index))) {
-                    return { ['containsOnlyLetters']: true };
-                }
-            }
 
-            const firstLetter = playerName[0];
-            if (firstLetter !== firstLetter.toUpperCase()) {
-                return { ['startsWithLowerLetter']: true };
+        if (playerName === undefined || playerName === null || playerName !== '') {
+            return null;
+        }
+
+        for (let index = 0; index < playerName.length; index++) {
+            if (!/[a-zA-ZÉéÎîÉéÇçÏï]/.test(playerName.charAt(index))) {
+                return { ['containsOnlyLetters']: true };
             }
         }
+
         return null;
     }
 
