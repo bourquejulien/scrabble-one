@@ -14,7 +14,7 @@ import { PlayerService } from '@app/services/player/player.service';
 import { RackService } from '@app/services/rack/rack.service';
 import { SessionService } from '@app/services/session/session.service';
 import { SocketClientService } from '@app/services/socket-client/socket-client.service';
-import { GameMode, GameType, ServerConfig, SessionStats, DictionaryMetadata } from '@common';
+import { GameMode, GameType, ServerConfig, SessionStats, DictionaryMetadata, VirtualPlayerLevel } from '@common';
 import { Observable, Subject } from 'rxjs';
 
 const dictionary: DictionaryMetadata = {
@@ -112,6 +112,7 @@ describe('GameService', () => {
         const config = {
             gameType: GameType.SinglePlayer,
             gameMode: GameMode.Log2990,
+            virtualPlayerLevel: VirtualPlayerLevel.Easy,
             playTimeMs: 1000,
             playerName: 'Monique',
             virtualPlayerName: 'Alphonse',
