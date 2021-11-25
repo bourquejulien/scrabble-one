@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { SocketClientService } from '@app/services/socket-client/socket-client.service';
 import { GoalData, GoalStatus } from '@common';
 import { Subject } from 'rxjs';
-import { SocketClientService } from '../socket-client/socket-client.service';
 
 @Injectable({
     providedIn: 'root',
@@ -10,7 +10,7 @@ import { SocketClientService } from '../socket-client/socket-client.service';
 export class GoalService {
     publicObjectives: GoalData[];
     privateObjectives: GoalData[];
-    goalData: Subject<GoalData[]>;
+    goalData: Subject<GoalData[]> = new Subject<GoalData[]>();
     sentSnackBar: string[];
     constructor(socketService: SocketClientService, private snackBar: MatSnackBar) {
         this.publicObjectives = [];
