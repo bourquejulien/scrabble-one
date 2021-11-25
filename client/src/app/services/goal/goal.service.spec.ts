@@ -1,5 +1,4 @@
 import { TestBed } from '@angular/core/testing';
-
 import { GoalService } from './goal.service';
 
 describe('GoalService', () => {
