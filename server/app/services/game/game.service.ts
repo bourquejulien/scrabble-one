@@ -19,7 +19,6 @@ import { DisabledGoalHandler } from '@app/handlers/goal-handler/disabled-goal-ha
 import { Log2990GoalHandler } from '@app/handlers/goal-handler/log2990-goal-handler';
 import { SessionStatsHandler } from '@app/handlers/stats-handlers/session-stats-handler/session-stats-handler';
 import { DictionaryService } from '@app/services/dictionary/dictionary.service';
-import { DictionaryHandler } from '@app/handlers/dictionary-handler/dictionary-handler';
 
 @Service()
 export class GameService {
@@ -37,16 +36,8 @@ export class GameService {
             gameType: gameConfig.gameType,
         };
 
-        let words: string[] = [];
-        try {
-            words = await this.dictionaryService.getWords(gameConfig.dictionary);
-        } catch (err) {
-            logger.error(`${err.stack}`);
-            return Promise.reject(`${err}`);
-        }
-
         // TODO add a construction service?
-        const dictionaryHandler = new DictionaryHandler(words, gameConfig.dictionary);
+        const dictionaryHandler = await this.dictionaryService.getHandler(gameConfig.dictionary.id);
         const boardHandler = this.boardGeneratorService.generateBoardHandler(gameConfig.isRandomBonus, dictionaryHandler);
         const reserveHandler = new ReserveHandler();
         const socketHandler = this.socketService.generate(sessionInfo.id);
@@ -84,16 +75,8 @@ export class GameService {
             gameType: gameConfig.gameType,
         };
 
-        let words: string[] = [];
-        try {
-            words = await this.dictionaryService.getWords(gameConfig.dictionary);
-        } catch (err) {
-            logger.error(`${err.stack}`);
-            return Promise.reject(`${err}`);
-        }
-
         // TODO add a construction service?
-        const dictionaryHandler = new DictionaryHandler(words, gameConfig.dictionary);
+        const dictionaryHandler = await this.dictionaryService.getHandler(gameConfig.dictionary.id);
         const boardHandler = this.boardGeneratorService.generateBoardHandler(gameConfig.isRandomBonus, dictionaryHandler);
         const reserveHandler = new ReserveHandler();
         const socketHandler = this.socketService.generate(sessionInfo.id);
