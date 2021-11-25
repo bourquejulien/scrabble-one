@@ -25,7 +25,7 @@ export class GoalService {
         for (const goal of goals) {
             if (this.isOpponentSucceeded(goal)) {
                 this.sentSnackBar.push(goal.id);
-                const message = `Votre adversaire a complété l'objectif: ${goal.name} lui rapportant un total de ${goal.score}`;
+                const message = `Votre adversaire a complété l'objectif: "${goal.name} lui rapportant un total de ${goal.score}"`;
                 this.snackBar.open(message, "D'accord");
             } else if (goal.isGlobal) {
                 this.publicObjectives.push(goal);
