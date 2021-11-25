@@ -56,7 +56,7 @@ export class Board implements ImmutableBoard {
 
             if (this.board[position.x][position.y].letter === '') {
                 this.setLetter(letter, position);
-                return;
+                continue;
             }
 
             throw new BoardMergeError(`Letter is already set at position (${position.x},${position.y})`);
