@@ -26,13 +26,13 @@ export class DatabaseService {
             const countLog = await this.scrabbleDb.collection(DATABASE_COLLECTION_LOG).countDocuments();
 
             if (countClassic === 0) {
-                await this.scrabbleDb.createCollection(DATABASE_COLLECTION_CLASSIC);
-                await this.fillClassicBoardWithDefault();
+                this.initCollections(DATABASE_COLLECTION_CLASSIC);
             }
+
             if (countLog === 0) {
-                await this.scrabbleDb.createCollection(DATABASE_COLLECTION_LOG);
-                await this.fillLogBoardWithDefault();
+                this.initCollections(DATABASE_COLLECTION_LOG);
             }
+
         } catch (e) {
             await this.client.close();
             throw e;
@@ -103,7 +103,18 @@ export class DatabaseService {
         logger.info('Log scoreboard has been filled with default values.');
     }
 
-    get database(): Db {
-        return this.scrabbleDb;
+    async reset(collectionName: string): Promise<void> {
+        await this.scrabbleDb.dropCollection(collectionName);
+        await this.initCollections(collectionName);
+    }
+
+    private async initCollections(collectionName: string): Promise<void> {
+        if (collectionName === DATABASE_COLLECTION_CLASSIC) {
+            await this.scrabbleDb.createCollection(DATABASE_COLLECTION_CLASSIC);
+            await this.fillClassicBoardWithDefault();
+        } else {
+            await this.scrabbleDb.createCollection(DATABASE_COLLECTION_LOG);
+            await this.fillLogBoardWithDefault();
+        }
     }
 }
