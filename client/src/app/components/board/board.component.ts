@@ -114,18 +114,21 @@ export class BoardComponent implements OnChanges, AfterViewInit {
         }
     }
 
-    ngAfterViewInit(): void {
+    async ngAfterViewInit(): Promise<void> {
         this.gridContext = this.gridCanvas.nativeElement.getContext('2d') as CanvasRenderingContext2D;
         this.squareContext = this.squareCanvas.nativeElement.getContext('2d') as CanvasRenderingContext2D;
         this.tempContext = this.tempCanvas.nativeElement.getContext('2d') as CanvasRenderingContext2D;
 
         this.scale();
 
-        new FontFaceObserver(this.gridService.letterFontFace.font).load().then(() => {
-            this.gridService.drawGrid(this.gridContext);
-            this.gridService.drawSquares(this.squareContext);
-            this.squareCanvas.nativeElement.focus();
-        });
+        // 1. rendre new FontFaceObserver global
+        // 2. set ala valeur de font -> Et utiliser await;
+
+        await new FontFaceObserver(this.gridService.letterFontFace.font).load();
+
+        this.gridService.drawGrid(this.gridContext);
+        this.gridService.drawSquares(this.squareContext);
+        this.squareCanvas.nativeElement.focus();
     }
 
     ngOnChanges(changes: SimpleChanges): void {

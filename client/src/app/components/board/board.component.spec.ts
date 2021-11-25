@@ -4,7 +4,7 @@
 import { CommonModule } from '@angular/common';
 import { HttpClient, HttpHandler } from '@angular/common/http';
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/compiler';
-import { NO_ERRORS_SCHEMA, SimpleChange } from '@angular/core';
+import { NO_ERRORS_SCHEMA, SimpleChanges } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { PlayerType } from '@app/classes/player/player-type';
@@ -128,13 +128,7 @@ class BoardServiceMock {
     }
 }
 
-class SimpleChangeMock {
-    isFirstChange() {
-        return true;
-    }
-}
-
-describe('BoardComponent', () => {
+fdescribe('BoardComponent', () => {
     const playerType = PlayerType.Local;
     // let fontfaceobserverSpy: jasmine.SpyObj<FontFaceObserver>;
     let component: BoardComponent;
@@ -142,7 +136,6 @@ describe('BoardComponent', () => {
     let gridServiceStub: GridServiceStub;
     let gameServiceSpy: jasmine.SpyObj<GameService>;
     let rackServiceSpy: jasmine.SpyObj<RackService>;
-
     let placeLetter: jasmine.SpyObj<PlaceLetterService>;
 
     beforeEach(async () => {
@@ -179,7 +172,7 @@ describe('BoardComponent', () => {
                 { provide: PlaceLetterService, useValue: placeLetter },
                 { provide: RackService, useValue: rackServiceSpy },
                 { provide: HttpClient, useClass: HttpClient },
-                { provide: SimpleChange, useClass: SimpleChangeMock },
+
                 HttpHandler,
             ],
             imports: [AppMaterialModule, CommonModule, BrowserAnimationsModule],
@@ -196,6 +189,42 @@ describe('BoardComponent', () => {
 
     it('should create', () => {
         expect(component).toBeTruthy();
+    });
+
+    it('should call ngOnChange', () => {
+        const changes = {
+            playerType: {
+                previousValue: PlayerType.Local,
+                currentValue: PlayerType.Virtual,
+                firstChange: false,
+                isFirstChange: () => {
+                    return changes.playerType.firstChange;
+                },
+            },
+        };
+
+        component.placeLetterService.tempRack = ['e', 's', 't', 'a'];
+        component.ngOnChanges(changes as unknown as SimpleChanges);
+
+        expect(component.placeLetterService.tempRack).toEqual([]);
+    });
+
+    it('should call ngOnChange', () => {
+        const changes = {
+            playerType: {
+                previousValue: PlayerType.Local,
+                currentValue: PlayerType.Virtual,
+                firstChange: true,
+                isFirstChange: () => {
+                    return changes.playerType.firstChange;
+                },
+            },
+        };
+
+        component.placeLetterService.tempRack = ['e', 's', 't', 'a'];
+        component.ngOnChanges(changes as unknown as SimpleChanges);
+
+        expect(component.placeLetterService.tempRack).not.toEqual([]);
     });
 
     it('should return correct width', () => {
