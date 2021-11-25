@@ -12,7 +12,7 @@ export class StatsService {
     constructor(readonly scoreService: ScoreService) {}
 
     async updateScoreboards(endGameData: EndGameData): Promise<void> {
-        const collectionName = endGameData.gameMode === GameMode.Classic ? DATABASE_COLLECTION_CLASSIC : DATABASE_COLLECTION_LOG
+        const collectionName = endGameData.gameMode === GameMode.Classic ? DATABASE_COLLECTION_CLASSIC : DATABASE_COLLECTION_LOG;
 
         // check if human player
         logger.info(`isHuman: ${endGameData.isWinnerHuman}`);

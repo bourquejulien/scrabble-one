@@ -24,7 +24,7 @@ services:
             dockerfile: Dockerfile
             target: final
         environment:
-            - DB_HOST=@mongo/default?retryWrites=true&w=majority
+            - DB_HOST=mongo
             - DB_USER=local
             - DB_PASSWORD=lacol
         hostname: server
