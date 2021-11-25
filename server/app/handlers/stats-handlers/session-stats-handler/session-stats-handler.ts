@@ -8,7 +8,7 @@ import { GameMode, MessageType, SessionStats } from '@common';
 import { Log2990GoalHandler } from '@app/handlers/goal-handler/log2990-goal-handler';
 
 export class SessionStatsHandler {
-    readonly playerStatsHandlers: PlayerStatsHandler[];
+    playerStatsHandlers: PlayerStatsHandler[];
 
     private readonly subscriptions: Subscription[];
 

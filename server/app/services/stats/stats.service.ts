@@ -11,25 +11,27 @@ export class StatsService {
 
     async updateScoreboards(endGameData: EndGameData): Promise<void> {
         const collectionName = endGameData.gameMode === GameMode.Classic ? DATABASE_COLLECTION_CLASSIC : DATABASE_COLLECTION_LOG;
+        const elligiblePlayers = await this.currentGreaterScores(endGameData.scores, collectionName);
 
-        for (const score of endGameData.scores) {
-            if (!(await this.isNewScoreGreater(score, collectionName))) {
+        for (let i = 0; i < elligiblePlayers.length; i++) {
+            if (await this.scoreService.updateNamesWithSameScore(elligiblePlayers[i], collectionName)) {
+                elligiblePlayers.splice(i, 1);
+            }
+
+            if (elligiblePlayers.length === 0) {
                 return;
             }
 
-            if (await this.scoreService.updateNamesWithSameScore(score, collectionName)) {
-                return;
-            }
-            await this.scoreService.updateScoreboard(score, collectionName);
+            await this.scoreService.updateScoreboard(elligiblePlayers, collectionName);
         }
     }
 
     async currentGreaterScores(scoreList: Score[], collectionName: string): Promise<Score[]> {
-        let listScores: Score[] = [];
+        const listScores: Score[] = [];
 
-        for (let i = 0; i < scoreList.length; i++) {
-            if (await this.isNewScoreGreater(scoreList[i], collectionName)) {
-                listScores.push(scoreList[i]);
+        for (const score of scoreList) {
+            if (await this.isNewScoreGreater(score, collectionName)) {
+                listScores.push(score);
             }
         }
 
@@ -55,5 +57,4 @@ export class StatsService {
         }
         return true;
     }
-
 }

@@ -2,10 +2,10 @@ import { DatabaseService } from '@app/services/database/database.service';
 import { Score } from '@common';
 import { Collection } from 'mongodb';
 import { Service } from 'typedi';
-import logger from 'winston';
 
 const DATABASE_COLLECTION_CLASSIC = 'classicScoreboard';
 const DATABASE_COLLECTION_LOG = 'logScoreboard';
+const MAX_DOCUMENTS = 5;
 
 @Service()
 export class ScoreService {
@@ -17,28 +17,17 @@ export class ScoreService {
         this.logScoreboard = this.databaseService.scrabbleDb.collection(DATABASE_COLLECTION_LOG);
     }
 
-    async updateScoreboard(score: Score, collectionName: string): Promise<void> {
-        this.getCollection(collectionName).insertOne(score);
-
-        // removed the limit... not necessary in this function i think
+    async updateScoreboard(score: Score[], collectionName: string): Promise<void> {
+        this.getCollection(collectionName).insertMany(score);
         const sortedScores = await this.getCollection(collectionName).find().sort({ scoreValue: -1 }).toArray();
-        /**
-         * in case 2 players with different scores are added
-         * for countdocuments(7) <= 5
-         *      pop
-         *      deleteOne
-         */
-        
-        const lastScore = sortedScores.pop();
-        logger.info(lastScore?.scoreValue);
 
-        this.getCollection(collectionName).deleteOne({ scoreValue: lastScore?.scoreValue });
+        while ((await this.getCollection(collectionName).countDocuments()) > MAX_DOCUMENTS) {
+            const lastScore = sortedScores.pop();
+            this.getCollection(collectionName).deleteOne({ scoreValue: lastScore?.scoreValue });
+        }
     }
 
     async updateNamesWithSameScore(score: Score, collectionName: string): Promise<boolean> {
-        // if score is unique, we want to use updateboard
-        let isUnique = await this.isScoreUnique(score.scoreValue, collectionName);
-        logger.info(`isUnique: ${isUnique}`);
         if (await this.isScoreUnique(score.scoreValue, collectionName)) {
             return false;
         }
@@ -63,18 +52,15 @@ export class ScoreService {
             });
     }
 
-    // for display client-side
     async getScoreboardClassic(): Promise<Score[]> {
         return this.classicScoreboard.find().sort({ scoreValue: -1 }).toArray();
     }
 
-    // for display client-side
     async getScoreboardLog(): Promise<Score[]> {
         return this.logScoreboard.find().sort({ scoreValue: -1 }).toArray();
     }
 
     private async isScoreUnique(scoreVal: number, collectionName: string): Promise<boolean> {
-        // if find() doesnt find a matching result, returns null; so if null, then score is unique
         const scoreFound = await this.getCollection(collectionName).findOne({ scoreValue: scoreVal });
         return scoreFound === null;
     }
