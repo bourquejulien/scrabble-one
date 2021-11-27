@@ -4,6 +4,7 @@
       <settings>
         <option name="buildKitEnabledForCompose" value="true" />
         <option name="envFilePath" value="" />
+        <option name="commandLineOptions" value="--build" />
         <option name="sourceFilePath" value="server/docker-compose.yml" />
       </settings>
     </deployment>
