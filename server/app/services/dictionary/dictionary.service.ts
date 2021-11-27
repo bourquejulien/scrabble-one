@@ -35,9 +35,8 @@ export class DictionaryService {
     async getWords(metadata: DictionaryMetadata): Promise<string[]> {
         let result: string[] = [];
         const data = await promises.readFile(this.getFilepath(metadata), 'utf8');
-        let json: JsonDictionary;
         try {
-            json = JSON.parse(data) as JsonDictionary;
+            const json = JSON.parse(data) as JsonDictionary;
             result = json.words;
             logger.debug(`Parsed words ${result.length} in the dictionary`);
         } catch (err) {
