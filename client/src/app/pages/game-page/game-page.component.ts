@@ -12,6 +12,7 @@ import { CommandsService } from '@app/services/commands/commands.service';
 import { GameService } from '@app/services/game/game.service';
 import { ReserveService } from '@app/services/reserve/reserve.service';
 import { SessionService } from '@app/services/session/session.service';
+import { GameMode } from '@common';
 import { SocketClientService } from '@app/services/socket-client/socket-client.service';
 import { Subscription } from 'rxjs';
 
@@ -142,5 +143,9 @@ export class GamePageComponent implements OnDestroy {
             this.gameService.reset();
             this.router.navigate(['home']);
         });
+    }
+
+    get gameMode(): typeof GameMode {
+        return GameMode;
     }
 }

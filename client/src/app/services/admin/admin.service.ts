@@ -3,13 +3,16 @@ import { Injectable } from '@angular/core';
 import { environmentExt } from '@environment-ext';
 import { finalize } from 'rxjs/operators';
 import { Subscription } from 'rxjs';
-import { DictionaryMetadata } from '@common';
+import { DictionaryMetadata, VirtualPlayerLevel } from '@common';
 
 const localUrl = (call: string, id: string) => `${environmentExt.apiUrl}admin/${call}/${id}`;
 interface Playernames {
     experts: string[];
     beginners: string[];
 }
+
+const DEFAULT_DICTIONARY = 'dictionary.json';
+
 @Injectable({
     providedIn: 'root',
 })
@@ -24,7 +27,7 @@ export class AdminService {
         this.dictionaries = [];
         this.virtualPlayerNames = { experts: [], beginners: [] };
         this.retrieveUsernames();
-        this.retrieveDictionnaries();
+        this.retrieveDictionaries();
     }
 
     uploadFile(file: File) {
@@ -50,10 +53,10 @@ export class AdminService {
     finishUpload() {
         this.uploadSub.unsubscribe();
         this.uploadProgress = 0;
-        this.retrieveDictionnaries();
+        this.retrieveDictionaries();
     }
 
-    async retrieveDictionnaries() {
+    async retrieveDictionaries() {
         this.dictionaries = await this.httpClient.get<DictionaryMetadata[]>(localUrl('dictionary', '')).toPromise();
     }
 
@@ -90,5 +93,13 @@ export class AdminService {
 
     async resetSettings(): Promise<void> {
         await this.httpClient.get<string[]>(localUrl('reset', '')).toPromise();
+    }
+
+    getVirtualPlayerNamesByLevel(virtualPlayerLevel: VirtualPlayerLevel) {
+        return (virtualPlayerLevel === VirtualPlayerLevel.Easy ? this.virtualPlayerNames.beginners : this.virtualPlayerNames.experts).slice();
+    }
+
+    get defaultDictionary(): DictionaryMetadata | null {
+        return this.dictionaries.find((d) => d.id === DEFAULT_DICTIONARY) ?? null;
     }
 }

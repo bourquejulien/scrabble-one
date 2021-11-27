@@ -53,7 +53,7 @@ export class BoardService {
     }
 
     isPositionAvailable(position: Vec2): boolean {
-        if (position.x === this.boardData.board.length + 2 || position.y === this.boardData.board.length + 2) {
+        if (position.x === this.boardData.board.length + 1 || position.y === this.boardData.board.length + 1) {
             return true;
         }
         const letter: string = this.boardData.board[position.x - 1][position.y - 1].letter;
