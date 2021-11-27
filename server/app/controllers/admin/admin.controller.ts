@@ -83,14 +83,14 @@ export class AdminController {
 
         this.router.get('/dictionary/:id', async (req: Request, res: Response) => {
             const id = req.params.id;
+            logger.debug(`Requesting to download dictionary: ${id}`);
 
             if (id) {
-                const metadata = await this.dictionaryService.getMetadataById(id);
+                const dictionary = await this.dictionaryService.getJsonDictionary(id);
 
-                if (metadata) {
-                    logger.debug(`Requesting to download dictionary: ${metadata.path}`);
+                if (dictionary != null) {
                     res.status(Constants.HTTP_STATUS.OK);
-                    res.download(metadata.path);
+                    res.json(dictionary);
                 }
             }
         });

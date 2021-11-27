@@ -61,13 +61,11 @@ export class DictionaryService {
 
     private static async getWords(filepath: string): Promise<string[]> {
         let result: string[] = [];
-        let json: JsonDictionary;
 
         try {
             const data = await fs.promises.readFile(filepath, 'utf8');
-            json = JSON.parse(data) as JsonDictionary;
-            result = json.words;
-            logger.debug(`Parsed words ${result.length} in the dictionary`);
+            result = JSON.parse(data) as string[];
+            logger.debug(`Retrieved dictionary of size ${result.length} from path ${filepath}`);
         } catch (err) {
             logger.warn(`JSON.parse returned an error ${err.stack}`);
         }
@@ -107,7 +105,8 @@ export class DictionaryService {
             return false;
         }
 
-        await fs.promises.rename(tempPath, newFilepath);
+        await fs.promises.rm(tempPath);
+        await fs.promises.writeFile(newFilepath, JSON.stringify(json.words), 'utf-8');
         logger.debug(`Dictionary moved/renamed to ${newFilepath}`);
 
         return true;
@@ -153,6 +152,22 @@ export class DictionaryService {
         }
 
         return await this.createHandler(metadata);
+    }
+
+    async getJsonDictionary(id: string): Promise<JsonDictionary | null> {
+        const metadata = await this.getMetadataById(id);
+
+        if (metadata == null) {
+            return null;
+        }
+
+        const words = await DictionaryService.getWords(metadata.path);
+
+        return {
+            title: metadata.title,
+            description: metadata.description,
+            words,
+        };
     }
 
     async getMetadataById(id: string): Promise<DictionaryMetadata | null> {
