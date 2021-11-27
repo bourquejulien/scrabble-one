@@ -1,4 +1,6 @@
 import { Component } from '@angular/core';
+import { MatDialog } from '@angular/material/dialog';
+import { BestScoresComponent } from '@app/components/best-scores/best-scores.component';
 import { GameMode } from '@common';
 
 @Component({
@@ -10,7 +12,7 @@ export class MainPageComponent {
     gameMode = GameMode;
     readonly developers: string[];
 
-    constructor() {
+    constructor(public dialog: MatDialog) {
         this.developers = [
             'Julien Bourque',
             'Alexandre Dufort',
@@ -19,5 +21,9 @@ export class MainPageComponent {
             'Ikram Kohil',
             'Morgan De Gregorio Beaudoin',
         ];
+    }
+
+    openScoresDialog(): void {
+        this.dialog.open(BestScoresComponent, { panelClass: 'init-game-dialog', autoFocus: false });
     }
 }

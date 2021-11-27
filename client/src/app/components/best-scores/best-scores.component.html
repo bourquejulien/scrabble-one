@@ -1,0 +1,49 @@
+<div id="header">
+    <button mat-icon-button class="close-button" [mat-dialog-close]="true">
+        <mat-icon class="close-icon">close</mat-icon>
+    </button>
+
+    <h2 class="title">Meilleurs scores</h2>
+</div>
+
+<div id="best-scores">
+    <table mat-table [dataSource]="classicBoardData" class="mat-elevation-z2">
+        <ng-container matColumnDef="Scrabble classique">
+            <th mat-header-cell *matHeaderCellDef colspan="4" style="text-align: center">Scrabble classique</th>
+        </ng-container>
+
+        <ng-container matColumnDef="score">
+            <th mat-header-cell *matHeaderCellDef>Scores</th>
+            <td mat-cell *matCellDef="let scores">{{ scores.scoreValue }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="name">
+            <th mat-header-cell *matHeaderCellDef>Joueurs</th>
+            <td mat-cell *matCellDef="let names">{{ names.name }}</td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="['Scrabble classique']"></tr>
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+    </table>
+
+    <table mat-table [dataSource]="logBoardData" class="mat-elevation-z2">
+        <ng-container matColumnDef="LOG2990">
+            <th mat-header-cell *matHeaderCellDef colspan="4" style="text-align: center">LOG2990</th>
+        </ng-container>
+
+        <ng-container matColumnDef="score">
+            <th mat-header-cell *matHeaderCellDef>Scores</th>
+            <td mat-cell *matCellDef="let scores">{{ scores.scoreValue }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="name">
+            <th mat-header-cell *matHeaderCellDef>Joueurs</th>
+            <td mat-cell *matCellDef="let names">{{ names.name }}</td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="['LOG2990']"></tr>
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+    </table>
+</div>
