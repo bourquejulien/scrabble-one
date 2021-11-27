@@ -1,5 +1,4 @@
 import { DictionaryMetadata, JsonDictionary } from '@common';
-import { generateId } from '@app/classes/id';
 import { promises } from 'fs';
 import { Service } from 'typedi';
 import * as logger from 'winston';
@@ -19,7 +18,7 @@ const schema = {
     words: ['string'],
     required: ['title', 'description', 'words'],
 };
-const dictionaryPath = /* process.env.DICTIONARIES_FOLDER ??*/ process.cwd() + '/assets/';
+const dictionaryPath = process.env.UPLOAD_DIR ?? process.cwd() + '/assets/';
 
 @Service()
 export class DictionaryService {
@@ -79,42 +78,43 @@ export class DictionaryService {
         }
     }
 
-    add(json: JsonDictionary): boolean {
+    add(json: JsonDictionary, id: string): boolean {
         const metadata: DictionaryMetadata = {
             title: json.title,
             description: json.description,
-            id: generateId(),
+            id,
             nbWords: json.words.length,
         };
         if (!this.dictionaryMetadata.find((m) => m.id === metadata.id)) {
             this.dictionaryMetadata.push(metadata);
-            return false;
+            return true;
         }
         logger.debug('Dictionary was not added because there was a duplicate');
         return false;
     }
 
-    async parse(filepath: string): Promise<boolean> {
+    async parse(filepath: string): Promise<JsonDictionary> {
         const data = await promises.readFile(filepath, 'utf8');
         if (this.validate(data)) {
             try {
-                const json: JsonDictionary = JSON.parse(data) as JsonDictionary;
-                return this.add(json);
+                logger.debug('Dictionary parsing successful');
+                return JSON.parse(data) as JsonDictionary;
             } catch (err) {
-                logger.error('JSON.parse() cant parse the content of that dictionary');
+                const errorMessage = 'JSON.parse() cant parse the content of that dictionary';
+                logger.error(errorMessage);
+                return Promise.reject(errorMessage);
             }
-            logger.debug('Dictionary parsing successful');
         }
-        return false;
-    }
-
-    validate(data: string) {
-        const validator = new Validator();
-        return validator.validate(data, schema);
+        return Promise.reject('Dictionary format invalid');
     }
 
     getMetadata(id: string) {
         return this.dictionaryMetadata.find((m) => m.id === id);
+    }
+
+    private validate(data: string) {
+        const validator = new Validator();
+        return validator.validate(data, schema);
     }
 
     get dictionaries() {

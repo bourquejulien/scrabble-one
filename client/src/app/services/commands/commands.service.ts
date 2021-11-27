@@ -13,9 +13,9 @@ const MAX_PARAMETER_COUNT = 3;
     providedIn: 'root',
 })
 export class CommandsService {
-    wordRegex: RegExp;
-    rackRegex: RegExp;
-    messageRegex: RegExp;
+    private readonly wordRegex: RegExp;
+    private readonly rackRegex: RegExp;
+    private readonly messageRegex: RegExp;
     private placeWordCommandRegex: RegExp;
 
     constructor(

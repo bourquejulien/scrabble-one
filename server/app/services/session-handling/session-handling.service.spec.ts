@@ -4,18 +4,18 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable no-unused-expressions -- Needed for chai library assertions */
 /* eslint-disable @typescript-eslint/no-unused-expressions */
-import { SessionHandler } from '@app/handlers/session-handler/session-handler';
+import { PlayerInfo } from '@app/classes/player-info';
+import { HumanPlayer } from '@app/classes/player/human-player/human-player';
+import { Player } from '@app/classes/player/player';
+import { VirtualPlayerEasy } from '@app/classes/player/virtual-player/virtual-player-easy/virtual-player-easy';
+import { SessionData } from '@app/classes/session-data';
 import { SessionInfo } from '@app/classes/session-info';
+import { PlayerHandler } from '@app/handlers/player-handler/player-handler';
+import { SessionHandler } from '@app/handlers/session-handler/session-handler';
+import { GameType } from '@common';
 import { expect } from 'chai';
 import Sinon, { createStubInstance } from 'sinon';
-import { Player } from '@app/classes/player/player';
 import { SessionHandlingService } from './session-handling.service';
-import { GameType } from '@common';
-import { PlayerHandler } from '@app/handlers/player-handler/player-handler';
-import { HumanPlayer } from '@app/classes/player/human-player/human-player';
-import { VirtualPlayerEasy } from '@app/classes/player/virtual-player/virtual-player-easy/virtual-player-easy';
-import { PlayerInfo } from '@app/classes/player-info';
-import { SessionData } from '@app/classes/session-data';
 
 const MAX_HANDLERS = 5;
 const TIME_MS = 1000;

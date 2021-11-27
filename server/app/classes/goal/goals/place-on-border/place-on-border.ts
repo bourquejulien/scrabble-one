@@ -10,7 +10,7 @@ export class PlaceOnBorder extends BaseGoal implements PlacementNotifier {
         super(
             {
                 id: 'place-on-border',
-                name: 'Former un mot de 2 lettres ou plus qui longe le plateau de jeu',
+                name: 'Former un mot de 2 lettres ou plus qui longe les extrémités du plateau de jeu',
                 score: 15,
             },
             ownerId,

@@ -25,12 +25,6 @@ describe('NameValidator', () => {
         expect(validator.errors).toEqual([]);
     });
 
-    it('should have error for lower letter', () => {
-        validator.name = NAMES[2];
-        validator.validate();
-        expect(validator.errors).toEqual(['*Le nom doit débuter par une majuscule.\n']);
-    });
-
     it('should have error for minimum length', () => {
         validator.name = NAMES[3];
         validator.validate();

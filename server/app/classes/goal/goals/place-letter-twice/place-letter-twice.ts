@@ -7,7 +7,7 @@ export class PlaceLetterTwice extends BaseGoal implements PlacementNotifier {
         super(
             {
                 id: 'place-letter-twice',
-                name: 'Placer un mot contenant 2 fois la même lettre',
+                name: 'Former un mot contenant 2 fois la même lettre',
                 score: 10,
             },
             ownerId,

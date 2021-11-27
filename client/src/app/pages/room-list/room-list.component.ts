@@ -1,11 +1,11 @@
-import { Component, AfterViewInit, OnDestroy, TemplateRef, ViewChild, OnInit } from '@angular/core';
-import { RoomService } from '@app/services/room/room.service';
-import { Subscription } from 'rxjs';
-import { AvailableGameConfig, GameMode, MultiplayerJoinConfig } from '@common';
-import { trigger, style, animate, transition } from '@angular/animations';
-import { NameValidator } from '@app/classes/form-validation/name-validator';
+import { animate, style, transition, trigger } from '@angular/animations';
+import { AfterViewInit, Component, OnDestroy, OnInit, TemplateRef, ViewChild } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { ActivatedRoute, Router } from '@angular/router';
+import { NameValidator } from '@app/classes/form-validation/name-validator';
+import { RoomService } from '@app/services/room/room.service';
+import { AvailableGameConfig, GameMode, MultiplayerJoinConfig } from '@common';
+import { Subscription } from 'rxjs';
 
 @Component({
     selector: 'app-room-list',
@@ -106,7 +106,12 @@ export class RoomListComponent implements AfterViewInit, OnInit, OnDestroy {
     private refreshConfig(availableGameConfigs: AvailableGameConfig[]) {
         this.availableGameConfigs = availableGameConfigs.filter((c) => c.gameMode === this.gameMode);
 
-        if (this.selectedConfig !== null && this.availableGameConfigs.findIndex((c) => c.id === this.selectedConfig?.id) === -1) {
+        if (this.selectedConfig === null) {
+            return;
+        }
+
+        const selectedConfigAvailable = this.availableGameConfigs.findIndex((c) => c.id === this.selectedConfig?.id) > -1;
+        if (!selectedConfigAvailable) {
             this.reset();
             this.openErrorDialog();
         }

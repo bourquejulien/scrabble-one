@@ -4,7 +4,7 @@ import { Application } from '@app/app';
 import { Constants } from '@app/constants';
 import { PlayerHandler } from '@app/handlers/player-handler/player-handler';
 import { SessionHandler } from '@app/handlers/session-handler/session-handler';
-import { SessionHandlingService } from '@app/services/sessionHandling/session-handling.service';
+import { SessionHandlingService } from '@app/services/session-handling/session-handling.service';
 import { expect } from 'chai';
 import { Player } from '@app/classes/player/player';
 import { createStubInstance, SinonStubbedInstance } from 'sinon';

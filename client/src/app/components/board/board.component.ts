@@ -25,7 +25,7 @@ export class BoardComponent implements OnDestroy, AfterViewInit {
     isMouseOnBoard: boolean;
     isUpper: boolean;
     letter: string;
-    squareSelected: boolean = false;
+    squareSelected: boolean;
 
     private gridContext: CanvasRenderingContext2D;
     private squareContext: CanvasRenderingContext2D;
@@ -40,7 +40,9 @@ export class BoardComponent implements OnDestroy, AfterViewInit {
         private readonly boardService: BoardService,
         private readonly gameService: GameService,
         readonly placeLetterService: PlaceLetterService,
-    ) {}
+    ) {
+        this.squareSelected = false;
+    }
 
     @HostListener('body:keydown', ['$event'])
     onKeyDown(event: KeyboardEvent): void {
@@ -55,7 +57,6 @@ export class BoardComponent implements OnDestroy, AfterViewInit {
         const enterValid: boolean = event.key === 'Enter' && this.placeLetterService.tempRack.length > 0;
         const lastSquare =
             this.placeLetterService.gridPosition.x > Constants.GRID.GRID_SIZE || this.placeLetterService.gridPosition.y > Constants.GRID.GRID_SIZE;
-
         if (backSpaceValid) {
             this.placeLetterService.backSpaceOperation(this.tempContext);
             this.gridService.drawBonusOfPosition(this.squareContext, this.placeLetterService.gridPosition);
@@ -67,7 +68,6 @@ export class BoardComponent implements OnDestroy, AfterViewInit {
         } else {
             this.handleKeyPress(event.key);
             const validKey: boolean = this.squareSelected && this.isLetter && this.placeLetterService.inGrid(this.placeLetterService.gridPosition);
-
             if (validKey && !lastSquare) {
                 this.handleKeyDown(lastSquare);
             }
@@ -76,9 +76,11 @@ export class BoardComponent implements OnDestroy, AfterViewInit {
 
     onMouseDown(event: MouseEvent): void {
         this.mouseHandlingService.mouseHitDetect(event);
-        this.resetPlaceSelection();
 
-        this.mouseHandlingService.mouseHitDetect(event);
+        if (!this.isMouseOnBoard) {
+            this.resetPlaceSelection();
+            this.gridService.resetCanvas(this.tempContext);
+        }
         const canClick = this.placeLetterService.myRack.length === 0 && this.gameService.currentTurn === PlayerType.Local;
         if (canClick) {
             this.mouseHandlingService.mouseHitDetect(event);
@@ -113,10 +115,9 @@ export class BoardComponent implements OnDestroy, AfterViewInit {
             }
             return;
         }
-        this.gridService.resetCanvas(this.tempContext);
     }
 
-    ngAfterViewInit(): void {
+    async ngAfterViewInit(): Promise<void> {
         this.gridContext = this.gridCanvas.nativeElement.getContext('2d') as CanvasRenderingContext2D;
         this.squareContext = this.squareCanvas.nativeElement.getContext('2d') as CanvasRenderingContext2D;
         this.tempContext = this.tempCanvas.nativeElement.getContext('2d') as CanvasRenderingContext2D;
@@ -125,11 +126,14 @@ export class BoardComponent implements OnDestroy, AfterViewInit {
 
         this.scale();
 
-        new FontFaceObserver(this.gridService.letterFontFace.font).load().then(() => {
-            this.gridService.drawGrid(this.gridContext);
-            this.gridService.drawSquares(this.squareContext);
-            this.squareCanvas.nativeElement.focus();
-        });
+        // 1. rendre new FontFaceObserver global
+        // 2. set ala valeur de font -> Et utiliser await;
+
+        await new FontFaceObserver(this.gridService.letterFontFace.font).load();
+
+        this.gridService.drawGrid(this.gridContext);
+        this.gridService.drawSquares(this.squareContext);
+        this.squareCanvas.nativeElement.focus();
     }
 
     ngOnDestroy(): void {
@@ -249,10 +253,8 @@ export class BoardComponent implements OnDestroy, AfterViewInit {
         ) {
             this.placeLetterService.isLastSquare = true;
         }
-
         this.placeLetterService.nextAvailableSquare(true);
         this.gridService.cleanInsideSquare(this.squareContext, this.placeLetterService.gridPosition);
-
         if (!lastSquare && !this.placeLetterService.isLastSquare) {
             this.gridService.drawSelectionSquare(this.tempContext, this.placeLetterService.gridPosition);
             this.gridService.drawDirectionArrow(this.tempContext, this.placeLetterService.gridPosition, this.placeLetterService.isHorizontal);

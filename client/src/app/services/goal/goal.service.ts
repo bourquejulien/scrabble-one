@@ -12,14 +12,15 @@ export class GoalService {
     privateObjectives: GoalData[];
     goalData: Subject<GoalData[]> = new Subject<GoalData[]>();
     sentSnackBar: string[];
-    constructor(socketService: SocketClientService, private snackBar: MatSnackBar) {
+
+    constructor(private socketService: SocketClientService, private snackBar: MatSnackBar) {
         this.publicObjectives = [];
         this.privateObjectives = [];
         this.sentSnackBar = [];
-        socketService.on('goals', (goals: GoalData[]) => this.updateObjectives(goals));
+        this.socketService.on('goals', (goals: GoalData[]) => this.updateObjectives(goals));
     }
 
-    updateObjectives(goals: GoalData[]) {
+    private updateObjectives(goals: GoalData[]) {
         this.publicObjectives = [];
         this.privateObjectives = [];
         for (const goal of goals) {

@@ -11,11 +11,12 @@ import { SessionData } from '@app/classes/session-data';
 import { SessionInfo } from '@app/classes/session-info';
 import { DictionaryService } from '@app/services/dictionary/dictionary.service';
 import { GameService } from '@app/services/game/game.service';
-import { SessionHandlingService } from '@app/services/sessionHandling/session-handling.service';
 import { SocketService } from '@app/services/socket/socket-service';
-import { ConvertConfig, GameMode, GameType, MultiplayerJoinConfig, ServerConfig } from '@common';
+import { ConvertConfig, GameMode, GameType, MultiplayerJoinConfig, ServerConfig, VirtualPlayerLevel } from '@common';
 import { expect } from 'chai';
 import Sinon, { assert, createStubInstance, stub } from 'sinon';
+import { SessionHandlingService } from '@app/services/session-handling/session-handling.service';
+import { StatsService } from '@app/services/stats/stats.service';
 
 class StubSessionHandler {
     players: Player[] = [];
@@ -82,6 +83,7 @@ const multiplayerJoinConfig: MultiplayerJoinConfig = {
 
 const convertConfig: ConvertConfig = {
     id: '438f98gser89dg',
+    virtualPlayerLevel: VirtualPlayerLevel.Easy,
     virtualPlayerName: 'test1',
 };
 
@@ -90,6 +92,7 @@ describe('GameService', () => {
     let boardGeneratorStub: Sinon.SinonStubbedInstance<BoardGeneratorService>;
     let sessionHandlingStub: Sinon.SinonStubbedInstance<SessionHandlingService>;
     let dictionaryServiceStub: Sinon.SinonStubbedInstance<DictionaryService>;
+    let statsServiceStub: Sinon.SinonStubbedInstance<StatsService>;
     let sessionHandlerStub: StubSessionHandler;
     let socketServiceStub: SocketService;
 
@@ -98,12 +101,14 @@ describe('GameService', () => {
         sessionHandlingStub = createStubInstance(SessionHandlingService);
         socketServiceStub = createStubInstance(SocketService);
         dictionaryServiceStub = createStubInstance(DictionaryService);
+        statsServiceStub = createStubInstance(StatsService);
         sessionHandlerStub = new StubSessionHandler();
 
         service = new GameService(
             boardGeneratorStub as unknown as BoardGeneratorService,
             sessionHandlingStub as unknown as SessionHandlingService,
             dictionaryServiceStub as unknown as DictionaryService,
+            statsServiceStub as unknown as StatsService,
             socketServiceStub as unknown as SocketService,
         );
     });
@@ -168,7 +173,7 @@ describe('GameService', () => {
             return '';
         });
         sessionHandlingStub.getHandlerBySessionId.returns(null);
-        const answer = await service.abandon('');
+        const answer = await service.convertOrDispose('');
         expect(answer).to.be.false;
     });
 
@@ -179,7 +184,7 @@ describe('GameService', () => {
         });
 
         sessionHandlingStub.getHandlerByPlayerId.returns(sessionHandlerStub as unknown as SessionHandler);
-        const answer = await service.abandon('');
+        const answer = await service.convertOrDispose('');
         assert.calledOnce(sessionHandlingStub.removeHandler);
         expect(answer).to.be.true;
     });
@@ -194,7 +199,7 @@ describe('GameService', () => {
         sessionHandlerStub.sessionData.isActive = true;
 
         sessionHandlingStub.getHandlerByPlayerId.returns(sessionHandlerStub as unknown as SessionHandler);
-        const answer = await service.abandon('');
+        const answer = await service.convertOrDispose('');
         expect(answer).to.be.true;
     });
 
@@ -208,7 +213,7 @@ describe('GameService', () => {
         sessionHandlerStub.sessionData.isActive = true;
         sessionHandlerStub.sessionData.isStarted = true;
         sessionHandlingStub.getHandlerByPlayerId.returns(sessionHandlerStub as unknown as SessionHandler);
-        await service.abandon('');
+        await service.convertOrDispose('');
         expect(sessionHandlerStub.convertCalled).to.be.true;
     });
 
