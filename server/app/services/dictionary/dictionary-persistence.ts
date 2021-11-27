@@ -1,10 +1,10 @@
 import { Service } from 'typedi';
 import { DatabaseService } from '@app/services/database/database.service';
 import { DictionaryMetadata } from '@common';
-import { Collection } from 'mongodb';
+import { Collection, InsertOneResult } from 'mongodb';
 
 const COLLECTION_NAME = 'dictionary.metadata';
-const DEFAULT_PATH = 'assets/dictionary.json';
+const DEFAULT_PATH = 'assets/dictionaries/dictionary.json';
 
 @Service()
 export class DictionaryPersistence {
@@ -24,25 +24,28 @@ export class DictionaryPersistence {
         this.metaDataCache.set(this.defaultMetadata._id, this.defaultMetadata);
     }
 
-    async canAdd(id: string): Promise<boolean> {
+    async add(dictionaryMetadata: DictionaryMetadata): Promise<boolean> {
+        let result: InsertOneResult<DictionaryMetadata>;
+
+        try {
+            result = await this.metaDataCollection.insertOne(dictionaryMetadata);
+        } catch (err) {
+            return false;
+        }
+
+        if (result.acknowledged) {
+            this.metaDataCache.set(dictionaryMetadata._id, dictionaryMetadata);
+            return true;
+        }
+
+        return false;
+    }
+
+    async remove(id: string): Promise<boolean> {
         if (this.isDefault(id)) {
             return false;
         }
 
-        return (await this.getMetadataById(id)) === null;
-    }
-
-    async add(dictionaryMetadata: DictionaryMetadata): Promise<boolean> {
-        const result = await this.metaDataCollection.insertOne(dictionaryMetadata);
-
-        if (result.acknowledged) {
-            this.metaDataCache.set(dictionaryMetadata._id, dictionaryMetadata);
-        }
-
-        return result.acknowledged;
-    }
-
-    async remove(id: string): Promise<boolean> {
         const result = await this.metaDataCollection.deleteOne({ _id: id });
         this.metaDataCache.delete(id);
 

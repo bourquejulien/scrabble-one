@@ -11,7 +11,7 @@ interface Playernames {
     beginners: string[];
 }
 
-const UPLOAD_DIR = process.env.UPLOAD_DIR ?? tmpdir();
+const UPLOAD_DIR = process.env.TEMP_DIR ?? tmpdir();
 
 @Service()
 export class AdminController {
@@ -35,7 +35,7 @@ export class AdminController {
 
             form.parse(req, (err: Error) => {
                 if (err) {
-                    logger.error(`Upload Error Caught - ${err}`);
+                    logger.error('Upload Error Caught', err);
                     return;
                 }
             });
@@ -59,12 +59,7 @@ export class AdminController {
             });
         });
 
-        this.router.get('/dictionary', async (req: Request, res: Response) => {
-            const metadata = await this.dictionaryService.getMetadata();
-            res.json(metadata);
-        });
-
-        this.router.post('/dictionary', async (req: Request, res: Response) => {
+        this.router.post('/dictionary/update', async (req: Request, res: Response) => {
             this.dictionaryService.update(req.body);
 
             let names = ' ';
@@ -72,7 +67,12 @@ export class AdminController {
             metadata.forEach((e) => (names = '«' + e.title + '» '));
 
             logger.debug(`Updated dictionary: ${names}`);
-            res.sendStatus(Constants.HTTP_STATUS.OK);
+            res.json(metadata);
+        });
+
+        this.router.get('/dictionary', async (req: Request, res: Response) => {
+            const metadata = await this.dictionaryService.getMetadata();
+            res.json(metadata);
         });
 
         this.router.get('/dictionary/:id', async (req: Request, res: Response) => {
@@ -87,6 +87,11 @@ export class AdminController {
                     res.download(metadata.path);
                 }
             }
+        });
+
+        this.router.delete('/dictionary/:id', async (req: Request, res: Response) => {
+            const isSuccess = await this.dictionaryService.remove(req.params.id);
+            res.sendStatus(isSuccess ? Constants.HTTP_STATUS.DELETED : Constants.HTTP_STATUS.BAD_REQUEST);
         });
 
         this.router.get('/playername', (req: Request, res: Response) => {

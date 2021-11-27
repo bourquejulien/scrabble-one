@@ -16,7 +16,7 @@ const schema = {
     required: ['title', 'description', 'words'],
 };
 
-const dictionaryPath = process.env.UPLOAD_DIR ?? process.cwd() + '/out/assets/';
+const dictionaryPath = process.env.UPLOAD_DIR ?? process.cwd() + '/assets/dictionaries/upload/';
 
 @Service()
 export class DictionaryService {
@@ -37,18 +37,41 @@ export class DictionaryService {
 
     private static async parse(filepath: string): Promise<JsonDictionary> {
         const data = await fs.promises.readFile(filepath, 'utf8');
+        let dictionary: JsonDictionary;
 
-        if (DictionaryService.validate(data)) {
-            try {
-                logger.debug('Dictionary parsing successful');
-                return JSON.parse(data) as JsonDictionary;
-            } catch (err) {
-                const errorMessage = 'JSON.parse() cant parse the content of that dictionary';
-                logger.error(errorMessage);
-                return Promise.reject(errorMessage);
-            }
+        if (!DictionaryService.validate(data)) {
+            return Promise.reject('Dictionary format invalid');
         }
-        return Promise.reject('Dictionary format invalid');
+
+        try {
+            dictionary = JSON.parse(data) as JsonDictionary;
+            logger.debug('Dictionary parsing successful');
+        } catch (err) {
+            const errorMessage = 'JSON.parse() cant parse the content of that dictionary';
+            logger.error(errorMessage);
+            return Promise.reject(errorMessage);
+        }
+
+        if (dictionary.words.length < Constants.MIN_DICTIONARY_SIZE) {
+            throw new Error('Not enough words in the chosen dictionary');
+        }
+
+        return dictionary;
+    }
+
+    private static async getWords(filepath: string): Promise<string[]> {
+        let result: string[] = [];
+        let json: JsonDictionary;
+
+        try {
+            const data = await fs.promises.readFile(filepath, 'utf8');
+            json = JSON.parse(data) as JsonDictionary;
+            result = json.words;
+            logger.debug(`Parsed words ${result.length} in the dictionary`);
+        } catch (err) {
+            logger.warn(`JSON.parse returned an error ${err.stack}`);
+        }
+        return result;
     }
 
     async init(): Promise<void> {
@@ -59,31 +82,14 @@ export class DictionaryService {
         }
     }
 
-    async getWords(metadata: DictionaryMetadata): Promise<string[]> {
-        let result: string[] = [];
-        const data = await fs.promises.readFile(metadata.path, 'utf8');
-        let json: JsonDictionary;
-        try {
-            json = JSON.parse(data) as JsonDictionary;
-            result = json.words;
-            logger.debug(`Parsed words ${result.length} in the dictionary`);
-        } catch (err) {
-            logger.error(`JSON.parse returned an error ${err.stack}`);
-        }
-        if (result.length < Constants.MIN_DICTIONARY_SIZE) {
-            throw new Error('Not enough words in the chosen dictionary');
-        }
-        return result;
-    }
-
     async reset(): Promise<void> {
         await this.dictionaryPersistence.reset();
         await DictionaryService.parse(this.dictionaryPersistence.defaultMetadata.path);
     }
 
     async add(tempPath: string): Promise<boolean> {
-        const id = md5(path.basename(tempPath));
         const json = await DictionaryService.parse(tempPath);
+        const id = md5(json.title);
         const newFilepath = path.resolve(path.join(dictionaryPath, id));
 
         const metadata: DictionaryMetadata = {
@@ -115,9 +121,11 @@ export class DictionaryService {
         // }
     }
 
-    async remove(metadata: DictionaryMetadata): Promise<void> {
-        const canRemove = await this.dictionaryPersistence.remove(metadata._id);
-        if (canRemove) {
+    async remove(id: string): Promise<boolean> {
+        const metadata = await this.dictionaryPersistence.getMetadataById(id);
+        const canRemove = await this.dictionaryPersistence.remove(id);
+
+        if (canRemove && metadata != null) {
             fs.promises
                 .rm(metadata.path)
                 .then(() => {
@@ -126,9 +134,12 @@ export class DictionaryService {
                 .catch((err) => {
                     logger.error(err.stack);
                 });
-        } else {
-            logger.error('Attempted to delete the default dictionary :o');
+
+            return true;
         }
+
+        logger.warn('Attempted to delete the default dictionary :o');
+        return false;
     }
 
     async getHandler(id: string): Promise<DictionaryHandler | null> {
@@ -156,7 +167,14 @@ export class DictionaryService {
     }
 
     private async createHandler(metadata: DictionaryMetadata): Promise<DictionaryHandler | null> {
-        const words: string[] = await this.getWords(metadata);
+        const words: string[] = await DictionaryService.getWords(metadata.path);
+
+        if (words.length === 0) {
+            logger.warn(`Cannot find dictionary ${metadata._id}`);
+            this.dictionaryPersistence.remove(metadata._id);
+            return null;
+        }
+
         const dictionaryHandler = new DictionaryHandler(words, metadata);
         this.handlers.set(metadata._id, dictionaryHandler);
 

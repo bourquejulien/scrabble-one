@@ -60,8 +60,10 @@ export class AdminService {
         this.dictionaries = await this.httpClient.get<DictionaryMetadata[]>(localUrl('dictionary', '')).toPromise();
     }
 
-    removeDictionary(metadata: DictionaryMetadata) {
-        this.dictionaries.splice(this.dictionaries.indexOf(metadata), 1);
+    async removeDictionary(metadata: DictionaryMetadata) {
+        this.httpClient
+            .delete(localUrl('dictionary', metadata._id))
+            .subscribe(() => this.dictionaries.splice(this.dictionaries.indexOf(metadata), 1));
     }
 
     async updateDictionaries() {
