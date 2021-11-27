@@ -30,7 +30,9 @@ export class GoalService {
                 this.snackBar.open(message, "D'accord");
             } else if (goal.isGlobal) {
                 this.publicObjectives.push(goal);
-            } else this.privateObjectives.push(goal);
+            } else if (!this.sentSnackBar.includes(goal.id)) {
+                this.privateObjectives.push(goal);
+            }
         }
     }
 
