@@ -1,7 +1,7 @@
 import { describe } from 'mocha';
 import { ManyLettersInRow } from '@app/classes/goal/goals/many-letters-in-row/many-letters-in-row';
 import { expect } from 'chai';
-import { Goal } from '@app/classes/goal/base-goal';
+import { BaseGoal, Goal } from '@app/classes/goal/base-goal';
 import { GoalData, GoalStatus } from '@common';
 
 describe('BaseGoal', () => {
@@ -24,5 +24,11 @@ describe('BaseGoal', () => {
             isGlobal: false,
         };
         expect(goal.getGoalData('id')).to.eq(goalDescription);
+    });
+
+    it('should get info', () => {
+        (goal as BaseGoal)['successId'] = 'id';
+        const goalData = (goal as BaseGoal).getGoalData('id');
+        expect(goalData.status).to.eq(GoalStatus.Succeeded);
     });
 });
