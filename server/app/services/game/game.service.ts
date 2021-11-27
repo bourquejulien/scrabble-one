@@ -87,14 +87,6 @@ export class GameService {
             gameType: gameConfig.gameType,
         };
 
-        let words: string[] = [];
-        try {
-            words = await this.dictionaryService.getWords(gameConfig.dictionary);
-        } catch (err) {
-            logger.warn('Failed to retrieve words', err);
-            return Promise.reject(`${err}`);
-        }
-
         // TODO add a construction service?
         const dictionaryHandler = await this.dictionaryService.getHandler(gameConfig.dictionary.id);
         const boardHandler = this.boardGeneratorService.generateBoardHandler(gameConfig.isRandomBonus, dictionaryHandler);
