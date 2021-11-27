@@ -7,6 +7,7 @@ import { AddressInfo } from 'net';
 import { Service } from 'typedi';
 import logger from 'winston';
 import { DictionaryService } from '@app/services/dictionary/dictionary.service';
+import { AdminPersistence } from '@app/services/admin/adminPersistence';
 
 @Service()
 export class Server {
@@ -19,6 +20,7 @@ export class Server {
         private readonly roomController: RoomController,
         private readonly databaseService: DatabaseService,
         private readonly dictionnaryService: DictionaryService,
+        private readonly adminPersistance: AdminPersistence,
     ) {}
 
     private static normalizePort(val: number | string): number | string | boolean {
@@ -44,6 +46,7 @@ export class Server {
         }
 
         await this.dictionnaryService.init();
+        await this.adminPersistance.init();
 
         this.server = http.createServer(this.application.app);
 

@@ -5,27 +5,21 @@ import { IncomingForm } from 'formidable';
 import { tmpdir } from 'os';
 import * as logger from 'winston';
 import { DictionaryService } from '@app/services/dictionary/dictionary.service';
-import { Answer, DictionaryMetadata } from '@common';
-
-interface Playernames {
-    experts: string[];
-    beginners: string[];
-}
+import { Answer, DictionaryMetadata, GameMode, VirtualPlayerLevel } from '@common';
+import { AdminPersistence } from '@app/services/admin/adminPersistence';
 
 const UPLOAD_DIR = process.env.TEMP_DIR ?? tmpdir();
 
 @Service()
 export class AdminController {
-    readonly defaultBotNames: Playernames = {
-        beginners: ['Monique', 'Claudette', 'Alphonse'],
-        experts: ['Éléanor', 'Alfred', 'Jeaninne'],
-    };
-    virtualPlayerNames: Playernames;
     router: Router;
 
-    constructor(private dictionaryService: DictionaryService) {
-        this.virtualPlayerNames = this.defaultBotNames;
+    constructor(private dictionaryService: DictionaryService, private readonly adminService: AdminPersistence) {
         this.configureRouter();
+    }
+
+    private static getPlayerLevel(level: string): VirtualPlayerLevel | null {
+        return VirtualPlayerLevel[level as keyof typeof GameMode];
     }
 
     private configureRouter(): void {
@@ -100,21 +94,67 @@ export class AdminController {
             res.sendStatus(isSuccess ? Constants.HTTP_STATUS.DELETED : Constants.HTTP_STATUS.BAD_REQUEST);
         });
 
-        this.router.get('/playername', (req: Request, res: Response) => {
-            res.json(this.virtualPlayerNames);
+        this.router.get('/playerName/:level', async (req: Request, res: Response) => {
+            const level = AdminController.getPlayerLevel(req.params.level);
+
+            if (level == null) {
+                res.sendStatus(Constants.HTTP_STATUS.BAD_REQUEST);
+                return;
+            }
+
+            const names = await this.adminService.getPlayerNameByLevel(level);
+            res.json(names);
         });
 
-        this.router.post('/playername', (req: Request, res: Response) => {
-            this.virtualPlayerNames = req.body;
-            logger.debug('Virtual Player Names - length:' + this.virtualPlayerNames.experts.length + this.virtualPlayerNames.beginners.length);
-            res.sendStatus(Constants.HTTP_STATUS.OK);
+        this.router.post('/playerName/set/:level', async (req: Request, res: Response) => {
+            const level = AdminController.getPlayerLevel(req.params.level);
+
+            if (level == null) {
+                res.sendStatus(Constants.HTTP_STATUS.BAD_REQUEST);
+                return;
+            }
+
+            const isAdded = await this.adminService.addVirtualPlayer(level, req.body);
+
+            if (!isAdded) {
+                res.sendStatus(Constants.HTTP_STATUS.BAD_REQUEST);
+            }
+
+            const names = await this.adminService.getPlayerNameByLevel(level);
+            res.json(names);
+        });
+
+        this.router.post('/playerName/rename', async (req: Request, res: Response) => {
+            const [oldName, newName] = req.body;
+
+            const level = await this.adminService.renameVirtualPlayer(oldName, newName);
+
+            if (level == null) {
+                res.sendStatus(Constants.HTTP_STATUS.BAD_REQUEST);
+                return;
+            }
+
+            const names = await this.adminService.getPlayerNameByLevel(level);
+            res.json(names);
+        });
+
+        this.router.delete('/playerName', async (req: Request, res: Response) => {
+            const level = await this.adminService.deleteVirtualPlayer(req.body);
+
+            if (level == null) {
+                res.sendStatus(Constants.HTTP_STATUS.BAD_REQUEST);
+                return;
+            }
+
+            const names = await this.adminService.getPlayerNameByLevel(level);
+            res.json(names);
         });
 
         this.router.get('/reset', async (req: Request, res: Response) => {
-            this.virtualPlayerNames = this.defaultBotNames;
             await this.dictionaryService.reset();
+            await this.adminService.reset();
             res.sendStatus(Constants.HTTP_STATUS.OK);
-            logger.debug('Reset');
+            logger.debug('Persistent data reset');
         });
     }
 }
