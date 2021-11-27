@@ -32,7 +32,6 @@ export class DatabaseService {
             if (countLog === 0) {
                 this.initCollections(DATABASE_COLLECTION_LOG);
             }
-
         } catch (e) {
             await this.client.close();
             throw e;
@@ -66,7 +65,7 @@ export class DatabaseService {
                     scoreValue: 8,
                 },
             ],
-            options
+            options,
         );
         logger.info('Classic scoreboard has been filled with default values.');
     }
@@ -98,7 +97,7 @@ export class DatabaseService {
                     scoreValue: 13,
                 },
             ],
-            options
+            options,
         );
         logger.info('Log scoreboard has been filled with default values.');
     }
@@ -116,5 +115,9 @@ export class DatabaseService {
             await this.scrabbleDb.createCollection(DATABASE_COLLECTION_LOG);
             await this.fillLogBoardWithDefault();
         }
+    }
+
+    get database(): Db {
+        return this.scrabbleDb;
     }
 }

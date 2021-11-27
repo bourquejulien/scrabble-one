@@ -26,7 +26,7 @@
                         </mat-form-field>
                         <span></span>
                         Nombre de mots: {{ dictionary.nbWords | number }}
-                        <button mat-stroked-button (click)="downloadDictionary(dictionary.id)">
+                        <button mat-stroked-button (click)="downloadDictionary(dictionary._id)">
                             <mat-icon>file_download</mat-icon>
                         </button>
                         <button *ngIf="i > 0" mat-stroked-button color="warn" (click)="adminService.removeDictionary(dictionary)">

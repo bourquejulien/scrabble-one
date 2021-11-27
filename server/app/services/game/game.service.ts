@@ -10,7 +10,16 @@ import { BoardGeneratorService } from '@app/services/board/board-generator.servi
 import { SocketService } from '@app/services/socket/socket-service';
 import { Service } from 'typedi';
 import { StatsService } from '@app/services/stats/stats.service';
-import { ConvertConfig, GameMode, GameType, MultiplayerCreateConfig, MultiplayerJoinConfig, ServerConfig, SinglePlayerConfig } from '@common';
+import {
+    ConvertConfig,
+    GameMode,
+    GameType,
+    MultiplayerCreateConfig,
+    MultiplayerJoinConfig,
+    ServerConfig,
+    SinglePlayerConfig,
+    VirtualPlayerLevel,
+} from '@common';
 import { VirtualPlayerExpert } from '@app/classes/player/virtual-player/virtual-player-expert/virtual-player-expert';
 import * as logger from 'winston';
 import { SessionInfo } from '@app/classes/session-info';
@@ -32,7 +41,7 @@ export class GameService {
         private readonly socketService: SocketService,
     ) {}
 
-    async initSinglePlayer(gameConfig: SinglePlayerConfig): Promise<ServerConfig> {
+    async initSinglePlayer(gameConfig: SinglePlayerConfig): Promise<ServerConfig | null> {
         const sessionInfo: SessionInfo = {
             id: generateId(),
             playTimeMs: gameConfig.playTimeMs,
@@ -40,7 +49,13 @@ export class GameService {
         };
 
         // TODO add a construction service?
-        const dictionaryHandler = await this.dictionaryService.getHandler(gameConfig.dictionary.id);
+        const dictionaryHandler = await this.dictionaryService.getHandler(gameConfig.dictionary._id);
+
+        // TODO
+        if (dictionaryHandler === null) {
+            return null;
+        }
+
         const boardHandler = this.boardGeneratorService.generateBoardHandler(gameConfig.isRandomBonus, dictionaryHandler);
         const reserveHandler = new ReserveHandler();
         const socketHandler = this.socketService.generate(sessionInfo.id);
@@ -79,7 +94,13 @@ export class GameService {
         };
 
         // TODO add a construction service?
-        const dictionaryHandler = await this.dictionaryService.getHandler(gameConfig.dictionary.id);
+        const dictionaryHandler = await this.dictionaryService.getHandler(gameConfig.dictionary._id);
+
+        // TODO
+        if (dictionaryHandler === null) {
+            return '';
+        }
+
         const boardHandler = this.boardGeneratorService.generateBoardHandler(gameConfig.isRandomBonus, dictionaryHandler);
         const reserveHandler = new ReserveHandler();
         const socketHandler = this.socketService.generate(sessionInfo.id);

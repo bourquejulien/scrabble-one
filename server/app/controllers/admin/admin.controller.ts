@@ -3,16 +3,16 @@ import { Request, Response, Router } from 'express';
 import { Constants } from '@app/constants';
 import { IncomingForm } from 'formidable';
 import { tmpdir } from 'os';
-import md5 from 'md5';
 import * as logger from 'winston';
 import { DictionaryService } from '@app/services/dictionary/dictionary.service';
-import path from 'path';
-import { promises } from 'fs';
+
 interface Playernames {
     experts: string[];
     beginners: string[];
 }
+
 const UPLOAD_DIR = process.env.UPLOAD_DIR ?? tmpdir();
+
 @Service()
 export class AdminController {
     readonly defaultBotNames: Playernames = {
@@ -32,55 +32,59 @@ export class AdminController {
 
         this.router.post('/dictionary/upload', (req: Request, res: Response) => {
             const form = new IncomingForm({ multiples: false, uploadDir: UPLOAD_DIR });
+
             form.parse(req, (err: Error) => {
                 if (err) {
                     logger.error(`Upload Error Caught - ${err}`);
                     return;
                 }
             });
+
             form.on('file', async (formName, file) => {
                 if (file.mimetype !== 'application/json') {
                     logger.error('Dictionary Upload Failed: non-JSON data received');
                     res.sendStatus(Constants.HTTP_STATUS.BAD_REQUEST);
                     return;
                 }
+
                 logger.debug(`Dictionary uploaded : ${file.filepath}`);
-                const id = md5(path.basename(file.filepath));
-                const newFilepath = path.resolve(path.join(UPLOAD_DIR, id));
-                await promises.rename(file.filepath, newFilepath);
-                logger.debug(`Dictionary moved/renamed to ${newFilepath}`);
+
                 try {
-                    const json = await this.dictionaryService.parse(newFilepath);
-                    this.dictionaryService.add(json, id);
-                    logger.debug(`Dictionary parsed : ${file.filepath}`);
+                    await this.dictionaryService.add(file.filepath);
+
                     res.sendStatus(Constants.HTTP_STATUS.OK);
                 } catch (err) {
-                    logger.error(`Dictionary parsing : ${err}`);
+                    logger.error('Dictionary parsing error', err);
                 }
             });
         });
 
-        this.router.get('/dictionary', (req: Request, res: Response) => {
-            res.json(this.dictionaryService.dictionaries);
+        this.router.get('/dictionary', async (req: Request, res: Response) => {
+            const metadata = await this.dictionaryService.getMetadata();
+            res.json(metadata);
         });
 
-        this.router.post('/dictionary', (req: Request, res: Response) => {
+        this.router.post('/dictionary', async (req: Request, res: Response) => {
             this.dictionaryService.update(req.body);
+
             let names = ' ';
-            this.dictionaryService.dictionaries.forEach((e) => (names = '«' + e.title + '» '));
+            const metadata = await this.dictionaryService.getMetadata();
+            metadata.forEach((e) => (names = '«' + e.title + '» '));
+
             logger.debug(`Updated dictionary: ${names}`);
             res.sendStatus(Constants.HTTP_STATUS.OK);
         });
 
-        this.router.get('/dictionary/:id', (req: Request, res: Response) => {
+        this.router.get('/dictionary/:id', async (req: Request, res: Response) => {
             const id = req.params.id;
+
             if (id) {
-                const metadata = this.dictionaryService.getMetadata(id);
+                const metadata = await this.dictionaryService.getMetadataById(id);
+
                 if (metadata) {
-                    const filepath = this.dictionaryService.getFilepath(metadata);
-                    logger.debug(`Requesting to download dictionary: ${filepath}`);
+                    logger.debug(`Requesting to download dictionary: ${metadata.path}`);
                     res.status(Constants.HTTP_STATUS.OK);
-                    res.download(filepath);
+                    res.download(metadata.path);
                 }
             }
         });

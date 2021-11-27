@@ -6,6 +6,7 @@ import * as http from 'http';
 import { AddressInfo } from 'net';
 import { Service } from 'typedi';
 import logger from 'winston';
+import { DictionaryService } from '@app/services/dictionary/dictionary.service';
 
 @Service()
 export class Server {
@@ -17,6 +18,7 @@ export class Server {
         private readonly socketService: SocketService,
         private readonly roomController: RoomController,
         private readonly databaseService: DatabaseService,
+        private readonly dictionnaryService: DictionaryService,
     ) {}
 
     private static normalizePort(val: number | string): number | string | boolean {
@@ -40,6 +42,8 @@ export class Server {
             logger.error('Failed connection to database', e);
             process.exit(1);
         }
+
+        await this.dictionnaryService.init();
 
         this.server = http.createServer(this.application.app);
 

@@ -31,7 +31,7 @@ describe('AdminService', () => {
 
     it('should correctly remove items', () => {
         const metadata: DictionaryMetadata = {
-            id: 'dictionary.json',
+            _id: 'dictionary.json',
             description: 'dictionary for tests',
             nbWords: 1024,
             title: 'Grand Dictionary of Tests',

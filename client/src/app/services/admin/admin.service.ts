@@ -100,6 +100,6 @@ export class AdminService {
     }
 
     get defaultDictionary(): DictionaryMetadata | null {
-        return this.dictionaries.find((d) => d.id === DEFAULT_DICTIONARY) ?? null;
+        return this.dictionaries.find((d) => d._id === DEFAULT_DICTIONARY) ?? null;
     }
 }

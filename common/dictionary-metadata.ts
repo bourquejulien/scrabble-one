@@ -1,5 +1,6 @@
 export interface DictionaryMetadata {
-    id: string;
+    _id: string;
+    path: string;
     title: string;
     description: string;
     nbWords: number;
