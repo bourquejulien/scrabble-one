@@ -20,7 +20,7 @@ interface Selection {
     styleUrls: ['./rack.component.scss'],
 })
 export class RackComponent implements OnInit {
-    @Output() reserveSelectionChange = new EventEmitter<Set<number>>();
+    @Output() reserveSelectionChange: EventEmitter<Set<number>>;
     playerType = PlayerType;
 
     selection: Selection;
@@ -41,10 +41,11 @@ export class RackComponent implements OnInit {
         };
 
         this.isFocus = false;
+        this.reserveSelectionChange = new EventEmitter<Set<number>>();
     }
 
     @HostListener('body:keydown', ['$event'])
-    onKeyDown(event: KeyboardEvent) {
+    onKeyDown(event: KeyboardEvent): void {
         this.handleKeyPress(event.key);
 
         if (this.selection.swap.index < 0) {
@@ -96,7 +97,7 @@ export class RackComponent implements OnInit {
             event.deltaY < 0 ? this.rackService.mod(this.selection.swap.index + 1) : this.rackService.mod(this.selection.swap.index - 1);
     }
 
-    reset() {
+    reset(): void {
         this.selection.swap.index = -1;
         this.selection.swap.lastIndex = 0;
         this.selection.reserve.clear();
@@ -108,7 +109,7 @@ export class RackComponent implements OnInit {
         return currentLetterData ? currentLetterData.points : -1;
     }
 
-    clearExchange() {
+    clearExchange(): void {
         this.selection.reserve.clear();
     }
 
@@ -125,7 +126,7 @@ export class RackComponent implements OnInit {
         this.clearExchange();
     }
 
-    private handleKeyPress(key: string) {
+    private handleKeyPress(key: string): void {
         if (key.length !== 1 || !key.match('([a-z]|\\*)')) {
             return;
         }
@@ -135,9 +136,10 @@ export class RackComponent implements OnInit {
         if (index !== -1 && this.isFocus) {
             this.swapSelectionIndex = index;
             this.selection.swap.lastIndex = index + 1;
-        } else {
-            this.reset();
+            return;
         }
+
+        this.reset();
     }
 
     private set swapSelectionIndex(position: number) {

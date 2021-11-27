@@ -12,20 +12,15 @@ export class SizeSelectorComponent {
     @Output() sizeUpdated = new EventEmitter<number>();
 
     increase() {
-        if (this.size < this.maxSize) {
-            this.size++;
-        } else {
-            this.size = this.maxSize;
-        }
-        this.sizeUpdated.emit(this.size);
+        this.updateSize(Math.min(this.size + 1, this.maxSize));
     }
 
     decrease() {
-        if (this.size > this.minSize) {
-            this.size--;
-        } else {
-            this.size = this.minSize;
-        }
-        this.sizeUpdated.emit(this.size);
+        this.updateSize(Math.max(this.size - 1, this.minSize));
+    }
+
+    private updateSize(size: number) {
+        this.size = size;
+        this.sizeUpdated.emit(size);
     }
 }
