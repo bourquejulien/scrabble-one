@@ -12,12 +12,12 @@ describe('StatsController', () => {
     let stubStatsService: SinonStubbedInstance<StatsService>;
     let expressApp: Express.Application;
 
-    const stubClassicScore: Score[] = [
+    const classicScore: Score[] = [
         { name: 'Albert', scoreValue: 10 },
         { name: 'Tristan', scoreValue: 15 },
     ];
 
-    const stubLogScore: Score[] = [
+    const logScore: Score[] = [
         { name: 'Bruce', scoreValue: 20 },
         { name: 'Wayne', scoreValue: 25 },
     ];
@@ -30,27 +30,27 @@ describe('StatsController', () => {
     });
 
     it('GET /classic/ should return correct scores', async () => {
-        stubStatsService.scoreToDisplay.resolves(stubClassicScore);
+        stubStatsService.scoreToDisplay.resolves(classicScore);
         return request(expressApp)
             .get('/api/score/classic')
             .then((response) => {
                 expect(response.status).to.be.equal(Constants.HTTP_STATUS.OK);
-                expect(response.body).to.deep.equal(stubClassicScore);
+                expect(response.body).to.deep.equal(classicScore);
             });
     });
 
     it('GET /log/ should return correct scores', async () => {
-        stubStatsService.scoreToDisplay.resolves(stubLogScore);
+        stubStatsService.scoreToDisplay.resolves(logScore);
         return request(expressApp)
             .get('/api/score/log')
             .then((response) => {
                 expect(response.status).to.be.equal(Constants.HTTP_STATUS.OK);
-                expect(response.body).to.deep.equal(stubLogScore);
+                expect(response.body).to.deep.equal(logScore);
             });
     });
 
     it('GET /classic/ should return error message if scores undefined', async () => {
-        stubStatsService.scoreToDisplay.rejects(stubClassicScore);
+        stubStatsService.scoreToDisplay.rejects(classicScore);
         return request(expressApp)
             .get('/api/score/classic')
             .then((response) => {
@@ -59,7 +59,7 @@ describe('StatsController', () => {
     });
 
     it('GET /log/ should return error message if scores undefined', async () => {
-        stubStatsService.scoreToDisplay.rejects(stubLogScore);
+        stubStatsService.scoreToDisplay.rejects(logScore);
         return request(expressApp)
             .get('/api/score/log')
             .then((response) => {
