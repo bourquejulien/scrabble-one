@@ -9,8 +9,8 @@ fdescribe('ScoreboardService', () => {
     let httpMock: HttpTestingController;
 
     const localUrl = (call: string) => `${environmentExt.apiUrl}score/${call}`;
-    const DATABASE_COLLECTION_CLASSIC = 'classicScoreboard';
-    const DATABASE_COLLECTION_LOG = 'logScoreboard';
+    const COLLECTION_NAME_CLASSIC = 'classic';
+    const COLLECTION_NAME_LOG = 'log';
 
     const classicScore: Score[] = [
         { name: 'Albert', scoreValue: 10 },
@@ -39,36 +39,36 @@ fdescribe('ScoreboardService', () => {
     });
 
     it('should GET classic scoreboard from server', fakeAsync(() => {
-        service.displayScores(DATABASE_COLLECTION_CLASSIC);
-        const request = httpMock.match(localUrl(DATABASE_COLLECTION_CLASSIC));
+        service.displayScores(COLLECTION_NAME_CLASSIC);
+        const request = httpMock.match(localUrl(COLLECTION_NAME_CLASSIC));
 
         expect(request[0].request.method).toEqual('GET');
         request[0].flush([]);
     }));
 
     it('should GET log scoreboard from server', fakeAsync(() => {
-        service.displayScores(DATABASE_COLLECTION_LOG);
-        const request = httpMock.match(localUrl(DATABASE_COLLECTION_LOG));
+        service.displayScores(COLLECTION_NAME_LOG);
+        const request = httpMock.match(localUrl(COLLECTION_NAME_LOG));
 
         expect(request[0].request.method).toEqual('GET');
         request[0].flush([]);
     }));
 
     it('should retrieve classic scoreboard from server', fakeAsync(() => {
-        service.displayScores(DATABASE_COLLECTION_CLASSIC).then((scores) => {
+        service.displayScores(COLLECTION_NAME_CLASSIC).then((scores) => {
             expect(scores).toEqual(classicScore);
         });
 
-        const request = httpMock.match(localUrl(DATABASE_COLLECTION_CLASSIC));
+        const request = httpMock.match(localUrl(COLLECTION_NAME_CLASSIC));
         request[0].flush(classicScore);
     }));
 
     it('should retrieve log scoreboard from server', fakeAsync(() => {
-        service.displayScores(DATABASE_COLLECTION_LOG).then((scores) => {
+        service.displayScores(COLLECTION_NAME_LOG).then((scores) => {
             expect(scores).toEqual(logScore);
         });
 
-        const request = httpMock.match(localUrl(DATABASE_COLLECTION_LOG));
+        const request = httpMock.match(localUrl(COLLECTION_NAME_LOG));
         request[0].flush(logScore);
     }));
 });
