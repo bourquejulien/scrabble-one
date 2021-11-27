@@ -3,22 +3,33 @@ import { PlayerInfo } from '@app/classes/player-info';
 import { HumanPlayer } from '@app/classes/player/human-player/human-player';
 import { Action } from '@app/classes/player/virtual-player/actions/action';
 import { VirtualPlayer } from '@app/classes/player/virtual-player/virtual-player';
+import { VirtualPlayerEasy } from '@app/classes/player/virtual-player/virtual-player-easy/virtual-player-easy';
+import { VirtualPlayerExpert } from '@app/classes/player/virtual-player/virtual-player-expert/virtual-player-expert';
+import { SessionInfo } from '@app/classes/session-info';
+import { DisabledGoalHandler } from '@app/handlers/goal-handler/disabled-goal-handler';
+import { GoalHandler } from '@app/handlers/goal-handler/goal-handler';
+import { Log2990GoalHandler } from '@app/handlers/goal-handler/log2990-goal-handler';
 import { PlayerHandler } from '@app/handlers/player-handler/player-handler';
 import { ReserveHandler } from '@app/handlers/reserve-handler/reserve-handler';
 import { SessionHandler } from '@app/handlers/session-handler/session-handler';
-import { BoardGeneratorService } from '@app/services/board/board-generator.service';
-import { SessionHandlingService } from '@app/services/sessionHandling/session-handling.service';
-import { SocketService } from '@app/services/socket/socket-service';
-import { Service } from 'typedi';
-import { ConvertConfig, GameMode, GameType, MultiplayerCreateConfig, MultiplayerJoinConfig, ServerConfig, SinglePlayerConfig } from '@common';
-import { VirtualPlayerExpert } from '@app/classes/player/virtual-player/virtual-player-expert/virtual-player-expert';
-import * as logger from 'winston';
-import { SessionInfo } from '@app/classes/session-info';
-import { GoalHandler } from '@app/handlers/goal-handler/goal-handler';
-import { DisabledGoalHandler } from '@app/handlers/goal-handler/disabled-goal-handler';
-import { Log2990GoalHandler } from '@app/handlers/goal-handler/log2990-goal-handler';
 import { SessionStatsHandler } from '@app/handlers/stats-handlers/session-stats-handler/session-stats-handler';
+import { BoardGeneratorService } from '@app/services/board/board-generator.service';
 import { DictionaryService } from '@app/services/dictionary/dictionary.service';
+import { SessionHandlingService } from '@app/services/session-handling/session-handling.service';
+import { SocketService } from '@app/services/socket/socket-service';
+import { StatsService } from '@app/services/stats/stats.service';
+import {
+    ConvertConfig,
+    GameMode,
+    GameType,
+    MultiplayerCreateConfig,
+    MultiplayerJoinConfig,
+    ServerConfig,
+    SinglePlayerConfig,
+    VirtualPlayerLevel,
+} from '@common';
+import { Service } from 'typedi';
+import * as logger from 'winston';
 
 @Service()
 export class GameService {
@@ -26,6 +37,7 @@ export class GameService {
         private readonly boardGeneratorService: BoardGeneratorService,
         private readonly sessionHandlingService: SessionHandlingService,
         private readonly dictionaryService: DictionaryService,
+        private readonly statsService: StatsService,
         private readonly socketService: SocketService,
     ) {}
 
@@ -58,7 +70,7 @@ export class GameService {
         };
 
         const humanPlayer = this.addHumanPlayer(humanPlayerInfo, sessionHandler);
-        this.addVirtualPlayer(virtualPlayerInfo, sessionHandler);
+        this.addVirtualPlayer(gameConfig.virtualPlayerLevel, virtualPlayerInfo, sessionHandler);
         this.sessionHandlingService.addHandler(sessionHandler);
 
         sessionHandler.sessionData.isActive = true;
@@ -74,6 +86,14 @@ export class GameService {
             playTimeMs: gameConfig.playTimeMs,
             gameType: gameConfig.gameType,
         };
+
+        let words: string[] = [];
+        try {
+            words = await this.dictionaryService.getWords(gameConfig.dictionary);
+        } catch (err) {
+            logger.warn('Failed to retrieve words', err);
+            return Promise.reject(`${err}`);
+        }
 
         // TODO add a construction service?
         const dictionaryHandler = await this.dictionaryService.getHandler(gameConfig.dictionary.id);
@@ -139,7 +159,7 @@ export class GameService {
         };
 
         handler.sessionInfo.gameType = GameType.SinglePlayer;
-        this.addVirtualPlayer(virtualPlayerInfo, handler);
+        this.addVirtualPlayer(convertConfig.virtualPlayerLevel, virtualPlayerInfo, handler);
         this.sessionHandlingService.updateEntries(handler);
 
         handler.start();
@@ -149,7 +169,7 @@ export class GameService {
         return handler.getServerConfig(convertConfig.id);
     }
 
-    async abandon(id: string): Promise<boolean> {
+    async convertOrDispose(id: string): Promise<boolean> {
         logger.debug(`Abandon - PlayerId: ${id}`);
         const handler = this.sessionHandlingService.getHandlerByPlayerId(id);
 
@@ -161,11 +181,14 @@ export class GameService {
         if (handler.sessionData.isStarted && handler.sessionData.isActive && handler.sessionInfo.gameType === GameType.Multiplayer) {
             logger.info(`Converting player: ${id}`);
             handler.convertWhileRunning(id);
-        } else {
-            handler.dispose();
-            this.sessionHandlingService.removeHandler(id);
-            logger.info(`Game disposed: ${id}`);
+            return true;
         }
+
+        const endGameData = handler.dispose();
+        this.statsService.updateScoreboards(endGameData);
+        this.sessionHandlingService.removeHandler(id);
+
+        logger.info(`Game disposed: ${id}`);
 
         return true;
     }
@@ -177,9 +200,13 @@ export class GameService {
         return humanPlayer;
     }
 
-    private addVirtualPlayer(playerInfo: PlayerInfo, sessionHandler: SessionHandler): VirtualPlayer {
+    private addVirtualPlayer(virtualPlayerLevel: VirtualPlayerLevel, playerInfo: PlayerInfo, sessionHandler: SessionHandler): VirtualPlayer {
         const actionCallback = (action: Action): Action | null => action.execute();
-        const virtualPlayer = new VirtualPlayerExpert(sessionHandler.boardHandler.dictionaryHandler, playerInfo, actionCallback);
+
+        const virtualPlayer =
+            virtualPlayerLevel === VirtualPlayerLevel.Easy
+                ? new VirtualPlayerEasy(sessionHandler.boardHandler.dictionaryHandler, playerInfo, actionCallback)
+                : new VirtualPlayerExpert(sessionHandler.boardHandler.dictionaryHandler, playerInfo, actionCallback);
 
         sessionHandler.addPlayer(virtualPlayer);
 

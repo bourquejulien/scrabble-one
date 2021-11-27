@@ -3,6 +3,7 @@ import { NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { BestScoresComponent } from '@app/components/best-scores/best-scores.component';
 import { PlayAreaComponent } from '@app/components/play-area/play-area.component';
 import { AppRoutingModule } from '@app/modules/app-routing.module';
 import { AppMaterialModule } from '@app/modules/material.module';
@@ -15,14 +16,15 @@ import { CommunicationBoxComponent } from './components/communication-box/commun
 import { ConfirmQuitDialogComponent } from './components/confirm-quit-dialog/confirm-quit-dialog.component';
 import { EndGameComponent } from './components/end-game/end-game.component';
 import { InitGameComponent } from './components/init-game/init-game.component';
+import { ObjectivesComponent } from './components/objectives/objectives.component';
 import { OpponentQuitComponent } from './components/opponent-quit/opponent-quit.component';
 import { RackComponent } from './components/rack/rack.component';
 import { SizeSelectorComponent } from './components/size-selector/size-selector.component';
 import { ToolbarComponent } from './components/toolbar/toolbar.component';
+import { AdminPageComponent } from './pages/admin-page/admin-page.component';
 import { GameModePageComponent } from './pages/game-mode-page/game-mode-page.component';
 import { RoomListComponent } from './pages/room-list/room-list.component';
 import { WaitingRoomPageComponent } from './pages/waiting-room-page/waiting-room-page.component';
-import { AdminPageComponent } from './pages/admin-page/admin-page.component';
 
 /**
  * Main module that is used in main.ts.
@@ -49,8 +51,10 @@ import { AdminPageComponent } from './pages/admin-page/admin-page.component';
         InitGameComponent,
         BoardComponent,
         ToolbarComponent,
+        BestScoresComponent,
         AdminPageComponent,
         OpponentQuitComponent,
+        ObjectivesComponent,
     ],
     imports: [AppMaterialModule, AppRoutingModule, BrowserAnimationsModule, BrowserModule, FormsModule, HttpClientModule],
     providers: [],

@@ -1,10 +1,12 @@
 import { DictionaryMetadata } from './dictionary-metadata';
 import { GameType } from './game-type';
 import { GameMode } from './game-mode';
+import { VirtualPlayerLevel } from './virtual-player-level';
 
 export interface SinglePlayerConfig {
     gameType: GameType;
     gameMode: GameMode;
+    virtualPlayerLevel: VirtualPlayerLevel;
     playTimeMs: number;
     playerName: string;
     virtualPlayerName: string;
@@ -29,6 +31,7 @@ export interface MultiplayerJoinConfig {
 export interface ConvertConfig {
     id: string;
     virtualPlayerName: string;
+    virtualPlayerLevel: VirtualPlayerLevel;
 }
 
 export interface AvailableGameConfig {

@@ -10,7 +10,7 @@ import { BoardHandler } from '@app/handlers/board-handler/board-handler';
 import { PlayerHandler } from '@app/handlers/player-handler/player-handler';
 import { SessionHandler } from '@app/handlers/session-handler/session-handler';
 import { GameService } from '@app/services/game/game.service';
-import { SessionHandlingService } from '@app/services/sessionHandling/session-handling.service';
+import { SessionHandlingService } from '@app/services/session-handling/session-handling.service';
 import { SocketService } from '@app/services/socket/socket-service';
 import { GameMode, GameType, Message, MessageType } from '@common';
 import { expect } from 'chai';
@@ -164,6 +164,7 @@ describe('RoomController', () => {
         assert.called(emitSpy);
     });
 
+    // TODO : Fix test
     it('should join the correct rooms', async () => {
         const stubSessionHandler = createStubInstance(SessionHandler) as unknown as SessionHandler;
         stubSessionHandler['sessionInfo'] = {
@@ -317,7 +318,7 @@ describe('RoomController', () => {
         const playerId = 'id';
         const socket = new SocketStub();
 
-        await controller['abandonCreatedGame'](socket as unknown as Socket, playerId);
+        await controller['convertOrDispose'](socket as unknown as Socket, playerId);
         expect(socket.leaveCallCount).to.equal(2);
     });
 });

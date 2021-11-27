@@ -4,7 +4,7 @@
 import { CommonModule } from '@angular/common';
 import { HttpClient, HttpHandler } from '@angular/common/http';
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/compiler';
-import { NO_ERRORS_SCHEMA, SimpleChange } from '@angular/core';
+import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { cleanStyles } from '@app/classes/helpers/cleanup.helper';
@@ -17,8 +17,8 @@ import { GridService } from '@app/services/grid/grid.service';
 import { PlaceLetterService } from '@app/services/place-letter/place-letter.service';
 import { RackService } from '@app/services/rack/rack.service';
 import { BoardData, Vec2 } from '@common';
-import { BoardComponent } from './board.component';
 import { BehaviorSubject, Observable } from 'rxjs';
+import { BoardComponent } from './board.component';
 
 class GridServiceStub {
     letterFontFace = { font: 'red', size: 0 };
@@ -88,12 +88,6 @@ class BoardServiceMock {
     }
 }
 
-class SimpleChangeMock {
-    isFirstChange() {
-        return true;
-    }
-}
-
 describe('BoardComponent', () => {
     const playerType = PlayerType.Local;
     // let fontfaceobserverSpy: jasmine.SpyObj<FontFaceObserver>;
@@ -102,7 +96,6 @@ describe('BoardComponent', () => {
     let gridServiceStub: GridServiceStub;
     let gameServiceSpy: jasmine.SpyObj<GameService>;
     let rackServiceSpy: jasmine.SpyObj<RackService>;
-
     let placeLetter: jasmine.SpyObj<PlaceLetterService>;
 
     beforeEach(async () => {
@@ -139,7 +132,7 @@ describe('BoardComponent', () => {
                 { provide: PlaceLetterService, useValue: placeLetter },
                 { provide: RackService, useValue: rackServiceSpy },
                 { provide: HttpClient, useClass: HttpClient },
-                { provide: SimpleChange, useClass: SimpleChangeMock },
+
                 HttpHandler,
             ],
             imports: [AppMaterialModule, CommonModule, BrowserAnimationsModule],

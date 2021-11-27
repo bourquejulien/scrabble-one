@@ -12,6 +12,8 @@ import { CommandsService } from '@app/services/commands/commands.service';
 import { GameService } from '@app/services/game/game.service';
 import { ReserveService } from '@app/services/reserve/reserve.service';
 import { SessionService } from '@app/services/session/session.service';
+import { SocketClientService } from '@app/services/socket-client/socket-client.service';
+import { GameMode } from '@common';
 import { Subscription } from 'rxjs';
 
 export enum Icon {
@@ -49,6 +51,7 @@ export class GamePageComponent implements OnDestroy {
         readonly sessionService: SessionService,
         readonly reserveService: ReserveService,
         readonly commandService: CommandsService,
+        readonly socketClientService: SocketClientService,
         private readonly dialog: MatDialog,
         private readonly router: Router,
         location: LocationStrategy,
@@ -140,5 +143,9 @@ export class GamePageComponent implements OnDestroy {
             this.gameService.reset();
             this.router.navigate(['home']);
         });
+    }
+
+    get gameMode(): typeof GameMode {
+        return GameMode;
     }
 }
