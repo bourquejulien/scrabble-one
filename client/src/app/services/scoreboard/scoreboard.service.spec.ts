@@ -4,7 +4,7 @@ import { Score } from '@common';
 import { environmentExt } from '@environment-ext';
 import { ScoreboardService } from './scoreboard.service';
 
-fdescribe('ScoreboardService', () => {
+describe('ScoreboardService', () => {
     let service: ScoreboardService;
     let httpMock: HttpTestingController;
 
