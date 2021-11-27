@@ -1,10 +1,11 @@
 import { Application } from '@app/app';
+import { RoomController } from '@app/controllers/room/room.controller';
+import { DatabaseService } from '@app/services/database/database.service';
+import { SocketService } from '@app/services/socket/socket-service';
 import * as http from 'http';
 import { AddressInfo } from 'net';
 import { Service } from 'typedi';
-import { SocketService } from '@app/services/socket/socket-service';
-import { RoomController } from '@app/controllers/room/room.controller';
-import * as logger from 'winston';
+import logger from 'winston';
 
 @Service()
 export class Server {
@@ -15,6 +16,7 @@ export class Server {
         private readonly application: Application,
         private readonly socketService: SocketService,
         private readonly roomController: RoomController,
+        private readonly databaseService: DatabaseService,
     ) {}
 
     private static normalizePort(val: number | string): number | string | boolean {
@@ -28,8 +30,16 @@ export class Server {
         return false;
     }
 
-    init(): void {
+    async init(): Promise<void> {
         this.application.app.set('port', Server.appPort);
+
+        try {
+            await this.databaseService.run();
+            logger.info('Successful connection to database');
+        } catch (e) {
+            logger.error('Failed connection to database', e);
+            process.exit(1);
+        }
 
         this.server = http.createServer(this.application.app);
 

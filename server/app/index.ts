@@ -7,6 +7,8 @@ import { Container } from 'typedi';
 import winston, * as logger from 'winston';
 import { Server } from './server';
 
+dotenv.config();
+
 const logFormat = winston.format.printf(({ level, message, timestamp, stack }) => {
     let format = `${timestamp} - ${level} - ${message}`;
     if (stack !== undefined) {
@@ -35,8 +37,6 @@ logger.configure({
 process.on('unhandledRejection', (reason: Error) => {
     throw reason;
 });
-
-dotenv.config();
 
 const server: Server = Container.get(Server);
 server.init();
