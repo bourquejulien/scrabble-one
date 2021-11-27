@@ -1,7 +1,7 @@
 import { Service } from 'typedi';
 import { DatabaseService } from '@app/services/database/database.service';
 import { DictionaryMetadata } from '@common';
-import { Collection, InsertOneResult } from 'mongodb';
+import { Collection } from 'mongodb';
 
 const COLLECTION_NAME = 'dictionary.metadata';
 const DEFAULT_PATH = 'assets/dictionaries/dictionary.json';
@@ -25,13 +25,13 @@ export class DictionaryPersistence {
     }
 
     async add(dictionaryMetadata: DictionaryMetadata): Promise<boolean> {
-        let result: InsertOneResult<DictionaryMetadata>;
+        const isDuplicate = await this.isDuplicate(dictionaryMetadata);
 
-        try {
-            result = await this.metaDataCollection.insertOne(dictionaryMetadata);
-        } catch (err) {
+        if (isDuplicate || this.isDefault(dictionaryMetadata._id)) {
             return false;
         }
+
+        const result = await this.metaDataCollection.insertOne(dictionaryMetadata);
 
         if (result.acknowledged) {
             this.metaDataCache.set(dictionaryMetadata._id, dictionaryMetadata);
@@ -50,6 +50,30 @@ export class DictionaryPersistence {
         this.metaDataCache.delete(id);
 
         return result.acknowledged;
+    }
+
+    async update(dictionaryMetadata: DictionaryMetadata): Promise<boolean> {
+        const isDuplicate = await this.isDuplicate(dictionaryMetadata);
+
+        if (isDuplicate || this.isDefault(dictionaryMetadata._id)) {
+            return false;
+        }
+
+        const result = await this.metaDataCollection.findOneAndUpdate(
+            { _id: dictionaryMetadata._id },
+            { $set: { title: dictionaryMetadata.title, description: dictionaryMetadata.description } },
+            { upsert: false },
+        );
+
+        const updatedMetadata = result.value;
+
+        if (updatedMetadata == null) {
+            return false;
+        }
+
+        this.metaDataCache.set(updatedMetadata._id, updatedMetadata);
+
+        return true;
     }
 
     async getMetadata(): Promise<DictionaryMetadata[]> {
@@ -73,6 +97,11 @@ export class DictionaryPersistence {
         await this.databaseService.database.dropCollection(COLLECTION_NAME);
         this.metaDataCache.clear();
         this.metaDataCache.set(this.defaultMetadata._id, this.defaultMetadata);
+    }
+
+    private async isDuplicate(dictionaryMetadata: DictionaryMetadata): Promise<boolean> {
+        const response = await this.metaDataCollection.findOne({ title: dictionaryMetadata.title });
+        return response != null && response._id !== dictionaryMetadata._id;
     }
 
     private isDefault(id: string): boolean {

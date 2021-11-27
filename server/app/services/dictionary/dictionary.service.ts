@@ -6,8 +6,8 @@ import { Validator } from 'jsonschema';
 import { Constants } from '@app/constants';
 import { DictionaryHandler } from '@app/handlers/dictionary-handler/dictionary-handler';
 import { DictionaryPersistence } from '@app/services/dictionary/dictionary-persistence';
-import md5 from 'md5';
 import * as fs from 'fs';
+import { generateId } from '@app/classes/id';
 
 const schema = {
     title: 'string',
@@ -89,7 +89,7 @@ export class DictionaryService {
 
     async add(tempPath: string): Promise<boolean> {
         const json = await DictionaryService.parse(tempPath);
-        const id = md5(json.title);
+        const id = generateId();
         const newFilepath = path.resolve(path.join(dictionaryPath, id));
 
         const metadata: DictionaryMetadata = {
@@ -113,12 +113,9 @@ export class DictionaryService {
         return true;
     }
 
-    update(metadata: DictionaryMetadata[]) {
-        // TODO
-        // if (!this.dictionaryMetadata.find((m) => m === defaultDictionary) && metadata) {
-        //     this.dictionaryMetadata = metadata;
-        //     this.dictionaryMetadata.push(defaultDictionary);
-        // }
+    async update(metadata: DictionaryMetadata[]): Promise<boolean> {
+        const promises = metadata.map(async (m) => this.dictionaryPersistence.update(m));
+        return (await Promise.all(promises)).reduce((prev, curr) => prev && curr, false);
     }
 
     async remove(id: string): Promise<boolean> {

@@ -5,6 +5,7 @@ import { IncomingForm } from 'formidable';
 import { tmpdir } from 'os';
 import * as logger from 'winston';
 import { DictionaryService } from '@app/services/dictionary/dictionary.service';
+import { Answer, DictionaryMetadata } from '@common';
 
 interface Playernames {
     experts: string[];
@@ -60,14 +61,19 @@ export class AdminController {
         });
 
         this.router.post('/dictionary/update', async (req: Request, res: Response) => {
-            this.dictionaryService.update(req.body);
+            const metadataToUpdate: DictionaryMetadata[] = [];
+
+            metadataToUpdate.push(...req.body);
+            const isSuccess = await this.dictionaryService.update(metadataToUpdate);
 
             let names = ' ';
             const metadata = await this.dictionaryService.getMetadata();
             metadata.forEach((e) => (names = '«' + e.title + '» '));
 
             logger.debug(`Updated dictionary: ${names}`);
-            res.json(metadata);
+
+            const answer: Answer<DictionaryMetadata[]> = { isSuccess, payload: metadata };
+            res.json(answer);
         });
 
         this.router.get('/dictionary', async (req: Request, res: Response) => {
@@ -104,9 +110,9 @@ export class AdminController {
             res.sendStatus(Constants.HTTP_STATUS.OK);
         });
 
-        this.router.get('/reset', (req: Request, res: Response) => {
+        this.router.get('/reset', async (req: Request, res: Response) => {
             this.virtualPlayerNames = this.defaultBotNames;
-            this.dictionaryService.reset();
+            await this.dictionaryService.reset();
             res.sendStatus(Constants.HTTP_STATUS.OK);
             logger.debug('Reset');
         });

@@ -17,7 +17,7 @@ describe('PlayerController', () => {
     let stubSessionHandlingService: SinonStubbedInstance<SessionHandlingService>;
     let expressApp: Express.Application;
     const exchangeLettersResponse = 'ExchangeLetterResponse';
-    const placeLettersAnswer: Answer = { isSuccess: true, body: 'Not your turn' };
+    const placeLettersAnswer: Answer = { isSuccess: true, payload: 'Not your turn' };
     const rack = ['m', 'e', 't', 'a'];
 
     beforeEach(async () => {

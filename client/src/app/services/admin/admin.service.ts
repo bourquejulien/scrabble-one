@@ -3,7 +3,7 @@ import { Injectable } from '@angular/core';
 import { environmentExt } from '@environment-ext';
 import { finalize } from 'rxjs/operators';
 import { Subscription } from 'rxjs';
-import { DictionaryMetadata, VirtualPlayerLevel } from '@common';
+import { Answer, DictionaryMetadata, VirtualPlayerLevel } from '@common';
 
 const localUrl = (call: string, id: string) => `${environmentExt.apiUrl}admin/${call}/${id}`;
 interface Playernames {
@@ -23,9 +23,13 @@ export class AdminService {
     uploadProgress: number;
     virtualPlayerNames: Playernames;
 
+    private readonly updatedDictionaries: Set<string>;
+
     constructor(private httpClient: HttpClient) {
         this.dictionaries = [];
+        this.updatedDictionaries = new Set<string>();
         this.virtualPlayerNames = { experts: [], beginners: [] };
+
         this.retrieveUsernames();
         this.retrieveDictionaries();
     }
@@ -60,14 +64,21 @@ export class AdminService {
         this.dictionaries = await this.httpClient.get<DictionaryMetadata[]>(localUrl('dictionary', '')).toPromise();
     }
 
-    async removeDictionary(metadata: DictionaryMetadata) {
+    removeDictionary(metadata: DictionaryMetadata) {
         this.httpClient
             .delete(localUrl('dictionary', metadata._id))
             .subscribe(() => this.dictionaries.splice(this.dictionaries.indexOf(metadata), 1));
     }
 
     async updateDictionaries() {
-        await this.httpClient.post(localUrl('dictionary', ''), this.dictionaries).toPromise();
+        const updatedMetadata = this.dictionaries.filter((d) => this.updatedDictionaries.has(d._id));
+        const answer = await this.httpClient.post<Answer<DictionaryMetadata[]>>(localUrl('dictionary', 'update'), updatedMetadata).toPromise();
+        this.dictionaries = answer.payload;
+    }
+
+    dictionaryUpdated(dictionary: DictionaryMetadata): void {
+        console.log(dictionary);
+        this.updatedDictionaries.add(dictionary._id);
     }
 
     downloadDictionary(id: string) {
@@ -91,6 +102,10 @@ export class AdminService {
         } else {
             this.virtualPlayerNames.beginners.splice(this.virtualPlayerNames.beginners.indexOf(playername), 1);
         }
+    }
+
+    isDefaultDictionary(metadata: DictionaryMetadata) {
+        return metadata._id === 'dictionary.json';
     }
 
     async resetSettings(): Promise<void> {
