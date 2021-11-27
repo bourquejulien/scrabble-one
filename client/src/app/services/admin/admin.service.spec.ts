@@ -29,19 +29,24 @@ describe('AdminService', () => {
         expect(service.downloadDictionary('123')).toBeInstanceOf(Observable);
     });
 
-    it('should correctly remove items', () => {
+    it('should correctly remove dictionaries', () => {
         const metadata: DictionaryMetadata = {
             id: 'dictionary.json',
             description: 'dictionary for tests',
             nbWords: 1024,
             title: 'Grand Dictionary of Tests',
         };
-        const nameLength = service.virtualPlayerNames.beginners.length;
-        service.removePlayername('Monique', false);
-        expect(service.virtualPlayerNames.beginners.length).toBe(nameLength - 1);
+        service.dictionaries.push(metadata);
         const dictionaryNb = service.dictionaries.length;
         service.removeDictionary(metadata);
         expect(service.dictionaries.length).toBe(dictionaryNb - 1);
+    });
+
+    it('should correctly remove playernames', () => {
+        service.virtualPlayerNames.beginners.push('Monique');
+        const nameLength = service.virtualPlayerNames.beginners.length;
+        service.removePlayername('Monique', false);
+        expect(service.virtualPlayerNames.beginners.length).toBe(nameLength - 1);
     });
 
     it('should upload files correctly', () => {
