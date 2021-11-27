@@ -132,7 +132,7 @@ export class GameService {
         const sessionHandler = this.sessionHandlingService.getHandlerBySessionId(gameConfig.sessionId);
         const waitingPlayer = sessionHandler?.players[0];
 
-        if (sessionHandler == null || waitingPlayer == null || sessionHandler.sessionData.isStarted) {
+        if (sessionHandler == null || waitingPlayer == null || !sessionHandler.sessionData.isStarted) {
             return null;
         }
 
