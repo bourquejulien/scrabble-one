@@ -1,10 +1,9 @@
 import { EndGameData } from '@app/classes/end-game-data';
+import { Constants } from '@app/constants';
 import { ScoreService } from '@app/services/score/score.service';
 import { GameMode, Score } from '@common';
 import { Service } from 'typedi';
 
-const DATABASE_COLLECTION_CLASSIC = 'classicScoreboard';
-const DATABASE_COLLECTION_LOG = 'logScoreboard';
 const MAX_DOCUMENTS = 5;
 
 @Service()
@@ -12,7 +11,7 @@ export class StatsService {
     constructor(readonly scoreService: ScoreService) {}
 
     async updateScoreboards(endGameData: EndGameData): Promise<void> {
-        const collectionName = endGameData.gameMode === GameMode.Classic ? DATABASE_COLLECTION_CLASSIC : DATABASE_COLLECTION_LOG;
+        const collectionName = endGameData.gameMode === GameMode.Classic ? Constants.DATABASE_COLLECTION_CLASSIC : Constants.DATABASE_COLLECTION_LOG;
         const elligiblePlayers = await this.currentGreaterScores(endGameData.scores, collectionName);
 
         if (elligiblePlayers.length === 0) {
@@ -51,7 +50,7 @@ export class StatsService {
     }
 
     private async groupedScores(collectionName: string): Promise<Map<number, string[]>> {
-        const scores = collectionName === DATABASE_COLLECTION_CLASSIC ? await this.getScoreboardClassic() : await this.getScoreBoardLog();
+        const scores = collectionName === Constants.DATABASE_COLLECTION_CLASSIC ? await this.getScoreboardClassic() : await this.getScoreBoardLog();
         const scoresToDisplay = new Map<number, string[]>();
 
         for (const score of scores) {

@@ -4,9 +4,6 @@ import { Request, Response, Router } from 'express';
 import { Service } from 'typedi';
 import logger from 'winston';
 
-const DATABASE_COLLECTION_CLASSIC = 'classicScoreboard';
-const DATABASE_COLLECTION_LOG = 'logScoreboard';
-
 @Service()
 export class StatsController {
     router: Router;
@@ -20,7 +17,7 @@ export class StatsController {
 
         this.router.get('/classic', (req: Request, res: Response) => {
             this.statsService
-                .scoreToDisplay(DATABASE_COLLECTION_CLASSIC)
+                .scoreToDisplay(Constants.DATABASE_COLLECTION_CLASSIC)
                 .then((scores) => res.json(scores))
                 .catch((e) => {
                     logger.warn('', e);
@@ -30,7 +27,7 @@ export class StatsController {
 
         this.router.get('/log', (req: Request, res: Response) => {
             this.statsService
-                .scoreToDisplay(DATABASE_COLLECTION_LOG)
+                .scoreToDisplay(Constants.DATABASE_COLLECTION_LOG)
                 .then((scores) => res.json(scores))
                 .catch((e) => {
                     logger.warn('', e);

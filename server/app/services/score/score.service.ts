@@ -2,9 +2,8 @@ import { DatabaseService } from '@app/services/database/database.service';
 import { Score } from '@common';
 import { Collection } from 'mongodb';
 import { Service } from 'typedi';
+import { Constants } from '@app/constants';
 
-const DATABASE_COLLECTION_CLASSIC = 'classicScoreboard';
-const DATABASE_COLLECTION_LOG = 'logScoreboard';
 const MAX_DOCUMENTS = 25;
 
 @Service()
@@ -13,8 +12,8 @@ export class ScoreService {
     private logScoreboard: Collection<Score>;
 
     constructor(private databaseService: DatabaseService) {
-        this.classicScoreboard = this.databaseService.scrabbleDb.collection(DATABASE_COLLECTION_CLASSIC);
-        this.logScoreboard = this.databaseService.scrabbleDb.collection(DATABASE_COLLECTION_LOG);
+        this.classicScoreboard = this.databaseService.scrabbleDb.collection(Constants.DATABASE_COLLECTION_CLASSIC);
+        this.logScoreboard = this.databaseService.scrabbleDb.collection(Constants.DATABASE_COLLECTION_LOG);
     }
 
     async updateScoreboard(score: Score[], collectionName: string): Promise<void> {
@@ -52,6 +51,6 @@ export class ScoreService {
     }
 
     private getCollection(collectionName: string): Collection<Score> {
-        return collectionName === DATABASE_COLLECTION_CLASSIC ? this.classicScoreboard : this.logScoreboard;
+        return collectionName === Constants.DATABASE_COLLECTION_CLASSIC ? this.classicScoreboard : this.logScoreboard;
     }
 }
