@@ -98,8 +98,8 @@ describe('RoomListComponent', () => {
     it('should join a random game if number of availableGame>=1', () => {
         spyOn(Math, 'random').and.returnValue(RANDOM_RETURN_VALUE);
         const availableConfigs: AvailableGameConfig[] = [
-            { id: '1', isRandomBonus: true, playTimeMs: 1000, waitingPlayerName: playerName },
-            { id: '2', isRandomBonus: true, playTimeMs: 1000, waitingPlayerName: 'Alphonse' },
+            { id: '1', gameMode: GameMode.Classic, isRandomBonus: true, playTimeMs: 1000, waitingPlayerName: playerName },
+            { id: '2', gameMode: GameMode.Classic, isRandomBonus: true, playTimeMs: 1000, waitingPlayerName: 'Alphonse' },
         ];
         component.availableGameConfigs = availableConfigs;
         component.randomJoin();
