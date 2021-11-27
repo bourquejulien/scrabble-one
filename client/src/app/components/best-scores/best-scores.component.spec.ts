@@ -1,11 +1,12 @@
+/* eslint-disable dot-notation */
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTableModule } from '@angular/material/table';
+import { BestScoresComponent } from '@app/components/best-scores/best-scores.component';
 import { ScoreboardService } from '@app/services/scoreboard/scoreboard.service';
 import { Score } from '@common';
-import { BestScoresComponent } from './best-scores.component';
 
 describe('BestScoresComponent', () => {
     let component: BestScoresComponent;
@@ -25,7 +26,7 @@ describe('BestScoresComponent', () => {
     beforeEach(async () => {
         scoreboardServiceSpy = jasmine.createSpyObj('ScoreboardService', ['displayScores']);
         await TestBed.configureTestingModule({
-            providers: [{ provide: ScoreboardService, useValue: scoreboardServiceSpy}],
+            providers: [{ provide: ScoreboardService, useValue: scoreboardServiceSpy }],
             declarations: [BestScoresComponent],
             imports: [HttpClientTestingModule, MatTableModule, MatIconModule, MatDialogModule],
         }).compileComponents();
