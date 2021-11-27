@@ -62,7 +62,7 @@ export class InitGameComponent implements OnInit {
         this.minutes = DEFAULT_PLAY_TIME.totalMinutes;
         this.seconds = DEFAULT_PLAY_TIME.seconds;
         this.formConfig = {
-            virtualPlayerLevelName: this.virtualPlayerLevelNames[0],
+            virtualPlayerLevelName: Constants.VIRTUAL_PLAYERS_LEVELS_NAMES[0],
             playTime: DEFAULT_PLAY_TIME,
             isRandomBonus: false,
             firstPlayerName: '',

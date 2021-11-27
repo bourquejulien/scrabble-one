@@ -18,12 +18,12 @@ const localUrl = (base: string, call: string, id?: string) => `${environmentExt.
 })
 export class GameService {
     stats: SessionStats;
-    currentTurn: PlayerType = PlayerType.Local;
+    currentTurn: PlayerType;
     onTurn: BehaviorSubject<PlayerType>;
     gameEnding: Subject<EndGameWinner>;
     opponentQuiting: Subject<boolean>;
 
-    private gameRunning: boolean = false;
+    private gameRunning: boolean;
 
     constructor(
         private readonly playerService: PlayerService,
@@ -45,6 +45,8 @@ export class GameService {
         this.socketService.on('onTurn', async (id: string) => this.onNextTurn(id));
         this.socketService.on('endGame', async (winnerId: string) => this.endGame(winnerId));
         this.socketService.on('stats', (sessionStats: SessionStats) => this.refresh(sessionStats));
+        this.currentTurn = PlayerType.Local;
+        this.gameRunning = false;
     }
 
     async startSinglePlayer(config: SinglePlayerConfig): Promise<void> {
