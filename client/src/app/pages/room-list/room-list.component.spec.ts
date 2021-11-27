@@ -37,6 +37,7 @@ describe('RoomListComponent', () => {
     let nameValidationSpy: jasmine.SpyObj<NameValidator>;
     let roomServiceSubject: Subject<AvailableGameConfig[]>;
     const playerName = 'Claudette';
+    const RANDOM_RETURN_VALUE = 0.12;
 
     beforeEach(async () => {
         roomServiceSubject = new Subject<AvailableGameConfig[]>();
@@ -87,6 +88,23 @@ describe('RoomListComponent', () => {
     //     expect(component['errorsList'].length).toBe(0);
     //     expect(nameValidationSpy.reset).toHaveBeenCalled();
     // });
+
+    it('should not join a random game if number of availableGame<=1', () => {
+        component.availableGameConfigs.length = 1;
+        component.randomJoin();
+        expect(component.selectedConfig).toBe(null);
+    });
+
+    it('should join a random game if number of availableGame>=1', () => {
+        spyOn(Math, 'random').and.returnValue(RANDOM_RETURN_VALUE);
+        const availableConfigs: AvailableGameConfig[] = [
+            { id: '1', gameMode: GameMode.Classic, isRandomBonus: true, playTimeMs: 1000, waitingPlayerName: playerName },
+            { id: '2', gameMode: GameMode.Classic, isRandomBonus: true, playTimeMs: 1000, waitingPlayerName: 'Alphonse' },
+        ];
+        component.availableGameConfigs = availableConfigs;
+        component.randomJoin();
+        expect(component.selectedConfig?.id).toEqual(availableConfigs[0].id);
+    });
 
     it('should join a new game if the correct info is provided', async () => {
         component.nameValidator.name = playerName;

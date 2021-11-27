@@ -1,48 +1,74 @@
 .room-container {
+    background-color: #eae7dc;
+    margin: auto;
+    width: 50%;
     width: max-content;
-    margin: 2rem;
     height: min-content;
     padding: 32px;
-    justify-content: center;
-    align-items: center;
-    float: left;
+    
+}
+
+body {
+    background-image: url('~src/assets/img/scrabble_bg.jpg');
+    background-attachment: fixed;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
 }
 
 .toolbar {
-    display: flex;
     justify-content: center;
     align-items: center;
-    background-color: var(--game-green);
+    background-color: #eae7dc;
+    color:black;
 }
 
 .container {
-    height: 100%;
     width: 100%;
     position: relative;
+    align-items: center;
+    
+}
+
+.room-info-bg {
+    background: #eae7dc;
+    border-color: black;
+    border-width: medium;
 }
 
 .room-info {
-    position: relative;
-    margin: 2rem;
-    float: right;
-}
-
-.info-card,
-.form-card {
-    margin: 2rem;
-    justify-content: center;
+    
+    width: 55%;
+    margin-top: 100px;
+    position: fixed;
+    bottom: 100px;
+    left: 22.5%;
+    margin-left: auto;
+    margin-right: auto;
+    
 }
 
 .info-card {
-    margin: 2rem;
+    margin: 10px;
     justify-content: center;
+    width: 30%;
+    padding: 30px;
+    display: inline-block;
+    
 }
 
 .form-card {
-    margin: 2rem;
+    width: 310px;
+    height: auto;
+    margin-top: 10px;
+    margin:auto;
     justify-content: center;
     text-align: center;
+    align-content: center;
+    margin-left: 100px;
+    padding: 32px;
     display: inline-block;
+    bottom: 10px;
 }
 
 .error {
@@ -56,14 +82,30 @@
     align-items: center;
 }
 
+
 .error-dialog button {
     margin-top: 1rem;
 }
 
 .exit-button {
+    padding: 15px 25px;
+    font-size: 15px;
+    background: #eae7dc;
     position: relative;
+    margin-top: 30px;
     margin-left: 5vh;
-    bottom: 10rem;
     text-align: center;
     align-items: center;
+}
+
+.random-game-button {
+    padding: 15px 25px;
+    font-size: 15px;
+    background: #eae7dc;
+    float: right;
+    margin-top: 30px;
+    position: relative;
+    margin-right: 5vh;
+    text-align: center;
+    align-items: right;
 }
