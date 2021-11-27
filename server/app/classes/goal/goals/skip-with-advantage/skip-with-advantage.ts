@@ -11,7 +11,7 @@ export class SkipWithAdvantage extends BaseGoal implements SkipNotifier, StatsNo
         super(
             {
                 id: 'skip-with-advantage',
-                name: "Passer son tour en ayant plus de points que l'adversaire et encore être en avance au prochain tour",
+                name: 'Passer son tour et encore être en avance au prochain tour',
                 score: 15,
             },
             ownerId,

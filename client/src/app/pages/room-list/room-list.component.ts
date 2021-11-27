@@ -66,6 +66,14 @@ export class RoomListComponent implements AfterViewInit, OnInit, OnDestroy {
         this.nameValidator.reset();
     }
 
+    randomJoin(): void {
+        if (this.availableGameConfigs.length <= 1) {
+            return;
+        }
+        const randomGame: number = this.getRandomInt(0, this.availableGameConfigs.length);
+        this.selectedConfig = this.availableGameConfigs[randomGame];
+    }
+
     async join() {
         if (!this.validateForm() || this.selectedConfig == null) {
             return;
@@ -103,10 +111,21 @@ export class RoomListComponent implements AfterViewInit, OnInit, OnDestroy {
         return this.errorsList.length === 0;
     }
 
+    private getRandomInt(min: number, max: number): number {
+        min = Math.ceil(min);
+        max = Math.floor(max);
+        return Math.floor(Math.random() * (max - min)) + min;
+    }
+
     private refreshConfig(availableGameConfigs: AvailableGameConfig[]) {
         this.availableGameConfigs = availableGameConfigs.filter((c) => c.gameMode === this.gameMode);
 
-        if (this.selectedConfig !== null && this.availableGameConfigs.findIndex((c) => c.id === this.selectedConfig?.id) === -1) {
+        if (this.selectedConfig === null) {
+            return;
+        }
+
+        const selectedConfigAvailable = this.availableGameConfigs.findIndex((c) => c.id === this.selectedConfig?.id) > -1;
+        if (!selectedConfigAvailable) {
             this.reset();
             this.openErrorDialog();
         }
