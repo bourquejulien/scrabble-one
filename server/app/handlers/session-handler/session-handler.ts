@@ -149,14 +149,16 @@ export class SessionHandler {
     }
 
     private get endGameData(): EndGameData {
-        const scores: Score[] = this.players.filter((p) => p.playerInfo.isHuman).map((p) => {
-            const playerStatsHandler = this.statsHandler.playerStatsHandlers.find((s) => s.id === p.id) as PlayerStatsHandler;
+        const scores: Score[] = this.players
+            .filter((p) => p.playerInfo.isHuman)
+            .map((p) => {
+                const playerStatsHandler = this.statsHandler.playerStatsHandlers.find((s) => s.id === p.id) as PlayerStatsHandler;
 
-            return {
-                name: p.playerInfo.name,
-                scoreValue: playerStatsHandler.stats.points,
-            };
-        });
+                return {
+                    name: p.playerInfo.name,
+                    scoreValue: playerStatsHandler.stats.points,
+                };
+            });
 
         return {
             scores,

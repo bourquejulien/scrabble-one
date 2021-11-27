@@ -1,15 +1,3 @@
 {
-    "recommendations": [
-        "esbenp.prettier-vscode",
-        "dbaeumer.vscode-eslint",
-        "Angular.ng-template",
-        "johnpapa.Angular2",
-        "PKief.material-icon-theme",
-        "ecmel.vscode-html-css",
-        "abusaidm.html-snippets",
-        "Gruntfuggly.todo-tree",
-        "streetsidesoftware.code-spell-checker",
-        "streetsidesoftware.code-spell-checker-french",
-        "raagh.angular-karma-test-explorer"
-    ]
+    "recommendations": ["esbenp.prettier-vscode", "dbaeumer.vscode-eslint", "angular.ng-template"]
 }
