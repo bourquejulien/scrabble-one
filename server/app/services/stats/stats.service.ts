@@ -21,18 +21,6 @@ export class StatsService {
         await this.scoreService.updateScoreboard(elligiblePlayers, collectionName);
     }
 
-    async currentGreaterScores(scoreList: Score[], collectionName: string): Promise<Score[]> {
-        const listScores: Score[] = [];
-
-        for (const score of scoreList) {
-            if (await this.isNewScoreGreater(score, collectionName)) {
-                listScores.push(score);
-            }
-        }
-
-        return listScores;
-    }
-
     async scoreToDisplay(collectionName: string): Promise<Score[]> {
         const currentScores = await this.groupedScores(collectionName);
 
@@ -47,6 +35,18 @@ export class StatsService {
             bestScores.push({ name: names, scoreValue: score[0] });
         }
         return bestScores;
+    }
+
+    private async currentGreaterScores(scoreList: Score[], collectionName: string): Promise<Score[]> {
+        const listScores: Score[] = [];
+
+        for (const score of scoreList) {
+            if (await this.isNewScoreGreater(score, collectionName)) {
+                listScores.push(score);
+            }
+        }
+
+        return listScores;
     }
 
     private async groupedScores(collectionName: string): Promise<Map<number, string[]>> {
