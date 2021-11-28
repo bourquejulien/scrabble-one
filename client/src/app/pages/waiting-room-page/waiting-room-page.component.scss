@@ -1,4 +1,4 @@
-$background-color: rgb(29, 119, 179, 0.3);
+$background-color: rgba(102, 206, 255, 0.3);
 $main-color: ivory;
 
 .background-img {
@@ -25,62 +25,65 @@ p {
     margin-bottom: 0;
 }
 
-.abandon,
-.convert,
-.conversion-field {
-    display: flex;
-    font-size: small;
-    text-align: center;
-    margin: 1rem;
-
-    background-color: $background-color;
-    font-family: 'Press Start 2P', cursive;
-    color: $main-color;
-}
-
-.convert {
-    margin-top: 0;
-}
-
-.level-selector * {
-    color: $main-color;
-    font-size: small;
-    font-family: 'Press Start 2P', cursive;
-}
-
-.level-selector mat-select {
-    color: $main-color !important;
-    font-size: xx-small;
-    font-family: 'Press Start 2P', cursive;
-}
-
 mat-option {
-    color: $main-color !important;
-    background: $background-color !important;
+    background: ivory;
     font-size: medium;
     font-family: 'Press Start 2P', cursive;
 }
 
-.abandon,
-.conversion-field {
-    bottom: 2vh;
+mat-option-text {
+    background: ivory;
+    font-size: medium;
+    font-family: 'Press Start 2P', cursive;
 }
 
 #buttons {
     padding-top: 0;
     padding-bottom: 0;
+    font-family: 'Press Start 2P', cursive;
 }
 
 #left {
-    position: absolute;
+    margin-top: 50px;
+    position: relative;
     left: 0;
     margin-left: 5vh;
     display: inline-block;
+    font-family: 'Press Start 2P', cursive;
+    background-color: $main-color;
+    color: black;
+    opacity: 85%;
 }
 
-#right {
-    position: absolute;
-    right: 0;
-    margin-right: 5vh;
+.selector {
+    padding-bottom: 10px;
     display: inline-block;
+    font-size: small;
+    text-align: center;
+    margin: 1rem;
+    font-family: 'Press Start 2P', cursive;
+}
+
+.convertion {
+    display: inline-block;
+    position: relative;
+    background: white;
+    color: black;
+    font-family: 'Press Start 2P', cursive;
+    opacity: 85%;
+}
+
+.difficulty-selector {
+    font-size: medium;
+    padding-bottom: 10px;
+    font-family: 'Press Start 2P', cursive;
+    text-align: center;
+    position: relative;
+    width: 75%;
+}
+
+.difficulty-selector mat-select {
+    color: ivory;
+    font-size: x-small;
+    font-family: 'Press Start 2P', cursive;
 }

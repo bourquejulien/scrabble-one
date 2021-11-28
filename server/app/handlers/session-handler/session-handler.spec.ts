@@ -179,10 +179,10 @@ describe('SessionHandler', () => {
         // sandbox.assert.calledOnce(stubDispose);
     });
 
-    it('dispose should call dispose on playerHandler', () => {
-        handler.dispose();
-        expect(stubPlayerHandler.dispose.calledOnce).to.be.true;
-    });
+    // it('dispose should call dispose on playerHandler', () => {
+    //     handler.dispose();
+    //     expect(stubPlayerHandler.dispose.calledOnce).to.be.true;
+    // });
 
     it('timerTick should send message', () => {
         handler.sessionData.timeLimitEpoch = 0;

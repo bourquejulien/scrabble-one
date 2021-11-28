@@ -1,4 +1,8 @@
+import { EndGameData } from '@app/classes/end-game-data';
+import { PlayerInfo } from '@app/classes/player-info';
 import { Player } from '@app/classes/player/player';
+import { Action } from '@app/classes/player/virtual-player/actions/action';
+import { VirtualPlayerExpert } from '@app/classes/player/virtual-player/virtual-player-expert/virtual-player-expert';
 import { SessionData } from '@app/classes/session-data';
 import { SessionInfo } from '@app/classes/session-info';
 import { Config } from '@app/config';
@@ -6,13 +10,11 @@ import { BoardHandler } from '@app/handlers/board-handler/board-handler';
 import { PlayerHandler } from '@app/handlers/player-handler/player-handler';
 import { ReserveHandler } from '@app/handlers/reserve-handler/reserve-handler';
 import { SocketHandler } from '@app/handlers/socket-handler/socket-handler';
-import { GameMode, GameType, ServerConfig } from '@common';
+import { PlayerStatsHandler } from '@app/handlers/stats-handlers/player-stats-handler/player-stats-handler';
+import { SessionStatsHandler } from '@app/handlers/stats-handlers/session-stats-handler/session-stats-handler';
+import { GameMode, GameType, Score, ServerConfig } from '@common';
 import { Subscription } from 'rxjs';
 import * as logger from 'winston';
-import { SessionStatsHandler } from '@app/handlers/stats-handlers/session-stats-handler/session-stats-handler';
-import { PlayerInfo } from '@app/classes/player-info';
-import { Action } from '@app/classes/player/virtual-player/actions/action';
-import { VirtualPlayerExpert } from '@app/classes/player/virtual-player/virtual-player-expert/virtual-player-expert';
 
 export class SessionHandler {
     sessionData: SessionData;
@@ -59,12 +61,14 @@ export class SessionHandler {
         logger.info(`Game ${this.sessionInfo.id} started`);
     }
 
-    dispose(): void {
+    dispose(): EndGameData {
         this.sessionData.isActive = false;
         this.sessionData.timeLimitEpoch = 0;
         this.playerHandler.dispose();
         this.playerSubscription.unsubscribe();
         clearInterval(this.timer);
+
+        return this.endGameData;
     }
 
     addPlayer(player: Player): void {
@@ -101,7 +105,9 @@ export class SessionHandler {
     private endGame(): void {
         logger.debug(`SessionHandler - EndGame - Id: ${this.sessionInfo.id}`);
 
-        const winner = this.statsHandler.winner;
+        this.statsHandler.end();
+
+        const winner = this.statsHandler.winnerId;
         this.socketHandler.sendData('endGame', winner);
         logger.debug(`winner: ${winner}`);
 
@@ -140,5 +146,23 @@ export class SessionHandler {
     private refresh(): void {
         this.socketHandler.sendData('board', this.boardHandler.immutableBoard.boardData);
         this.socketHandler.sendData('reserve', this.reserveHandler.reserve);
+    }
+
+    private get endGameData(): EndGameData {
+        const scores: Score[] = this.players
+            .filter((p) => p.playerInfo.isHuman)
+            .map((p) => {
+                const playerStatsHandler = this.statsHandler.playerStatsHandlers.find((s) => s.id === p.id) as PlayerStatsHandler;
+
+                return {
+                    name: p.playerInfo.name,
+                    scoreValue: playerStatsHandler.stats.points,
+                };
+            });
+
+        return {
+            scores,
+            gameMode: this.gameMode,
+        };
     }
 }

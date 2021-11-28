@@ -5,6 +5,7 @@ import * as logger from 'winston';
 import path from 'path';
 import { Validator } from 'jsonschema';
 import { Constants } from '@app/constants';
+import { DictionaryHandler } from '@app/handlers/dictionary-handler/dictionary-handler';
 
 const defaultDictionary: DictionaryMetadata = {
     id: 'dictionary.json',
@@ -23,9 +24,12 @@ const dictionaryPath = process.env.UPLOAD_DIR ?? process.cwd() + '/assets/';
 @Service()
 export class DictionaryService {
     private dictionaryMetadata: DictionaryMetadata[];
+    private handlers: Map<string, DictionaryHandler>;
 
     constructor() {
-        this.dictionaryMetadata = [defaultDictionary];
+        this.dictionaryMetadata = [];
+        this.handlers = new Map();
+        this.createHandler(defaultDictionary);
     }
 
     getFilepath(metadata: DictionaryMetadata): string {
@@ -86,7 +90,7 @@ export class DictionaryService {
             nbWords: json.words.length,
         };
         if (!this.dictionaryMetadata.find((m) => m.id === metadata.id)) {
-            this.dictionaryMetadata.push(metadata);
+            this.createHandler(metadata);
             return true;
         }
         logger.debug('Dictionary was not added because there was a duplicate');
@@ -112,9 +116,20 @@ export class DictionaryService {
         return this.dictionaryMetadata.find((m) => m.id === id);
     }
 
+    async getHandler(id: string): Promise<DictionaryHandler> {
+        return this.handlers.get(id) ?? new DictionaryHandler(await this.getWords(defaultDictionary), defaultDictionary);
+    }
+
     private validate(data: string) {
         const validator = new Validator();
         return validator.validate(data, schema);
+    }
+
+    private async createHandler(metadata: DictionaryMetadata) {
+        this.dictionaryMetadata.push(metadata);
+        const words: string[] = await this.getWords(metadata);
+        const dictionaryHandler = new DictionaryHandler(words, metadata);
+        this.handlers.set(metadata.id, dictionaryHandler);
     }
 
     get dictionaries() {

@@ -8,8 +8,9 @@ import { GameMode, MessageType, SessionStats } from '@common';
 import { Log2990GoalHandler } from '@app/handlers/goal-handler/log2990-goal-handler';
 
 export class SessionStatsHandler {
-    subscriptions: Subscription[];
     playerStatsHandlers: PlayerStatsHandler[];
+
+    private readonly subscriptions: Subscription[];
 
     constructor(
         private readonly socketHandler: SocketHandler,
@@ -53,7 +54,7 @@ export class SessionStatsHandler {
         return this.isOverSkipLimit || (this.reserveHandler.length === 0 && this.rackEmptied);
     }
 
-    get winner(): string {
+    get winnerId(): string {
         if (this.playerStatsHandlers[0].stats.points === this.playerStatsHandlers[1].stats.points) {
             return '';
         }
@@ -85,18 +86,6 @@ export class SessionStatsHandler {
             );
     }
 
-    private getStats(id: string): SessionStats | null {
-        const index = this.playerStatsHandlers.findIndex((p) => p.id === id);
-        const firstPlayer = this.playerStatsHandlers[index];
-        const secondPlayer = this.playerStatsHandlers[1 - index];
-
-        if (firstPlayer == null || secondPlayer == null) {
-            return null;
-        }
-
-        return { localStats: firstPlayer.stats, remoteStats: secondPlayer.stats };
-    }
-
     private get isOverSkipLimit(): boolean {
         for (const playerHandler of this.playerStatsHandlers) {
             if (playerHandler.skippedTurns <= Config.MAX_SKIP_TURN) {
@@ -108,5 +97,17 @@ export class SessionStatsHandler {
 
     private get rackEmptied(): boolean {
         return this.playerStatsHandlers.map((p) => p.rackSize === 0).reduce((acc, isEmpty) => acc || isEmpty);
+    }
+
+    private getStats(id: string): SessionStats | null {
+        const index = this.playerStatsHandlers.findIndex((p) => p.id === id);
+        const firstPlayer = this.playerStatsHandlers[index];
+        const secondPlayer = this.playerStatsHandlers[1 - index];
+
+        if (firstPlayer == null || secondPlayer == null) {
+            return null;
+        }
+
+        return { localStats: firstPlayer.stats, remoteStats: secondPlayer.stats };
     }
 }
