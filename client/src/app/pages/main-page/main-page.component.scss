@@ -31,15 +31,11 @@
     text-align: center;
 }
 
-h1 {
-    color: #eae7dc;
-    text-align: center;
-}
-
 h2 {
-    color: #eae7dc;
+    color: black;
     font-size: 100px;
     font-style: oblique;
+    margin-top: 15vh;
 }
 
 h3 {
@@ -47,8 +43,8 @@ h3 {
 }
 
 body {
-    background-image: url('~src/assets/img/scrabble_bg.png');
-    background-size: cover;
+    background: rgb(145, 208, 216);
+    background: linear-gradient(135deg, rgba(145, 208, 216, 1) 0%, rgba(189, 242, 244, 0.5116247182466737) 73%);
 }
 
 .button1,
@@ -60,7 +56,7 @@ body {
     text-decoration: none;
     outline: none;
     color: black;
-    background-color: #eae7dc;
+    background-color: white;
     border: none;
     border-radius: 10px;
     box-shadow: 0 5px rgb(212, 212, 212);
@@ -78,11 +74,6 @@ body {
     transform: translateY(4px);
 }
 
-p {
-    text-align: center;
-    color: #eae7dc;
-    font-size: 20px;
-}
 .dropdown {
     position: relative;
     display: inline-block;
