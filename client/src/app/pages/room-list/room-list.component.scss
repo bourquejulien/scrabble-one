@@ -1,5 +1,5 @@
 .room-container {
-    background-color: #eae7dc;
+    background-color: white;
     margin: auto;
     width: 50%;
     width: max-content;
@@ -8,14 +8,14 @@
 }
 
 body {
-    background: rgb(145, 208, 216);
-    background: linear-gradient(135deg, rgba(145, 208, 216, 1) 0%, rgba(189, 242, 244, 0.5116247182466737) 73%);
+    background: rgb(14,170,242);
+    background: linear-gradient(135deg, rgba(14,170,242,1) 0%, rgba(14,204,242,0.21750707118785018) 62%);
 }
 
 .toolbar {
     justify-content: center;
     align-items: center;
-    background-color: #eae7dc;
+    background-color: white;
     color: black;
 }
 
@@ -26,7 +26,7 @@ body {
 }
 
 .room-info-bg {
-    background: #eae7dc;
+    background: white;
     border-color: black;
     border-width: medium;
 }
@@ -81,7 +81,7 @@ body {
 .exit-button {
     padding: 15px 25px;
     font-size: 15px;
-    background: #eae7dc;
+    background: white;
     position: relative;
     margin-top: 30px;
     margin-left: 5vh;
@@ -92,7 +92,7 @@ body {
 .random-game-button {
     padding: 15px 25px;
     font-size: 15px;
-    background: #eae7dc;
+    background: white;
     float: right;
     margin-top: 30px;
     position: relative;
