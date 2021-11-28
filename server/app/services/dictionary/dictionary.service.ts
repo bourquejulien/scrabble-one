@@ -28,6 +28,11 @@ export class DictionaryService {
         this.dictionaryMetadata = [defaultDictionary];
     }
 
+    private static validate(data: string) {
+        const validator = new Validator();
+        return validator.validate(data, schema);
+    }
+
     getFilepath(metadata: DictionaryMetadata): string {
         return path.join(dictionaryPath, metadata.id);
     }
@@ -58,7 +63,7 @@ export class DictionaryService {
         if (metadata !== defaultDictionary) {
             this.dictionaryMetadata.splice(this.dictionaryMetadata.indexOf(metadata), 1);
             promises
-                .rm(filepath)
+                .unlink(filepath)
                 .then(() => {
                     logger.debug(`Successful Deletion: ${filepath}`);
                 })
@@ -94,7 +99,7 @@ export class DictionaryService {
 
     async parse(filepath: string): Promise<JsonDictionary> {
         const data = await promises.readFile(filepath, 'utf8');
-        if (this.validate(data)) {
+        if (DictionaryService.validate(data)) {
             try {
                 logger.debug('Dictionary parsing successful');
                 return JSON.parse(data) as JsonDictionary;
@@ -109,11 +114,6 @@ export class DictionaryService {
 
     getMetadata(id: string) {
         return this.dictionaryMetadata.find((m) => m.id === id);
-    }
-
-    private validate(data: string) {
-        const validator = new Validator();
-        return validator.validate(data, schema);
     }
 
     get dictionaries() {

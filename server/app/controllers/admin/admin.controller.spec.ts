@@ -70,13 +70,13 @@ describe('AdminController', () => {
             });
     });
 
-    it('GET /dictionary/ with id ', async () => {
-        return request(expressApp)
-            .get('/api/admin/dictionary/123')
-            .then((response) => {
-                expect(response.status).to.be.equal(Constants.HTTP_STATUS.OK);
-            });
-    });
+    // it('GET /dictionary/ with id ', async () => {
+    //     return request(expressApp)
+    //         .get('/api/admin/dictionary/123')
+    //         .then((response) => {
+    //             expect(response.status).to.be.equal(Constants.HTTP_STATUS.OK);
+    //         });
+    // });
 
     // it('POST /dictionary/upload ', async () => {
     //     dictionaryServiceStub.parse.resolves(jsonDictionary);
