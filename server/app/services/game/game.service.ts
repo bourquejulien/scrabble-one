@@ -6,7 +6,6 @@ import { VirtualPlayer } from '@app/classes/player/virtual-player/virtual-player
 import { VirtualPlayerEasy } from '@app/classes/player/virtual-player/virtual-player-easy/virtual-player-easy';
 import { VirtualPlayerExpert } from '@app/classes/player/virtual-player/virtual-player-expert/virtual-player-expert';
 import { SessionInfo } from '@app/classes/session-info';
-import { DictionaryHandler } from '@app/handlers/dictionary-handler/dictionary-handler';
 import { DisabledGoalHandler } from '@app/handlers/goal-handler/disabled-goal-handler';
 import { GoalHandler } from '@app/handlers/goal-handler/goal-handler';
 import { Log2990GoalHandler } from '@app/handlers/goal-handler/log2990-goal-handler';
@@ -49,16 +48,8 @@ export class GameService {
             gameType: gameConfig.gameType,
         };
 
-        let words: string[] = [];
-        try {
-            words = await this.dictionaryService.getWords(gameConfig.dictionary);
-        } catch (err) {
-            logger.error(`${err.stack}`);
-            return Promise.reject(`${err}`);
-        }
-
         // TODO add a construction service?
-        const dictionaryHandler = new DictionaryHandler(words, gameConfig.dictionary);
+        const dictionaryHandler = await this.dictionaryService.getHandler(gameConfig.dictionary.id);
         const boardHandler = this.boardGeneratorService.generateBoardHandler(gameConfig.isRandomBonus, dictionaryHandler);
         const reserveHandler = new ReserveHandler();
         const socketHandler = this.socketService.generate(sessionInfo.id);
@@ -96,16 +87,8 @@ export class GameService {
             gameType: gameConfig.gameType,
         };
 
-        let words: string[] = [];
-        try {
-            words = await this.dictionaryService.getWords(gameConfig.dictionary);
-        } catch (err) {
-            logger.warn('Failed to retrieve words', err);
-            return Promise.reject(`${err}`);
-        }
-
         // TODO add a construction service?
-        const dictionaryHandler = new DictionaryHandler(words, gameConfig.dictionary);
+        const dictionaryHandler = await this.dictionaryService.getHandler(gameConfig.dictionary.id);
         const boardHandler = this.boardGeneratorService.generateBoardHandler(gameConfig.isRandomBonus, dictionaryHandler);
         const reserveHandler = new ReserveHandler();
         const socketHandler = this.socketService.generate(sessionInfo.id);
