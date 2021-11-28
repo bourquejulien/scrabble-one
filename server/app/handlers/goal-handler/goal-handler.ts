@@ -9,7 +9,7 @@ import { StatsNotifier } from '@app/classes/goal/notifiers/stats-notifier';
 
 export abstract class GoalHandler implements PlacementNotifier, ExchangeNotifier, SkipNotifier, StatsNotifier {
     readonly goals: Goal[];
-    protected readonly updateSubject: Subject<void>;
+    protected updateSubject: Subject<void>;
 
     constructor() {
         this.goals = [];

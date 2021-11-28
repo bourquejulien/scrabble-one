@@ -1,3 +1,6 @@
+/* eslint-disable no-unused-expressions */
+/* eslint-disable @typescript-eslint/no-unused-expressions */
+/* eslint-disable dot-notation */
 import { describe } from 'mocha';
 import { ManyLettersInRow } from '@app/classes/goal/goals/many-letters-in-row/many-letters-in-row';
 import { expect } from 'chai';
@@ -23,12 +26,12 @@ describe('BaseGoal', () => {
             status: GoalStatus.Pending,
             isGlobal: false,
         };
-        expect(goal.getGoalData('id')).to.eq(goalDescription);
+        expect(goal.getGoalData('id')).to.eql(goalDescription);
     });
 
-    it('should get info', () => {
+    it('should mark goal as succeeded when there is the right user id', () => {
         (goal as BaseGoal)['successId'] = 'id';
         const goalData = (goal as BaseGoal).getGoalData('id');
-        expect(goalData.status).to.eq(GoalStatus.Succeeded);
+        expect(goalData.status).to.eql(GoalStatus.Succeeded);
     });
 });

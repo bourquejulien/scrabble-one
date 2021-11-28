@@ -4,7 +4,7 @@ import { SocketHandler } from '@app/handlers/socket-handler/socket-handler';
 import { ReserveHandler } from '@app/handlers/reserve-handler/reserve-handler';
 import { Subscription } from 'rxjs';
 import { GoalHandler } from '@app/handlers/goal-handler/goal-handler';
-import { GameMode, MessageType, SessionStats } from '@common';
+import { GameMode, SessionStats } from '@common';
 import { Log2990GoalHandler } from '@app/handlers/goal-handler/log2990-goal-handler';
 
 export class SessionStatsHandler {
@@ -72,18 +72,18 @@ export class SessionStatsHandler {
     private onUpdatedBonus() {
         this.onUpdatedStats();
         this.playerStatsHandlers.map((ps) => ps.id).forEach((id) => this.socketHandler.sendData('goals', this.goalHandler.getGoalsData(id), id));
-        this.playerStatsHandlers
-            .map((ps) => ps.id)
-            .forEach((id) =>
-                this.socketHandler.sendMessage({
-                    title: 'Bonus - POUR TESTER SEULEMENT!!', // TODO
-                    body: this.goalHandler
-                        .getGoalsData(id)
-                        .map((g) => `name:${g.name} - status:${g.status} - isGlobal:${g.isGlobal} - score:${g.score}`)
-                        .join('\n'),
-                    messageType: MessageType.System,
-                }),
-            );
+        // TODO this.playerStatsHandlers
+        //     .map((ps) => ps.id)
+        //     .forEach((id) =>
+        //         this.socketHandler.sendMessage({
+        //             title: 'Bonus - POUR TESTER SEULEMENT!!',
+        //             body: this.goalHandler
+        //                 .getGoalsData(id)
+        //                 .map((g) => `name:${g.name} - status:${g.status} - isGlobal:${g.isGlobal} - score:${g.score}`)
+        //                 .join('\n'),
+        //             messageType: MessageType.System,
+        //         }),
+        //     );
     }
 
     private get isOverSkipLimit(): boolean {

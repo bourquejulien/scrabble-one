@@ -1,3 +1,6 @@
+/* eslint-disable no-unused-expressions */
+/* eslint-disable @typescript-eslint/no-unused-expressions */
+/* eslint-disable dot-notation */
 import { describe } from 'mocha';
 import { expect } from 'chai';
 import { BaseGoal, Goal } from '@app/classes/goal/base-goal';

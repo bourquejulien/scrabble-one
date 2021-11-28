@@ -1,3 +1,7 @@
+/* eslint-disable no-unused-expressions */
+/* eslint-disable @typescript-eslint/no-unused-expressions */
+/* eslint-disable @typescript-eslint/no-empty-function */
+/* eslint-disable dot-notation */
 import { describe } from 'mocha';
 import { expect } from 'chai';
 import { PlaceCorner } from '@app/classes/goal/goals/place-corner/place-corner';
@@ -15,7 +19,7 @@ describe('PlaceCorner', () => {
         expect(goal).to.be.ok;
     });
     it('should tell that it is on the edge', () => {
-       expect(PlaceCorner['isOnEdge']({x: Config.GRID.GRID_SIZE-1, y: Config.GRID.GRID_SIZE-1})).to.be.true;
+        expect(PlaceCorner['isOnEdge']({ x: Config.GRID.GRID_SIZE - 1, y: Config.GRID.GRID_SIZE - 1 })).to.be.true;
     });
     it('should tell that it is on the edge', () => {
         const id = 'id';

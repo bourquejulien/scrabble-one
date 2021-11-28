@@ -1,3 +1,7 @@
+/* eslint-disable no-unused-expressions */
+/* eslint-disable @typescript-eslint/no-unused-expressions */
+/* eslint-disable @typescript-eslint/no-empty-function */
+/* eslint-disable dot-notation */
 import { describe } from 'mocha';
 import { expect } from 'chai';
 import { PlayerStatsHandler } from '@app/handlers/stats-handlers/player-stats-handler/player-stats-handler';
@@ -12,7 +16,7 @@ describe('PlayerStatsHandler', () => {
     beforeEach(() => {
         goalHandler = createStubInstance(GoalHandler) as unknown as GoalHandler;
         goalHandler['notifyStats'] = () => {};
-        goalHandler['notifyPlacement'] = () => {}
+        goalHandler['notifyPlacement'] = () => {};
         goalHandler['notifySkip'] = () => {};
         goalHandler['notifyExchange'] = () => {};
         handler = new PlayerStatsHandler(goalHandler, 'id');
@@ -67,7 +71,6 @@ describe('PlayerStatsHandler', () => {
     });
 
     it('should not notify placement if the validation has failed', () => {
-
         const sandbox = createSandbox();
         const spy = sandbox.stub(handler['updateSubject'], 'next');
         const validation: ValidationFailed = {
