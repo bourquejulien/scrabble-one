@@ -1,5 +1,5 @@
 import { Service } from 'typedi';
-import { VirtualPlayerLevel } from '@common';
+import { VirtualPlayerLevel, VirtualPlayerName } from '@common';
 import { DatabaseService } from '@app/services/database/database.service';
 import { Collection } from 'mongodb';
 import logger from 'winston';
@@ -29,13 +29,13 @@ export class AdminPersistence {
         const count = await this.collection.countDocuments();
 
         if (count === 0) {
-            await this.reset();
+            await this.collection.insertMany(DEFAULT_VIRTUAL_PLAYER_NAMES);
         }
     }
 
-    async getPlayerNameByLevel(level: VirtualPlayerLevel): Promise<string[]> {
-        const cursor = await this.collection.find({ level });
-        return (await cursor.toArray()).map((p) => p._id);
+    async getPlayerNames(): Promise<VirtualPlayerName[]> {
+        const cursor = await this.collection.find({});
+        return (await cursor.toArray()).map((p) => ({ name: p._id, level: p.level, isReadonly: p.isReadonly }));
     }
 
     async addVirtualPlayer(level: VirtualPlayerLevel, name: string): Promise<boolean> {
@@ -73,7 +73,12 @@ export class AdminPersistence {
     }
 
     async reset(): Promise<void> {
-        await this.collection.deleteMany({});
+        const count = await this.collection.countDocuments();
+
+        if (count > 0) {
+            await this.collection.drop();
+        }
+
         await this.collection.insertMany(DEFAULT_VIRTUAL_PLAYER_NAMES);
     }
 

@@ -94,7 +94,12 @@ export class DictionaryPersistence {
     }
 
     async reset(): Promise<void> {
-        await this.databaseService.database.dropCollection(COLLECTION_NAME);
+        const count = await this.metaDataCollection.countDocuments();
+
+        if (count > 0) {
+            await this.metaDataCollection.drop();
+        }
+
         this.metaDataCache.clear();
         this.metaDataCache.set(this.defaultMetadata._id, this.defaultMetadata);
     }

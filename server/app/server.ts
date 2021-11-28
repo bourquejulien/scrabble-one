@@ -7,7 +7,7 @@ import { AddressInfo } from 'net';
 import { Service } from 'typedi';
 import logger from 'winston';
 import { DictionaryService } from '@app/services/dictionary/dictionary.service';
-import { AdminPersistence } from '@app/services/admin/adminPersistence';
+import { AdminPersistence } from '@app/services/admin/admin-persistence';
 
 @Service()
 export class Server {

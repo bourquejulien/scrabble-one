@@ -22,7 +22,7 @@ import { MatSelectModule } from '@angular/material/select';
 // import { MatSidenavModule } from '@angular/material/sidenav';
 // import { MatSelectModule } from '@angular/material/select';
 import { MatSidenavModule } from '@angular/material/sidenav';
-// import { MatSlideToggleModule } from '@angular/material/slide-toggle';
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 // import { MatSliderModule } from '@angular/material/slider';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 // import { MatSortModule } from '@angular/material/sort';
@@ -57,7 +57,7 @@ const modules = [
     // MatSelectModule,
     MatSidenavModule,
     // MatSliderModule,
-    // MatSlideToggleModule,
+    MatSlideToggleModule,
     MatSnackBarModule,
     // MatSortModule,
     // MatStepperModule,

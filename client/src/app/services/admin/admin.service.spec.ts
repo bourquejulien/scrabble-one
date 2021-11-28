@@ -23,9 +23,9 @@ describe('AdminService', () => {
 
     it('should return asynchronous objects after requesting an URL', () => {
         expect(service.resetSettings()).toBeInstanceOf(Promise);
-        expect(service.updateUsername()).toBeInstanceOf(Promise);
+        expect(service.updatePlayerName()).toBeInstanceOf(Promise);
         expect(service.updateDictionaries()).toBeInstanceOf(Promise);
-        expect(service.updateUsername()).toBeInstanceOf(Promise);
+        expect(service.updatePlayerName()).toBeInstanceOf(Promise);
         expect(service.downloadDictionary('123')).toBeInstanceOf(Observable);
     });
 
@@ -36,9 +36,9 @@ describe('AdminService', () => {
             nbWords: 1024,
             title: 'Grand Dictionary of Tests',
         };
-        const nameLength = service.virtualPlayerNames.beginners.length;
-        service.removePlayername('Monique', false);
-        expect(service.virtualPlayerNames.beginners.length).toBe(nameLength - 1);
+        const nameLength = service.virtualPlayerNames.easy.length;
+        service.removePlayerName('Monique', false);
+        expect(service.virtualPlayerNames.easy.length).toBe(nameLength - 1);
         const dictionaryNb = service.dictionaries.length;
         service.removeDictionary(metadata);
         expect(service.dictionaries.length).toBe(dictionaryNb - 1);

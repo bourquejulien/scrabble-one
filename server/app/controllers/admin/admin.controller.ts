@@ -6,7 +6,7 @@ import { tmpdir } from 'os';
 import * as logger from 'winston';
 import { DictionaryService } from '@app/services/dictionary/dictionary.service';
 import { Answer, DictionaryMetadata, GameMode, VirtualPlayerLevel } from '@common';
-import { AdminPersistence } from '@app/services/admin/adminPersistence';
+import { AdminPersistence } from '@app/services/admin/admin-persistence';
 
 const UPLOAD_DIR = process.env.TEMP_DIR ?? tmpdir();
 
@@ -94,37 +94,31 @@ export class AdminController {
             res.sendStatus(isSuccess ? Constants.HTTP_STATUS.DELETED : Constants.HTTP_STATUS.BAD_REQUEST);
         });
 
-        this.router.get('/playerName/:level', async (req: Request, res: Response) => {
-            const level = AdminController.getPlayerLevel(req.params.level);
-
-            if (level == null) {
-                res.sendStatus(Constants.HTTP_STATUS.BAD_REQUEST);
-                return;
-            }
-
-            const names = await this.adminService.getPlayerNameByLevel(level);
+        this.router.get('/playername', async (req: Request, res: Response) => {
+            const names = await this.adminService.getPlayerNames();
             res.json(names);
         });
 
-        this.router.post('/playerName/set/:level', async (req: Request, res: Response) => {
+        this.router.post('/playername/set/:level', async (req: Request, res: Response) => {
             const level = AdminController.getPlayerLevel(req.params.level);
 
-            if (level == null) {
+            if (level == null || req.body.name === undefined) {
                 res.sendStatus(Constants.HTTP_STATUS.BAD_REQUEST);
                 return;
             }
 
-            const isAdded = await this.adminService.addVirtualPlayer(level, req.body);
+            const isAdded = await this.adminService.addVirtualPlayer(level, req.body.name);
 
             if (!isAdded) {
                 res.sendStatus(Constants.HTTP_STATUS.BAD_REQUEST);
+                return;
             }
 
-            const names = await this.adminService.getPlayerNameByLevel(level);
+            const names = await this.adminService.getPlayerNames();
             res.json(names);
         });
 
-        this.router.post('/playerName/rename', async (req: Request, res: Response) => {
+        this.router.post('/playername/rename', async (req: Request, res: Response) => {
             const [oldName, newName] = req.body;
 
             const level = await this.adminService.renameVirtualPlayer(oldName, newName);
@@ -134,25 +128,35 @@ export class AdminController {
                 return;
             }
 
-            const names = await this.adminService.getPlayerNameByLevel(level);
+            const names = await this.adminService.getPlayerNames();
             res.json(names);
         });
 
-        this.router.delete('/playerName', async (req: Request, res: Response) => {
-            const level = await this.adminService.deleteVirtualPlayer(req.body);
+        this.router.delete('/playername/:name', async (req: Request, res: Response) => {
+            const name = req.params.name;
+
+            if (name === undefined) {
+                res.sendStatus(Constants.HTTP_STATUS.BAD_REQUEST);
+                return;
+            }
+
+            const level = await this.adminService.deleteVirtualPlayer(req.params.name);
 
             if (level == null) {
                 res.sendStatus(Constants.HTTP_STATUS.BAD_REQUEST);
                 return;
             }
 
-            const names = await this.adminService.getPlayerNameByLevel(level);
+            const names = await this.adminService.getPlayerNames();
             res.json(names);
         });
 
         this.router.get('/reset', async (req: Request, res: Response) => {
-            await this.dictionaryService.reset();
-            await this.adminService.reset();
+            const promises: Promise<void>[] = [];
+            promises.push(this.dictionaryService.reset());
+            promises.push(this.adminService.reset());
+            await Promise.all(promises);
+
             res.sendStatus(Constants.HTTP_STATUS.OK);
             logger.debug('Persistent data reset');
         });

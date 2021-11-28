@@ -82,7 +82,6 @@ export class DictionaryService {
 
     async reset(): Promise<void> {
         await this.dictionaryPersistence.reset();
-        await DictionaryService.parse(this.dictionaryPersistence.defaultMetadata.path);
     }
 
     async add(tempPath: string): Promise<boolean> {
