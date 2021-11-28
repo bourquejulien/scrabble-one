@@ -3,20 +3,20 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable no-unused-expressions -- Needed for chai library assertions */
 /* eslint-disable @typescript-eslint/no-unused-expressions */
-import { BoardGeneratorService } from '@app/services/board/board-generator.service';
-import { SessionHandler } from '@app/handlers/session-handler/session-handler';
 import { HumanPlayer } from '@app/classes/player/human-player/human-player';
 import { Player } from '@app/classes/player/player';
 import { SessionData } from '@app/classes/session-data';
 import { SessionInfo } from '@app/classes/session-info';
+import { SessionHandler } from '@app/handlers/session-handler/session-handler';
+import { BoardGeneratorService } from '@app/services/board/board-generator.service';
 import { DictionaryService } from '@app/services/dictionary/dictionary.service';
 import { GameService } from '@app/services/game/game.service';
+import { SessionHandlingService } from '@app/services/session-handling/session-handling.service';
 import { SocketService } from '@app/services/socket/socket-service';
+import { StatsService } from '@app/services/stats/stats.service';
 import { ConvertConfig, GameMode, GameType, MultiplayerJoinConfig, ServerConfig, VirtualPlayerLevel } from '@common';
 import { expect } from 'chai';
 import Sinon, { assert, createStubInstance, stub } from 'sinon';
-import { SessionHandlingService } from '@app/services/session-handling/session-handling.service';
-import { StatsService } from '@app/services/stats/stats.service';
 
 class StubSessionHandler {
     players: Player[] = [];
