@@ -8,11 +8,8 @@
 }
 
 body {
-    background-image: url('~src/assets/img/scrabble_bg.jpg');
-    background-attachment: fixed;
-    background-position: center;
-    background-repeat: no-repeat;
-    background-size: cover;
+    background: rgb(145, 208, 216);
+    background: linear-gradient(135deg, rgba(145, 208, 216, 1) 0%, rgba(189, 242, 244, 0.5116247182466737) 73%);
 }
 
 .toolbar {
