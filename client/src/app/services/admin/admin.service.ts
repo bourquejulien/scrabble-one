@@ -13,6 +13,7 @@ const DEFAULT_DICTIONARY = 'dictionary.json';
     providedIn: 'root',
 })
 export class AdminService {
+    // TODO Just to trigger the pipeline
     dictionaries: DictionaryMetadata[];
     fileName = '';
     uploadSub: Subscription;
