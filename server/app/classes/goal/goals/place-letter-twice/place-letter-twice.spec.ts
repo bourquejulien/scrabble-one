@@ -3,7 +3,6 @@ import { expect } from 'chai';
 import { BaseGoal, Goal } from '@app/classes/goal/base-goal';
 import { PlaceLetterTwice } from '@app/classes/goal/goals/place-letter-twice/place-letter-twice';
 import { ValidationFailed, ValidationResponse } from '@app/classes/validation/validation-response';
-import { PlaceCorner } from '@app/classes/goal/goals/place-corner/place-corner';
 
 describe('PlaceLetterTwice', () => {
     let goal: Goal;
@@ -31,7 +30,7 @@ describe('PlaceLetterTwice', () => {
                 },
             ],
         };
-        (goal as PlaceCorner).notifyPlacement(validationResponse, id);
+        (goal as PlaceLetterTwice).notifyPlacement(validationResponse, id);
         expect((goal as BaseGoal)['successId']).to.equal(id);
     });
     it('should not set successId if the same letter is not there twice', () => {
@@ -50,7 +49,7 @@ describe('PlaceLetterTwice', () => {
                 },
             ],
         };
-        (goal as PlaceCorner).notifyPlacement(validationResponse, id);
+        (goal as PlaceLetterTwice).notifyPlacement(validationResponse, id);
         expect((goal as BaseGoal)['successId']).to.equal('');
     });
     it('should not set successId if it receives a validation failed answer', () => {
@@ -59,7 +58,7 @@ describe('PlaceLetterTwice', () => {
             isSuccess: false,
             description: '',
         };
-        (goal as PlaceCorner).notifyPlacement(validationResponse, id);
+        (goal as PlaceLetterTwice).notifyPlacement(validationResponse, id);
         expect((goal as BaseGoal)['successId']).to.equal('');
     });
 });
