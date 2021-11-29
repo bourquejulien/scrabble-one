@@ -64,29 +64,9 @@
             <mat-panel-title> Nom des joueurs virtuels </mat-panel-title>
             <mat-panel-description> Ajouter ou retirer des choix de noms pour des joueurs virtuels </mat-panel-description>
         </mat-expansion-panel-header>
-        <mat-slide-toggle [(ngModel)]="isExpertSelected" color='primary' >{{isExpertSelected ?  'Joueurs experts' : 'Joueur débutants' }}</mat-slide-toggle>
-        <mat-list>
-            <mat-list-item *ngFor="let player of virtualPlayerNamesByLevel(selectedPlayerLevel); let i = index">
-                <mat-card class='player-name' (click)='select(player)'>{{player.name}}</mat-card>
-            </mat-list-item>
-        </mat-list>
 
-        <mat-card *ngIf='isSelected' class="form-card" (keydown.enter)="changeName()">
-            <div>
-                <mat-form-field style="margin-right: 15px" appearance="fill">
-                    <mat-label>Joueur</mat-label>
-                    <input matInput placeholder="Joueur" name="name" id="inputName" [(ngModel)]="this.nameValidator.name" />
-                </mat-form-field>
-            </div>
-            <div *ngFor="let error of nameValidator.errors" class="error">{{ error }}</div>
-            <div>
-                <button id="change-button" mat-raised-button (click)="changeName()" color="primary">{{originName === null ? 'Ajouter' : 'Modifier'}}</button>
-                <button *ngIf='originName !== null' id="delete-button" mat-raised-button (click)="this.adminService.removePlayerName(this.originName.name)" color="warn">Supprimer</button>
-            </div>
-        </mat-card>
+        <app-virtual-player-name></app-virtual-player-name>
 
-        <button mat-stroked-button color="success" (click)="add()">Ajouter un joueur virtuel<mat-icon>done</mat-icon>
-        </button>
     </mat-expansion-panel>
     <mat-expansion-panel>
         <mat-expansion-panel-header>
