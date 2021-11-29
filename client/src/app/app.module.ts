@@ -26,6 +26,7 @@ import { GameModePageComponent } from './pages/game-mode-page/game-mode-page.com
 import { RoomListComponent } from './pages/room-list/room-list.component';
 import { WaitingRoomPageComponent } from './pages/waiting-room-page/waiting-room-page.component';
 import { VirtualPlayerNameComponent } from './components/virtual-player-name/virtual-player-name.component';
+import { ErrorDialogComponent } from './components/error-dialog/error-dialog.component';
 
 /**
  * Main module that is used in main.ts.
@@ -57,6 +58,7 @@ import { VirtualPlayerNameComponent } from './components/virtual-player-name/vir
         OpponentQuitComponent,
         ObjectivesComponent,
         VirtualPlayerNameComponent,
+        ErrorDialogComponent,
     ],
     imports: [AppMaterialModule, AppRoutingModule, BrowserAnimationsModule, BrowserModule, FormsModule, HttpClientModule],
     providers: [],

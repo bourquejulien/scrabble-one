@@ -1,11 +1,12 @@
 import { animate, style, transition, trigger } from '@angular/animations';
-import { AfterViewInit, Component, OnDestroy, OnInit, TemplateRef, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, OnDestroy, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { ActivatedRoute, Router } from '@angular/router';
 import { NameValidator } from '@app/classes/form-validation/name-validator';
 import { RoomService } from '@app/services/room/room.service';
 import { AvailableGameConfig, GameMode, MultiplayerJoinConfig } from '@common';
 import { Subscription } from 'rxjs';
+import { ErrorDialogComponent } from '@app/components/error-dialog/error-dialog.component';
 
 @Component({
     selector: 'app-room-list',
@@ -26,7 +27,6 @@ import { Subscription } from 'rxjs';
     styleUrls: ['./room-list.component.scss'],
 })
 export class RoomListComponent implements AfterViewInit, OnInit, OnDestroy {
-    @ViewChild('alertDialog') alertDialog: TemplateRef<unknown>;
     gameModeType: typeof GameMode;
     gameMode: GameMode;
 
@@ -94,7 +94,10 @@ export class RoomListComponent implements AfterViewInit, OnInit, OnDestroy {
 
     private openErrorDialog() {
         this.dialog
-            .open(this.alertDialog)
+            .open(ErrorDialogComponent, {
+                panelClass: 'app-error-dialog',
+                data: { warningMessage: "La partie sélectionnée n'est plus disponible.\nVeuillez en choisir une autre." },
+            })
             .afterClosed()
             .subscribe(() => this.reset());
     }
