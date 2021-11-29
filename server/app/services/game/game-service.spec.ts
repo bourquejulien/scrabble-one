@@ -130,7 +130,11 @@ describe('GameService', () => {
         dictionaryServiceStub.getHandler.resolves(dictionaryHandler as unknown as DictionaryHandler);
         statsServiceStub = createStubInstance(StatsService);
         sessionHandlerStub = new StubSessionHandler();
-
+        sessionHandlerStub['boardHandler'] = createStubInstance(BoardHandler) as unknown as BoardHandler;
+        Object.setPrototypeOf(
+            SessionHandler,
+            stub().callsFake(() => {}),
+        );
         service = new GameService(
             boardGeneratorStub as unknown as BoardGeneratorService,
             sessionHandlingStub as unknown as SessionHandlingService,
@@ -171,6 +175,7 @@ describe('GameService', () => {
         });
         sessionHandlingStub.getHandlerBySessionId.returns(sessionHandlerStub as unknown as SessionHandler);
         sessionHandlerStub.players = [playerStub as unknown as Player];
+        // sessionHandlerStub.start.
         const serverConfig = await service.joinMultiplayer(multiplayerJoinConfig);
         expect(serverConfig?.id).to.equal(serverConfig?.id);
     });
