@@ -10,7 +10,6 @@ export const Config = {
     },
     RACK_SIZE: 7,
     MAX_PLAYERS: 2,
-    DICTIONARY_PATH: 'assets/dictionary.json',
     VIRTUAL_PLAYER: {
         SKIP_PERCENTAGE: 0.1,
         EXCHANGE_PERCENTAGE: 0.1,

@@ -3,25 +3,25 @@ import { PlayerInfo } from '@app/classes/player-info';
 import { HumanPlayer } from '@app/classes/player/human-player/human-player';
 import { Action } from '@app/classes/player/virtual-player/actions/action';
 import { VirtualPlayer } from '@app/classes/player/virtual-player/virtual-player';
-import { VirtualPlayerEasy } from '@app/classes/player/virtual-player/virtual-player-easy/virtual-player-easy';
-import { VirtualPlayerExpert } from '@app/classes/player/virtual-player/virtual-player-expert/virtual-player-expert';
-import { SessionInfo } from '@app/classes/session-info';
-import { DictionaryHandler } from '@app/handlers/dictionary-handler/dictionary-handler';
 import { DisabledGoalHandler } from '@app/handlers/goal-handler/disabled-goal-handler';
-import { GoalHandler } from '@app/handlers/goal-handler/goal-handler';
 import { Log2990GoalHandler } from '@app/handlers/goal-handler/log2990-goal-handler';
 import { PlayerHandler } from '@app/handlers/player-handler/player-handler';
 import { ReserveHandler } from '@app/handlers/reserve-handler/reserve-handler';
 import { SessionHandler } from '@app/handlers/session-handler/session-handler';
-import { SessionStatsHandler } from '@app/handlers/stats-handlers/session-stats-handler/session-stats-handler';
 import { BoardGeneratorService } from '@app/services/board/board-generator.service';
 import { DictionaryService } from '@app/services/dictionary/dictionary.service';
-import { SessionHandlingService } from '@app/services/session-handling/session-handling.service';
 import { SocketService } from '@app/services/socket/socket-service';
 import { StatsService } from '@app/services/stats/stats.service';
+import { VirtualPlayerExpert } from '@app/classes/player/virtual-player/virtual-player-expert/virtual-player-expert';
+import { Service } from 'typedi';
+import * as logger from 'winston';
+import { SessionInfo } from '@app/classes/session-info';
+import { GoalHandler } from '@app/handlers/goal-handler/goal-handler';
+import { SessionStatsHandler } from '@app/handlers/stats-handlers/session-stats-handler/session-stats-handler';
+import { VirtualPlayerEasy } from '@app/classes/player/virtual-player/virtual-player-easy/virtual-player-easy';
+import { SessionHandlingService } from '@app/services/session-handling/session-handling.service';
 import {
-    ConvertConfig,
-    GameMode,
+    ConvertConfig, GameMode,
     GameType,
     MultiplayerCreateConfig,
     MultiplayerJoinConfig,
@@ -29,8 +29,6 @@ import {
     SinglePlayerConfig,
     VirtualPlayerLevel,
 } from '@common';
-import { Service } from 'typedi';
-import * as logger from 'winston';
 
 @Service()
 export class GameService {
@@ -42,23 +40,21 @@ export class GameService {
         private readonly socketService: SocketService,
     ) {}
 
-    async initSinglePlayer(gameConfig: SinglePlayerConfig): Promise<ServerConfig> {
+    async initSinglePlayer(gameConfig: SinglePlayerConfig): Promise<ServerConfig | null> {
         const sessionInfo: SessionInfo = {
             id: generateId(),
             playTimeMs: gameConfig.playTimeMs,
             gameType: gameConfig.gameType,
         };
 
-        let words: string[] = [];
-        try {
-            words = await this.dictionaryService.getWords(gameConfig.dictionary);
-        } catch (err) {
-            logger.error(`${err.stack}`);
-            return Promise.reject(`${err}`);
+        // TODO add a construction service?
+        const dictionaryHandler = await this.dictionaryService.getHandler(gameConfig.dictionary._id);
+
+        // TODO
+        if (dictionaryHandler === null) {
+            return null;
         }
 
-        // TODO add a construction service?
-        const dictionaryHandler = new DictionaryHandler(words, gameConfig.dictionary);
         const boardHandler = this.boardGeneratorService.generateBoardHandler(gameConfig.isRandomBonus, dictionaryHandler);
         const reserveHandler = new ReserveHandler();
         const socketHandler = this.socketService.generate(sessionInfo.id);
@@ -96,16 +92,14 @@ export class GameService {
             gameType: gameConfig.gameType,
         };
 
-        let words: string[] = [];
-        try {
-            words = await this.dictionaryService.getWords(gameConfig.dictionary);
-        } catch (err) {
-            logger.warn('Failed to retrieve words', err);
-            return Promise.reject(`${err}`);
+        // TODO add a construction service?
+        const dictionaryHandler = await this.dictionaryService.getHandler(gameConfig.dictionary._id);
+
+        // TODO
+        if (dictionaryHandler === null) {
+            return '';
         }
 
-        // TODO add a construction service?
-        const dictionaryHandler = new DictionaryHandler(words, gameConfig.dictionary);
         const boardHandler = this.boardGeneratorService.generateBoardHandler(gameConfig.isRandomBonus, dictionaryHandler);
         const reserveHandler = new ReserveHandler();
         const socketHandler = this.socketService.generate(sessionInfo.id);

@@ -22,7 +22,7 @@ export class ScoreService {
 
     async isPlayerInScoreboard(playerName: string, collectionName: string): Promise<boolean> {
         const foundPlayer = await this.getCollection(collectionName).findOne({ name: playerName });
-        return foundPlayer === null ? false : true;
+        return foundPlayer !== null;
     }
 
     async deleteElement(playerName: string, collectionName: string): Promise<void> {
@@ -38,7 +38,7 @@ export class ScoreService {
         return this.getCollection(collectionName)
             .findOne({ name: playerName })
             .then((score) => {
-                return score === null ? -1 : score.scoreValue;
+                return score == null ? -1 : score.scoreValue;
             });
     }
 

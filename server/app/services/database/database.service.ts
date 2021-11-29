@@ -69,4 +69,8 @@ export class DatabaseService {
             await this.fillLogBoardWithDefault();
         }
     }
+
+    get database(): Db {
+        return this.scrabbleDb;
+    }
 }

@@ -3,7 +3,7 @@ import { Injectable } from '@angular/core';
 import { BoardService } from '@app/services/board/board.service';
 import { ReserveService } from '@app/services/reserve/reserve.service';
 import { SessionService } from '@app/services/session/session.service';
-import { Answer, Direction, Vec2 } from '@common';
+import { Direction, Vec2 } from '@common';
 import { environmentExt } from '@environment-ext';
 
 const localUrl = (call: string, id: string) => `${environmentExt.apiUrl}player/${call}/${id}`;
@@ -19,27 +19,18 @@ export class PlayerService {
         private httpClient: HttpClient,
     ) {}
 
-    async placeLetters(word: string, position: Vec2, direction: Direction): Promise<boolean> {
+    placeLetters(word: string, position: Vec2, direction: Direction): void {
         const positionToPlace = this.boardService.retrievePlacements(word, position, direction);
-
-        try {
-            const answer = await this.httpClient.post<Answer>(localUrl('place', this.sessionService.id), positionToPlace).toPromise();
-            return answer.isSuccess;
-        } catch (err) {
-            return false;
-        }
+        this.httpClient.post(localUrl('place', this.sessionService.id), positionToPlace);
     }
 
-    async exchangeLetters(lettersToExchange: string): Promise<boolean> {
+    exchangeLetters(lettersToExchange: string): void {
         const letterArray = lettersToExchange.split('');
-        const answer = await this.httpClient.post<Answer>(localUrl('exchange', this.sessionService.id), letterArray).toPromise();
-
-        return answer.isSuccess;
+        this.httpClient.post(localUrl('exchange', this.sessionService.id), letterArray);
     }
 
-    async skipTurn(): Promise<boolean> {
-        const answer = await this.httpClient.post<Answer>(localUrl('skip', this.sessionService.id), this.sessionService.id).toPromise();
-        return answer.isSuccess;
+    skipTurn(): void {
+        this.httpClient.post(localUrl('skip', this.sessionService.id), this.sessionService.id);
     }
 
     reset(): void {
