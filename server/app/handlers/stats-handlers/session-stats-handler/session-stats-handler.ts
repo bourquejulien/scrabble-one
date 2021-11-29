@@ -72,18 +72,6 @@ export class SessionStatsHandler {
     private onUpdatedBonus() {
         this.onUpdatedStats();
         this.playerStatsHandlers.map((ps) => ps.id).forEach((id) => this.socketHandler.sendData('goals', this.goalHandler.getGoalsData(id), id));
-        // TODO this.playerStatsHandlers
-        //     .map((ps) => ps.id)
-        //     .forEach((id) =>
-        //         this.socketHandler.sendMessage({
-        //             title: 'Bonus - POUR TESTER SEULEMENT!!',
-        //             body: this.goalHandler
-        //                 .getGoalsData(id)
-        //                 .map((g) => `name:${g.name} - status:${g.status} - isGlobal:${g.isGlobal} - score:${g.score}`)
-        //                 .join('\n'),
-        //             messageType: MessageType.System,
-        //         }),
-        //     );
     }
 
     private get isOverSkipLimit(): boolean {
