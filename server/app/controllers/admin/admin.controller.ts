@@ -35,14 +35,14 @@ export class AdminController {
 
             form.parse(req, (err: Error) => {
                 if (err) {
-                    logger.error('Upload Error Caught', err);
+                    logger.warn('Upload Error Caught', err);
                     return;
                 }
             });
 
             form.on('file', async (formName, file) => {
                 if (file.mimetype !== 'application/json') {
-                    logger.error('Dictionary Upload Failed: non-JSON data received');
+                    logger.warn('Dictionary Upload Failed: non-JSON data received');
                     res.sendStatus(Constants.HTTP_STATUS.BAD_REQUEST);
                     return;
                 }
@@ -54,7 +54,8 @@ export class AdminController {
 
                     res.sendStatus(Constants.HTTP_STATUS.OK);
                 } catch (err) {
-                    logger.error('Dictionary parsing error', err);
+                    logger.warn('Dictionary parsing error', err);
+                    res.sendStatus(Constants.HTTP_STATUS.BAD_REQUEST);
                 }
             });
         });

@@ -24,7 +24,6 @@
                             <mat-label>Description du dictionnaire</mat-label>
                             <textarea class="dictionary-description" rows="1" [disabled]='adminService.isDefaultDictionary(dictionary)' matInput required [(ngModel)]="dictionary.description" (ngModelChange)="adminService.dictionaryUpdated(dictionary)" ></textarea>
                         </mat-form-field>
-                        <span></span>
                         Nombre de mots: {{ dictionary.nbWords | number }}
                         <button mat-stroked-button (click)="downloadDictionary(dictionary._id)">
                             <mat-icon>file_download</mat-icon>
