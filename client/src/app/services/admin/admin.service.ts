@@ -1,13 +1,14 @@
-import { HttpClient, HttpEventType } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse, HttpEventType } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { environmentExt } from '@environment-ext';
 import { finalize } from 'rxjs/operators';
-import { BehaviorSubject, Observable, Subscription } from 'rxjs';
+import { BehaviorSubject, Observable, Subject, Subscription } from 'rxjs';
 import { Answer, DictionaryMetadata, VirtualPlayerLevel, VirtualPlayerName } from '@common';
 
 const localUrl = (call: string, id: string) => `${environmentExt.apiUrl}admin/${call}/${id}`;
 
 const DEFAULT_DICTIONARY = 'dictionary.json';
+const ERROR_LEVEL = 400;
 
 @Injectable({
     providedIn: 'root',
@@ -15,11 +16,13 @@ const DEFAULT_DICTIONARY = 'dictionary.json';
 export class AdminService {
     dictionaries: DictionaryMetadata[];
     fileName = '';
-    uploadSub: Subscription;
     uploadProgress: number;
-    virtualPlayerNames: VirtualPlayerName[];
 
+    private uploadSub: Subscription;
+
+    private readonly virtualPlayerNames: VirtualPlayerName[];
     private readonly updatedDictionaries: Set<string>;
+    private readonly errorSubject: Subject<string>;
     private readonly virtualPlayerSubject: BehaviorSubject<VirtualPlayerName[]>;
 
     constructor(private httpClient: HttpClient) {
@@ -27,6 +30,7 @@ export class AdminService {
         this.updatedDictionaries = new Set<string>();
         this.virtualPlayerNames = [];
         this.virtualPlayerSubject = new BehaviorSubject<VirtualPlayerName[]>([]);
+        this.errorSubject = new Subject<string>();
 
         this.retrievePlayerNames();
         this.retrieveDictionaries();
@@ -36,6 +40,7 @@ export class AdminService {
         const formData = new FormData();
         this.fileName = file.name;
         formData.append('file', file);
+
         const upload$ = this.httpClient
             .post(localUrl('dictionary', 'upload'), formData, {
                 reportProgress: true,
@@ -43,13 +48,20 @@ export class AdminService {
             })
             .pipe(finalize(() => this.finishUpload()));
 
-        this.uploadSub = upload$.subscribe((uploadEvent) => {
-            if (uploadEvent.type === HttpEventType.UploadProgress) {
-                const progressMax = 100;
-                const total = uploadEvent.total ?? progressMax;
-                this.uploadProgress = Math.round(progressMax * (uploadEvent.loaded / total));
-            }
-        });
+        this.uploadSub = upload$.subscribe(
+            (uploadEvent) => {
+                if (uploadEvent.type === HttpEventType.UploadProgress) {
+                    const progressMax = 100;
+                    const total = uploadEvent.total ?? progressMax;
+                    this.uploadProgress = Math.round(progressMax * (uploadEvent.loaded / total));
+                }
+            },
+            (err: HttpErrorResponse) => {
+                if (err.status >= ERROR_LEVEL) {
+                    this.errorSubject.next('Erreur lors du téléversement du dictionnaire');
+                }
+            },
+        );
     }
 
     finishUpload(): void {
@@ -82,6 +94,10 @@ export class AdminService {
         return this.httpClient.get<Blob>(localUrl('dictionary', id));
     }
 
+    isDefaultDictionary(metadata: DictionaryMetadata): boolean {
+        return metadata._id === DEFAULT_DICTIONARY;
+    }
+
     async retrievePlayerNames(): Promise<void> {
         const names = await this.httpClient.get<VirtualPlayerName[]>(localUrl('playername', '')).toPromise();
         this.virtualPlayerUpdate(names);
@@ -99,31 +115,31 @@ export class AdminService {
         this.httpClient.delete<VirtualPlayerName[]>(localUrl('playername', playerName)).subscribe((p) => this.virtualPlayerUpdate(p));
     }
 
-    isDefaultDictionary(metadata: DictionaryMetadata): boolean {
-        return metadata._id === DEFAULT_DICTIONARY;
-    }
-
     virtualPlayerNamesByLevel(level: VirtualPlayerLevel): string[] {
         return this.virtualPlayerNames.filter((playerName) => playerName.level === level).map((playerName) => playerName.name);
-    }
-
-    get onVirtualPlayerUpdate(): Observable<VirtualPlayerName[]> {
-        return this.virtualPlayerSubject.asObservable();
     }
 
     async resetSettings(): Promise<void> {
         await this.httpClient.get<string[]>(localUrl('reset', '')).toPromise();
     }
 
-    get defaultDictionary(): DictionaryMetadata | null {
-        return this.dictionaries.find((d) => d._id === DEFAULT_DICTIONARY) ?? null;
-    }
-
     private virtualPlayerUpdate(virtualPlayerNames: VirtualPlayerName[]) {
         if (virtualPlayerNames.length === 0) {
             return;
         }
-        this.virtualPlayerNames = virtualPlayerNames;
+        this.virtualPlayerNames.push(...virtualPlayerNames);
         this.virtualPlayerSubject.next(virtualPlayerNames);
+    }
+
+    get onVirtualPlayerUpdate(): Observable<VirtualPlayerName[]> {
+        return this.virtualPlayerSubject.asObservable();
+    }
+
+    get onerror(): Observable<string> {
+        return this.errorSubject.asObservable();
+    }
+
+    get defaultDictionary(): DictionaryMetadata | null {
+        return this.dictionaries.find((d) => d._id === DEFAULT_DICTIONARY) ?? null;
     }
 }

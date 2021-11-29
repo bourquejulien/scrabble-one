@@ -1,14 +1,27 @@
-import { Component } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { AdminService } from '@app/services/admin/admin.service';
+import { ErrorDialogComponent } from '@app/components/error-dialog/error-dialog.component';
+import { MatDialog } from '@angular/material/dialog';
+import { Subscription } from 'rxjs';
 
 @Component({
     selector: 'app-admin-page',
     templateUrl: './admin-page.component.html',
     styleUrls: ['./admin-page.component.scss'],
 })
-export class AdminPageComponent {
-    constructor(public adminService: AdminService, private snackbar: MatSnackBar) {}
+export class AdminPageComponent implements OnInit, OnDestroy {
+    private errorSubscription: Subscription;
+
+    constructor(public adminService: AdminService, private snackbar: MatSnackBar, private readonly dialog: MatDialog) {}
+
+    ngOnInit() {
+        this.errorSubscription = this.adminService.onerror.subscribe((message) => this.openErrorDialog(message));
+    }
+
+    ngOnDestroy() {
+        this.errorSubscription.unsubscribe();
+    }
 
     onFileSelected(event: Event) {
         const input = event.target as HTMLInputElement;
@@ -51,5 +64,12 @@ export class AdminPageComponent {
             .catch(() => {
                 window.location.reload();
             });
+    }
+
+    private openErrorDialog(warningMessage: string) {
+        this.dialog.open(ErrorDialogComponent, {
+            panelClass: 'app-error-dialog',
+            data: { warningMessage },
+        });
     }
 }

@@ -37,7 +37,12 @@ export class RoomListComponent implements AfterViewInit, OnInit, OnDestroy {
 
     private roomSubscription: Subscription;
 
-    constructor(readonly roomService: RoomService, private readonly router: Router, private route: ActivatedRoute, readonly dialog: MatDialog) {
+    constructor(
+        private readonly roomService: RoomService,
+        private readonly router: Router,
+        private readonly route: ActivatedRoute,
+        private readonly dialog: MatDialog,
+    ) {
         this.gameModeType = GameMode;
 
         this.availableGameConfigs = [];
