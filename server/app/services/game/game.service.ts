@@ -21,7 +21,8 @@ import { SessionStatsHandler } from '@app/handlers/stats-handlers/session-stats-
 import { VirtualPlayerEasy } from '@app/classes/player/virtual-player/virtual-player-easy/virtual-player-easy';
 import { SessionHandlingService } from '@app/services/session-handling/session-handling.service';
 import {
-    ConvertConfig, GameMode,
+    ConvertConfig,
+    GameMode,
     GameType,
     MultiplayerCreateConfig,
     MultiplayerJoinConfig,

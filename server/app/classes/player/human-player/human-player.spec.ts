@@ -108,25 +108,25 @@ describe('HumanPlayer', () => {
     it('exchange letters should return not your turn if is turn is false', () => {
         service.isTurn = false;
         const returnValue = service.exchangeLetters(LETTERS);
-        expect(returnValue).to.eql({ isSuccess: false, body: '' });
+        expect(returnValue).to.be.false;
     });
 
     it('exchangeLetters should return letters not in rack if the rack is not full', () => {
         const returnValue = service.exchangeLetters(LETTERS);
-        expect(returnValue).to.eql({ isSuccess: false, body: '' });
+        expect(returnValue).to.be.false;
     });
 
     it('exchangeLetters should fail if reserve is smaller than rack_size', () => {
         service.rack = ['a', 'b', 'c', 'd', 'e', 'f', 'z'];
         service['reserveHandler'].reserve = ['a'];
         const returnValue = service.exchangeLetters(['a']);
-        expect(returnValue).to.eql({ isSuccess: false, body: '' });
+        expect(returnValue).to.be.false;
     });
 
     it('exchangeLetters should return letters not in rack if the letters are not all in rack', () => {
         service.rack = ['a', 'b', 'c', 'd', 'e', 'f', 'z'];
         const returnValue = service.exchangeLetters(LETTERS);
-        expect(returnValue).to.eql({ isSuccess: false, body: '' });
+        expect(returnValue).to.be.false;
     });
 
     it('exchangeletters should exchange letters', () => {
@@ -146,7 +146,7 @@ describe('HumanPlayer', () => {
     it('placing letters should return letters not in rack if the letters are not all in rack', async () => {
         service.rack = ['z', 'e', 's', 'd', 'e', 'f', 'z'];
         const returnValue = await service.placeLetters(PLACEMENT);
-        expect(returnValue).to.eql({ isSuccess: false, body: '' });
+        expect(returnValue).to.be.false;
     });
 
     it('starting turn should call send data of socketHandler', () => {
@@ -166,19 +166,19 @@ describe('HumanPlayer', () => {
     it('place letters should return not your turn if is turn is false', async () => {
         service.isTurn = false;
         const returnValue = await service.placeLetters(PLACEMENT);
-        expect(returnValue).to.eql({ isSuccess: false, body: '' });
+        expect(returnValue).to.be.false;
     });
 
     it('place letters should support capital letters as any letter', async () => {
         RACK.forEach((l) => service.rack.push(l));
         const returnValue = await service.placeLetters(VALID_PLACEMENT);
-        expect(returnValue).to.eql({ isSuccess: true, body: '' });
+        expect(returnValue).to.be.true;
     });
 
     it('exchangeletters should fail if theres no more letters in reserve', () => {
         reserveHandler.reserve = [];
         const returnValue = service.exchangeLetters(LETTERS);
-        expect(returnValue).to.eql({ isSuccess: false, body: '' });
+        expect(returnValue).to.be.false;
     });
 
     it('onTurn should return turnEnded as observable', () => {
@@ -190,7 +190,7 @@ describe('HumanPlayer', () => {
         const RESET_LETTERS = ['a', 'b', 'c', 'd', 'e', 'f', 'g'];
         RESET_LETTERS.forEach((l) => service.rack.push(l));
         const returnValue = await service.placeLetters(PLACEMENT);
-        expect(returnValue).to.eql({ isSuccess: false, body: '' });
+        expect(returnValue).to.be.false;
     });
 
     it('update rack should go bad if letterindex === -1', () => {

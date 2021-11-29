@@ -19,18 +19,18 @@ export class PlayerService {
         private httpClient: HttpClient,
     ) {}
 
-    placeLetters(word: string, position: Vec2, direction: Direction): void {
+    async placeLetters(word: string, position: Vec2, direction: Direction): Promise<void> {
         const positionToPlace = this.boardService.retrievePlacements(word, position, direction);
-        this.httpClient.post(localUrl('place', this.sessionService.id), positionToPlace);
+        return this.httpClient.post<void>(localUrl('place', this.sessionService.id), positionToPlace).toPromise();
     }
 
-    exchangeLetters(lettersToExchange: string): void {
+    async exchangeLetters(lettersToExchange: string): Promise<void> {
         const letterArray = lettersToExchange.split('');
-        this.httpClient.post(localUrl('exchange', this.sessionService.id), letterArray);
+        return this.httpClient.post<void>(localUrl('exchange', this.sessionService.id), letterArray).toPromise();
     }
 
-    skipTurn(): void {
-        this.httpClient.post(localUrl('skip', this.sessionService.id), this.sessionService.id);
+    async skipTurn(): Promise<void> {
+        return this.httpClient.post<void>(localUrl('skip', this.sessionService.id), this.sessionService.id).toPromise();
     }
 
     reset(): void {

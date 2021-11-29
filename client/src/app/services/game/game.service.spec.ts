@@ -19,6 +19,7 @@ import { Observable, Subject } from 'rxjs';
 
 const dictionary: DictionaryMetadata = {
     _id: 'dictionary.json',
+    path: 'test.json',
     title: 'dict',
     description: 'Dictionary',
     nbWords: 1024,

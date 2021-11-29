@@ -11,13 +11,12 @@ import { createStubInstance, SinonStubbedInstance } from 'sinon';
 import request from 'supertest';
 import { Container } from 'typedi';
 import { HumanPlayer } from '@app/classes/player/human-player/human-player';
-import { Answer, Placement } from '@common';
+import { Placement } from '@common';
 
 describe('PlayerController', () => {
     let stubSessionHandlingService: SinonStubbedInstance<SessionHandlingService>;
     let expressApp: Express.Application;
     const exchangeLettersResponse = 'ExchangeLetterResponse';
-    const placeLettersAnswer: Answer = { isSuccess: true, payload: 'Not your turn' };
     const rack = ['m', 'e', 't', 'a'];
 
     beforeEach(async () => {
@@ -38,12 +37,12 @@ describe('PlayerController', () => {
                 rack,
             },
             // eslint-disable-next-line @typescript-eslint/no-empty-function
-            skipTurn: () => {},
+            skipTurn: () => true,
             exchangeLetters: () => {
                 return exchangeLettersResponse;
             },
             placeLetters: () => {
-                return placeLettersAnswer;
+                return true;
             },
         } as unknown as HumanPlayer;
         const player3: Player = { id: '1', isTurn: false, playerInfo: { id: '3', isHuman: false, name: 'Alphonse' } } as Player;
@@ -85,7 +84,7 @@ describe('PlayerController', () => {
             .send(exchange)
             .then((response) => {
                 expect(response.status).to.be.equal(Constants.HTTP_STATUS.OK);
-                expect(response.body).to.be.equal(exchangeLettersResponse);
+                expect(response.body).to.deep.equal({});
             });
     });
 
@@ -105,7 +104,7 @@ describe('PlayerController', () => {
             .post('/api/player/skip/2')
             .then((response) => {
                 expect(response.status).to.be.equal(Constants.HTTP_STATUS.OK);
-                expect(response.body).to.deep.equal('');
+                expect(response.body).to.deep.equal({});
             });
     });
 

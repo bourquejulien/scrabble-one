@@ -8,6 +8,7 @@ const WORDS = ['pomme', 'orange', 'poire', 'raisin', 'peche', 'banane', 'bananes
 const METADATA: DictionaryMetadata = {
     title: 'Dictionary',
     description: 'default',
+    path: 'path/test.json',
     _id: 'dictionary.json',
     nbWords: 1024,
 };
