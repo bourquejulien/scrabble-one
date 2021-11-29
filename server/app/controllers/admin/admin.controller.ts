@@ -7,6 +7,7 @@ import * as logger from 'winston';
 import { DictionaryService } from '@app/services/dictionary/dictionary.service';
 import { Answer, DictionaryMetadata, GameMode, VirtualPlayerLevel } from '@common';
 import { AdminPersistence } from '@app/services/admin/admin-persistence';
+import { ScoreService } from '@app/services/score/score.service';
 
 const UPLOAD_DIR = process.env.TEMP_DIR ?? tmpdir();
 
@@ -14,7 +15,11 @@ const UPLOAD_DIR = process.env.TEMP_DIR ?? tmpdir();
 export class AdminController {
     router: Router;
 
-    constructor(private dictionaryService: DictionaryService, private readonly adminService: AdminPersistence) {
+    constructor(
+        private dictionaryService: DictionaryService,
+        private readonly adminService: AdminPersistence,
+        private readonly scoreService: ScoreService,
+    ) {
         this.configureRouter();
     }
 
@@ -153,12 +158,14 @@ export class AdminController {
 
         this.router.get('/reset', async (req: Request, res: Response) => {
             const promises: Promise<void>[] = [];
+
             promises.push(this.dictionaryService.reset());
+            promises.push(this.scoreService.reset());
             promises.push(this.adminService.reset());
             await Promise.all(promises);
 
             res.sendStatus(Constants.HTTP_STATUS.OK);
-            logger.debug('Persistent data reset');
+            logger.info('Persistent data reset');
         });
     }
 }
