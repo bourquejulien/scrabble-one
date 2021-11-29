@@ -37,8 +37,9 @@ describe('PlayerController', () => {
             playerData: {
                 rack,
             },
-            // eslint-disable-next-line @typescript-eslint/no-empty-function
-            skipTurn: () => {},
+            skipTurn: () => {
+                return true;
+            },
             exchangeLetters: () => {
                 return exchangeLettersResponse;
             },
@@ -103,7 +104,7 @@ describe('PlayerController', () => {
             .post('/api/player/skip/2')
             .then((response) => {
                 expect(response.status).to.be.equal(Constants.HTTP_STATUS.OK);
-                expect(response.body).to.deep.equal('');
+                expect(response.body).to.deep.equal({});
             });
     });
 
