@@ -19,7 +19,7 @@ export class StatsService {
         await this.scoreService.updateScoreboard(eligiblePlayers, endGameData.gameMode);
     }
 
-    async scoreToDisplay(gameMode: GameMode): Promise<Score[]> {
+    async getScoreToDisplay(gameMode: GameMode): Promise<Score[]> {
         const currentScores = await this.groupedScores(gameMode);
 
         const sortedScores = Array.from(currentScores).sort((a: [number, string[]], b: [number, string[]]) => {

@@ -70,7 +70,7 @@ describe('StatsService', () => {
     it('should sort elements in classic scoreboard', async () => {
         scoreServiceStub['getScoreboardClassic'].resolves(classicScore);
         const spyFunction = spy(Array.prototype, 'sort');
-        await service.scoreToDisplay(Constants.DATABASE_COLLECTION_CLASSIC);
+        await service.getScoreToDisplay(Constants.DATABASE_COLLECTION_CLASSIC);
         assert.called(spyFunction);
         spyFunction.restore();
     });
@@ -78,7 +78,7 @@ describe('StatsService', () => {
     it('should sort elements in log scoreboard', async () => {
         scoreServiceStub['getScoreboardLog'].resolves(logScore);
         const spyFunction = spy(Array.prototype, 'sort');
-        await service.scoreToDisplay(Constants.DATABASE_COLLECTION_LOG);
+        await service.getScoreToDisplay(Constants.DATABASE_COLLECTION_LOG);
         assert.called(spyFunction);
         spyFunction.restore();
     });
@@ -90,7 +90,7 @@ describe('StatsService', () => {
         ];
         scoreServiceStub['getScoreboardClassic'].resolves(classicScoreSameScores);
         const spyFunction = spy(Array.prototype, 'join');
-        await service.scoreToDisplay(Constants.DATABASE_COLLECTION_CLASSIC);
+        await service.getScoreToDisplay(Constants.DATABASE_COLLECTION_CLASSIC);
         assert.called(spyFunction);
         spyFunction.restore();
     });
@@ -103,7 +103,7 @@ describe('StatsService', () => {
 
         scoreServiceStub['getScoreboardLog'].resolves(logScoreSameScores);
         const spyFunction = spy(Array.prototype, 'join');
-        await service.scoreToDisplay(Constants.DATABASE_COLLECTION_LOG);
+        await service.getScoreToDisplay(Constants.DATABASE_COLLECTION_LOG);
         assert.called(spyFunction);
         spyFunction.restore();
     });
@@ -111,14 +111,14 @@ describe('StatsService', () => {
     it('should return correct array of classic scores to display', async () => {
         scoreServiceStub['getScoreboardClassic'].resolves(classicScore);
 
-        const scores = await service.scoreToDisplay(Constants.DATABASE_COLLECTION_CLASSIC);
+        const scores = await service.getScoreToDisplay(Constants.DATABASE_COLLECTION_CLASSIC);
         expect(scores).to.deep.equal(classicScore);
     });
 
     it('should return correct array of scores of log score to display', async () => {
         scoreServiceStub['getScoreboardLog'].resolves(logScore);
 
-        const scores = await service.scoreToDisplay(Constants.DATABASE_COLLECTION_LOG);
+        const scores = await service.getScoreToDisplay(Constants.DATABASE_COLLECTION_LOG);
         expect(scores).to.deep.equal(logScore);
     });
 
