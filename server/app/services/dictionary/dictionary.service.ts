@@ -105,7 +105,7 @@ export class DictionaryService {
             return false;
         }
 
-        await fs.promises.rm(tempPath);
+        await fs.promises.unlink(tempPath);
         await fs.promises.writeFile(newFilepath, JSON.stringify(json.words), 'utf-8');
         logger.debug(`Dictionary moved/renamed to ${newFilepath}`);
 
@@ -123,7 +123,7 @@ export class DictionaryService {
 
         if (canRemove && metadata != null) {
             fs.promises
-                .rm(metadata.path)
+                .unlink(metadata.path)
                 .then(() => {
                     logger.debug(`Successful Deletion: ${metadata.path}`);
                 })

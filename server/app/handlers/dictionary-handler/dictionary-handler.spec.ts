@@ -6,6 +6,7 @@ import { DictionaryMetadata } from '@common';
 
 const WORDS = ['pomme', 'orange', 'poire', 'raisin', 'peche', 'banane', 'bananes'];
 const METADATA: DictionaryMetadata = {
+    path: 'dictionary.json',
     title: 'Dictionary',
     description: 'default',
     _id: 'dictionary.json',

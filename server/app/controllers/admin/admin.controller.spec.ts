@@ -13,9 +13,9 @@ import { DictionaryService } from '@app/services/dictionary/dictionary.service';
 import { IncomingForm, File } from 'formidable';
 import { DictionaryMetadata } from '@common';
 
-const PATH = process.cwd() + '/assets/dictionary.json';
 const metadata: DictionaryMetadata = {
-    id: 'dictionary.json',
+    _id: 'dictionary.json',
+    path: 'dictionary.json',
     description: 'dictionary for tests',
     nbWords: 1024,
     title: 'Grand Dictionary of Tests',
@@ -34,9 +34,7 @@ describe('AdminController', () => {
     let incomingFormStub: SinonStub;
     beforeEach(async () => {
         dictionaryServiceStub = createStubInstance(DictionaryService);
-        dictionaryServiceStub.getFilepath.returns(PATH);
-        dictionaryServiceStub.getMetadata.returns(metadata);
-        stub(dictionaryServiceStub, 'dictionaries').returns([metadata]);
+        dictionaryServiceStub.getMetadataById.resolves(metadata);
         file = createStubInstance(File) as unknown as File;
         file.mimetype = 'application/json';
         incomingFormStub = stub(IncomingForm.prototype, 'on').callsFake((name: string, callback: () => void) => {
