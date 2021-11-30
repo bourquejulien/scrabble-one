@@ -12,9 +12,11 @@ import { ReserveHandler } from '@app/handlers/reserve-handler/reserve-handler';
 import { SocketHandler } from '@app/handlers/socket-handler/socket-handler';
 import { PlayerStatsHandler } from '@app/handlers/stats-handlers/player-stats-handler/player-stats-handler';
 import { SessionStatsHandler } from '@app/handlers/stats-handlers/session-stats-handler/session-stats-handler';
-import { GameMode, GameType, Score, ServerConfig } from '@common';
+import { GameMode, GameType, Score, ServerConfig, SystemMessages } from '@common';
 import { Subscription } from 'rxjs';
 import * as logger from 'winston';
+import { MessageType } from '@common';
+imoprt { SystemMessages } from 'system-messages.constants.ts'
 
 export class SessionHandler {
     sessionData: SessionData;
@@ -57,6 +59,8 @@ export class SessionHandler {
         this.refresh();
         this.statsHandler.start();
         this.playerHandler.start();
+
+        this.socketHandler.sendMessage({ title: 'Wee', body: SystemMessages., messageType: MessageType.System });
 
         logger.info(`Game ${this.sessionInfo.id} started`);
     }

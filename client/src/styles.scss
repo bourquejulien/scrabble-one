@@ -1,6 +1,13 @@
 @use '~@angular/material' as mat;
 
+@import 'custom-theme.scss';
+
 @include mat.core();
+
+@font-face {
+    font-family:'digital-clock-font';
+    src: url('~src/assets/img/digital-7.ttf');
+}
 
 :root {
     // Colors
@@ -8,7 +15,7 @@
     --game-green: #45cb85;
 }
 
-$angular-light-theme: mat.define-light-theme(
+$mat-light-theme: mat.define-light-theme(
     (
         color: (
             primary: mat.define-palette(mat.$indigo-palette),
@@ -21,9 +28,9 @@ $angular-light-theme: mat.define-light-theme(
 // Include theme styles for core and each component used in your app.
 // Alternatively, you can import and @include the theme mixins for each component
 // that you are using.
-@include mat.all-component-themes($angular-light-theme);
+@include mat.all-component-themes($mat-light-theme);
 
-.angular-light-theme {
+.mat-light-theme {
     // Nothing to do. This is the default theme
 }
 
@@ -58,7 +65,7 @@ body {
     color: #fff;
 }
 
-$angular-dark-theme: mat.define-dark-theme(
+$mat-dark-theme: mat.define-dark-theme(
     (
         color: (
             primary: mat.define-palette(mat.$purple-palette, 700, 500, 800),
@@ -69,5 +76,5 @@ $angular-dark-theme: mat.define-dark-theme(
 );
 
 .darkMode {
-    @include mat.all-component-colors($angular-dark-theme);
+    @include mat.all-component-colors($mat-dark-theme);
 }

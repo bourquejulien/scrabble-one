@@ -19,7 +19,7 @@ import { Subscription } from 'rxjs';
 export enum Icon {
     Logout = 'exit_to_app',
     Message = 'question_answer',
-    Skip = 'block',
+    Skip = 'cached',
     Dark = 'dark_mode',
 }
 
@@ -71,6 +71,12 @@ export class GamePageComponent implements OnDestroy {
         this.playerType = gameService.onTurn.getValue();
         this.buttonConfig = [
             {
+                color: 'primary',
+                icon: Icon.Dark,
+                hover: 'Activer le mode sombre',
+                action: () => this.toggleDarkMode(),
+            },
+            {
                 color: 'warn',
                 icon: Icon.Logout,
                 hover: 'Quitter la partie',
@@ -87,12 +93,6 @@ export class GamePageComponent implements OnDestroy {
                 icon: Icon.Skip,
                 hover: 'Passer son tour',
                 action: async () => this.commandService.parseInput('!passer'),
-            },
-            {
-                color: 'primary',
-                icon: Icon.Dark,
-                hover: 'Activer le mode sombre',
-                action: () => this.toggleDarkMode(),
             },
         ];
         this.opponentQuitSubscription = gameService.opponentQuiting.subscribe(() => this.opponentQuit());

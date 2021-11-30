@@ -10,76 +10,76 @@ mat-drawer-container {
     position: absolute;
 }
 
-.scoreboard.player-one-open {
-    background-color: var(--game-green);
-    margin-left: 85%;
-    right: 15rem;
-    top: 8rem;
-    width: 7.5rem;
-    height: 5rem;
-    transition: 0.45s;
-}
+// .scoreboard.player-one-open {
+//     background-color: var(--game-green);
+//     margin-left: 85%;
+//     right: 15rem;
+//     top: 8rem;
+//     width: 7.5rem;
+//     height: 5rem;
+//     transition: 0.45s;
+// }
 
-.scoreboard.player-one-closed {
-    background-color: var(--game-green);
-    margin-left: 85%;
-    right: 15rem;
-    top: 8rem;
-    width: 7.5rem;
-    height: 5rem;
-    transition: 0.45s;
-}
+// .scoreboard.player-one-closed {
+//     background-color: var(--game-green);
+//     margin-left: 85%;
+//     right: 15rem;
+//     top: 8rem;
+//     width: 7.5rem;
+//     height: 5rem;
+//     transition: 0.45s;
+// }
 
-.scoreboard.reserve-length-open {
-    font-size: large;
-    color: #fff;
-    background-color: #3f51b5;
-    text-align: center;
-    margin-left: 85%;
-    right: 9.5rem;
-    top: 18rem;
-    width: 7.5rem;
-    height: 5rem;
-    transition: 0.45s;
-}
+// .scoreboard.reserve-length-open {
+//     font-size: large;
+//     color: #fff;
+//     background-color: #3f51b5;
+//     text-align: center;
+//     margin-left: 85%;
+//     right: 9.5rem;
+//     top: 18rem;
+//     width: 7.5rem;
+//     height: 5rem;
+//     transition: 0.45s;
+// }
 
-.scoreboard.reserve-length-closed {
-    font-size: large;
-    color: #fff;
-    background-color: #3f51b5;
-    text-align: center;
-    margin-left: 85%;
-    right: 9.5rem;
-    top: 18rem;
-    width: 7.5rem;
-    height: 5rem;
-    transition: 0.45s;
-}
+// .scoreboard.reserve-length-closed {
+//     font-size: large;
+//     color: #fff;
+//     background-color: #3f51b5;
+//     text-align: center;
+//     margin-left: 85%;
+//     right: 9.5rem;
+//     top: 18rem;
+//     width: 7.5rem;
+//     height: 5rem;
+//     transition: 0.45s;
+// }
 
-.scoreboard.player-two-open {
-    margin-left: 85%;
-    left: 0rem;
-    top: 8rem;
-    width: 7.5rem;
-    height: 5rem;
-    transition: 0.45s;
-}
+// .scoreboard.player-two-open {
+//     margin-left: 85%;
+//     left: 0rem;
+//     top: 8rem;
+//     width: 7.5rem;
+//     height: 5rem;
+//     transition: 0.45s;
+// }
 
-.scoreboard.player-two-closed {
-    margin-left: 85%;
-    left: 0rem;
-    top: 8rem;
-    width: 7.5rem;
-    height: 5rem;
-    transition: 0.45s;
-}
+// .scoreboard.player-two-closed {
+//     margin-left: 85%;
+//     left: 0rem;
+//     top: 8rem;
+//     width: 7.5rem;
+//     height: 5rem;
+//     transition: 0.45s;
+// }
 
-.scoreboard {
-    &.player-two-open,
-    &.player-two-closed.singlePlayer {
-        background-color: var(--game-red);
-    }
-}
+// .scoreboard {
+//     &.player-two-open,
+//     &.player-two-closed.singlePlayer {
+//         background-color: var(--game-red);
+//     }
+// }
 
 .vertical-flex-items {
     margin-top: 20px;
@@ -94,7 +94,7 @@ mat-drawer-container {
     z-index: 1;
     margin-top: 5rem;
     top: 0rem;
-    margin-left: 20%;
+    margin-left: 10%;
     left: 0rem;
     transition: 0.55s;
 }
@@ -140,16 +140,86 @@ mat-drawer-container {
 
 #tools-container {
     display: flex;
+    margin-top: -10vh;
 }
 
 .objectives {
     flex: 1 1 auto;
     align-items: center;
-    position: absolute;
+    // position: absolute;
     z-index: 1;
-    margin-top: 5rem;
+    // margin-top: 5rem;
     top: 20rem;
-    margin-left: 20%;
-    right: 2rem;
-    transition: 0.55s;
+    margin-left: -40%;
+    right: -5vw;
+    // transition: 0.55s;
+}
+
+.isTurn {
+    outline-style: double;
+    outline-color: coral;
+    outline-width: thick;
+    box-shadow: 5rem;
+}
+
+.isNotTurn {
+    font-weight: normal;
+}
+
+.open-side-bars {
+    display: flex;
+    flex-direction: column;
+    gap: 2vh;
+    margin-left: 85%;
+    left: 0rem;
+    width: 7.5rem;
+    height: 5rem;
+    transition: 0.45s;
+    padding-top: 2vh;
+}
+
+.close-side-bars {
+    display: flex;
+    flex-direction: column;
+    gap: 5vh;
+    margin-left: 85%;
+    left: 0rem;
+    top: 8rem;
+    width: 7.5rem;
+    height: 5rem;
+    transition: 0.45s;
+    padding-top: 2vh;
+}
+
+.scoreboard-one {
+    background-color: var(--game-green);
+    width: 7.5rem;
+    height: 5rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.scoreboard-two {
+    background-color: var(--game-red);
+    width: 7.5rem;
+    height: 5rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+#scoreboard-reserve {
+    font-size: large;
+    color: #fff;
+    background-color: #3f51b5;
+    text-align: center;
+    width: 7.5rem;
+    height: 5rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
 }
