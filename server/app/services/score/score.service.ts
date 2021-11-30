@@ -29,11 +29,6 @@ export class ScoreService {
         await this.getCollection(collectionName).deleteOne({ name: playerName });
     }
 
-    async isScoreUnique(scoreVal: number, collectionName: string): Promise<boolean> {
-        const scoreFound = await this.getCollection(collectionName).findOne({ scoreValue: scoreVal });
-        return scoreFound === null;
-    }
-
     async getPlayerScore(playerName: string, collectionName: string): Promise<number> {
         return this.getCollection(collectionName)
             .findOne({ name: playerName })

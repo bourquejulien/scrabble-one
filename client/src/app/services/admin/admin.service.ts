@@ -78,7 +78,6 @@ export class AdminService {
     }
 
     dictionaryUpdated(dictionary: DictionaryMetadata): void {
-        console.log(dictionary);
         this.updatedDictionaries.add(dictionary._id);
     }
 

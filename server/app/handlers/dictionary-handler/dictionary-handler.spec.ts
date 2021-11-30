@@ -12,7 +12,7 @@ const METADATA: DictionaryMetadata = {
     _id: 'dictionary.json',
     nbWords: 1024,
 };
-describe('DictionaryService', () => {
+describe('DictionaryHandler', () => {
     let service: DictionaryHandler;
 
     beforeEach(() => {

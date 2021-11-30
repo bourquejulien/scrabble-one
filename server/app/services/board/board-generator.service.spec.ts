@@ -2,18 +2,17 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable no-unused-expressions -- Needed for chai library assertions */
 /* eslint-disable @typescript-eslint/no-unused-expressions */
-/* import { expect } from 'chai';
+import { expect } from 'chai';
 import { createSandbox, createStubInstance } from 'sinon';
-import { DictionaryService } from '@app/handlers/dictionary-handler/dictionary-handler.service';
 import { BoardGeneratorService } from './board-generator.service';
 import { Bonus } from '@common';
+import { DictionaryHandler } from '@app/handlers/dictionary-handler/dictionary-handler';
 
 describe('BoardHandlingService', () => {
     let service: BoardGeneratorService;
 
     beforeEach(() => {
-        const dictionaryServiceStub = createStubInstance(DictionaryService);
-        service = new BoardGeneratorService(dictionaryServiceStub as unknown as DictionaryService);
+        service = new BoardGeneratorService();
     });
 
     it('should be created', () => {
@@ -21,20 +20,23 @@ describe('BoardHandlingService', () => {
     });
 
     it('should generate a BoardHandler', () => {
-        const bonusHandler = service.generateBoardHandler(false);
-        expect(service.generateBoardHandler(false)).to.be.ok;
+        const dictionaryHandlerStub = createStubInstance(DictionaryHandler) as unknown as DictionaryHandler;
+        const bonusHandler = service.generateBoardHandler(false, dictionaryHandlerStub);
+        expect(service.generateBoardHandler(false, dictionaryHandlerStub)).to.be.ok;
         expect(bonusHandler.isRandomBonus).to.be.false;
     });
 
     it('should generate a random BoardHandler', () => {
-        const randomBonusHandler = service.generateBoardHandler(true);
+        const dictionaryHandlerStub = createStubInstance(DictionaryHandler) as unknown as DictionaryHandler;
+        const randomBonusHandler = service.generateBoardHandler(true, dictionaryHandlerStub);
         expect(randomBonusHandler).to.be.ok;
         expect(randomBonusHandler.isRandomBonus).to.be.true;
     });
 
     it('should keep random position in same place', () => {
-        const randomBonusHandler = service.generateBoardHandler(true);
-        const bonusHandler = service.generateBoardHandler(false);
+        const dictionaryHandlerStub = createStubInstance(DictionaryHandler) as unknown as DictionaryHandler;
+        const randomBonusHandler = service.generateBoardHandler(true, dictionaryHandlerStub);
+        const bonusHandler = service.generateBoardHandler(false, dictionaryHandlerStub);
         expect(randomBonusHandler.isRandomBonus).to.be.true;
         expect(bonusHandler.isRandomBonus).to.be.false;
 
@@ -57,4 +59,4 @@ describe('BoardHandlingService', () => {
         service['retrieveBonuses'](true);
         expect(stubInitBank.calledOnce).to.be.true;
     });
-}); */
+});

@@ -5,8 +5,6 @@
 /* eslint-disable @typescript-eslint/no-unused-expressions */
 import { HumanPlayer } from '@app/classes/player/human-player/human-player';
 import { Player } from '@app/classes/player/player';
-import { SessionData } from '@app/classes/session-data';
-import { SessionInfo } from '@app/classes/session-info';
 import { SessionHandler } from '@app/handlers/session-handler/session-handler';
 import { BoardGeneratorService } from '@app/services/board/board-generator.service';
 import { DictionaryService } from '@app/services/dictionary/dictionary.service';
@@ -21,7 +19,6 @@ import {
     GameType,
     MultiplayerCreateConfig,
     MultiplayerJoinConfig,
-    ServerConfig,
     SinglePlayerConfig,
     VirtualPlayerLevel,
 } from '@common';
@@ -29,48 +26,6 @@ import { expect } from 'chai';
 import Sinon, { assert, createStubInstance, stub } from 'sinon';
 import { DictionaryHandler } from '@app/handlers/dictionary-handler/dictionary-handler';
 import { BoardHandler } from '@app/handlers/board-handler/board-handler';
-
-class StubSessionHandler {
-    players: Player[] = [];
-    addedPlayers: Player[] = [];
-    convertCalled: boolean = false;
-    sessionData: SessionData = {
-        isActive: false,
-        isStarted: false,
-        timeLimitEpoch: 0,
-    };
-    boardHandler: BoardHandler;
-
-    sessionInfo: SessionInfo = {
-        id: '',
-        playTimeMs: 0,
-        gameType: GameType.SinglePlayer,
-    };
-
-    addPlayer(player: Player) {
-        this.addedPlayers.push(player);
-    }
-
-    start() {}
-
-    getServerConfig(id: string): ServerConfig {
-        return {
-            id,
-            startId: '',
-            gameMode: GameMode.Classic,
-            gameType: GameType.SinglePlayer,
-            playTimeMs: 0,
-            firstPlayerName: '',
-            secondPlayerName: '',
-        };
-    }
-
-    dispose() {}
-
-    convertWhileRunning(playerId: string, dictionnaryService: DictionaryService): void {
-        this.convertCalled = true;
-    }
-}
 
 const dictionary: DictionaryMetadata = {
     title: 'title',
@@ -117,19 +72,29 @@ describe('GameService', () => {
     let sessionHandlingStub: Sinon.SinonStubbedInstance<SessionHandlingService>;
     let dictionaryServiceStub: Sinon.SinonStubbedInstance<DictionaryService>;
     let statsServiceStub: Sinon.SinonStubbedInstance<StatsService>;
-    let sessionHandlerStub: StubSessionHandler;
+    let sessionHandlerStub: Sinon.SinonStubbedInstance<SessionHandler>;
     let socketServiceStub: SocketService;
 
     beforeEach(() => {
         boardGeneratorStub = createStubInstance(BoardGeneratorService);
+        const boardHandler = createStubInstance(BoardHandler) as unknown as BoardHandler;
+        boardHandler['dictionaryHandler'] = createStubInstance(DictionaryHandler) as unknown as DictionaryHandler;
+        boardGeneratorStub.generateBoardHandler.returns(boardHandler);
         sessionHandlingStub = createStubInstance(SessionHandlingService);
         sessionHandlingStub.addHandler.returns();
+        sessionHandlingStub.removeHandler.returns(null);
         socketServiceStub = createStubInstance(SocketService);
         dictionaryServiceStub = createStubInstance(DictionaryService);
         const dictionaryHandler = createStubInstance(DictionaryHandler);
         dictionaryServiceStub.getHandler.resolves(dictionaryHandler as unknown as DictionaryHandler);
         statsServiceStub = createStubInstance(StatsService);
-        sessionHandlerStub = new StubSessionHandler();
+        sessionHandlerStub = createStubInstance(SessionHandler);
+        sessionHandlerStub.addPlayer.returns();
+        sessionHandlerStub['sessionInfo'] = {
+            id: '1',
+            playTimeMs: 1000,
+            gameType: GameType.SinglePlayer,
+        };
         sessionHandlerStub['boardHandler'] = createStubInstance(BoardHandler) as unknown as BoardHandler;
         Object.setPrototypeOf(
             SessionHandler,
@@ -148,8 +113,13 @@ describe('GameService', () => {
         expect(service).to.be.ok;
     });
 
+    it('should not init if there is no dictionary handler single player', async () => {
+        dictionaryServiceStub.getHandler.resolves(null);
+        expect(await service.initMultiplayer(multiplayerCreateConfig)).to.equal('');
+        expect(await service.initSinglePlayer(singlePlayerConfig)).to.be.null;
+    });
+
     it('should init single player', async () => {
-        sessionHandlerStub.boardHandler.dictionaryHandler = createStubInstance(DictionaryHandler) as unknown as DictionaryHandler;
         const serverConfig = await service.initSinglePlayer(singlePlayerConfig);
         assert.calledOnce(sessionHandlingStub.addHandler);
         expect(serverConfig).to.be.ok;
@@ -169,13 +139,19 @@ describe('GameService', () => {
     });
 
     it('should join multiplayer', async () => {
+        sessionHandlerStub['sessionData'] = {
+            isActive: true,
+            isStarted: true,
+            timeLimitEpoch: 1000,
+        };
         const playerStub = createStubInstance(HumanPlayer);
         stub(playerStub, 'id').get(() => {
             return '';
         });
         sessionHandlingStub.getHandlerBySessionId.returns(sessionHandlerStub as unknown as SessionHandler);
-        sessionHandlerStub.players = [playerStub as unknown as Player];
-        // sessionHandlerStub.start.
+        stub(sessionHandlerStub, 'players').get(() => {
+            return [playerStub as unknown as Player];
+        });
         const serverConfig = await service.joinMultiplayer(multiplayerJoinConfig);
         expect(serverConfig?.id).to.equal(serverConfig?.id);
     });
@@ -187,6 +163,11 @@ describe('GameService', () => {
     });
 
     it('should convert multiplayer', async () => {
+        sessionHandlerStub['sessionInfo'] = {
+            id: '1',
+            playTimeMs: 1000,
+            gameType: GameType.SinglePlayer,
+        };
         const playerStub = createStubInstance(HumanPlayer);
         stub(playerStub, 'id').get(() => {
             return '';
@@ -194,7 +175,9 @@ describe('GameService', () => {
         sessionHandlerStub.sessionInfo.gameType = GameType.Multiplayer;
 
         sessionHandlingStub.getHandlerByPlayerId.returns(sessionHandlerStub as unknown as SessionHandler);
-        sessionHandlerStub.players = [playerStub as unknown as Player];
+        stub(sessionHandlerStub, 'players').get(() => {
+            return [playerStub as unknown as Player];
+        });
         const serverConfig = await service.convert(convertConfig);
         assert.calledOnce(sessionHandlingStub.updateEntries);
         expect(serverConfig?.id).to.equal(serverConfig?.id);
@@ -211,6 +194,16 @@ describe('GameService', () => {
     });
 
     it('should dispose if multiplayer game is inactive', async () => {
+        sessionHandlerStub['sessionInfo'] = {
+            id: '1',
+            playTimeMs: 1000,
+            gameType: GameType.Multiplayer,
+        };
+        sessionHandlerStub['sessionData'] = {
+            isActive: false,
+            isStarted: true,
+            timeLimitEpoch: 1000,
+        };
         const playerStub = createStubInstance(HumanPlayer);
         stub(playerStub, 'id').get(() => {
             return '';
@@ -223,13 +216,20 @@ describe('GameService', () => {
     });
 
     it('should abandon if multiplayer game is active', async () => {
+        sessionHandlerStub['sessionInfo'] = {
+            id: '1',
+            playTimeMs: 1000,
+            gameType: GameType.Multiplayer,
+        };
+        sessionHandlerStub['sessionData'] = {
+            isActive: true,
+            isStarted: true,
+            timeLimitEpoch: 1000,
+        };
         const playerStub = createStubInstance(HumanPlayer);
         stub(playerStub, 'id').get(() => {
             return '';
         });
-
-        sessionHandlerStub.sessionInfo.gameType = GameType.Multiplayer;
-        sessionHandlerStub.sessionData.isActive = true;
 
         sessionHandlingStub.getHandlerByPlayerId.returns(sessionHandlerStub as unknown as SessionHandler);
         const answer = await service.convertOrDispose('');
@@ -241,12 +241,18 @@ describe('GameService', () => {
         stub(playerStub, 'id').get(() => {
             return '';
         });
-
-        sessionHandlerStub.sessionInfo.gameType = GameType.Multiplayer;
-        sessionHandlerStub.sessionData.isActive = true;
-        sessionHandlerStub.sessionData.isStarted = true;
+        sessionHandlerStub['sessionInfo'] = {
+            id: '1',
+            playTimeMs: 1000,
+            gameType: GameType.Multiplayer,
+        };
+        sessionHandlerStub['sessionData'] = {
+            isActive: true,
+            isStarted: true,
+            timeLimitEpoch: 1000,
+        };
         sessionHandlingStub.getHandlerByPlayerId.returns(sessionHandlerStub as unknown as SessionHandler);
         await service.convertOrDispose('');
-        expect(sessionHandlerStub.convertCalled).to.be.true;
+        assert.notCalled(sessionHandlingStub.removeHandler);
     });
 });
