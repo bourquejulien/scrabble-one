@@ -3,10 +3,11 @@ import { RoomController } from '@app/controllers/room/room.controller';
 import { DatabaseService } from '@app/services/database/database.service';
 import { SocketService } from '@app/services/socket/socket-service';
 import * as http from 'http';
-import { AddressInfo } from 'net';
 import { Service } from 'typedi';
 import logger from 'winston';
 import { DictionaryService } from '@app/services/dictionary/dictionary.service';
+import { AdminPersistence } from '@app/services/admin/admin-persistence';
+import { ScoreService } from '@app/services/score/score.service';
 
 @Service()
 export class Server {
@@ -14,11 +15,14 @@ export class Server {
     private server: http.Server;
 
     constructor(
+        // TODO Abomination
         private readonly application: Application,
         private readonly socketService: SocketService,
         private readonly roomController: RoomController,
         private readonly databaseService: DatabaseService,
         private readonly dictionnaryService: DictionaryService,
+        private readonly adminPersistance: AdminPersistence,
+        private readonly scoreService: ScoreService,
     ) {}
 
     private static normalizePort(val: number | string): number | string | boolean {
@@ -32,6 +36,26 @@ export class Server {
         return false;
     }
 
+    private static onError(error: NodeJS.ErrnoException): void {
+        if (error.syscall !== 'listen') {
+            throw error;
+        }
+
+        const bind: string = typeof Server.appPort === 'string' ? 'Pipe ' + Server.appPort : 'Port ' + Server.appPort;
+        switch (error.code) {
+            case 'EACCES':
+                logger.error(`${bind} requires elevated privileges`);
+                process.exit(1);
+                break;
+            case 'EADDRINUSE':
+                logger.error(`${bind} is already in use`);
+                process.exit(1);
+                break;
+            default:
+                throw error;
+        }
+    }
+
     async init(): Promise<void> {
         this.application.app.set('port', Server.appPort);
 
@@ -43,7 +67,9 @@ export class Server {
             process.exit(1);
         }
 
+        await this.scoreService.init();
         await this.dictionnaryService.init();
+        await this.adminPersistance.init();
 
         this.server = http.createServer(this.application.app);
 
@@ -51,35 +77,14 @@ export class Server {
         this.roomController.handleSockets();
 
         this.server.listen(Server.appPort);
-        this.server.on('error', (error: NodeJS.ErrnoException) => this.onError(error));
+        this.server.on('error', (error: NodeJS.ErrnoException) => Server.onError(error));
         this.server.on('listening', () => this.onListening());
     }
 
-    private onError(error: NodeJS.ErrnoException): void {
-        if (error.syscall !== 'listen') {
-            throw error;
-        }
-        const bind: string = typeof Server.appPort === 'string' ? 'Pipe ' + Server.appPort : 'Port ' + Server.appPort;
-        switch (error.code) {
-            case 'EACCES':
-                // eslint-disable-next-line no-console
-                console.error(`${bind} requires elevated privileges`);
-                process.exit(1);
-                break;
-            case 'EADDRINUSE':
-                // eslint-disable-next-line no-console
-                console.error(`${bind} is already in use`);
-                process.exit(1);
-                break;
-            default:
-                throw error;
-        }
-    }
-
     private onListening(): void {
-        const addr = this.server.address() as AddressInfo;
-        const bind: string = typeof addr === 'string' ? `pipe ${addr}` : `port ${addr.port}`;
-        // eslint-disable-next-line no-console
-        logger.debug(`Listening on ${bind}`);
+        const address = this.server.address();
+        const bind: string = typeof address === 'string' ? `pipe ${address}` : `port ${address?.port}`;
+
+        logger.info(`Listening on ${bind}`);
     }
 }

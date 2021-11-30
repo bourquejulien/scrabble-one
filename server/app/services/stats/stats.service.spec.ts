@@ -3,7 +3,6 @@
 /* eslint-disable @typescript-eslint/no-unused-expressions */
 /* eslint-disable no-unused-expressions */
 import { EndGameData } from '@app/classes/end-game-data';
-import { Constants } from '@app/constants';
 import { ScoreService } from '@app/services/score/score.service';
 import { StatsService } from '@app/services/stats/stats.service';
 import { GameMode, Score } from '@common';
@@ -70,7 +69,7 @@ describe('StatsService', () => {
     it('should sort elements in classic scoreboard', async () => {
         scoreServiceStub['getScoreboardClassic'].resolves(classicScore);
         const spyFunction = spy(Array.prototype, 'sort');
-        await service.scoreToDisplay(Constants.DATABASE_COLLECTION_CLASSIC);
+        await service.getScoreToDisplay(GameMode.Classic);
         assert.called(spyFunction);
         spyFunction.restore();
     });
@@ -78,7 +77,7 @@ describe('StatsService', () => {
     it('should sort elements in log scoreboard', async () => {
         scoreServiceStub['getScoreboardLog'].resolves(logScore);
         const spyFunction = spy(Array.prototype, 'sort');
-        await service.scoreToDisplay(Constants.DATABASE_COLLECTION_LOG);
+        await service.getScoreToDisplay(GameMode.Log2990);
         assert.called(spyFunction);
         spyFunction.restore();
     });
@@ -90,7 +89,7 @@ describe('StatsService', () => {
         ];
         scoreServiceStub['getScoreboardClassic'].resolves(classicScoreSameScores);
         const spyFunction = spy(Array.prototype, 'join');
-        await service.scoreToDisplay(Constants.DATABASE_COLLECTION_CLASSIC);
+        await service.getScoreToDisplay(GameMode.Classic);
         assert.called(spyFunction);
         spyFunction.restore();
     });
@@ -103,7 +102,7 @@ describe('StatsService', () => {
 
         scoreServiceStub['getScoreboardLog'].resolves(logScoreSameScores);
         const spyFunction = spy(Array.prototype, 'join');
-        await service.scoreToDisplay(Constants.DATABASE_COLLECTION_LOG);
+        await service.getScoreToDisplay(GameMode.Log2990);
         assert.called(spyFunction);
         spyFunction.restore();
     });
@@ -111,14 +110,14 @@ describe('StatsService', () => {
     it('should return correct array of classic scores to display', async () => {
         scoreServiceStub['getScoreboardClassic'].resolves(classicScore);
 
-        const scores = await service.scoreToDisplay(Constants.DATABASE_COLLECTION_CLASSIC);
+        const scores = await service.getScoreToDisplay(GameMode.Classic);
         expect(scores).to.deep.equal(classicScore);
     });
 
     it('should return correct array of scores of log score to display', async () => {
         scoreServiceStub['getScoreboardLog'].resolves(logScore);
 
-        const scores = await service.scoreToDisplay(Constants.DATABASE_COLLECTION_LOG);
+        const scores = await service.getScoreToDisplay(GameMode.Log2990);
         expect(scores).to.deep.equal(logScore);
     });
 
