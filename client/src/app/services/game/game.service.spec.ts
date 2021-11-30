@@ -18,6 +18,7 @@ import { GameMode, GameType, ServerConfig, SessionStats, DictionaryMetadata, Vir
 import { Observable, Subject } from 'rxjs';
 
 const dictionary: DictionaryMetadata = {
+    path: 'dictionary.json',
     _id: 'dictionary.json',
     title: 'dict',
     description: 'Dictionary',
