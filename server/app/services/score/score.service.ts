@@ -22,23 +22,18 @@ export class ScoreService {
 
     async isPlayerInScoreboard(playerName: string, collectionName: string): Promise<boolean> {
         const foundPlayer = await this.getCollection(collectionName).findOne({ name: playerName });
-        return foundPlayer === null ? false : true;
+        return foundPlayer !== null;
     }
 
     async deleteElement(playerName: string, collectionName: string): Promise<void> {
         await this.getCollection(collectionName).deleteOne({ name: playerName });
     }
 
-    async isScoreUnique(scoreVal: number, collectionName: string): Promise<boolean> {
-        const scoreFound = await this.getCollection(collectionName).findOne({ scoreValue: scoreVal });
-        return scoreFound === null;
-    }
-
     async getPlayerScore(playerName: string, collectionName: string): Promise<number> {
         return this.getCollection(collectionName)
             .findOne({ name: playerName })
             .then((score) => {
-                return score === null ? -1 : score.scoreValue;
+                return score == null ? -1 : score.scoreValue;
             });
     }
 

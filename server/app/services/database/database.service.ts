@@ -33,9 +33,8 @@ export class DatabaseService {
             if (countLog === 0) {
                 this.initCollections(Constants.DATABASE_COLLECTION_LOG);
             }
-        } catch (e) {
+        } catch (err) {
             await this.client.close();
-            throw e;
         }
     }
 
@@ -69,5 +68,9 @@ export class DatabaseService {
             await this.scrabbleDb.createCollection(Constants.DATABASE_COLLECTION_LOG);
             await this.fillLogBoardWithDefault();
         }
+    }
+
+    get database(): Db {
+        return this.scrabbleDb;
     }
 }

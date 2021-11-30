@@ -13,7 +13,7 @@ export class PlayerStatsHandler implements PlayerStatsNotifier {
 
     private readonly updateSubject: Subject<void>;
 
-    constructor(private readonly goalHandler: GoalHandler, readonly id: string) {
+    constructor(private readonly goalHandler: GoalHandler, public id: string) {
         this.baseScore = 0;
         this.scoreAdjustment = 0;
         this.skippedTurns = 0;

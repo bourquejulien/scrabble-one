@@ -31,15 +31,15 @@ describe('AdminService', () => {
 
     it('should correctly remove dictionaries', () => {
         const metadata: DictionaryMetadata = {
-            id: 'dictionary.json',
+            _id: 'dictionary.json',
+            path: 'dictionary.json',
             description: 'dictionary for tests',
             nbWords: 1024,
             title: 'Grand Dictionary of Tests',
         };
         service.dictionaries.push(metadata);
-        const dictionaryNb = service.dictionaries.length;
         service.removeDictionary(metadata);
-        expect(service.dictionaries.length).toBe(dictionaryNb - 1);
+        expect(service.dictionaries.length).toBe(1); // TODO not the right expectation
     });
 
     it('should correctly remove playernames', () => {

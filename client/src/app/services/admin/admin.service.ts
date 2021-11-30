@@ -3,7 +3,7 @@ import { Injectable } from '@angular/core';
 import { environmentExt } from '@environment-ext';
 import { finalize } from 'rxjs/operators';
 import { Subscription } from 'rxjs';
-import { DictionaryMetadata, VirtualPlayerLevel } from '@common';
+import { Answer, DictionaryMetadata, VirtualPlayerLevel } from '@common';
 
 const localUrl = (call: string, id: string) => `${environmentExt.apiUrl}admin/${call}/${id}`;
 interface Playernames {
@@ -17,16 +17,19 @@ const DEFAULT_DICTIONARY = 'dictionary.json';
     providedIn: 'root',
 })
 export class AdminService {
-    // TODO Just to trigger the pipeline
     dictionaries: DictionaryMetadata[];
     fileName = '';
     uploadSub: Subscription;
     uploadProgress: number;
     virtualPlayerNames: Playernames;
 
+    private readonly updatedDictionaries: Set<string>;
+
     constructor(private httpClient: HttpClient) {
         this.dictionaries = [];
+        this.updatedDictionaries = new Set<string>();
         this.virtualPlayerNames = { experts: [], beginners: [] };
+
         this.retrieveUsernames();
         this.retrieveDictionaries();
     }
@@ -62,11 +65,19 @@ export class AdminService {
     }
 
     removeDictionary(metadata: DictionaryMetadata) {
-        this.dictionaries.splice(this.dictionaries.indexOf(metadata), 1);
+        this.httpClient
+            .delete(localUrl('dictionary', metadata._id))
+            .subscribe(() => this.dictionaries.splice(this.dictionaries.indexOf(metadata), 1));
     }
 
     async updateDictionaries() {
-        await this.httpClient.post(localUrl('dictionary', ''), this.dictionaries).toPromise();
+        const updatedMetadata = this.dictionaries.filter((d) => this.updatedDictionaries.has(d._id));
+        const answer = await this.httpClient.post<Answer<DictionaryMetadata[]>>(localUrl('dictionary', 'update'), updatedMetadata).toPromise();
+        this.dictionaries = answer.payload;
+    }
+
+    dictionaryUpdated(dictionary: DictionaryMetadata): void {
+        this.updatedDictionaries.add(dictionary._id);
     }
 
     downloadDictionary(id: string) {
@@ -92,6 +103,10 @@ export class AdminService {
         }
     }
 
+    isDefaultDictionary(metadata: DictionaryMetadata) {
+        return metadata._id === 'dictionary.json';
+    }
+
     async resetSettings(): Promise<void> {
         await this.httpClient.get<string[]>(localUrl('reset', '')).toPromise();
     }
@@ -101,6 +116,6 @@ export class AdminService {
     }
 
     get defaultDictionary(): DictionaryMetadata | null {
-        return this.dictionaries.find((d) => d.id === DEFAULT_DICTIONARY) ?? null;
+        return this.dictionaries.find((d) => d._id === DEFAULT_DICTIONARY) ?? null;
     }
 }
