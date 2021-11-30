@@ -7,6 +7,7 @@ no-unused-expressions,
 @typescript-eslint/no-empty-function
 */
 import { PlayerInfo } from '@app/classes/player-info';
+import { HumanPlayer } from '@app/classes/player/human-player/human-player';
 import { Player } from '@app/classes/player/player';
 import { SessionInfo } from '@app/classes/session-info';
 import { Config } from '@app/config';
@@ -20,8 +21,9 @@ import { SessionStatsHandler } from '@app/handlers/stats-handlers/session-stats-
 import { GameMode, GameType, ServerConfig } from '@common';
 import { expect } from 'chai';
 import { Subject } from 'rxjs';
-import Sinon, { createSandbox, createStubInstance } from 'sinon';
+import Sinon, { createSandbox, createStubInstance, useFakeTimers } from 'sinon';
 import { SessionHandler } from './session-handler';
+import { Board } from '@app/classes/board/board';
 
 const TIME_MS = 120 * 1000;
 const PLAYER_INFO_A: PlayerInfo = { id: '0', name: 'tester1', isHuman: true };
@@ -163,11 +165,6 @@ describe('SessionHandler', () => {
         expect(returnValue).to.eql(expectedServerConfig);
     });
 
-    it('start should call start on player handler', () => {
-        // handler.start();
-        // expect(stubPlayerHandler.start.calledOnce).to.be.true;
-    });
-
     it('endgame should call dispose and add rack to score adjustement', () => {
         // const sandbox = createSandbox();
         // const stubDispose = sandbox.stub(handler, 'dispose');
@@ -179,10 +176,15 @@ describe('SessionHandler', () => {
         // sandbox.assert.calledOnce(stubDispose);
     });
 
-    // it('dispose should call dispose on playerHandler', () => {
-    //     handler.dispose();
-    //     expect(stubPlayerHandler.dispose.calledOnce).to.be.true;
-    // });
+    it('dispose should deactivate the game', () => {
+        createSandbox()
+            .stub(handler, 'endGameData' as any)
+            .get(() => {
+                return true;
+            });
+        handler.dispose();
+        expect(handler.sessionData.isActive).to.be.false;
+    });
 
     it('timerTick should send message', () => {
         handler.sessionData.timeLimitEpoch = 0;
@@ -197,44 +199,28 @@ describe('SessionHandler', () => {
         expect(handler.sessionData.timeLimitEpoch).to.eql(TIME_MS_EPOCH);
     });
 
-    it('onTurn should call endgame if game is ended', () => {
-        stubReserveHandler.reserve = [];
+    it('onTurn call endgame if game is ended', () => {
+        createSandbox()
+            .stub(handler['statsHandler'], 'isEndGame')
+            .get(() => {
+                return true;
+            });
         const sandbox = createSandbox();
         const stubEndGame = sandbox.stub(handler, 'endGame' as any);
         handler['onTurn']('0');
         sandbox.assert.calledOnce(stubEndGame);
     });
 
-    it('onTurn should not call endgame if game is not ended  but fails to find player', () => {
-        // handler['playerHandler'].players[0].playerData.skippedTurns = 0;
-        // handler['playerHandler'].players[1].playerData.skippedTurns = 0;
-        // handler.reserveHandler.reserve = ['a'];
-        // const sandbox = createSandbox();
-        // const stubEndGame = sandbox.stub(handler, 'endGame' as any);
-        // handler['onTurn']('2');
-        // sandbox.assert.notCalled(stubEndGame);
-    });
-
-    it('onTurn should not call endgame if game is not ended', () => {
-        // handler['playerHandler'].players[0].playerData.skippedTurns = 0;
-        // handler['playerHandler'].players[1].playerData.skippedTurns = 0;
-        // handler.reserveHandler.reserve = ['a'];
-        // const sandbox = createSandbox();
-        // const stubEndGame = sandbox.stub(handler, 'endGame' as any);
-        // handler['onTurn']('0');
-        // sandbox.assert.notCalled(stubEndGame);
-    });
-
-    it('onTurn call endgame if game is ended cause rackEmptied', () => {
-        // handler['playerHandler'].players[0].playerData.skippedTurns = 0;
-        // handler['playerHandler'].players[1].playerData.skippedTurns = 0;
-        // handler.reserveHandler.reserve = [];
-        // handler['playerHandler'].players[0].playerData.rack = [];
-        // handler['playerHandler'].players[1].playerData.rack = [];
-        // const sandbox = createSandbox();
-        // const stubEndGame = sandbox.stub(handler, 'endGame' as any);
-        // handler['onTurn']('0');
-        // sandbox.assert.calledOnce(stubEndGame);
+    it('onTurn should call refresh if game is not ended', () => {
+        createSandbox()
+            .stub(handler['statsHandler'], 'isEndGame')
+            .get(() => {
+                return false;
+            });
+        const sandbox = createSandbox();
+        const stubRefresh = sandbox.stub(handler, 'refresh' as any);
+        handler['onTurn']('0');
+        sandbox.assert.calledOnce(stubRefresh);
     });
 
     it('timer from start should call timerTick', () => {
@@ -245,10 +231,12 @@ describe('SessionHandler', () => {
     });
 
     it('callback in timer should be called', () => {
-        // const timerTickStub = createSandbox().stub(handler, 'timerTick' as any);
-        // handler.start();
-        // clock.tick(Config.SESSION.REFRESH_INTERVAL_MS);
-        // expect(timerTickStub.called).to.be.true;
+        const timerTickStub = createSandbox().stub(handler, 'timerTick' as any);
+        createSandbox().stub(handler, 'refresh' as any);
+        const clock = useFakeTimers();
+        handler.start();
+        clock.tick(Config.SESSION.REFRESH_INTERVAL_MS);
+        expect(timerTickStub.called).to.be.true;
     });
 
     it('endgame should call dispose and add rack to score adjustement', () => {
@@ -259,5 +247,56 @@ describe('SessionHandler', () => {
         handler['playerHandler'].players[0].rack.length = 0;
         handler['endGame']();
         expect(stubDispose.calledOnce).to.be.true;
+    });
+
+    it('convertWhileRunning should return if removedPlayer is not found', () => {
+        handler['playerHandler'].players[0] = playerA as HumanPlayer;
+        const addPlayerStub = createSandbox().stub(handler, 'addPlayer');
+        handler.convertWhileRunning('0');
+        expect(addPlayerStub.called).to.be.false;
+    });
+
+    it('convertWhileRunning should addPlayer if removedPlayer is found', () => {
+        stubPlayerHandler['removePlayer'].returns(playerA);
+        handler['playerHandler'].players[0] = playerA as HumanPlayer;
+        const addPlayerStub = createSandbox().stub(handler, 'addPlayer');
+        handler.convertWhileRunning('0');
+        expect(addPlayerStub.called).to.be.true;
+    });
+
+    it('refresh should call sendData ', () => {
+        stubSocketHandler.sendData.restore();
+        const sendDataStub = createSandbox().stub(handler['socketHandler'], 'sendData');
+        const boardStub = createStubInstance(Board);
+        createSandbox()
+            .stub(stubBoardHandler, 'immutableBoard')
+            .get(() => {
+                return boardStub;
+            });
+        createSandbox()
+            .stub(boardStub, 'boardData')
+            .get(() => {
+                return true;
+            });
+        handler['refresh']();
+        expect(sendDataStub.called).to.be.true;
+    });
+
+    it('refresh should call sendData ', () => {
+        stubSocketHandler.sendData.restore();
+        const sendDataStub = createSandbox().stub(handler['socketHandler'], 'sendData');
+        const boardStub = createStubInstance(Board);
+        createSandbox()
+            .stub(stubBoardHandler, 'immutableBoard')
+            .get(() => {
+                return boardStub;
+            });
+        createSandbox()
+            .stub(boardStub, 'boardData')
+            .get(() => {
+                return true;
+            });
+        handler['refresh']();
+        expect(sendDataStub.called).to.be.true;
     });
 });
