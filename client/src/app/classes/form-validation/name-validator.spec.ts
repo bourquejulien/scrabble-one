@@ -67,10 +67,4 @@ describe('NameValidator', () => {
         validator.name = NAMES[0];
         expect(validator.isValid).toBe(true);
     });
-    it('should support errors being null', () => {
-        validator.name = NAMES[0];
-        validator.errors.push('test');
-        validator.validate();
-        expect(validator.isValid).toBe(true);
-    });
 });
