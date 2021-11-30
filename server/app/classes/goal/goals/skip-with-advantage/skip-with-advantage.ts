@@ -54,6 +54,7 @@ export class SkipWithAdvantage extends BaseGoal implements SkipNotifier, StatsNo
         if (playerStats === undefined) {
             return false;
         }
+        this.lastStats.delete(id);
 
         for (const { points } of this.lastStats.values()) {
             if (points >= playerStats.points) {

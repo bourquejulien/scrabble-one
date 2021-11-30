@@ -10,7 +10,7 @@ import { Subject } from 'rxjs';
 import { AdminPageComponent } from './admin-page.component';
 
 const dictionary: DictionaryMetadata = {
-    id: 'dictionary.json',
+    _id: 'dictionary.json',
     nbWords: 2048,
     description: 'cool dictionary',
     title: 'Dictionary',
@@ -51,7 +51,7 @@ describe('AdminPageComponent', () => {
     it('should download dictionary', () => {
         const subject = new Subject<Blob>();
         adminServiceSpyObj.downloadDictionary.and.returnValue(subject.asObservable());
-        component.downloadDictionary(dictionary.id);
+        component.downloadDictionary(dictionary._id);
         subject.next(new Blob(['{}'], { type: 'application/json' }));
     });
 

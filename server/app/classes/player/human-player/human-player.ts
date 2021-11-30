@@ -1,7 +1,7 @@
 import { Player } from '@app/classes/player/player';
 import { PlayerInfo } from '@app/classes/player-info';
 import { Config } from '@app/config';
-import { Answer, MessageType, Placement, SystemMessages } from '@common';
+import { MessageType, Placement, SystemMessages } from '@common';
 import * as logger from 'winston';
 
 export class HumanPlayer extends Player {
@@ -17,9 +17,9 @@ export class HumanPlayer extends Player {
         return Promise.resolve();
     }
 
-    async placeLetters(placements: Placement[]): Promise<Answer> {
+    async placeLetters(placements: Placement[]): Promise<boolean> {
         if (!this.isTurn) {
-            return { isSuccess: false, body: '' };
+            return false;
         }
 
         const lettersToPlace: string[] = [];
@@ -39,7 +39,7 @@ export class HumanPlayer extends Player {
 
         if (!this.areLettersInRack(lettersToPlace)) {
             this.endTurn();
-            return { isSuccess: false, body: '' };
+            return false;
         }
 
         const validationData = await this.boardHandler.lookupLetters(placements);
@@ -49,7 +49,7 @@ export class HumanPlayer extends Player {
                 this.id,
             );
             this.endTurn();
-            return { isSuccess: false, body: '' };
+            return false;
         }
 
         this.statsNotifier.notifyPlacement(validationData);
@@ -70,17 +70,17 @@ export class HumanPlayer extends Player {
             this.id,
         );
 
-        return { isSuccess: true, body: '' };
+        return true;
     }
 
-    exchangeLetters(lettersToExchange: string[]): Answer {
+    exchangeLetters(lettersToExchange: string[]): boolean {
         if (!this.isTurn) {
-            return { isSuccess: false, body: '' };
+            return false;
         }
 
         if (!this.areLettersInRack(lettersToExchange)) {
             this.endTurn();
-            return { isSuccess: false, body: '' };
+            return false;
         }
 
         if (this.reserveHandler.length < Config.RACK_SIZE) {
@@ -92,7 +92,7 @@ export class HumanPlayer extends Player {
                 },
                 this.id,
             );
-            return { isSuccess: false, body: '' };
+            return false;
         }
 
         lettersToExchange.forEach(() => this.rack.push(this.reserveHandler.drawLetter()));
@@ -114,10 +114,10 @@ export class HumanPlayer extends Player {
             this.id,
         );
 
-        return { isSuccess: true, body: '' };
+        return true;
     }
 
-    skipTurn(): Answer {
+    skipTurn(): boolean {
         this.statsNotifier.notifySkip();
         this.endTurn();
 
@@ -129,7 +129,8 @@ export class HumanPlayer extends Player {
             },
             this.id,
         );
-        return { isSuccess: true, body: '' };
+
+        return true;
     }
 
     fillRack() {

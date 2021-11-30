@@ -26,7 +26,7 @@ export class PlayerController {
             }
 
             const response = await humanPlayer.placeLetters(placements);
-            res.json(response);
+            res.sendStatus(response ? Constants.HTTP_STATUS.OK : Constants.HTTP_STATUS.BAD_REQUEST);
         });
 
         this.router.post('/exchange/:id', async (req: Request, res: Response) => {
@@ -39,7 +39,7 @@ export class PlayerController {
             }
 
             const response = humanPlayer.exchangeLetters(exchange);
-            res.json(response);
+            res.sendStatus(response ? Constants.HTTP_STATUS.OK : Constants.HTTP_STATUS.BAD_REQUEST);
         });
 
         this.router.post('/skip/:id', async (req: Request, res: Response) => {
@@ -51,7 +51,7 @@ export class PlayerController {
             }
 
             const response = humanPlayer.skipTurn();
-            res.json(response);
+            res.sendStatus(response ? Constants.HTTP_STATUS.OK : Constants.HTTP_STATUS.BAD_REQUEST);
         });
     }
 
