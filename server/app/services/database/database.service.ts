@@ -18,9 +18,9 @@ export class DatabaseService {
         try {
             await this.client.connect();
             await this.scrabbleDb.command({ ping: 1 });
-        } catch (e) {
+        } catch (err) {
             await this.client.close();
-            throw e;
+            throw err;
         }
     }
 

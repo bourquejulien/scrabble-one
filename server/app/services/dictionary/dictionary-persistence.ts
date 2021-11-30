@@ -8,8 +8,8 @@ const DEFAULT_PATH = 'assets/dictionaries/dictionary.json';
 
 @Service()
 export class DictionaryPersistence {
-    readonly defaultMetadata: DictionaryMetadata;
-    private readonly metaDataCache: Map<string, DictionaryMetadata>;
+    defaultMetadata: DictionaryMetadata;
+    private metaDataCache: Map<string, DictionaryMetadata>;
 
     constructor(private readonly databaseService: DatabaseService) {
         this.defaultMetadata = {

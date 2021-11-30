@@ -30,7 +30,7 @@ export class AdminController {
     private configureRouter(): void {
         this.router = Router();
 
-        this.router.post('/dictionary/upload', (req: Request, res: Response) => {
+        this.router.post('/dictionary/upload', async (req: Request, res: Response) => {
             const form = new IncomingForm({ multiples: false, uploadDir: UPLOAD_DIR });
 
             form.parse(req, (err: Error) => {
