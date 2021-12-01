@@ -8,6 +8,7 @@ import { RoomService } from '@app/services/room/room.service';
 import { Constants } from '@app/constants/global.constants';
 import { NameValidator } from '@app/classes/form-validation/name-validator';
 import { AdminService } from '@app/services/admin/admin.service';
+import { PlayerNameService } from '@app/services/player-name/player-name.service';
 
 interface FormConfig {
     virtualPlayerLevelName: string;
@@ -47,13 +48,14 @@ export class InitGameComponent implements OnInit {
         private readonly router: Router,
         private readonly roomService: RoomService,
         readonly adminService: AdminService,
+        private readonly playerNameService: PlayerNameService,
         readonly dialogRef: MatDialogRef<InitGameComponent>,
         @Inject(MAT_DIALOG_DATA) readonly data: { gameType: GameType; gameMode: GameMode },
     ) {
         this.typeOfGameType = GameType;
 
         this.virtualPlayerLevelNames = Constants.VIRTUAL_PLAYERS_LEVELS_NAMES;
-        this.botNames = this.adminService.virtualPlayerNamesByLevel(VirtualPlayerLevel.Easy);
+        this.botNames = this.playerNameService.virtualPlayerNamesByLevel(VirtualPlayerLevel.Easy);
         this.dictionary = adminService.defaultDictionary as DictionaryMetadata;
         this.minutesList = TURN_LENGTH_MINUTES;
         this.secondsList = TURN_LENGTH_SECONDS;
@@ -80,7 +82,7 @@ export class InitGameComponent implements OnInit {
     }
 
     updateVirtualPlayerNames() {
-        this.botNames = this.adminService.virtualPlayerNamesByLevel(this.virtualPlayerLevel);
+        this.botNames = this.playerNameService.virtualPlayerNamesByLevel(this.virtualPlayerLevel);
         this.formConfig.secondPlayerName = InitGameComponent.randomizeBotName(this.botNames);
     }
 
@@ -101,10 +103,10 @@ export class InitGameComponent implements OnInit {
             return;
         }
 
-        await this.adminService.retrievePlayerNames();
+        await this.playerNameService.retrievePlayerNames();
         await this.adminService.retrieveDictionaries();
 
-        this.botNames = this.adminService.virtualPlayerNamesByLevel(VirtualPlayerLevel.Easy);
+        this.botNames = this.playerNameService.virtualPlayerNamesByLevel(VirtualPlayerLevel.Easy);
         this.dictionary = this.adminService.defaultDictionary as DictionaryMetadata;
     }
 

@@ -51,6 +51,7 @@ describe('PlayerService', () => {
             ],
             imports: [HttpClientTestingModule],
         });
+
         service = TestBed.inject(PlayerService);
         httpMock = TestBed.inject(HttpTestingController);
     });

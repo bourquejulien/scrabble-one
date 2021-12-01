@@ -14,7 +14,7 @@
         <div *ngFor="let error of nameValidator.errors" class="error">{{ error }}</div>
         <div class='action-button'>
             <button id="change-button" mat-raised-button (click)="changeName()" (keydown.enter)="changeName()" color="primary">{{originName === null ? 'Ajouter' : 'Modifier'}}</button>
-            <button *ngIf='originName !== null' id="delete-button" mat-raised-button (click)="this.adminService.removePlayerName(this.originName.name)" color="warn">Supprimer</button>
+            <button *ngIf='originName !== null' id="delete-button" mat-raised-button (click)="this.playerNameService.removePlayerName(this.originName.name)" color="warn">Supprimer</button>
         </div>
     </mat-card>
 </div>

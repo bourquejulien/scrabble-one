@@ -1,8 +1,8 @@
 import { HttpClient, HttpErrorResponse, HttpEventType } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { environmentExt } from '@environment-ext';
-import { BehaviorSubject, Observable, Subject, Subscription } from 'rxjs';
-import { Answer, DictionaryMetadata, VirtualPlayerLevel, VirtualPlayerName } from '@common';
+import { Observable, Subject, Subscription } from 'rxjs';
+import { Answer, DictionaryMetadata } from '@common';
 
 const localUrl = (call: string, id: string) => `${environmentExt.apiUrl}admin/${call}/${id}`;
 
@@ -19,19 +19,14 @@ export class AdminService {
 
     private uploadSub: Subscription;
 
-    private readonly virtualPlayerNames: VirtualPlayerName[];
     private readonly updatedDictionaries: Set<string>;
     private readonly errorSubject: Subject<string>;
-    private readonly virtualPlayerSubject: BehaviorSubject<VirtualPlayerName[]>;
 
     constructor(private httpClient: HttpClient) {
         this.dictionaries = [];
         this.updatedDictionaries = new Set<string>();
-        this.virtualPlayerNames = [];
-        this.virtualPlayerSubject = new BehaviorSubject<VirtualPlayerName[]>([]);
         this.errorSubject = new Subject<string>();
 
-        this.retrievePlayerNames();
         this.retrieveDictionaries();
     }
 
@@ -96,33 +91,8 @@ export class AdminService {
         return metadata._id === DEFAULT_DICTIONARY;
     }
 
-    async retrievePlayerNames(): Promise<void> {
-        const names = await this.httpClient.get<VirtualPlayerName[]>(localUrl('playername', '')).toPromise();
-        this.virtualPlayerUpdate(names);
-    }
-
-    addPlayerName(name: string, level: VirtualPlayerLevel): void {
-        this.httpClient.post<VirtualPlayerName[]>(localUrl('playername/set', level), { name }).subscribe((p) => this.virtualPlayerUpdate(p));
-    }
-
-    updatePlayerName(oldName: string, newName: string): void {
-        this.httpClient.post<VirtualPlayerName[]>(localUrl('playername', 'rename'), [oldName, newName]).subscribe((p) => this.virtualPlayerUpdate(p));
-    }
-
-    removePlayerName(playerName: string): void {
-        this.httpClient.delete<VirtualPlayerName[]>(localUrl('playername', playerName)).subscribe((p) => this.virtualPlayerUpdate(p));
-    }
-
-    virtualPlayerNamesByLevel(level: VirtualPlayerLevel): string[] {
-        return this.virtualPlayerNames.filter((playerName) => playerName.level === level).map((playerName) => playerName.name);
-    }
-
     async resetSettings(): Promise<void> {
         await this.httpClient.get<string[]>(localUrl('reset', '')).toPromise();
-    }
-
-    get onVirtualPlayerUpdate(): Observable<VirtualPlayerName[]> {
-        return this.virtualPlayerSubject.asObservable();
     }
 
     get onerror(): Observable<string> {
@@ -131,14 +101,6 @@ export class AdminService {
 
     get defaultDictionary(): DictionaryMetadata | null {
         return this.dictionaries.find((d) => d._id === DEFAULT_DICTIONARY) ?? null;
-    }
-
-    private virtualPlayerUpdate(virtualPlayerNames: VirtualPlayerName[]) {
-        if (virtualPlayerNames.length === 0) {
-            return;
-        }
-        this.virtualPlayerNames.push(...virtualPlayerNames);
-        this.virtualPlayerSubject.next(virtualPlayerNames);
     }
 
     private finishUpload(answer: Answer<DictionaryMetadata[], string> | null = null): void {

@@ -2,7 +2,7 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { VirtualPlayerLevel, VirtualPlayerName } from '@common';
 import { NameValidator } from '@app/classes/form-validation/name-validator';
 import { Subscription } from 'rxjs';
-import { AdminService } from '@app/services/admin/admin.service';
+import { PlayerNameService } from '@app/services/player-name/player-name.service';
 
 @Component({
     selector: 'app-virtual-player-name',
@@ -19,7 +19,7 @@ export class VirtualPlayerNameComponent implements OnInit, OnDestroy {
 
     private playerNamesSubscription: Subscription;
 
-    constructor(public adminService: AdminService) {
+    constructor(readonly playerNameService: PlayerNameService) {
         this.isExpertSelected = false;
         this.isSelected = false;
         this.nameValidator = new NameValidator();
@@ -27,7 +27,7 @@ export class VirtualPlayerNameComponent implements OnInit, OnDestroy {
     }
 
     ngOnInit(): void {
-        this.playerNamesSubscription = this.adminService.onVirtualPlayerUpdate.subscribe((playerNames) => this.playerNamesUpdated(playerNames));
+        this.playerNamesSubscription = this.playerNameService.onVirtualPlayerUpdate.subscribe((playerNames) => this.playerNamesUpdated(playerNames));
     }
 
     ngOnDestroy(): void {
@@ -79,11 +79,11 @@ export class VirtualPlayerNameComponent implements OnInit, OnDestroy {
         }
 
         if (this.originName == null) {
-            this.adminService.addPlayerName(this.nameValidator.name, this.selectedPlayerLevel);
+            this.playerNameService.addPlayerName(this.nameValidator.name, this.selectedPlayerLevel);
             return;
         }
 
-        this.adminService.updatePlayerName(this.originName.name, this.nameValidator.name);
+        this.playerNameService.updatePlayerName(this.originName.name, this.nameValidator.name);
     }
 
     private playerNamesUpdated(playerNames: VirtualPlayerName[]) {
