@@ -74,14 +74,20 @@ export class DictionaryService {
 
     async init(): Promise<void> {
         await this.createHandler(this.dictionaryPersistence.defaultMetadata);
-
-        if (!fs.existsSync(dictionaryPath)) {
-            await fs.promises.mkdir(dictionaryPath, { recursive: true });
-        }
+        await fs.promises.mkdir(dictionaryPath, { recursive: true });
     }
 
     async reset(): Promise<void> {
         await this.dictionaryPersistence.reset();
+        fs.promises
+            .rm(dictionaryPath, { recursive: true, force: true })
+            .then(() => {
+                fs.promises.mkdir(dictionaryPath, { recursive: true });
+                logger.debug('Successful Dictionary directory reset');
+            })
+            .catch((err) => {
+                logger.warn('Dictionary directory cannot be reset', err);
+            });
     }
 
     async add(tempPath: string): Promise<Answer<DictionaryMetadata[], string>> {
@@ -120,17 +126,18 @@ export class DictionaryService {
     }
 
     async remove(id: string): Promise<boolean> {
-        const metadata = await this.dictionaryPersistence.getMetadataById(id);
-        const canRemove = await this.dictionaryPersistence.remove(id);
+        const metadata = await this.dictionaryPersistence.remove(id);
 
-        if (canRemove && metadata != null) {
+        this.handlers.delete(id);
+
+        if (metadata != null) {
             fs.promises
                 .unlink(metadata.path)
                 .then(() => {
                     logger.debug(`Successful Deletion: ${metadata.path}`);
                 })
                 .catch((err) => {
-                    logger.error(err.stack);
+                    logger.warn('Dictionary file cannot be deleted', err);
                 });
 
             return true;

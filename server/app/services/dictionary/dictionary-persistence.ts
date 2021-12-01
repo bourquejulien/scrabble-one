@@ -41,15 +41,15 @@ export class DictionaryPersistence {
         return false;
     }
 
-    async remove(id: string): Promise<boolean> {
+    async remove(id: string): Promise<DictionaryMetadata | null> {
         if (this.isDefault(id)) {
-            return false;
+            return null;
         }
 
-        const result = await this.metaDataCollection.deleteOne({ _id: id });
+        const result = await this.metaDataCollection.findOneAndDelete({ _id: id });
         this.metaDataCache.delete(id);
 
-        return result.acknowledged;
+        return result.value;
     }
 
     async update(dictionaryMetadata: DictionaryMetadata): Promise<boolean> {
