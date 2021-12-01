@@ -2,6 +2,7 @@
 /* eslint-disable dot-notation */
 /* eslint-disable no-unused-vars */
 /* eslint-disable max-classes-per-file -- Multiple stub implementation needed */
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { CUSTOM_ELEMENTS_SCHEMA, Injectable, NO_ERRORS_SCHEMA } from '@angular/core';
 import { ComponentFixture, fakeAsync, TestBed } from '@angular/core/testing';
 import { FormsModule } from '@angular/forms';
@@ -9,13 +10,12 @@ import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { Router } from '@angular/router';
 import { cleanStyles } from '@app/classes/helpers/cleanup.helper';
+import { PlayerType } from '@app/classes/player/player-type';
 import { AppMaterialModule } from '@app/modules/material.module';
 import { GameService } from '@app/services/game/game.service';
-import { InitGameComponent } from './init-game.component';
-import { PlayerType } from '@app/classes/player/player-type';
-import { GameType } from '@common';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { RoomService } from '@app/services/room/room.service';
+import { GameType } from '@common';
+import { InitGameComponent } from './init-game.component';
 
 @Injectable({
     providedIn: 'root',
@@ -44,7 +44,7 @@ const THIRTY_SECONDS = 30;
 const FIVE_MINUTES = 5;
 const FOUR_MINUTES = 4;
 
-describe('InitGameComponent', () => {
+fdescribe('InitGameComponent', () => {
     let component: InitGameComponent;
     let fixture: ComponentFixture<InitGameComponent>;
     let roomServiceSpyObj: jasmine.SpyObj<RoomService>;
@@ -131,6 +131,30 @@ describe('InitGameComponent', () => {
 
         expect(component.seconds).not.toEqual(THIRTY_SECONDS);
     }));
+
+    it('should confirm initialization if game initialized', async() => {
+        const spy = spyOn<any>(component, 'confirmInitialization');
+        await component.init();
+        expect(spy).toHaveBeenCalled();
+    });
+
+    it('should close dialog once init confirmed', async() => {
+        spyOn<any>(component, 'confirmInitialization').and.returnValue(true);
+        const spy = spyOn(component.dialogRef, 'close');
+        await component.init();
+        expect(spy).toHaveBeenCalled();
+    });
+
+    it('should init single player game if single player selected', async() => {
+        const spy = spyOn<any>(component, 'initSinglePlayer').and.callThrough();
+        spyOn<any>(component, 'confirmInitialization').and.returnValue(true);
+        // component.data.gameType = GameType.Multiplayer;
+
+        await component.init();
+        spy.and.callThrough();
+
+        expect(spy).toHaveBeenCalled();
+    });
 
     afterAll(() => cleanStyles());
 });
