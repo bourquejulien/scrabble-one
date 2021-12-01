@@ -58,7 +58,7 @@ export class SessionHandler {
         this.statsHandler.start();
         this.playerHandler.start();
 
-        this.socketHandler.sendMessage({ title: 'Wee', body: SystemMessages.HelpMessage, messageType: MessageType.System });
+        this.socketHandler.sendMessage({ title: 'Commandes possibles', body: SystemMessages.HelpMessage, messageType: MessageType.System });
 
         logger.info(`Game ${this.sessionInfo.id} started`);
     }
