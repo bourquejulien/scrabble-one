@@ -8,10 +8,11 @@ const WORDS = ['pomme', 'orange', 'poire', 'raisin', 'peche', 'banane', 'bananes
 const METADATA: DictionaryMetadata = {
     title: 'Dictionary',
     description: 'default',
-    id: 'dictionary.json',
+    path: 'path/test.json',
+    _id: 'dictionary.json',
     nbWords: 1024,
 };
-describe('DictionaryService', () => {
+describe('DictionaryHandler', () => {
     let service: DictionaryHandler;
 
     beforeEach(() => {

@@ -1,94 +1,81 @@
-// /* eslint-disable no-unused-expressions */
-// /* eslint-disable @typescript-eslint/no-unused-expressions */
-// import { DictionaryMetadata, JsonDictionary } from '@common';
+// /* eslint-disable dot-notation,
+// @typescript-eslint/no-unused-expressions,
+// @typescript-eslint/no-empty-function,
+// no-unused-expressions,
+// */
+// import { DictionaryMetadata } from '@common';
 // import { expect } from 'chai';
 // import { DictionaryService } from './dictionary.service';
 // import mock from 'mock-fs';
-
+// import { DictionaryPersistence } from '@app/services/dictionary/dictionary-persistence';
+// import { assert, createStubInstance, SinonStubbedInstance } from 'sinon';
+//
 // describe('DictionaryService', () => {
 //     let service: DictionaryService;
-
-//     const dictionary: DictionaryMetadata = {
-//         id: 'not.json',
-//         description: 'Blablabla',
-//         title: 'My cool dictionary',
-//         nbWords: 1024,
-//     };
-
+//     let dictionaryPersistenceStub: SinonStubbedInstance<DictionaryPersistence>;
+//
+//     // const notDictionary: DictionaryMetadata = {
+//     //     _id: 'not.json',
+//     //     path: 'assets/not.json',
+//     //     description: 'Blablabla',
+//     //     title: 'My cool dictionary',
+//     //     nbWords: 1024,
+//     // };
+//
 //     const defaultDictionary: DictionaryMetadata = {
-//         id: 'dictionary.json',
+//         _id: 'dictionary.json',
+//         path: 'dictionary.json',
 //         description: 'Default Dictionary',
 //         title: 'Dictionnaire du serveur',
 //         nbWords: 2048,
 //     };
-
-//     const jsonDictionary: JsonDictionary = {
-//         description: 'Default Dictionary',
-//         title: 'Dictionnaire du serveur',
-//         words: ['alpha', 'beta', 'gamma', 'omega'],
-//     };
-
+//
+//     // const jsonDictionary: JsonDictionary = {
+//     //     description: 'Default Dictionary',
+//     //     title: 'Dictionnaire du serveur',
+//     //     words: ['alpha', 'beta', 'gamma', 'omega'],
+//     // };
+//
 //     beforeEach(() => {
-//         service = new DictionaryService();
+//         dictionaryPersistenceStub = createStubInstance(DictionaryPersistence);
+//         dictionaryPersistenceStub.add.resolves(true);
+//         dictionaryPersistenceStub.defaultMetadata = defaultDictionary;
+//         service = new DictionaryService(dictionaryPersistenceStub as unknown as DictionaryPersistence);
 //         mock({
-//             'assets/': {
+//             'assets/dictionaries/upload': {
 //                 'dictionary.json': '{"title":"Dico", "description":"French dictionary", "words":["alpha", "beta", "gamma"]}',
 //                 'not.json': Buffer.from([1, 2, 3]),
 //             },
 //         });
 //     });
-
+//
 //     afterEach(() => {
 //         mock.restore();
 //     });
-
+//
 //     it('should be created', () => {
 //         expect(service).to.be.ok;
 //     });
-
-//     it('should parse correctly', () => {
-//         service.add(jsonDictionary);
-//         const metadata = service.getMetadata(dictionary.id);
-//         if (metadata) {
-//             expect(service.parse(service.getFilepath(metadata))).to.be.true;
-//         } else {
-//             expect(metadata).not.to.be.undefined;
-//         }
+//
+//     it('should be initiated', async () => {
+//         const handlersSize = service['handlers'].size;
+//         await service.init();
+//         expect(handlersSize).to.equal(handlersSize + 1);
 //     });
-
-//     it('should not parse invalid files', () => {
-//         service.add(jsonDictionary);
-//         const metadata = service.getMetadata(dictionary.id);
-//         if (metadata) {
-//             expect(service.parse(service.getFilepath(metadata))).to.be.false;
-//         } else {
-//             expect(metadata).not.to.be.undefined;
-//         }
+//
+//     it('should parse correctly', async () => {
+//         const filepath = DictionaryService.getFilepath(defaultDictionary);
+//         expect(await service.add(filepath)).to.be.false;
 //     });
-
-//     it('should handle dictionaries correctly', () => {
-//         service.add(jsonDictionary);
-//         service.remove(dictionary);
-//         expect(service.dictionaries.length).to.equal(0);
+//
+//     it('should not parse invalid files', async () => {
+//         const filepath = DictionaryService.getFilepath(defaultDictionary);
+//         expect(await service.add(filepath)).to.be.false;
 //     });
-
-//     it('should not get rid of the default dictionary', () => {
-//         service.add(jsonDictionary);
-//         service.update([]);
-//         expect(service.dictionaries.length).to.equal(2);
-//         service.reset();
-//         service.update([dictionary]);
-//         expect(service.dictionaries.length).to.equal(2);
-//         service.reset();
-//         service.add(jsonDictionary);
-//         service.remove(defaultDictionary);
-//         expect(service.dictionaries.length).to.equal(1);
-//     });
-
-//     it('should get words properly', async () => {
-//         let words = await service.getWords(defaultDictionary);
-//         expect(words.length).to.equal(0);
-//         words = await service.getWords(dictionary);
-//         expect(words.length).to.equal(0);
+//
+//     it('should reset', async () => {
+//         await service.reset();
+//         assert.calledOnce(dictionaryPersistenceStub.reset);
+//         assert.calledOnce(dictionaryPersistenceStub.add);
 //     });
 // });

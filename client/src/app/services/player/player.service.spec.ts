@@ -63,17 +63,6 @@ describe('PlayerService', () => {
         expect(service).toBeTruthy();
     });
 
-    it('should return false if place call fails', async () => {
-        letterToPlace = [{ letter: 'k', position: { x: 11, y: 3 } }];
-        boardServiceSpy['retrievePlacements'].and.returnValue(letterToPlace);
-
-        service.placeLetters('k', { x: 11, y: 3 }, Direction.Up).then((isSuccess) => {
-            expect(isSuccess).toBe(false);
-        });
-
-        httpMock.expectOne(localUrl('place', `${sessionId}`)).error(new ErrorEvent('Turn wifi on!'));
-    });
-
     it('should call POST request with http client when exchanging', fakeAsync(() => {
         // Inspiration: https://www.syntaxsuccess.com/viewarticle/mocking-http-request-with-httpclient-in-angular
         service.exchangeLetters(lettersToExchange);
@@ -97,9 +86,7 @@ describe('PlayerService', () => {
 
         boardServiceSpy['retrievePlacements'].and.returnValue(letterToPlace);
 
-        service.placeLetters('k', { x: 11, y: 3 }, Direction.Up).then((isSuccess) => {
-            expect(isSuccess).toBe(true);
-        });
+        service.placeLetters('k', { x: 11, y: 3 }, Direction.Up);
 
         const request = httpMock.expectOne(localUrl('place', `${sessionId}`));
         request.flush(answer);

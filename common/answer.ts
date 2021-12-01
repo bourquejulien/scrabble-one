@@ -1,4 +1,4 @@
-export interface Answer {
+export interface Answer<T> {
     isSuccess: boolean;
-    body: string;
+    payload: T;
 }

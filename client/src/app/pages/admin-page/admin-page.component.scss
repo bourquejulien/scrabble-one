@@ -20,3 +20,8 @@ mat-grid-tile {
     display: flex;
     justify-content: center;
 }
+
+.dictionary-description {
+    white-space: nowrap;
+    overflow:hidden;
+}

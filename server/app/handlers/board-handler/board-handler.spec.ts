@@ -3,13 +3,14 @@
 /* eslint-disable max-classes-per-file -- Need more than one stub class */
 /* eslint-disable no-unused-expressions -- Needed for chai library assertions */
 /* eslint-disable @typescript-eslint/no-unused-expressions -- Needed for chai library assertions*/
-/* import { expect } from 'chai';
+import { expect } from 'chai';
 import { Board } from '@app/classes/board/board';
-import { BoardValidator } from '@app/classes/validation/board-validator';
 import { Bonus, Placement, Vec2 } from '@common';
 import { BoardHandler } from './board-handler';
 import { ValidationResponse } from '@app/classes/validation/validation-response';
-import { createSandbox } from 'sinon';
+import { createSandbox, createStubInstance } from 'sinon';
+import { DictionaryHandler } from '@app/handlers/dictionary-handler/dictionary-handler';
+import { BoardValidator } from '@app/classes/validation/board-validator';
 
 const BOARD_SIZE = 15;
 const COMBINED_WORD: Placement[] = [
@@ -38,11 +39,13 @@ class BoardValidatorStub {
 describe('BoardHandler', () => {
     let handler: BoardHandler;
     let boardValidatorStub: BoardValidatorStub;
+    let dictionaryHandlerStub: DictionaryHandler;
     let centerPosition: Vec2;
 
     beforeEach(() => {
         boardValidatorStub = new BoardValidatorStub();
-        handler = new BoardHandler(new Board(BOARD_SIZE), boardValidatorStub as unknown as BoardValidator, false);
+        dictionaryHandlerStub = createStubInstance(DictionaryHandler) as unknown as DictionaryHandler;
+        handler = new BoardHandler(new Board(BOARD_SIZE), boardValidatorStub as unknown as BoardValidator, false, dictionaryHandlerStub);
         const halfBoardSize = Math.floor(handler.immutableBoard.size / 2);
         centerPosition = { x: halfBoardSize, y: halfBoardSize };
     });
@@ -124,7 +127,6 @@ describe('BoardHandler', () => {
         createSandbox()
             .stub(stubbedBoard, 'getSquare')
             .returns({ letter: 'p', bonus: Bonus.L2, position: { x: 7, y: 7 } }).throws;
-        handler = new BoardHandler(stubbedBoard, boardValidatorStub as unknown as BoardValidator, false);
         expect(handler.retrieveNewLetters(COMBINED_WORD)).to.throw;
     });
-});*/
+});

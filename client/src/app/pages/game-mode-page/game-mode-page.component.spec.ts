@@ -20,7 +20,7 @@ describe('GameModePageComponent', () => {
     let fixture: ComponentFixture<GameModePageComponent>;
 
     beforeEach(async () => {
-        const stubbedAdminService = jasmine.createSpyObj('AdminService', ['retrieveDictionaries', 'retrieveUsernames'], { defaultDictionary: {} });
+        const stubbedAdminService = jasmine.createSpyObj('AdminService', ['retrieveDictionaries', 'retrievePlayerNames'], { defaultDictionary: {} });
 
         await TestBed.configureTestingModule({
             declarations: [GameModePageComponent, StubInitGameComponent],

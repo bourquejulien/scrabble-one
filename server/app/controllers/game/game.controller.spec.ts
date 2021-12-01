@@ -17,7 +17,8 @@ describe('GameController', () => {
 
     const dictionary: DictionaryMetadata = {
         description: 'Blablabla',
-        id: 'dictionary.json',
+        _id: 'dictionary.json',
+        path: 'test/dic.json',
         nbWords: 1024,
         title: 'My cool dictionary',
     };
