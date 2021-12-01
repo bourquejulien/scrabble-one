@@ -79,6 +79,7 @@ export class DictionaryService {
 
     async reset(): Promise<void> {
         await this.dictionaryPersistence.reset();
+        this.handlers.clear();
         fs.promises
             .rm(dictionaryPath, { recursive: true, force: true })
             .then(() => {
@@ -147,20 +148,26 @@ export class DictionaryService {
         return false;
     }
 
-    async getHandler(id: string): Promise<DictionaryHandler | null> {
-        const handler = this.handlers.get(id);
+    async getHandler(id: string): Promise<Answer<DictionaryHandler, string>> {
+        let handler = this.handlers.get(id) ?? null;
 
-        if (handler !== undefined) {
-            return handler;
+        if (handler != null) {
+            return { isSuccess: true, payload: handler };
         }
 
         const metadata = await this.dictionaryPersistence.getMetadataById(id);
 
         if (metadata === null) {
-            return null;
+            return { isSuccess: false, payload: 'Le dictionnaire spécifié est introuvable' };
         }
 
-        return await this.createHandler(metadata);
+        handler = await this.createHandler(metadata);
+
+        if (handler == null) {
+            return { isSuccess: false, payload: "Le dictionnaire n'est pas actuellement disponible" };
+        }
+
+        return { isSuccess: true, payload: handler };
     }
 
     async getJsonDictionary(id: string): Promise<JsonDictionary | null> {

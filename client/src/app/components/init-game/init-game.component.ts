@@ -46,7 +46,7 @@ export class InitGameComponent implements OnInit {
         readonly gameService: GameService,
         private readonly router: Router,
         private readonly roomService: RoomService,
-        public adminService: AdminService,
+        readonly adminService: AdminService,
         readonly dialogRef: MatDialogRef<InitGameComponent>,
         @Inject(MAT_DIALOG_DATA) readonly data: { gameType: GameType; gameMode: GameMode },
     ) {
@@ -85,17 +85,27 @@ export class InitGameComponent implements OnInit {
     }
 
     async init(): Promise<void> {
-        const needsToReroute: boolean = this.confirmInitialization();
+        if (!this.confirmInitialization()) {
+            return;
+        }
+
+        let needsToReroute = true;
+        if (this.data.gameType === GameType.SinglePlayer) {
+            needsToReroute &&= await this.initSinglePlayer();
+        } else {
+            needsToReroute &&= await this.initMultiplayer();
+        }
 
         if (needsToReroute) {
             this.dialogRef.close();
-
-            if (this.data.gameType === GameType.SinglePlayer) {
-                await this.initSinglePlayer();
-            } else {
-                await this.initMultiplayer();
-            }
+            return;
         }
+
+        await this.adminService.retrievePlayerNames();
+        await this.adminService.retrieveDictionaries();
+
+        this.botNames = this.adminService.virtualPlayerNamesByLevel(VirtualPlayerLevel.Easy);
+        this.dictionary = this.adminService.defaultDictionary as DictionaryMetadata;
     }
 
     manageTimeLimits() {
@@ -113,7 +123,7 @@ export class InitGameComponent implements OnInit {
         return this.virtualPlayerLevelNames[0] === this.formConfig.virtualPlayerLevelName ? VirtualPlayerLevel.Easy : VirtualPlayerLevel.Expert;
     }
 
-    private async initSinglePlayer(): Promise<void> {
+    private async initSinglePlayer(): Promise<boolean> {
         const singlePlayerConfig: SinglePlayerConfig = {
             gameType: GameType.SinglePlayer,
             gameMode: this.data.gameMode,
@@ -125,11 +135,18 @@ export class InitGameComponent implements OnInit {
             dictionary: this.dictionary,
         };
 
-        await this.gameService.startSinglePlayer(singlePlayerConfig);
+        const answer = await this.gameService.startSinglePlayer(singlePlayerConfig);
+
+        if (answer !== undefined) {
+            this.nameValidator.errors.push(answer.payload);
+            return false;
+        }
+
         await this.router.navigate(['game']);
+        return true;
     }
 
-    private async initMultiplayer(): Promise<void> {
+    private async initMultiplayer(): Promise<boolean> {
         const multiplayerConfig: MultiplayerCreateConfig = {
             gameType: GameType.Multiplayer,
             gameMode: this.data.gameMode,
@@ -139,8 +156,15 @@ export class InitGameComponent implements OnInit {
             dictionary: this.dictionary,
         };
 
+        const answer = await this.roomService.create(multiplayerConfig);
+
+        if (answer !== undefined) {
+            this.nameValidator.errors.push(answer.payload);
+            return false;
+        }
+
         await this.router.navigate(['waiting-room']);
-        await this.roomService.create(multiplayerConfig);
+        return true;
     }
 
     private forceSecondsToZero(): void {

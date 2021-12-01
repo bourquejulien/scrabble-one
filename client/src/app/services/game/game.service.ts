@@ -7,7 +7,7 @@ import { PlayerService } from '@app/services/player/player.service';
 import { RackService } from '@app/services/rack/rack.service';
 import { SessionService } from '@app/services/session/session.service';
 import { SocketClientService } from '@app/services/socket-client/socket-client.service';
-import { GameType, MessageType, ServerConfig, SessionStats, SinglePlayerConfig } from '@common';
+import { Answer, Failure, GameType, MessageType, ServerConfig, SessionStats, SinglePlayerConfig } from '@common';
 import { environmentExt } from '@environment-ext';
 import { BehaviorSubject, Subject } from 'rxjs';
 
@@ -49,13 +49,20 @@ export class GameService {
         this.gameRunning = false;
     }
 
-    async startSinglePlayer(config: SinglePlayerConfig): Promise<void> {
-        const serverConfig = await this.httpCLient.put<ServerConfig>(localUrl('game', 'init/single'), config).toPromise();
+    async startSinglePlayer(config: SinglePlayerConfig): Promise<Failure<string> | void> {
+        const answer = await this.httpCLient.put<Answer<ServerConfig, string>>(localUrl('game', 'init/single'), config).toPromise();
+
+        if (!answer.isSuccess) {
+            return answer;
+        }
+
+        const serverConfig = answer.payload;
+
         this.socketService.join(serverConfig.id);
         await this.start(serverConfig);
     }
 
-    async start(serverConfig: ServerConfig): Promise<void> {
+    start(serverConfig: ServerConfig): void {
         this.sessionService.serverConfig = serverConfig;
         this.gameRunning = true;
         this.onNextTurn(serverConfig.startId);

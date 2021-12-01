@@ -71,6 +71,13 @@ export class VirtualPlayerNameComponent implements OnInit, OnDestroy {
             return;
         }
 
+        const isNewName = this.playerNames.findIndex((p) => p.name === this.nameValidator.name) === -1;
+
+        if (!isNewName) {
+            this.nameValidator.errors.push('Le nom existe déjà');
+            return;
+        }
+
         if (this.originName == null) {
             this.adminService.addPlayerName(this.nameValidator.name, this.selectedPlayerLevel);
             return;
