@@ -48,12 +48,15 @@ fdescribe('InitGameComponent', () => {
     let component: InitGameComponent;
     let fixture: ComponentFixture<InitGameComponent>;
     let roomServiceSpyObj: jasmine.SpyObj<RoomService>;
+    let gameTypeVal: GameType;
+
     const NAMES = ['Jean', 'RenÉéÎîÉéÇçÏï', 'moulon', 'Jo', 'Josiannnnnnnnnnne', 'Jean123', 'A1', 'Alphonse', ''];
     const routerMock = {
         navigate: jasmine.createSpy('navigate').and.callThrough(),
     };
 
     beforeEach(async () => {
+        gameTypeVal = GameType.SinglePlayer;
         roomServiceSpyObj = jasmine.createSpyObj('RoomService', ['create']);
         roomServiceSpyObj.create.and.returnValue(Promise.resolve());
         await TestBed.configureTestingModule({
@@ -64,7 +67,7 @@ fdescribe('InitGameComponent', () => {
                 { provide: Router, useValue: routerMock },
                 { provide: GameService, useClass: GameServiceStub },
                 { provide: MatDialogRef, useClass: MatDialogStub },
-                { provide: MAT_DIALOG_DATA, useValue: { gameType: GameType.SinglePlayer } },
+                { provide: MAT_DIALOG_DATA, useValue: {gameType: gameTypeVal}},
             ],
         }).compileComponents();
     });
@@ -146,9 +149,19 @@ fdescribe('InitGameComponent', () => {
     });
 
     it('should init single player game if single player selected', async() => {
-        const spy = spyOn<any>(component, 'initSinglePlayer').and.callThrough();
+        const spy = spyOn<any>(component, 'initSinglePlayer');
         spyOn<any>(component, 'confirmInitialization').and.returnValue(true);
-        // component.data.gameType = GameType.Multiplayer;
+
+        await component.init();
+        spy.and.callThrough();
+
+        expect(spy).toHaveBeenCalled();
+    });
+
+    it('should init multiplayer player game if multiplayer player selected', async() => {
+        const spy = spyOn<any>(component, 'initMultiplayer');
+        spyOn<any>(component, 'confirmInitialization').and.returnValue(true);
+        component.data.gameType = GameType.Multiplayer;
 
         await component.init();
         spy.and.callThrough();
