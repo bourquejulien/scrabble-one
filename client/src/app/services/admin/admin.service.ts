@@ -1,7 +1,6 @@
 import { HttpClient, HttpErrorResponse, HttpEventType } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { environmentExt } from '@environment-ext';
-import { finalize } from 'rxjs/operators';
 import { BehaviorSubject, Observable, Subject, Subscription } from 'rxjs';
 import { Answer, DictionaryMetadata, VirtualPlayerLevel, VirtualPlayerName } from '@common';
 
@@ -41,12 +40,10 @@ export class AdminService {
         this.fileName = file.name;
         formData.append('file', file);
 
-        const upload$ = this.httpClient
-            .post(localUrl('dictionary', 'upload'), formData, {
-                reportProgress: true,
-                observe: 'events',
-            })
-            .pipe(finalize(() => this.finishUpload()));
+        const upload$ = this.httpClient.post<Answer<DictionaryMetadata[], string>>(localUrl('dictionary', 'upload'), formData, {
+            reportProgress: true,
+            observe: 'events',
+        });
 
         this.uploadSub = upload$.subscribe(
             (uploadEvent) => {
@@ -54,20 +51,16 @@ export class AdminService {
                     const progressMax = 100;
                     const total = uploadEvent.total ?? progressMax;
                     this.uploadProgress = Math.round(progressMax * (uploadEvent.loaded / total));
+                } else if (uploadEvent.type === HttpEventType.Response) {
+                    this.finishUpload(uploadEvent.body);
                 }
             },
             (err: HttpErrorResponse) => {
                 if (err.status >= ERROR_LEVEL) {
-                    this.errorSubject.next('Erreur lors du téléversement du dictionnaire');
+                    this.finishUpload();
                 }
             },
         );
-    }
-
-    finishUpload(): void {
-        this.uploadSub.unsubscribe();
-        this.uploadProgress = 0;
-        this.retrieveDictionaries();
     }
 
     async retrieveDictionaries(): Promise<void> {
@@ -83,7 +76,12 @@ export class AdminService {
     async updateDictionaries(): Promise<void> {
         const updatedMetadata = this.dictionaries.filter((d) => this.updatedDictionaries.has(d._id));
         const answer = await this.httpClient.post<Answer<DictionaryMetadata[]>>(localUrl('dictionary', 'update'), updatedMetadata).toPromise();
+        this.updatedDictionaries.clear();
         this.dictionaries = answer.payload;
+
+        if (!answer.isSuccess) {
+            this.errorSubject.next('Erreur lors de la mise à jours des dictionnaires');
+        }
     }
 
     dictionaryUpdated(dictionary: DictionaryMetadata): void {
@@ -123,14 +121,6 @@ export class AdminService {
         await this.httpClient.get<string[]>(localUrl('reset', '')).toPromise();
     }
 
-    private virtualPlayerUpdate(virtualPlayerNames: VirtualPlayerName[]) {
-        if (virtualPlayerNames.length === 0) {
-            return;
-        }
-        this.virtualPlayerNames.push(...virtualPlayerNames);
-        this.virtualPlayerSubject.next(virtualPlayerNames);
-    }
-
     get onVirtualPlayerUpdate(): Observable<VirtualPlayerName[]> {
         return this.virtualPlayerSubject.asObservable();
     }
@@ -141,5 +131,25 @@ export class AdminService {
 
     get defaultDictionary(): DictionaryMetadata | null {
         return this.dictionaries.find((d) => d._id === DEFAULT_DICTIONARY) ?? null;
+    }
+
+    private virtualPlayerUpdate(virtualPlayerNames: VirtualPlayerName[]) {
+        if (virtualPlayerNames.length === 0) {
+            return;
+        }
+        this.virtualPlayerNames.push(...virtualPlayerNames);
+        this.virtualPlayerSubject.next(virtualPlayerNames);
+    }
+
+    private finishUpload(answer: Answer<DictionaryMetadata[], string> | null = null): void {
+        this.uploadSub.unsubscribe();
+        this.uploadProgress = 0;
+
+        if (answer == null || !answer.isSuccess) {
+            this.errorSubject.next(answer?.payload ?? 'Erreur lors du téléversement du dictionnaire');
+            return;
+        }
+
+        this.dictionaries = answer.payload;
     }
 }

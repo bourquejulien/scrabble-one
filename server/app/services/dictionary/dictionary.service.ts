@@ -1,4 +1,4 @@
-import { DictionaryMetadata, JsonDictionary } from '@common';
+import { Answer, DictionaryMetadata, JsonDictionary } from '@common';
 import { Service } from 'typedi';
 import * as logger from 'winston';
 import path from 'path';
@@ -84,7 +84,7 @@ export class DictionaryService {
         await this.dictionaryPersistence.reset();
     }
 
-    async add(tempPath: string): Promise<boolean> {
+    async add(tempPath: string): Promise<Answer<DictionaryMetadata[], string>> {
         const json = await DictionaryService.parse(tempPath);
         const id = generateId();
         const newFilepath = path.resolve(path.join(dictionaryPath, id));
@@ -101,19 +101,22 @@ export class DictionaryService {
 
         if (!isAdded) {
             logger.debug('Dictionary was not added because there was a duplicate');
-            return false;
+            return { isSuccess: false, payload: `Échec de l'ajout : le dictionnaire ${metadata.title} existe déjà` };
         }
 
         await fs.promises.unlink(tempPath);
         await fs.promises.writeFile(newFilepath, JSON.stringify(json.words), 'utf-8');
         logger.debug(`Dictionary moved/renamed to ${newFilepath}`);
 
-        return true;
+        return { isSuccess: true, payload: await this.getMetadata() };
     }
 
-    async update(metadata: DictionaryMetadata[]): Promise<boolean> {
-        const promises = metadata.map(async (m) => this.dictionaryPersistence.update(m));
-        return (await Promise.all(promises)).reduce((prev, curr) => prev && curr, false);
+    async update(metadataList: DictionaryMetadata[]): Promise<Answer<DictionaryMetadata[]>> {
+        let isSuccess = true;
+        for (const metadata of metadataList) {
+            isSuccess &&= await this.dictionaryPersistence.update(metadata);
+        }
+        return { isSuccess, payload: await this.getMetadata() };
     }
 
     async remove(id: string): Promise<boolean> {
@@ -182,7 +185,7 @@ export class DictionaryService {
 
         if (words.length === 0) {
             logger.warn(`Cannot find dictionary ${metadata._id}`);
-            this.dictionaryPersistence.remove(metadata._id);
+            await this.dictionaryPersistence.remove(metadata._id);
             return null;
         }
 

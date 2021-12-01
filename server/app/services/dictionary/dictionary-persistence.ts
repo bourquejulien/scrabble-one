@@ -77,7 +77,7 @@ export class DictionaryPersistence {
     }
 
     async getMetadata(): Promise<DictionaryMetadata[]> {
-        const metaData = await this.metaDataCollection.find().toArray();
+        const metaData = await this.metaDataCollection.find().sort({ title: -1 }).toArray();
         metaData.forEach((m) => this.metaDataCache.set(m._id, m));
 
         return Array.from(this.metaDataCache.values());

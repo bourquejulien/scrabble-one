@@ -13,7 +13,7 @@
         <div>
             <mat-divider></mat-divider>
             <h3><b>Gérer les dictionnaires existants</b></h3>
-            <mat-selection-list>
+            <mat-selection-list (keydown.enter)="adminService.updateDictionaries()" >
                 <div class="dictionary-settings" *ngFor="let dictionary of adminService.dictionaries; let i = index">
                     <mat-list-item>
                         <mat-form-field appearance="outline">
