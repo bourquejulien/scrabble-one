@@ -7,79 +7,81 @@ import { Config } from '@app/config';
 import JsonBonuses from '@assets/bonus.json';
 import { Bonus, BonusInfos, Direction, LETTER_DEFINITIONS, Placement, Vec2 } from '@common';
 import { expect } from 'chai';
-import { BoardValidator } from './board-validator'
+import { BoardValidator } from './board-validator';
 const WORDS: string[] = ['pomme', 'orange', 'poire', 'raisin', 'peche', 'banane', 'bananes'];
-const mockedDictionary: Set<string> = new Set(WORDS)
+const mockedDictionary: Set<string> = new Set(WORDS);
 const generatePlacement = (word: string, initialPosition: Vec2, direction: Direction): Placement[] => {
-    const letters: Placement[] = []
+    const letters: Placement[] = [];
     let xIncr: number;
-    let yIncr: number
+    let yIncr: number;
     switch (direction) {
         case Direction.Down:
             xIncr = 0;
             yIncr = 1;
-            break
+            break;
         case Direction.Up:
             xIncr = 0;
             yIncr = -1;
-            break
+            break;
         case Direction.Right:
             xIncr = 1;
             yIncr = 0;
-            break
+            break;
         case Direction.Left:
             xIncr = -1;
             yIncr = 0;
-            break
+            break;
         default:
             xIncr = 0;
             yIncr = 0;
             break;
     }
     for (let i = 0; i < word.length; i++) {
-        letters.push({ letter: word[i], position: { x: initialPosition.x + xIncr * i, y: initialPosition.y + yIncr * i }});
+        letters.push({ letter: word[i], position: { x: initialPosition.x + xIncr * i, y: initialPosition.y + yIncr * i } });
     }
 
     return letters;
-}
+};
 const generateLetters = (): { [key: string]: number } => {
-    const letterValues: { [key: string]: number } = {}
+    const letterValues: { [key: string]: number } = {};
     for (const [letter, data] of LETTER_DEFINITIONS) {
         letterValues[letter] = data.points;
     }
     return letterValues;
-}
+};
 const retrieveBonuses = (): BonusInfos[] => {
-    const bonuses: BonusInfos[] = []
+    const bonuses: BonusInfos[] = [];
     for (const jsonBonus of JsonBonuses) {
         const bonusInfo: BonusInfos = { bonus: jsonBonus.Bonus as Bonus, position: jsonBonus.Position };
         bonuses.push(bonusInfo);
     }
     return bonuses;
-}
+};
 class StubDictionary implements Dictionary {
     lookup(word: string): boolean {
         return mockedDictionary.has(word) ?? false;
     }
+
     // eslint-disable-next-line no-unused-vars -- Unused method in BoardValidator
     lookUpStart(word: string): { isWord: boolean; isOther: boolean } {
         throw new Error('Method not implemented.');
     }
+
     // eslint-disable-next-line no-unused-vars -- Unused method in BoardValidator
     lookUpEnd(word: string): boolean {
         throw new Error('Method not implemented.');
     }
-
+}
 describe('BoardValidator', () => {
     let board: Board;
     let boardValidator: BoardValidator;
     let stubDictionaryService: StubDictionary;
-    let centerPosition: Vec2
+    let centerPosition: Vec2;
     beforeEach(() => {
         board = new Board(Config.GRID.GRID_SIZE, retrieveBonuses());
         stubDictionaryService = new StubDictionary();
         boardValidator = new BoardValidator(board, stubDictionaryService, generateLetters());
-        //const halfBoardSize = Math.floor(board.size / 2);
+        // const halfBoardSize = Math.floor(board.size / 2);
         // centerPosition = { x: halfBoardSize, y: halfBoardSize };
     });
     it('should be created', () => {
@@ -120,11 +122,11 @@ describe('BoardValidator', () => {
             { letter: 'c', position: { x: 7, y: 9 } },
             { letter: 'h', position: { x: 7, y: 10 } },
             { letter: 'e', position: { x: 7, y: 11 } },
-        ]
+        ];
         let response = boardValidator.validate(FIRST_PLACEMENT);
         expect(response.isSuccess).to.be.true;
         if (response.isSuccess) expect(response.score).to.eql(expectedScores[0]);
-        board.merge(FIRST_PLACEMENT)
+        board.merge(FIRST_PLACEMENT);
         response = boardValidator.validate(COMBINED_WORD);
         expect(response.isSuccess).to.be.true;
         if (response.isSuccess) expect(response.score).to.eql(expectedScores[1]);
@@ -141,7 +143,7 @@ describe('BoardValidator', () => {
             { x: 11, y: 5 },
             { x: 11, y: 6 },
             { x: 11, y: 8 },
-        ]
+        ];
         // eslint-disable-next-line dot-notation -- Needs to access private property for testing
         expect(BoardValidator['ensureCoherence'](board, COMBINED_WORD, Direction.Down)).to.be.false;
     });
