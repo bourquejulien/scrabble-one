@@ -14,7 +14,6 @@
     position: relative;
     margin-top: 0rem;
     top: 0rem;
-    margin-right: 5rem;
     right: 0rem;
 }
 
@@ -39,7 +38,7 @@
     position: absolute;
 }
 
-#tempcanvas {
+#temp-canvas {
     z-index: 2;
     position: absolute;
 }
@@ -57,5 +56,14 @@ canvas {
 }
 
 #play-button {
-    margin-right: 460px;
+    float: left;
+}
+
+#size-selector {
+    float: right;
+}
+
+.parent {
+    box-sizing: border-box;
+    width: 100%;
 }

@@ -1,33 +1,33 @@
 <div id="grid-container" (mouseenter)="isMouseOnBoard = true" (mouseleave)="isMouseOnBoard = false" tabindex="-1" (focusout)="lostFocus()">
-    <div id="board-canvas" [style.width.px]="width" [style.height.px]="height">
+    <div id="board-canvas" [style.width.px]="canvasDisplaySize" [style.height.px]="canvasDisplaySize">
         <canvas
             class="board-display"
             id="grid-canvas"
             #gridCanvas
-            [style.width.px]="width"
-            [style.height.px]="height"
-            [attr.width]="width"
-            [attr.height]="height"
+            [style.width.px]="canvasDisplaySize"
+            [style.height.px]="canvasDisplaySize"
+            [attr.width]="canvasDrawSize"
+            [attr.height]="canvasDrawSize"
         ></canvas>
         <canvas
             class="board-display"
-            id="squareCanvas"
+            id="square-canvas"
             #squareCanvas
-            [style.width.px]="width"
-            [style.height.px]="height"
+            [style.width.px]="canvasDisplaySize"
+            [style.height.px]="canvasDisplaySize"
             (click)="mouseHandlingService.mouseHitDetect($event)"
-            [attr.width]="width"
-            [attr.height]="height"
+            [attr.width]="canvasDrawSize"
+            [attr.height]="canvasDrawSize"
         ></canvas>
         <canvas
             class="board-display"
-            id="tempcanvas"
+            id="temp-canvas"
             #tempCanvas
-            [style.width.px]="width"
-            [style.height.px]="height"
+            [style.width.px]="canvasDisplaySize"
+            [style.height.px]="canvasDisplaySize"
             (click)="onMouseDown($event)"
-            [attr.width]="width"
-            [attr.height]="height"
+            [attr.width]="canvasDrawSize"
+            [attr.height]="canvasDrawSize"
         ></canvas>
     </div>
     <div class="parent">
