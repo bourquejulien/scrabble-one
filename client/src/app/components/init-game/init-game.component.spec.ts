@@ -15,7 +15,7 @@ import { PlayerType } from '@app/classes/player/player-type';
 import { AppMaterialModule } from '@app/modules/material.module';
 import { GameService } from '@app/services/game/game.service';
 import { RoomService } from '@app/services/room/room.service';
-import { GameMode, GameType } from '@common';
+import { GameMode, GameType, VirtualPlayerLevel } from '@common';
 import { InitGameComponent } from './init-game.component';
 
 @Injectable({
@@ -109,10 +109,10 @@ fdescribe('InitGameComponent', () => {
         expect(component.formConfig.secondPlayerName).not.toEqual(FIRST_PLAYER_NAME);
     });
 
-    // it('should get virtualPlayer level depending on its name', () => {
-    //     component.formConfig.virtualPlayerLevelName = 'Éléanore';
-    //     expect(component.virtualPlayerLevel).toEqual(VirtualPlayerLevel.Expert);
-    // });
+    it('should get virtualPlayer level depending on its name', () => {
+        component.formConfig.virtualPlayerLevelName = 'Éléanore';
+        expect(component.virtualPlayerLevel).toEqual(VirtualPlayerLevel.Expert);
+    });
 
     it('should call forceSecondsToZero ', fakeAsync(() => {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
