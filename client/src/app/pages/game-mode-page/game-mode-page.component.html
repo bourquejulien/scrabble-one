@@ -1,6 +1,9 @@
 <body class="background">
     <div class="container justified">
         <h2>Scrabble.one</h2>
+        <div id="home">
+            <button class="exit-button" mat-fab routerLink="/home"><mat-icon>exit_to_app</mat-icon></button>
+        </div>
         <section id="game">
             <div class="buttons">
                     <button class="option-button" mat-raised-button (click)="openDialog(typeOfGameType.SinglePlayer)">Jouer une partie en solo</button>
@@ -8,6 +11,5 @@
                     <button class="option-button" [routerLink]="['/room-list', gameMode]" mat-raised-button>Joindre une partie multijoueur</button>
             </div>
         </section>
-        <button class="exit-button" mat-fab routerLink="/home"><mat-icon>exit_to_app</mat-icon></button>
     </div>
 </body>

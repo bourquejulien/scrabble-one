@@ -155,7 +155,8 @@ describe('BoardComponent', () => {
     });
 
     it('should return correct height', () => {
-        expect(component.canvasDisplaySize).toEqual(Constants.GRID.CANVAS_SIZE.y);
+        const SCALE_FACTOR = 0.6;
+        expect(component.canvasDisplaySize).toEqual(Math.floor(Math.min(window.innerWidth * SCALE_FACTOR, window.innerHeight * SCALE_FACTOR)));
     });
 
     it('should update font size if size provided', () => {

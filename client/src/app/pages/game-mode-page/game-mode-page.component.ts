@@ -1,10 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
-import { InitGameComponent } from '@app/components/init-game/init-game.component';
-import { GameMode, GameType } from '@common';
 import { ActivatedRoute } from '@angular/router';
+import { InitGameComponent } from '@app/components/init-game/init-game.component';
 import { AdminService } from '@app/services/admin/admin.service';
 import { PlayerNameService } from '@app/services/player-name/player-name.service';
+import { GameMode, GameType } from '@common';
 
 @Component({
     selector: 'app-game-mode-page',
@@ -38,6 +38,6 @@ export class GameModePageComponent implements OnInit {
             throw new Error('Cannot retrieve default dictionnary');
         }
 
-        await this.dialog.open(InitGameComponent, { panelClass: 'init-game-dialog', data: { gameType, gameMode: this.gameMode } });
+        this.dialog.open(InitGameComponent, { panelClass: 'init-game-dialog', autoFocus: false , data: { gameType, gameMode: this.gameMode } });
     }
 }

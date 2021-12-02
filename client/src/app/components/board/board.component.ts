@@ -11,7 +11,7 @@ import { RackService } from '@app/services/rack/rack.service';
 import FontFaceObserver from 'fontfaceobserver';
 import { Subscription } from 'rxjs';
 
-const RE_SCALE_FACTOR = 0.55;
+const RE_SCALE_FACTOR = 0.6;
 
 @Component({
     selector: 'app-board',
@@ -138,6 +138,7 @@ export class BoardComponent implements OnDestroy, AfterViewInit {
         this.gridService.drawGrid(this.gridContext);
         this.gridService.drawSquares(this.squareContext);
         this.squareCanvas.nativeElement.focus();
+        this.mouseHandlingService.displaySize = this.canvasDisplaySize;
     }
 
     ngOnDestroy(): void {

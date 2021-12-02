@@ -12,14 +12,14 @@ import { CommandsService } from '@app/services/commands/commands.service';
 import { GameService } from '@app/services/game/game.service';
 import { ReserveService } from '@app/services/reserve/reserve.service';
 import { SessionService } from '@app/services/session/session.service';
-import { GameMode } from '@common';
 import { SocketClientService } from '@app/services/socket-client/socket-client.service';
+import { GameMode } from '@common';
 import { Subscription } from 'rxjs';
 
 export enum Icon {
-    Logout = 'exit_to_app',
+    Home = 'home',
     Message = 'question_answer',
-    Skip = 'cached',
+    Skip = 'skip_next',
     Dark = 'dark_mode',
 }
 
@@ -71,6 +71,12 @@ export class GamePageComponent implements OnDestroy {
         this.playerType = gameService.onTurn.getValue();
         this.buttonConfig = [
             {
+                color: 'accent',
+                icon: Icon.Home,
+                hover: 'Quitter la partie',
+                action: () => this.confirmQuit(),
+            },
+            {
                 color: 'primary',
                 icon: Icon.Dark,
                 hover: 'Activer le mode sombre',
@@ -78,18 +84,12 @@ export class GamePageComponent implements OnDestroy {
             },
             {
                 color: 'accent',
-                icon: Icon.Logout,
-                hover: 'Quitter la partie',
-                action: () => this.confirmQuit(),
-            },
-            {
-                color: 'primary',
                 icon: Icon.Message,
                 hover: 'Ouvrir/Fermer la boite de communication',
                 action: () => this.toggleDrawer(),
             },
             {
-                color: 'warn',
+                color: 'primary',
                 icon: Icon.Skip,
                 hover: 'Passer son tour',
                 action: async () => this.commandService.parseInput('!passer'),

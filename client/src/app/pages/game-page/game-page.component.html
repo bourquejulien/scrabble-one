@@ -12,7 +12,7 @@
             </span>
         </mat-card>
         <mat-card color="primary" id="scoreboard-reserve">
-            <span> Nombre de lettres dans la réserve : {{ reserveService.length }} </span>
+            <span> {{ reserveService.length }} lettre(s) dans la réserve </span>
         </mat-card>
         <mat-card color="primary" [ngClass]="gameService.currentTurn !== 'local' ? 'isTurn' : 'isNotTurn'" class="scoreboard-two">
             <span class="vertical-flex-items">{{ sessionService.gameConfig.secondPlayerName }}</span>
@@ -28,12 +28,12 @@
             <div class="button-bar" *ngFor="let config of buttonConfig">
                 <button
                     mat-fab
-                    *ngIf="playerType === 'local' || config.icon !== 'cached'"
+                    matTooltipPosition="right"
+                    *ngIf="playerType === 'local' || config.icon !== 'skip_next'"
                     class="fab-button"
                     [color]="config.color"
                     (click)="config.action()"
-                    [matTooltip]="config.hover"
-                >
+                    [matTooltip]="config.hover">
                     <mat-icon>
                         {{ config.icon }}
                     </mat-icon>
