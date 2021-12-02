@@ -132,7 +132,6 @@ export class GridService {
     }
 
     drawBonusOfPosition(squareContext: CanvasRenderingContext2D, position: Vec2): void {
-        // const gridCoord = this.computeCanvasCoord(position);
         const boardData = this.boardService.gameBoard;
         const square = boardData.board[position.x - 1][position.y - 1];
         if (square.bonus !== Bonus.None) {

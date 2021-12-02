@@ -14,10 +14,6 @@ describe('ScoreService', () => {
     let dbServiceStub: SinonStubbedInstance<DatabaseService>;
     let sandbox: SinonSandbox;
     let collectionStub: SinonStubbedInstance<Collection>;
-    // const score: Score = {
-    //     scoreValue: 100,
-    //     name: 'Monique',
-    // };
     beforeEach(() => {
         sandbox = createSandbox();
         dbServiceStub = sandbox.createStubInstance(DatabaseService);

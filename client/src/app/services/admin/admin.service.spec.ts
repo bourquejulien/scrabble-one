@@ -1,20 +1,17 @@
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
+import { DictionaryMetadata } from '@common';
 import { Observable } from 'rxjs';
 import { AdminService } from './admin.service';
-import { DictionaryMetadata } from '@common';
 
 describe('AdminService', () => {
     let service: AdminService;
-    // let httpMock: HttpTestingController;
-    // const localUrl = (call: string, id: string) => `${environmentExt.apiUrl}player/${call}/${id}`;
 
     beforeEach(() => {
         TestBed.configureTestingModule({
             imports: [HttpClientTestingModule],
         });
         service = TestBed.inject(AdminService);
-        // httpMock = TestBed.inject(HttpTestingController);
     });
 
     it('should be created', () => {
