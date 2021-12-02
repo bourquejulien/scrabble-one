@@ -15,7 +15,7 @@ const UPLOAD_DIR = process.env.TEMP_DIR ?? tmpdir();
 export class AdminController {
     router: Router;
 
-    constructor(private dictionaryService: DictionaryService, private adminService: AdminPersistence, private readonly scoreService: ScoreService) {
+    constructor(private dictionaryService: DictionaryService, private adminService: AdminPersistence, private scoreService: ScoreService) {
         this.configureRouter();
     }
 
@@ -127,13 +127,6 @@ export class AdminController {
         });
 
         this.router.delete('/playername/:name', async (req: Request, res: Response) => {
-            const name = req.params.name;
-
-            if (name === undefined) {
-                res.sendStatus(Constants.HTTP_STATUS.BAD_REQUEST);
-                return;
-            }
-
             const level = await this.adminService.deleteVirtualPlayer(req.params.name);
 
             if (level == null) {
