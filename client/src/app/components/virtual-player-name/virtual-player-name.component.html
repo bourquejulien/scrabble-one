@@ -1,21 +1,33 @@
-<mat-slide-toggle [(ngModel)]="isExpertSelected" (click)="reset()" color='primary' >{{isExpertSelected ?  'Joueurs experts' : 'Joueur débutants' }}</mat-slide-toggle>
+<mat-slide-toggle [(ngModel)]="isExpertSelected" (click)="reset()" color="primary">{{
+    isExpertSelected ? 'Joueurs experts' : 'Joueur débutants'
+}}</mat-slide-toggle>
 <div class="container">
     <mat-list>
         <mat-list-item *ngFor="let player of virtualPlayerNamesByLevel(selectedPlayerLevel); let i = index">
-            <mat-card class="player-name" [ngClass]="{'readonly': player.isReadonly}" (click)='select(player)'>{{player.name}}</mat-card>
+            <mat-card class="player-name" [ngClass]="{ readonly: player.isReadonly }" (click)="select(player)">{{ player.name }}</mat-card>
         </mat-list-item>
     </mat-list>
 
-    <mat-card *ngIf='isSelected' class="form-card" (keydown.enter)="changeName()">
+    <mat-card *ngIf="isSelected" class="form-card" (keydown.enter)="changeName()">
         <mat-form-field appearance="fill">
             <mat-label>Joueur</mat-label>
             <input matInput placeholder="Joueur" name="name" id="inputName" [(ngModel)]="this.nameValidator.name" />
         </mat-form-field>
         <div *ngFor="let error of nameValidator.errors" class="error">{{ error }}</div>
-        <div class='action-button'>
-            <button id="change-button" mat-raised-button (click)="changeName()" (keydown.enter)="changeName()" color="primary">{{originName === null ? 'Ajouter' : 'Modifier'}}</button>
-            <button *ngIf='originName !== null' id="delete-button" mat-raised-button (click)="this.adminService.removePlayerName(this.originName.name)" color="warn">Supprimer</button>
+        <div class="action-button">
+            <button id="change-button" mat-raised-button (click)="changeName()" (keydown.enter)="changeName()" color="primary">
+                {{ originName === null ? 'Ajouter' : 'Modifier' }}
+            </button>
+            <button
+                *ngIf="originName !== null"
+                id="delete-button"
+                mat-raised-button
+                (click)="this.playerNameService.removePlayerName(this.originName.name)"
+                color="warn"
+            >
+                Supprimer
+            </button>
         </div>
     </mat-card>
 </div>
-<button class='add-button' mat-stroked-button color="success" (click)="add()">Ajouter un joueur virtuel<mat-icon>done</mat-icon></button>
+<button class="add-button" mat-stroked-button color="success" (click)="add()">Ajouter un joueur virtuel<mat-icon>done</mat-icon></button>

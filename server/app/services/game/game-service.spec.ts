@@ -86,7 +86,7 @@ describe('GameService', () => {
         socketServiceStub = createStubInstance(SocketService);
         dictionaryServiceStub = createStubInstance(DictionaryService);
         const dictionaryHandler = createStubInstance(DictionaryHandler);
-        dictionaryServiceStub.getHandler.resolves(dictionaryHandler as unknown as DictionaryHandler);
+        dictionaryServiceStub.getHandler.resolves({ isSuccess: true, payload: dictionaryHandler as unknown as DictionaryHandler });
         statsServiceStub = createStubInstance(StatsService);
         sessionHandlerStub = createStubInstance(SessionHandler);
         sessionHandlerStub.addPlayer.returns();
@@ -114,9 +114,9 @@ describe('GameService', () => {
     });
 
     it('should not init if there is no dictionary handler single player', async () => {
-        dictionaryServiceStub.getHandler.resolves(null);
-        expect(await service.initMultiplayer(multiplayerCreateConfig)).to.equal('');
-        expect(await service.initSinglePlayer(singlePlayerConfig)).to.be.null;
+        dictionaryServiceStub.getHandler.resolves({ isSuccess: false, payload: '' });
+        expect(await service.initMultiplayer(multiplayerCreateConfig)).to.eql({ isSuccess: false, payload: '' });
+        expect(await service.initSinglePlayer(singlePlayerConfig)).to.eql({ isSuccess: false, payload: '' });
     });
 
     it('should init single player', async () => {
