@@ -1,5 +1,3 @@
-version: '3.4'
-
 x-app: &default
     networks:
         - mynetwork
@@ -31,9 +29,12 @@ services:
             - mongo
         ports:
             - "3000:3000"
+        volumes:
+            - server_data:/assets
 
 networks:
     mynetwork:
 
 volumes:
     mongo_data:
+    server_data:

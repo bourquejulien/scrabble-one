@@ -1,4 +1,4 @@
-import { FormControl, FormGroup, ValidatorFn, Validators } from '@angular/forms';
+import { FormControl, ValidatorFn, Validators } from '@angular/forms';
 
 const ERRORS: Map<string, string> = new Map([
     ['minlength', '*Le nom doit contenir au moins 3 caractères.\n'],
@@ -14,9 +14,17 @@ export class NameValidator {
     name: string;
     errors: string[];
 
+    private readonly validationFunction: ValidatorFn[];
+
     constructor() {
         this.name = '';
         this.errors = [];
+        this.validationFunction = [
+            Validators.required,
+            Validators.minLength(MIN_SIZE_NAME),
+            Validators.maxLength(MAX_SIZE_NAME),
+            NameValidator.validateName as ValidatorFn,
+        ];
     }
 
     private static validateName(control: FormControl): { [key: string]: boolean } | null {
@@ -37,18 +45,11 @@ export class NameValidator {
     }
 
     validate(): void {
-        const nameForm = new FormGroup({
-            control: new FormControl(this.name, [
-                Validators.required,
-                Validators.minLength(MIN_SIZE_NAME),
-                Validators.maxLength(MAX_SIZE_NAME),
-                NameValidator.validateName as ValidatorFn,
-            ]),
-        });
+        const control = new FormControl(this.name, this.validationFunction);
 
         this.errors.length = 0;
 
-        const errors = nameForm.get('control')?.errors;
+        const errors = control.errors;
         if (errors !== null && errors !== undefined) {
             this.errors.push(...Object.keys(errors).map((e) => ERRORS.get(e) ?? ''));
         }

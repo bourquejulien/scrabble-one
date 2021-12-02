@@ -4,6 +4,7 @@ import { InitGameComponent } from '@app/components/init-game/init-game.component
 import { GameMode, GameType } from '@common';
 import { ActivatedRoute } from '@angular/router';
 import { AdminService } from '@app/services/admin/admin.service';
+import { PlayerNameService } from '@app/services/player-name/player-name.service';
 
 @Component({
     selector: 'app-game-mode-page',
@@ -15,7 +16,12 @@ export class GameModePageComponent implements OnInit {
     typeOfGameMode: typeof GameMode;
     gameMode: GameMode;
 
-    constructor(readonly dialog: MatDialog, private readonly route: ActivatedRoute, private readonly adminService: AdminService) {
+    constructor(
+        readonly dialog: MatDialog,
+        private readonly route: ActivatedRoute,
+        private readonly adminService: AdminService,
+        private readonly playerNameService: PlayerNameService,
+    ) {
         this.typeOfGameType = GameType;
         this.typeOfGameMode = GameMode;
     }
@@ -25,7 +31,7 @@ export class GameModePageComponent implements OnInit {
     }
 
     async openDialog(gameType: GameType): Promise<void> {
-        await this.adminService.retrievePlayerNames();
+        await this.playerNameService.retrievePlayerNames();
         await this.adminService.retrieveDictionaries();
 
         if (this.adminService.defaultDictionary === null) {

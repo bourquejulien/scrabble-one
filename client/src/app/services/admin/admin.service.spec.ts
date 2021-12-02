@@ -20,7 +20,6 @@ describe('AdminService', () => {
 
     it('should return asynchronous objects after requesting an URL', () => {
         expect(service.resetSettings()).toBeInstanceOf(Promise);
-        expect(service.retrievePlayerNames()).toBeInstanceOf(Promise);
         expect(service.updateDictionaries()).toBeInstanceOf(Promise);
         expect(service.downloadDictionary('123')).toBeInstanceOf(Observable);
     });
