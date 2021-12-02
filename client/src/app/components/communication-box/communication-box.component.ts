@@ -80,19 +80,16 @@ export class CommunicationBoxComponent implements OnInit, OnDestroy {
         }
     }
 
-    private onMessage(message: Message) {
-        if (!this.messagingService.isDebug && message.messageType === MessageType.Log) {
-            return;
-        }
-
-        this.messages.push(message);
-        this.scroll();
-    }
-
-    private scroll(): void {
+    scroll(): void {
         this.messageContainer?.nativeElement.scroll({
             top: this.messageContainer.nativeElement.scrollHeight + this.messageContainer.nativeElement.offsetHeight,
             behavior: 'smooth',
         });
+    }
+    private onMessage(message: Message) {
+        if (!this.messagingService.isDebug && message.messageType === MessageType.Log) {
+            return;
+        }
+        this.messages.push(message);
     }
 }
