@@ -22,7 +22,7 @@ import { InitGameComponent } from './init-game.component';
     providedIn: 'root',
 })
 class dataStub {
-    gameType: GameType =  GameType.SinglePlayer; 
+    gameType: GameType; 
     gameMode: GameMode = GameMode.Classic;
 }
 
@@ -93,6 +93,7 @@ fdescribe('InitGameComponent', () => {
     beforeEach(() => {
         fixture = TestBed.createComponent(InitGameComponent);
         component = fixture.componentInstance;
+        component.data.gameType = GameType.SinglePlayer;
         fixture.detectChanges();
     });
 
@@ -176,9 +177,10 @@ fdescribe('InitGameComponent', () => {
     });
 
     it('should init multiplayer game if multiplayer selected', async() => {
+        component.data.gameType = GameType.Multiplayer;
+        fixture.detectChanges();
         const spy = spyOn<any>(component, 'initMultiplayer');
         spyOn<any>(component, 'confirmInitialization').and.returnValue(true);
-        component.data.gameType = GameType.Multiplayer;
         
         await component.init();
         spy.and.callThrough();
