@@ -20,12 +20,12 @@ export class AdminService {
     private uploadSub: Subscription;
 
     private readonly updatedDictionaries: Set<string>;
-    private readonly errorSubject: Subject<string>;
+    private readonly notifySubject: Subject<Answer<string>>;
 
     constructor(private httpClient: HttpClient) {
         this.dictionaries = [];
         this.updatedDictionaries = new Set<string>();
-        this.errorSubject = new Subject<string>();
+        this.notifySubject = new Subject<Answer<string>>();
 
         this.retrieveDictionaries();
     }
@@ -70,12 +70,19 @@ export class AdminService {
 
     async updateDictionaries(): Promise<void> {
         const updatedMetadata = this.dictionaries.filter((d) => this.updatedDictionaries.has(d._id));
+
+        if (updatedMetadata.length === 0) {
+            return;
+        }
+
         const answer = await this.httpClient.post<Answer<DictionaryMetadata[]>>(localUrl('dictionary', 'update'), updatedMetadata).toPromise();
         this.updatedDictionaries.clear();
         this.dictionaries = answer.payload;
 
-        if (!answer.isSuccess) {
-            this.errorSubject.next('Erreur lors de la mise à jours des dictionnaires');
+        if (answer.isSuccess) {
+            this.notifySubject.next({ isSuccess: true, payload: 'Dictionnaires mis à jours' });
+        } else {
+            this.notifySubject.next({ isSuccess: false, payload: 'Erreur lors de la mise à jours des dictionnaires' });
         }
     }
 
@@ -95,12 +102,12 @@ export class AdminService {
         await this.httpClient.get<string[]>(localUrl('reset', '')).toPromise();
     }
 
-    get onerror(): Observable<string> {
-        return this.errorSubject.asObservable();
-    }
-
     get defaultDictionary(): DictionaryMetadata | null {
         return this.dictionaries.find((d) => d._id === DEFAULT_DICTIONARY) ?? null;
+    }
+
+    get onNotify(): Observable<Answer<string>> {
+        return this.notifySubject.asObservable();
     }
 
     private finishUpload(answer: Answer<DictionaryMetadata[], string> | null = null): void {
@@ -108,9 +115,11 @@ export class AdminService {
         this.uploadProgress = 0;
 
         if (answer == null || !answer.isSuccess) {
-            this.errorSubject.next(answer?.payload ?? 'Erreur lors du téléversement du dictionnaire');
+            this.notifySubject.next({ isSuccess: false, payload: answer?.payload ?? 'Erreur lors du téléversement du dictionnaire' });
             return;
         }
+
+        this.notifySubject.next({ isSuccess: true, payload: 'Dictionnaire ajouté avec succès' });
 
         this.dictionaries = answer.payload;
     }

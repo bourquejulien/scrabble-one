@@ -16,7 +16,7 @@ const schema = {
     required: ['title', 'description', 'words'],
 };
 
-const dictionaryPath = process.env.UPLOAD_DIR ?? process.cwd() + '/assets/dictionaries/upload/';
+const dictionaryPath = process.env.UPLOAD_DIR ?? process.cwd() + path.join('assets', 'dictionaries', 'upload');
 
 @Service()
 export class DictionaryService {
@@ -37,16 +37,8 @@ export class DictionaryService {
 
     private static async parse(filepath: string): Promise<JsonDictionary> {
         const data = await fs.promises.readFile(filepath, 'utf8');
-        let dictionary: JsonDictionary;
-
-        try {
-            dictionary = JSON.parse(data) as JsonDictionary;
-            logger.debug('Dictionary parsing successful');
-        } catch (err) {
-            const errorMessage = 'JSON.parse() cant parse the content of that dictionary';
-            logger.error(errorMessage);
-            return Promise.reject(errorMessage);
-        }
+        const dictionary = JSON.parse(data) as JsonDictionary;
+        logger.debug('Dictionary parsing successful');
 
         if (!this.validate(dictionary).valid) {
             return Promise.reject('Dictionary format invalid');
@@ -92,7 +84,14 @@ export class DictionaryService {
     }
 
     async add(tempPath: string): Promise<Answer<DictionaryMetadata[], string>> {
-        const json = await DictionaryService.parse(tempPath);
+        let json;
+
+        try {
+            json = await DictionaryService.parse(tempPath);
+        } catch (err) {
+            return { isSuccess: false, payload: 'Le format du dictionnaire est invalide' };
+        }
+
         const id = generateId();
         const newFilepath = path.resolve(path.join(dictionaryPath, id));
 

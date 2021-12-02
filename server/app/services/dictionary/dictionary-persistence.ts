@@ -105,6 +105,12 @@ export class DictionaryPersistence {
     }
 
     private async isDuplicate(dictionaryMetadata: DictionaryMetadata): Promise<boolean> {
+        for (const metadata of this.metaDataCache.values()) {
+            if (metadata.title === dictionaryMetadata.title) {
+                return true;
+            }
+        }
+
         const response = await this.metaDataCollection.findOne({ title: dictionaryMetadata.title });
         return response != null && response._id !== dictionaryMetadata._id;
     }

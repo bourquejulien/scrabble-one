@@ -53,7 +53,7 @@ export class AdminController {
                     const answer = await this.dictionaryService.add(file.filepath);
                     res.json(answer);
                 } catch (err) {
-                    logger.warn('Dictionary parsing error', err);
+                    logger.warn('Error while adding dictionnary', err);
                     res.sendStatus(Constants.HTTP_STATUS.BAD_REQUEST);
                 }
             });

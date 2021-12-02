@@ -13,7 +13,7 @@
         <div>
             <mat-divider></mat-divider>
             <h3><b>Gérer les dictionnaires existants</b></h3>
-            <mat-selection-list (keydown.enter)="adminService.updateDictionaries()" >
+            <mat-selection-list (keydown.enter)="updateDictionaries()" >
                 <div class="dictionary-settings" *ngFor="let dictionary of adminService.dictionaries; let i = index">
                     <mat-list-item>
                         <mat-form-field appearance="outline">
@@ -33,7 +33,7 @@
                         </button>
                     </mat-list-item>
                 </div>
-                <button mat-stroked-button color="success" (click)="adminService.updateDictionaries()">
+                <button mat-stroked-button color="success" (click)="updateDictionaries()">
                     Accepter les modifications <mat-icon>done</mat-icon>
                 </button>
             </mat-selection-list>
@@ -77,4 +77,3 @@
         <button mat-stroked-button color="warn" (click)="resetSettings()">Réinitialiser les réglages<mat-icon>warning</mat-icon></button>
     </mat-expansion-panel>
 </mat-accordion>
-
