@@ -117,6 +117,18 @@ describe('VirtualPlayerNameComponent', () => {
         expect(spy).toHaveBeenCalled();
     });
 
+    it('should change player name if name valid and not in bot names list', () => {
+        component.originName = null;
+        const spy = spyOn(component.playerNameService, 'addPlayerName');
+
+        spyOnProperty(component.nameValidator, 'isValid').and.returnValue(true);
+        component.playerNames = playerNameList;
+        component.nameValidator.name = 'ZaWarudo';
+
+        component.changeName();
+        expect(spy).toHaveBeenCalled();
+    });
+
     it('should not change player name if name invalid', () => {
         const spy = spyOn(component.playerNameService, 'updatePlayerName');
         spyOnProperty(component.nameValidator, 'isValid').and.returnValue(false);
@@ -154,5 +166,32 @@ describe('VirtualPlayerNameComponent', () => {
 
         component.ngOnInit();
         expect(spy).toHaveBeenCalled();
+    });
+
+    it('should return level expert', () => {
+        component.isExpertSelected = true;
+        expect(component.selectedPlayerLevel).toBe(VirtualPlayerLevel.Expert);
+    });
+
+    it('callback in virtualPlayerNamesByLevel should work', () => {
+        component.playerNames = [
+            {
+                name: 'Sailor Mars',
+                level: VirtualPlayerLevel.Expert,
+                isReadonly: true,
+            },
+            {
+                name: 'Sailor Moon',
+                level: VirtualPlayerLevel.Easy,
+                isReadonly: true,
+            },
+            {
+                name: 'Vegeta',
+                level: VirtualPlayerLevel.Expert,
+                isReadonly: true,
+            },
+        ];
+        const newList = component.virtualPlayerNamesByLevel(VirtualPlayerLevel.Easy);
+        expect(component.playerNames).not.toBe(newList);
     });
 });
