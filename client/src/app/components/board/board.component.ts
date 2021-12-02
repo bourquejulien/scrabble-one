@@ -11,7 +11,7 @@ import { RackService } from '@app/services/rack/rack.service';
 import FontFaceObserver from 'fontfaceobserver';
 import { Subscription } from 'rxjs';
 
-const RE_SCALE_FACTOR = 0.55;
+const RE_SCALE_FACTOR = 0.60;
 
 @Component({
     selector: 'app-board',
