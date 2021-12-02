@@ -1,32 +1,38 @@
-/* eslint-disable @typescript-eslint/no-unused-expressions */
-import { CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA } from '@angular/core';
+/* eslint-disable dot-notation -- we need access to private properties for the test */
+/* eslint-disable @typescript-eslint/no-empty-function */
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
+import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { Injectable } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { FormsModule } from '@angular/forms';
-import { MatDialog } from '@angular/material/dialog';
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { cleanStyles } from '@app/classes/helpers/cleanup.helper';
-import { PlayerType } from '@app/classes/player/player-type';
-import { AppMaterialModule } from '@app/modules/material.module';
+import { MatDialogModule, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { GameService } from '@app/services/game/game.service';
 import { OpponentQuitComponent } from './opponent-quit.component';
+@Injectable({
+    providedIn: 'root',
+})
+class MatDialogStub {
+    closeAll() {
+        // Does Nothing
+    }
+}
 
 describe('OpponentQuitComponent', () => {
     let matDialogSpy: jasmine.SpyObj<MatDialog>;
     let component: OpponentQuitComponent;
     let fixture: ComponentFixture<OpponentQuitComponent>;
     let gameServiceSpy: jasmine.SpyObj<GameService>;
-    const playerType = PlayerType.Local;
+
     beforeEach(async () => {
-        matDialogSpy = jasmine.createSpyObj('MatBar', ['open', 'closeAll']);
-        gameServiceSpy = jasmine.createSpyObj('GameService', ['reset'], { currentTurn: playerType });
+        gameServiceSpy = jasmine.createSpyObj('GameService', ['reset']);
         await TestBed.configureTestingModule({
             declarations: [OpponentQuitComponent],
-            imports: [AppMaterialModule, BrowserAnimationsModule, FormsModule],
+            imports: [HttpClientTestingModule, MatDialogModule],
             providers: [
+                { provide: MatDialogRef, useClass: MatDialogStub },
                 { provide: GameService, useValue: gameServiceSpy },
-                { provide: MatDialog, useValue: matDialogSpy },
+                { provide: MAT_DIALOG_DATA, useValue: {} },
             ],
-            schemas: [CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA],
         }).compileComponents();
     });
 
@@ -40,15 +46,20 @@ describe('OpponentQuitComponent', () => {
         expect(component).toBeTruthy();
     });
 
-    it('should call reset on gameService', () => {
+    it('should reset game if quit', () => {
         component.quit();
-        expect(gameServiceSpy.reset).toHaveBeenCalled();
+        expect(gameServiceSpy['reset']).toHaveBeenCalled();
     });
 
-    it('should call closeAll on gameService', () => {
+    it('should close all dialogs if quit', () => {
+        const spy = spyOn<any>(component['dialogRef'], 'closeAll');
+        component.quit();
+        expect(spy).toHaveBeenCalled();
+    });
+
+    it('should close all dialogs if continue', () => {
+        const spy = spyOn<any>(component['dialogRef'], 'closeAll');
         component.continue();
-        expect(matDialogSpy.closeAll).toHaveBeenCalled();
+        expect(spy).toHaveBeenCalled();
     });
-
-    afterAll(() => cleanStyles());
 });
