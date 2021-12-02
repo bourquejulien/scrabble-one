@@ -8,7 +8,7 @@
 import { expect } from 'chai';
 import { SessionStatsHandler } from '@app/handlers/stats-handlers/session-stats-handler/session-stats-handler';
 import { GoalHandler } from '@app/handlers/goal-handler/goal-handler';
-import { createSandbox, createStubInstance } from 'sinon';
+import { createSandbox, createStubInstance, stub } from 'sinon';
 import { SocketHandler } from '@app/handlers/socket-handler/socket-handler';
 import { ReserveHandler } from '@app/handlers/reserve-handler/reserve-handler';
 import { PlayerStatsHandler } from '@app/handlers/stats-handlers/player-stats-handler/player-stats-handler';
@@ -31,11 +31,15 @@ describe('SessionStatsHandler', () => {
         goalHandlerStub['start'] = () => {};
         reserveHandlerStub = createStubInstance(ReserveHandler) as unknown as ReserveHandler;
         handler = new SessionStatsHandler(socketHandlerStub, reserveHandlerStub, goalHandlerStub);
-        const playerStatsHandlerStub1 = createStubInstance(PlayerStatsHandler) as unknown as PlayerStatsHandler;
+        const playerStatsHandlerStub1 = createStubInstance(PlayerStatsHandler);
         playerStatsHandlerStub1['id'] = 'id';
         playerStatsHandlerStub1['rackScore'] = 7;
         playerStatsHandlerStub1['scoreAdjustment'] = 10;
-        handler['playerStatsHandlers'] = [playerStatsHandlerStub1];
+        stub(playerStatsHandlerStub1, 'stats').get(() => {
+            return { points: 100, rackSize: 0 };
+        });
+        handler['playerStatsHandlers'].push(playerStatsHandlerStub1 as unknown as PlayerStatsHandler);
+        handler['playerStatsHandlers'].push(playerStatsHandlerStub1 as unknown as PlayerStatsHandler);
     });
 
     it('should be created', () => {
@@ -43,7 +47,7 @@ describe('SessionStatsHandler', () => {
         expect(handler).to.be.ok;
     });
 
-    it('should return the correct playerhandler', () => {
+    it('should return playerhandler', () => {
         expect(handler.getPlayerStatsHandler('id')).to.be.instanceof(PlayerStatsHandler);
         handler['playerStatsHandlers'] = [];
         const sandbox = createSandbox();
@@ -57,18 +61,32 @@ describe('SessionStatsHandler', () => {
         sandbox.assert.calledOnce(spy);
         sandbox.restore();
     });
-    it('should start correctly', () => {
+    it('should start', () => {
         const sandbox = createSandbox();
         const spy = sandbox.spy(goalHandlerStub, 'start');
         handler.start();
         sandbox.assert.calledWith(spy, ['id']);
         sandbox.restore();
     });
-    it('should end correctly', () => {
+    it('should end', () => {
         const sandbox = createSandbox();
         sandbox.stub(reserveHandlerStub, 'length').get(() => 0);
         handler.end();
         sandbox.restore();
+        // TODO
+    });
+    it('should end and adjust scores', () => {
+        const playerStatsHandlerStub1 = createStubInstance(PlayerStatsHandler);
+        playerStatsHandlerStub1['rackSize'] = 0;
+        const sandbox = createSandbox();
+        handler.playerStatsHandlers = [
+            playerStatsHandlerStub1 as unknown as PlayerStatsHandler,
+            playerStatsHandlerStub1 as unknown as PlayerStatsHandler,
+        ];
+        sandbox.stub(reserveHandlerStub, 'length').get(() => 0);
+        handler.end();
+        sandbox.restore();
+        // TODO
     });
     it('should tell when it has skipped', () => {
         const playerStatsHandlerStub1 = createStubInstance(PlayerStatsHandler) as unknown as PlayerStatsHandler;
@@ -80,20 +98,21 @@ describe('SessionStatsHandler', () => {
         handler['playerStatsHandlers'] = [playerStatsHandlerStub1];
         expect(handler['isOverSkipLimit']).to.be.false;
     });
-    // it('should update data when triggered by events', () => { // TODO passes randomly...
-    //     const sandbox = createSandbox();
-    //     const playerStatsHandlerStub2 = createStubInstance(PlayerStatsHandler) as unknown as PlayerStatsHandler;
-    //     playerStatsHandlerStub2['id'] = 'id';
-    //     playerStatsHandlerStub2['rackScore'] = 7;
-    //     playerStatsHandlerStub2['scoreAdjustment'] = 10;
-    //
-    //     handler['playerStatsHandlers'].push(playerStatsHandlerStub2);
-    //     goalUpdateSubject.next(undefined);
-    //     sandbox.stub(playerStatsHandlerStub2, 'stats').get(() => {
-    //         return { points: 100, rackSize: 0 };
-    //     });
-    //     sandbox.restore();
-    // });
+    it('should update data when triggered by events', () => {
+        // TODO passes randomly...
+        const sandbox = createSandbox();
+        const playerStatsHandlerStub2 = createStubInstance(PlayerStatsHandler) as unknown as PlayerStatsHandler;
+        playerStatsHandlerStub2['id'] = 'id';
+        playerStatsHandlerStub2['rackScore'] = 7;
+        playerStatsHandlerStub2['scoreAdjustment'] = 10;
+
+        handler['playerStatsHandlers'].push(playerStatsHandlerStub2);
+        handler['getPlayerStatsHandler']('id');
+        goalUpdateSubject.next(undefined);
+
+        // TODO
+        sandbox.restore();
+    });
     it('should tell when there is no winner', () => {
         const sandbox = createSandbox();
         handler['playerStatsHandlers'] = [];
@@ -113,5 +132,8 @@ describe('SessionStatsHandler', () => {
         });
         expect(handler['winnerId']).to.be.eq('');
         sandbox.restore();
+    });
+    it('should tell when game is finished', () => {
+        expect(handler.isEndGame).to.be.true;
     });
 });
