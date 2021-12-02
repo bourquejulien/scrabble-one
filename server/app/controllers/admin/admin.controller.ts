@@ -15,11 +15,7 @@ const UPLOAD_DIR = process.env.TEMP_DIR ?? tmpdir();
 export class AdminController {
     router: Router;
 
-    constructor(
-        private dictionaryService: DictionaryService,
-        private readonly adminService: AdminPersistence,
-        private readonly scoreService: ScoreService,
-    ) {
+    constructor(private dictionaryService: DictionaryService, private adminService: AdminPersistence, private readonly scoreService: ScoreService) {
         this.configureRouter();
     }
 
@@ -66,7 +62,6 @@ export class AdminController {
             const answer = await this.dictionaryService.update(metadataToUpdate);
 
             logger.debug('Dictionary update ' + (answer.isSuccess ? 'succeeded' : 'failed'));
-
             res.json(answer);
         });
 
