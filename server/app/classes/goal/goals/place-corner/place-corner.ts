@@ -1,8 +1,8 @@
+import { BaseGoal, Goal } from '@app/classes/goal/base-goal';
 import { PlacementNotifier } from '@app/classes/goal/notifiers/placement-notifier';
 import { ValidationResponse } from '@app/classes/validation/validation-response';
-import { BaseGoal, Goal } from '@app/classes/goal/base-goal';
-import { Vec2 } from '@common';
 import { Config } from '@app/config';
+import { Vec2 } from '@common';
 
 const GRID_MAX_POSITION = Config.GRID.GRID_SIZE - 1;
 
@@ -27,7 +27,7 @@ export class PlaceCorner extends BaseGoal implements PlacementNotifier {
     }
 
     notifyPlacement(validationResponse: ValidationResponse, id: string): void {
-        if (!validationResponse.isSuccess || this.guard(id)) {
+        if (this.guard(id) || !validationResponse.isSuccess) {
             return;
         }
 

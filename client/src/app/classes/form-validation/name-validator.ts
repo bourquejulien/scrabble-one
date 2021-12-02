@@ -22,8 +22,8 @@ export class NameValidator {
     private static validateName(control: FormControl): { [key: string]: boolean } | null {
         // We make sure that player name is considered as a string
         const playerName = control.value as string;
-
-        if (playerName === undefined || playerName === null || playerName === '') {
+        const validateName = playerName === undefined || playerName === null || playerName === '';
+        if (validateName) {
             return null;
         }
 

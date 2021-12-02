@@ -1,9 +1,9 @@
 import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { Constants } from '@app/constants/global.constants';
 import { CommandsService } from '@app/services/commands/commands.service';
+import { MessagingService } from '@app/services/messaging/messaging.service';
 import { SessionService } from '@app/services/session/session.service';
 import { Message, MessageType } from '@common';
-import { MessagingService } from '@app/services/messaging/messaging.service';
 import { Subscription } from 'rxjs';
 
 @Component({
@@ -81,7 +81,7 @@ export class CommunicationBoxComponent implements OnInit, OnDestroy {
     }
 
     private onMessage(message: Message) {
-        if (!this.messagingService.isDebug && message.messageType === MessageType.Log) {
+        if (message.messageType === MessageType.Log && !this.messagingService.isDebug) {
             return;
         }
 
