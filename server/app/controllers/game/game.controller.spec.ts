@@ -63,13 +63,13 @@ describe('GameController', () => {
     });
 
     it('PUT /init/single should succeed', async () => {
-        gameService.initSinglePlayer.resolves(serverConfig);
+        gameService.initSinglePlayer.resolves({ isSuccess: true, payload: serverConfig });
         return request(expressApp)
             .put('/api/game/init/single')
             .send(singlePlayerConfig)
             .then((response) => {
                 expect(response.status).to.be.equal(Constants.HTTP_STATUS.OK);
-                expect(response.body).to.deep.equal(serverConfig);
+                expect(response.body).to.deep.equal({ isSuccess: true, payload: serverConfig });
             });
     });
 
@@ -107,13 +107,13 @@ describe('GameController', () => {
     });
 
     it('PUT /init/multi should succeed', async () => {
-        gameService.initMultiplayer.resolves(multiplayerConfig);
+        gameService.initMultiplayer.resolves({ isSuccess: true, payload: multiplayerConfig });
         return request(expressApp)
             .put('/api/game/init/multi')
             .send(multiplayerCreateConfig)
             .then((response) => {
                 expect(response.status).to.be.equal(Constants.HTTP_STATUS.OK);
-                expect(response.body).to.deep.equal(multiplayerConfig);
+                expect(response.body).to.deep.equal({ isSuccess: true, payload: multiplayerConfig });
             });
     });
 

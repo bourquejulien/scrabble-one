@@ -6,10 +6,24 @@
             <p>Choix du mode de jeu</p>
             <div class="button-group">
                 <div class="dropdown">
-                    <button class="button1" mat-raised-button matTooltip="Rien de mieux qu'une bonne vieille partie de Scrabble. Jouer contre un joueur virtuel ou un ami avec les règles classiques." [routerLink]="['/settings', gameMode.Classic]">Scrabble classique</button>
+                    <button
+                        class="button1"
+                        mat-raised-button
+                        matTooltip="Rien de mieux qu'une bonne vieille partie de Scrabble. Jouer contre un joueur virtuel ou un ami avec les règles classiques."
+                        [routerLink]="['/settings', gameMode.Classic]"
+                    >
+                        Scrabble classique
+                    </button>
                 </div>
                 <div class="dropdown">
-                    <button class="button1" mat-raised-button matTooltip="Une variante amusante et plus active de Scrabble. Jouer contre un joueur virtuel ou un ami. Ajout d'objectifs qui pimentent la partie" [routerLink]="['/settings', gameMode.Log2990]">Scrabble LOG2990</button>
+                    <button
+                        class="button1"
+                        mat-raised-button
+                        matTooltip="Une variante amusante et plus active de Scrabble. Jouer contre un joueur virtuel ou un ami. Ajout d'objectifs qui pimentent la partie"
+                        [routerLink]="['/settings', gameMode.Log2990]"
+                    >
+                        Scrabble LOG2990
+                    </button>
                 </div>
             </div>
         </section>

@@ -3,7 +3,16 @@ import { Injectable } from '@angular/core';
 import { Constants } from '@app/constants/global.constants';
 import { GameService } from '@app/services/game/game.service';
 import { SocketClientService } from '@app/services/socket-client/socket-client.service';
-import { AvailableGameConfig, ConvertConfig, MultiplayerCreateConfig, MultiplayerJoinConfig, ServerConfig, VirtualPlayerLevel } from '@common';
+import {
+    Answer,
+    AvailableGameConfig,
+    ConvertConfig,
+    Failure,
+    MultiplayerCreateConfig,
+    MultiplayerJoinConfig,
+    ServerConfig,
+    VirtualPlayerLevel,
+} from '@common';
 import { environmentExt } from '@environment-ext';
 import { Observable, Subject } from 'rxjs';
 
@@ -32,11 +41,15 @@ export class RoomService {
         this.pendingRoomId = '';
     }
 
-    async create(createConfig: MultiplayerCreateConfig): Promise<void> {
-        const id = await this.httpCLient.put<string>(localUrl('game', 'init/multi'), createConfig).toPromise();
-        this.socketService.join(id);
+    async create(createConfig: MultiplayerCreateConfig): Promise<Failure<string> | void> {
+        const answer = await this.httpCLient.put<Answer<string>>(localUrl('game', 'init/multi'), createConfig).toPromise();
 
-        this.pendingRoomId = id;
+        if (!answer.isSuccess) {
+            return answer;
+        }
+
+        this.socketService.join(answer.payload);
+        this.pendingRoomId = answer.payload;
     }
 
     async abort(): Promise<void> {

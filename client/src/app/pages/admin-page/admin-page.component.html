@@ -13,16 +13,31 @@
         <div>
             <mat-divider></mat-divider>
             <h3><b>Gérer les dictionnaires existants</b></h3>
-            <mat-selection-list>
+            <mat-selection-list (keydown.enter)="updateDictionaries()">
                 <div class="dictionary-settings" *ngFor="let dictionary of adminService.dictionaries; let i = index">
                     <mat-list-item>
                         <mat-form-field appearance="outline">
                             <mat-label>Nom du dictionnaire</mat-label>
-                            <input [disabled]='adminService.isDefaultDictionary(dictionary)' matInput required placeholder="Nom du dictionnaire" [(ngModel)]="dictionary.title" (ngModelChange)="adminService.dictionaryUpdated(dictionary)" />
+                            <input
+                                [disabled]="adminService.isDefaultDictionary(dictionary)"
+                                matInput
+                                required
+                                placeholder="Nom du dictionnaire"
+                                [(ngModel)]="dictionary.title"
+                                (ngModelChange)="adminService.dictionaryUpdated(dictionary)"
+                            />
                         </mat-form-field>
                         <mat-form-field appearance="fill">
                             <mat-label>Description du dictionnaire</mat-label>
-                            <textarea class="dictionary-description" rows="1" [disabled]='adminService.isDefaultDictionary(dictionary)' matInput required [(ngModel)]="dictionary.description" (ngModelChange)="adminService.dictionaryUpdated(dictionary)" ></textarea>
+                            <textarea
+                                class="dictionary-description"
+                                rows="1"
+                                [disabled]="adminService.isDefaultDictionary(dictionary)"
+                                matInput
+                                required
+                                [(ngModel)]="dictionary.description"
+                                (ngModelChange)="adminService.dictionaryUpdated(dictionary)"
+                            ></textarea>
                         </mat-form-field>
                         Nombre de mots: {{ dictionary.nbWords | number }}
                         <button mat-stroked-button (click)="downloadDictionary(dictionary._id)">
@@ -33,7 +48,7 @@
                         </button>
                     </mat-list-item>
                 </div>
-                <button mat-stroked-button color="success" (click)="adminService.updateDictionaries()">
+                <button mat-stroked-button color="success" (click)="updateDictionaries()">
                     Accepter les modifications <mat-icon>done</mat-icon>
                 </button>
             </mat-selection-list>
@@ -65,7 +80,6 @@
         </mat-expansion-panel-header>
 
         <app-virtual-player-name></app-virtual-player-name>
-
     </mat-expansion-panel>
     <mat-expansion-panel>
         <mat-expansion-panel-header>
@@ -77,4 +91,3 @@
         <button mat-stroked-button color="warn" (click)="resetSettings()">Réinitialiser les réglages<mat-icon>warning</mat-icon></button>
     </mat-expansion-panel>
 </mat-accordion>
-

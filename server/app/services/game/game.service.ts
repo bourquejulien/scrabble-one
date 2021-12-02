@@ -21,6 +21,7 @@ import { SessionStatsHandler } from '@app/handlers/stats-handlers/session-stats-
 import { VirtualPlayerEasy } from '@app/classes/player/virtual-player/virtual-player-easy/virtual-player-easy';
 import { SessionHandlingService } from '@app/services/session-handling/session-handling.service';
 import {
+    Answer,
     ConvertConfig,
     GameMode,
     GameType,
@@ -41,7 +42,7 @@ export class GameService {
         private readonly socketService: SocketService,
     ) {}
 
-    async initSinglePlayer(gameConfig: SinglePlayerConfig): Promise<ServerConfig | null> {
+    async initSinglePlayer(gameConfig: SinglePlayerConfig): Promise<Answer<ServerConfig, string>> {
         const sessionInfo: SessionInfo = {
             id: generateId(),
             playTimeMs: gameConfig.playTimeMs,
@@ -49,14 +50,13 @@ export class GameService {
         };
 
         // TODO add a construction service?
-        const dictionaryHandler = await this.dictionaryService.getHandler(gameConfig.dictionary._id);
+        const answer = await this.dictionaryService.getHandler(gameConfig.dictionary._id);
 
-        // TODO
-        if (dictionaryHandler === null) {
-            return null;
+        if (!answer.isSuccess) {
+            return answer;
         }
 
-        const boardHandler = this.boardGeneratorService.generateBoardHandler(gameConfig.isRandomBonus, dictionaryHandler);
+        const boardHandler = this.boardGeneratorService.generateBoardHandler(gameConfig.isRandomBonus, answer.payload);
         const reserveHandler = new ReserveHandler();
         const socketHandler = this.socketService.generate(sessionInfo.id);
         const statsHandler = new SessionStatsHandler(socketHandler, reserveHandler, this.getGoalHandler(gameConfig.gameMode));
@@ -83,10 +83,10 @@ export class GameService {
 
         logger.info(`Single player game: ${sessionHandler.sessionInfo.id} initialised`);
 
-        return sessionHandler.getServerConfig(humanPlayer.id);
+        return { isSuccess: true, payload: sessionHandler.getServerConfig(humanPlayer.id) };
     }
 
-    async initMultiplayer(gameConfig: MultiplayerCreateConfig): Promise<string> {
+    async initMultiplayer(gameConfig: MultiplayerCreateConfig): Promise<Answer<string>> {
         const sessionInfo: SessionInfo = {
             id: generateId(),
             playTimeMs: gameConfig.playTimeMs,
@@ -94,14 +94,13 @@ export class GameService {
         };
 
         // TODO add a construction service?
-        const dictionaryHandler = await this.dictionaryService.getHandler(gameConfig.dictionary._id);
+        const answer = await this.dictionaryService.getHandler(gameConfig.dictionary._id);
 
-        // TODO
-        if (dictionaryHandler === null) {
-            return '';
+        if (!answer.isSuccess) {
+            return answer;
         }
 
-        const boardHandler = this.boardGeneratorService.generateBoardHandler(gameConfig.isRandomBonus, dictionaryHandler);
+        const boardHandler = this.boardGeneratorService.generateBoardHandler(gameConfig.isRandomBonus, answer.payload);
         const reserveHandler = new ReserveHandler();
         const socketHandler = this.socketService.generate(sessionInfo.id);
         const statsHandler = new SessionStatsHandler(socketHandler, reserveHandler, this.getGoalHandler(gameConfig.gameMode));
@@ -120,7 +119,7 @@ export class GameService {
 
         logger.info(`Multiplayer game: ${sessionHandler.sessionInfo.id} initialised`);
 
-        return humanPlayer.id;
+        return { isSuccess: true, payload: humanPlayer.id };
     }
 
     async joinMultiplayer(gameConfig: MultiplayerJoinConfig): Promise<ServerConfig | null> {
