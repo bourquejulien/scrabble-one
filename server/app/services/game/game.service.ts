@@ -124,10 +124,12 @@ export class GameService {
 
     async joinMultiplayer(gameConfig: MultiplayerJoinConfig): Promise<ServerConfig | null> {
         const sessionHandler = this.sessionHandlingService.getHandlerBySessionId(gameConfig.sessionId);
+        if (sessionHandler == null || sessionHandler.sessionData.isStarted) {
+            return null;
+        }
         const waitingPlayer = sessionHandler?.players[0];
-        const sessionNotAvailable = sessionHandler == null || waitingPlayer == null || sessionHandler.sessionData.isStarted;
 
-        if (sessionNotAvailable) {
+        if (waitingPlayer == null) {
             return null;
         }
 
@@ -181,8 +183,8 @@ export class GameService {
             logger.warn(`Failed to abandon game: ${id}`);
             return false;
         }
-
-        if (handler.sessionData.isStarted && handler.sessionData.isActive && handler.sessionInfo.gameType === GameType.Multiplayer) {
+        const canConvertPlayer = handler.sessionData.isStarted && handler.sessionData.isActive && handler.sessionInfo.gameType === GameType.Multiplayer;
+        if (canConvertPlayer) {
             logger.info(`Converting player: ${id}`);
             handler.convertWhileRunning(id);
             return true;

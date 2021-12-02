@@ -25,7 +25,7 @@ export class BoardComponent implements OnDestroy, AfterViewInit {
     isMouseOnBoard: boolean;
     isUpper: boolean;
     letter: string;
-    squareSelected: boolean;
+    squareSelected: boolean = false;
 
     private gridContext: CanvasRenderingContext2D;
     private squareContext: CanvasRenderingContext2D;
@@ -40,9 +40,7 @@ export class BoardComponent implements OnDestroy, AfterViewInit {
         private readonly boardService: BoardService,
         private readonly gameService: GameService,
         readonly placeLetterService: PlaceLetterService,
-    ) {
-        this.squareSelected = false;
-    }
+    ) {}
 
     @HostListener('body:keydown', ['$event'])
     onKeyDown(event: KeyboardEvent): void {
@@ -190,7 +188,8 @@ export class BoardComponent implements OnDestroy, AfterViewInit {
         const input = SPECIAL_CHARACTERS.get(key);
 
         if (input === undefined) {
-            if (key.length !== 1 || !key.match('([a-zA-Z])')) {
+            const isNotLetter = key.length !== 1 || !key.match('([a-zA-Z])');
+            if (isNotLetter) {
                 this.isLetter = false;
                 return;
             }

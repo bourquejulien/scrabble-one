@@ -1,7 +1,7 @@
 import { Board, ImmutableBoard } from '@app/classes/board/board';
+import { Dictionary } from '@app/classes/dictionary/dictionary';
 import { Config } from '@app/config';
 import { Bonus, Direction, getBonusDetails, Placement, reverseDirection, Square, Vec2 } from '@common';
-import { Dictionary } from '@app/classes/dictionary/dictionary';
 import { ValidatedLetter, ValidatedWord, ValidationFailed, ValidationResponse } from './validation-response';
 
 export class BoardValidator {
@@ -65,11 +65,13 @@ export class BoardValidator {
         }
 
         for (let i = 2; i < positions.length; i++) {
-            if (positions[i - 1].x === positions[i].x) {
+            const previousPosition = positions[i - 1];
+            const currentPosition = positions[i];
+            if (previousPosition.x === currentPosition.x) {
                 if (direction !== Direction.Down) {
                     return Direction.None;
                 }
-            } else if (positions[i - 1].y === positions[i].y) {
+            } else if (previousPosition.y ===currentPosition.y) {
                 if (direction !== Direction.Right) {
                     return Direction.None;
                 }
@@ -157,8 +159,8 @@ export class BoardValidator {
             const isRightSquareValid = BoardValidator.validateSquare(this.board.getRelative(position, Direction.Right));
             const isUpSquareValid = BoardValidator.validateSquare(this.board.getRelative(position, Direction.Up));
             const isDownSquareValid = BoardValidator.validateSquare(this.board.getRelative(position, Direction.Down));
-
-            if (isLeftSquareValid || isRightSquareValid || isUpSquareValid || isDownSquareValid) {
+            const allSquareAroundValid = isLeftSquareValid || isRightSquareValid || isUpSquareValid || isDownSquareValid;
+            if (allSquareAroundValid) {
                 return true;
             }
         }

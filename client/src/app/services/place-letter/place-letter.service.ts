@@ -48,10 +48,12 @@ export class PlaceLetterService {
             this.gridPosition.y = 16;
         }
         this.gridService.clearSquare(tempContext, this.gridPosition);
+
         if (this.isHorizontal) {
             this.gridService.cleanInsideSquare(tempContext, { x: this.gridPosition.x - 1, y: this.gridPosition.y });
-        } else {
-            this.gridService.cleanInsideSquare(tempContext, { x: this.gridPosition.x, y: this.gridPosition.y - 1 });
+    
+        } else {this.gridService.cleanInsideSquare(tempContext, { x: this.gridPosition.x, y: this.gridPosition.y - 1 });
+        
         }
 
         this.rackService.rack.push(this.myRack[this.myRack.length - 1]);
