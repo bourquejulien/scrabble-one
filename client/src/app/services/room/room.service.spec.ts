@@ -5,7 +5,7 @@ import { HttpClientTestingModule, HttpTestingController } from '@angular/common/
 import { TestBed } from '@angular/core/testing';
 import { GameService } from '@app/services/game/game.service';
 import { SocketClientService } from '@app/services/socket-client/socket-client.service';
-import { GameType, MultiplayerJoinConfig, ServerConfig, VirtualPlayerLevel } from '@common';
+import { GameMode, GameType, MultiplayerCreateConfig, MultiplayerJoinConfig, ServerConfig, VirtualPlayerLevel } from '@common';
 import { Observable } from 'rxjs';
 import { RoomService } from './room.service';
 import { environmentExt } from '@environment-ext';
@@ -138,5 +138,18 @@ describe('RoomService', () => {
 
     it('should call roomSubject and onTurn when room is created', () => {
         expect(socketClientSpyObj['on']).toHaveBeenCalled();
+    });
+
+    it('should create a multiplayer game', async () => {
+        const multiplayerConfig: MultiplayerCreateConfig = {
+            gameType: GameType.Multiplayer,
+            gameMode: GameMode.Classic,
+            playTimeMs: 0,
+            playerName: 'test',
+            isRandomBonus: false,
+            dictionary: { _id: '', path: '', title: 'test', description: 'test', nbWords: 0 },
+        };
+        await service.create(multiplayerConfig);
+        expect(service['pendingRoomId']).toBe('0');
     });
 });
