@@ -10,7 +10,7 @@ import { VirtualPlayerLevel, VirtualPlayerName } from '@common';
 import { BehaviorSubject } from 'rxjs';
 import { VirtualPlayerNameComponent } from './virtual-player-name.component';
 
-fdescribe('VirtualPlayerNameComponent', () => {
+describe('VirtualPlayerNameComponent', () => {
     let updateSubject: BehaviorSubject<VirtualPlayerName[]>;
     let adminServiceMock: AdminService;
     let component: VirtualPlayerNameComponent;
