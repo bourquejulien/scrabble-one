@@ -89,7 +89,7 @@ export class BoardComponent implements OnDestroy, AfterViewInit {
                 this.placeLetterService.positionInit = { x: this.placeLetterService.gridPosition.x, y: this.placeLetterService.gridPosition.y };
                 this.gridService.resetCanvas(this.tempContext);
             } else {
-                this.placeLetterService.samePosition(this.mouseHandlingService.position);
+                this.placeLetterService.isSameSquare(this.mouseHandlingService.position);
                 this.gridService.resetCanvas(this.tempContext);
                 this.gridService.drawSquares(this.squareContext);
             }
@@ -227,7 +227,7 @@ export class BoardComponent implements OnDestroy, AfterViewInit {
         this.squareSelected = false;
         this.placeLetterService.isHorizontal = true;
     }
-
+    
     private handleKeyDown(lastSquare: boolean): void {
         this.gridService.cleanInsideSquare(this.tempContext, this.placeLetterService.gridPosition);
         this.gridService.cleanInsideSquare(this.squareContext, this.placeLetterService.gridPosition);
@@ -235,14 +235,12 @@ export class BoardComponent implements OnDestroy, AfterViewInit {
 
         if (this.isUpper) {
             this.rackService.rack.splice(this.rackService.indexOf('*'), 1);
-            this.placeLetterService.tempRack.push(this.letter);
             this.placeLetterService.myRack.push('*');
         } else {
             this.rackService.rack.splice(this.rackService.indexOf(this.letter), 1);
-            this.placeLetterService.tempRack.push(this.letter);
             this.placeLetterService.myRack.push(this.letter);
         }
-
+        this.placeLetterService.tempRack.push(this.letter);
         if (
             this.placeLetterService.gridPosition.x === Constants.GRID.GRID_SIZE - 1 ||
             this.placeLetterService.gridPosition.y === Constants.GRID.GRID_SIZE - 1

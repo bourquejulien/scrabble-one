@@ -1,5 +1,5 @@
-import { Player } from '@app/classes/player/player';
 import { PlayerInfo } from '@app/classes/player-info';
+import { Player } from '@app/classes/player/player';
 import { Config } from '@app/config';
 import { MessageType, Placement, SystemMessages } from '@common';
 import * as logger from 'winston';
@@ -95,7 +95,7 @@ export class HumanPlayer extends Player {
             return false;
         }
 
-        lettersToExchange.forEach(() => this.rack.push(this.reserveHandler.drawLetter()));
+        lettersToExchange.forEach(() => this.rack.push(this.reserveHandler.drawLetterFromReserve()));
 
         for (const letter of lettersToExchange) {
             this.reserveHandler.putBackLetter(letter);

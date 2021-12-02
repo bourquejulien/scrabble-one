@@ -81,7 +81,7 @@ export class PlaceLetterService {
         return key === 'Backspace' && squareSelected;
     }
 
-    samePosition(position: Vec2): void {
+    isSameSquare(position: Vec2): void {
         if (this.gridPosition.x === position.x && this.gridPosition.y === position.y) {
             this.isHorizontal = !this.isHorizontal;
 

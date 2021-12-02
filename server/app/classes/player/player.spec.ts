@@ -2,12 +2,12 @@
 import { BoardHandler } from '@app/handlers/board-handler/board-handler';
 import { ReserveHandler } from '@app/handlers/reserve-handler/reserve-handler';
 import { SocketHandler } from '@app/handlers/socket-handler/socket-handler';
+import { PlayerStatsHandler } from '@app/handlers/stats-handlers/player-stats-handler/player-stats-handler';
+import { SessionStatsHandler } from '@app/handlers/stats-handlers/session-stats-handler/session-stats-handler';
 import { expect } from 'chai';
 import { Observable } from 'rxjs';
 import { createStubInstance } from 'sinon';
 import { Player } from './player';
-import { SessionStatsHandler } from '@app/handlers/stats-handlers/session-stats-handler/session-stats-handler';
-import { PlayerStatsHandler } from '@app/handlers/stats-handlers/player-stats-handler/player-stats-handler';
 
 const LETTERS = ['a', 'b', 'c', 'd', 'e', 'f', 'g'];
 
@@ -30,7 +30,7 @@ describe('Player', () => {
 
     statsHandler.getPlayerStatsHandler.returns(playerStatsHandler as unknown as PlayerStatsHandler);
 
-    reserveHandler.drawLetter.returns('a');
+    reserveHandler.drawLetterFromReserve.returns('a');
     reserveHandler['reserve'] = LETTERS;
     const socketHandler = createStubInstance(SocketHandler);
 

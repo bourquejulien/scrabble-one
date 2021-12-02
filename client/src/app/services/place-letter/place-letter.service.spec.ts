@@ -157,7 +157,7 @@ describe('PlaceLetterService', () => {
     it('should set isHorizontal to false when samePosition is called', () => {
         const position = { x: 8, y: 8 };
         service.gridPosition = { x: 8, y: 8 };
-        service.samePosition(position);
+        service.isSameSquare(position);
 
         expect(service.isHorizontal).toBeFalse();
     });
@@ -165,7 +165,7 @@ describe('PlaceLetterService', () => {
     it('should set correct attribute when not samePosition is called', () => {
         const position = { x: 8, y: 8 };
         service.gridPosition = { x: 9, y: 9 };
-        service.samePosition(position);
+        service.isSameSquare(position);
 
         expect(service.myRack).toEqual([]);
         expect(service.gridPosition).toEqual(position);
@@ -194,7 +194,7 @@ describe('PlaceLetterService', () => {
     it('should call cancel when samePosition is called', () => {
         const position = { x: 8, y: 8 };
         service.gridPosition = { x: 9, y: 9 };
-        service.samePosition(position);
+        service.isSameSquare(position);
 
         expect(service.tempRack).toEqual([]);
     });
