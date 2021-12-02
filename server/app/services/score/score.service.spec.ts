@@ -37,7 +37,7 @@ describe('ScoreService', () => {
         dbStub = sandbox.createStubInstance(Db);
         dbServiceStub['scrabbleDb'] = dbStub as unknown as Db;
         collectionStub = sandbox.createStubInstance(Collection);
-        collectionStub.insertOne.resolves();
+        collectionStub.insertOne.resolves(undefined);
         collectionStub.insertMany.resolves();
         collectionStub.deleteOne.resolves();
         collectionStub.find.returns(new Mock() as unknown as FindCursor);
@@ -58,9 +58,6 @@ describe('ScoreService', () => {
     });
     it('should tell if player is in scoreboard', async () => {
         expect(await service.isPlayerInScoreboard('id', GameMode.Classic)).to.be.true;
-    });
-    it('should delete element', async () => {
-        // assert.calledOnce();
     });
     it('should init', async () => {
         await service['init']();

@@ -3,7 +3,6 @@ import { Service } from 'typedi';
 import * as logger from 'winston';
 import path from 'path';
 import { Validator, ValidatorResult } from 'jsonschema';
-import { Constants } from '@app/constants';
 import { DictionaryHandler } from '@app/handlers/dictionary-handler/dictionary-handler';
 import { DictionaryPersistence } from '@app/services/dictionary/dictionary-persistence';
 import * as fs from 'fs';
@@ -16,10 +15,9 @@ const schema = {
     required: ['title', 'description', 'words'],
 };
 
-const dictionaryPath = process.env.UPLOAD_DIR ?? process.cwd() + path.join('assets', 'dictionaries', 'upload');
-
 @Service()
 export class DictionaryService {
+    private static dictionaryPath = process.env.UPLOAD_DIR ?? process.cwd() + '/assets/dictionaries/upload/';
     private handlers: Map<string, DictionaryHandler>;
 
     constructor(private readonly dictionaryPersistence: DictionaryPersistence) {
@@ -27,7 +25,7 @@ export class DictionaryService {
     }
 
     static getFilepath(metadata: DictionaryMetadata): string {
-        return path.join(dictionaryPath, metadata._id);
+        return path.join(this.dictionaryPath, metadata._id);
     }
 
     private static validate<T>(data: T): ValidatorResult {
@@ -42,10 +40,6 @@ export class DictionaryService {
 
         if (!this.validate(dictionary).valid) {
             return Promise.reject('Dictionary format invalid');
-        }
-
-        if (dictionary.words.length < Constants.MIN_DICTIONARY_SIZE) {
-            return Promise.reject('Not enough words in the chosen dictionary');
         }
 
         return dictionary;
@@ -66,21 +60,15 @@ export class DictionaryService {
 
     async init(): Promise<void> {
         await this.createHandler(this.dictionaryPersistence.defaultMetadata);
-        await fs.promises.mkdir(dictionaryPath, { recursive: true });
+        await fs.promises.mkdir(DictionaryService.dictionaryPath, { recursive: true });
     }
 
     async reset(): Promise<void> {
         await this.dictionaryPersistence.reset();
         this.handlers.clear();
-        fs.promises
-            .rm(dictionaryPath, { recursive: true, force: true })
-            .then(() => {
-                fs.promises.mkdir(dictionaryPath, { recursive: true });
-                logger.debug('Successful Dictionary directory reset');
-            })
-            .catch((err) => {
-                logger.warn('Dictionary directory cannot be reset', err);
-            });
+        await fs.promises.rmdir(DictionaryService.dictionaryPath, { recursive: true });
+        await fs.promises.mkdir(DictionaryService.dictionaryPath, { recursive: true });
+        logger.debug('Successful Dictionary directory reset');
     }
 
     async add(tempPath: string): Promise<Answer<DictionaryMetadata[], string>> {
@@ -93,7 +81,7 @@ export class DictionaryService {
         }
 
         const id = generateId();
-        const newFilepath = path.resolve(path.join(dictionaryPath, id));
+        const newFilepath = path.resolve(path.join(DictionaryService.dictionaryPath, id));
 
         const metadata: DictionaryMetadata = {
             title: json.title,

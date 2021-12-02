@@ -87,7 +87,7 @@ describe('RoomController', () => {
             fromId: 'user1',
         };
 
-        controller['socketIdToPlayerId'].set(IDS.socket, IDS.player);
+        controller['socketIdToPlayerId'].set(IDS.socket, '');
 
         controller['handleSockets']();
 
@@ -197,13 +197,34 @@ describe('RoomController', () => {
         assert.called(stubSessionHandlingService.getHandlerByPlayerId);
     });
 
+    it('should not join if no handler is found', async () => {
+        controller['handleSockets']();
+        const clientSocket = new SocketMock();
+        stubSessionHandlingService.getHandlerByPlayerId.returns(null);
+        await socketServerMock.triggerEndpoint('connection', clientSocket);
+        await clientSocket.triggerEndpoint('joinRoom', 'full');
+        // assert.called(stubSessionHandlingService.getHandlerByPlayerId); // TODO
+    });
+
     it('should exit room', async () => {
         controller['handleSockets']();
-
         const stubSessionHandler = createStubInstance(SessionHandler) as unknown as SessionHandler;
         controller['sessionHandlingService']['sessionHandlers'] = [stubSessionHandler];
+        const clientSocket = new SocketMock();
+        controller['socketIdToPlayerId'].set('123', '123');
+        socketServerMock.triggerEndpoint('connection', clientSocket);
+        clientSocket.triggerEndpoint('exit', 'dummy param');
+        assert.calledOnce(gameService.convertOrDispose);
+    });
 
-        socketServerMock.triggerEndpoint('exit');
+    it('should fail to exit room', async () => {
+        controller['handleSockets']();
+        const stubSessionHandler = createStubInstance(SessionHandler) as unknown as SessionHandler;
+        controller['sessionHandlingService']['sessionHandlers'] = [stubSessionHandler];
+        const clientSocket = new SocketMock();
+        socketServerMock.triggerEndpoint('connection', clientSocket);
+        clientSocket.triggerEndpoint('exit', 'dummy param');
+        assert.notCalled(gameService.convertOrDispose);
     });
 
     it('should not join if the room is full', async () => {
@@ -223,7 +244,7 @@ describe('RoomController', () => {
         // End of copy-paste
 
         controller['handleSockets']();
-
+        stubSessionHandlingService.getHandlerByPlayerId.returns(createStubInstance(SessionHandler) as unknown as SessionHandler);
         const clientSocket = new SocketMock();
         const joinSpy = spy(clientSocket, 'join');
         socketServerMock.triggerEndpoint('connection', clientSocket);
@@ -293,7 +314,7 @@ describe('RoomController', () => {
 
     it('should tell when a room is full', async () => {
         const socket = new SocketMock() as unknown as Socket;
-        expect(await RoomController['isRoomFull'](socket, 'full')).to.be.equals(true);
+        expect(await RoomController['isRoomFull'](socket, 'full')).to.equal(true);
     });
 
     it('should stop correctly', async () => {
