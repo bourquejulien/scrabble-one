@@ -104,13 +104,12 @@ export class AdminController {
 
             const isAdded = await this.adminService.addVirtualPlayer(level, req.body.name);
 
-            if (!isAdded) {
-                res.sendStatus(Constants.HTTP_STATUS.BAD_REQUEST);
+            if (isAdded) {
+                const names = await this.adminService.getPlayerNames();
+                res.json(names);
                 return;
             }
-
-            const names = await this.adminService.getPlayerNames();
-            res.json(names);
+            res.sendStatus(Constants.HTTP_STATUS.BAD_REQUEST);
         });
 
         this.router.post('/playername/rename', async (req: Request, res: Response) => {
