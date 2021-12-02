@@ -69,6 +69,7 @@ describe('InitGameComponent', () => {
         roomServiceSpyObj = jasmine.createSpyObj('RoomService', ['create']);
         roomServiceSpyObj.create.and.resolveTo();
         routerSpy = jasmine.createSpyObj('Router', ['navigate']);
+        routerSpy.navigate.and.resolveTo(true);
 
         await TestBed.configureTestingModule({
             declarations: [InitGameComponent],
@@ -164,21 +165,19 @@ describe('InitGameComponent', () => {
     it('should init single player game if single player selected', async () => {
         const spy = spyOn<any>(component, 'initSinglePlayer');
         spyOn<any>(component, 'confirmInitialization').and.returnValue(true);
-
-        await component.init();
         spy.and.callThrough();
+        await component.init();
 
         expect(spy).toHaveBeenCalled();
     });
 
     it('should init multiplayer game if multiplayer selected', async () => {
         dialogData.gameType = GameType.Multiplayer;
-        // fixture.detectChanges();
         const spy = spyOn<any>(component, 'initMultiplayer');
         spyOn<any>(component, 'confirmInitialization').and.returnValue(true);
 
-        await component.init();
         spy.and.callThrough();
+        await component.init();
 
         expect(spy).toHaveBeenCalled();
     });
@@ -186,7 +185,6 @@ describe('InitGameComponent', () => {
     it('should init multiplayer game if multiplayer selected 2', async () => {
         dialogData.gameType = GameType.Multiplayer;
         spyOn<any>(component, 'confirmInitialization').and.returnValue(true);
-        routerSpy['navigate'].and.resolveTo(true);
         await component['initMultiplayer']();
     });
 
