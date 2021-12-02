@@ -134,7 +134,7 @@ export class BoardValidator {
         return { isSuccess: true, score, placements, words: response };
     }
 
-    getLetterScore(letter: string): number {
+    private getLetterScore(letter: string): number {
         return this.letterPoints[letter] ?? 0;
     }
 
