@@ -1,3 +1,4 @@
+/* eslint-disable dot-notation */
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormsModule } from '@angular/forms';
@@ -16,31 +17,31 @@ describe('VirtualPlayerNameComponent', () => {
     let component: VirtualPlayerNameComponent;
     let fixture: ComponentFixture<VirtualPlayerNameComponent>;
     let playerNameList: VirtualPlayerName[];
-    
+
     beforeEach(async () => {
         updateSubject = new BehaviorSubject<VirtualPlayerName[]>([]);
         adminServiceMock = jasmine.createSpyObj('AdminService', ['updatePlayerName'], { onVirtualPlayerUpdate: updateSubject.asObservable() });
         playerNameList = [
-        {
-            name: 'Sailor Moon',
-            level: VirtualPlayerLevel.Easy,
-            isReadonly: true
-        },
-        {
-            name: 'Sailor Mars',
-            level: VirtualPlayerLevel.Expert,
-            isReadonly: true
-        },
-        {
-            name: 'Vegeta',
-            level: VirtualPlayerLevel.Expert,
-            isReadonly: true
-        },
-    ];
-    
-    // const playerNameServiceMock = {
-    //     of({playerNames: playerNameList}, updatedNameList);
-    // };
+            {
+                name: 'Sailor Moon',
+                level: VirtualPlayerLevel.Easy,
+                isReadonly: true,
+            },
+            {
+                name: 'Sailor Mars',
+                level: VirtualPlayerLevel.Expert,
+                isReadonly: true,
+            },
+            {
+                name: 'Vegeta',
+                level: VirtualPlayerLevel.Expert,
+                isReadonly: true,
+            },
+        ];
+
+        // const playerNameServiceMock = {
+        //     of({playerNames: playerNameList}, updatedNameList);
+        // };
 
         await TestBed.configureTestingModule({
             declarations: [VirtualPlayerNameComponent],
@@ -61,11 +62,12 @@ describe('VirtualPlayerNameComponent', () => {
 
     it('should unsubscribe from player names once component destroyed', () => {
         const spy = spyOn(component['playerNamesSubscription'], 'unsubscribe');
-        component.ngOnDestroy()
+        component.ngOnDestroy();
         expect(spy).toHaveBeenCalled();
     });
 
-    it('should not change player name', () => { // TO DO: FIND GOOD TEST NAME
+    it('should not change player name', () => {
+        // TO DO: FIND GOOD TEST NAME
         component.nameValidator.name = 'Chariot Requiem';
 
         const virtPlayerName: VirtualPlayerName = {
@@ -78,7 +80,8 @@ describe('VirtualPlayerNameComponent', () => {
         expect(component.nameValidator.name).toBe('Chariot Requiem');
     });
 
-    it('should change player name', () => { // TO DO: FIND GOOD TEST NAME
+    it('should change player name', () => {
+        // TO DO: FIND GOOD TEST NAME
         component.nameValidator.name = 'Chariot Requiem';
 
         const virtPlayerName: VirtualPlayerName = {
@@ -97,7 +100,7 @@ describe('VirtualPlayerNameComponent', () => {
         expect(component.nameValidator.name).toBe('');
     });
 
-    it('should change player name if name valid and not in bot names list', () => { 
+    it('should change player name if name valid and not in bot names list', () => {
         const virtPlayerName: VirtualPlayerName = {
             name: 'Jean Pierre Polnareff',
             level: VirtualPlayerLevel.Easy,
@@ -122,7 +125,7 @@ describe('VirtualPlayerNameComponent', () => {
         expect(spy).not.toHaveBeenCalled();
     });
 
-    it('should not change player name if name in bot name list', () => { 
+    it('should not change player name if name in bot name list', () => {
         const spy = spyOn(component.playerNameService, 'updatePlayerName');
         spyOnProperty(component.nameValidator, 'isValid').and.returnValue(true);
         component.playerNames = playerNameList;
@@ -132,24 +135,24 @@ describe('VirtualPlayerNameComponent', () => {
         expect(spy).not.toHaveBeenCalled();
     });
 
-    it('should reset names before updating them', () => { 
-        component.playerNames = playerNameList;
-         
-        let updatedNameList: VirtualPlayerName[] = [
+    it('should reset names before updating them', () => {
+        const updatedNameList: VirtualPlayerName[] = [
             {
                 name: 'Future Trunks',
                 level: VirtualPlayerLevel.Easy,
-                isReadonly: true
+                isReadonly: true,
             },
         ];
 
-        // component.playerNameService.onVirtualPlayerUpdate.subscribe((playerNames) => {
-        //     component['playerNamesUpdated'](playerNames);
-        // });
-        
-        // spyOn<any>(component.playerNameService, 'onVirtualPlayerUpdate').and.returnValue(updatedNameList);
-        
-        // component.ngOnInit();
-        expect(component.playerNames).toEqual(updatedNameList);
+        component.playerNames.concat(updatedNameList);
+
+        component.playerNameService.onVirtualPlayerUpdate.subscribe((playerNames) => {
+            component['playerNamesUpdated'](playerNames);
+        });
+
+        const spy = spyOn(component, 'reset');
+
+        component.ngOnInit();
+        expect(spy).toHaveBeenCalled();
     });
 });
