@@ -186,6 +186,7 @@ export class GridService {
             this.squareHeight + COORD_CLEAR_SQUARE,
         );
     }
+
     cleanInsideSquare(tempContext: CanvasRenderingContext2D, position: Vec2): void {
         const gridCoord = this.computeCanvasCoord(position);
         tempContext.clearRect(

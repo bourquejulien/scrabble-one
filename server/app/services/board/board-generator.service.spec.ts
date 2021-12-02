@@ -2,11 +2,11 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable no-unused-expressions -- Needed for chai library assertions */
 /* eslint-disable @typescript-eslint/no-unused-expressions */
+import { DictionaryHandler } from '@app/handlers/dictionary-handler/dictionary-handler';
+import { Bonus } from '@common';
 import { expect } from 'chai';
 import { createSandbox, createStubInstance } from 'sinon';
 import { BoardGeneratorService } from './board-generator.service';
-import { Bonus } from '@common';
-import { DictionaryHandler } from '@app/handlers/dictionary-handler/dictionary-handler';
 
 describe('BoardHandlingService', () => {
     let service: BoardGeneratorService;
@@ -52,6 +52,7 @@ describe('BoardHandlingService', () => {
             }
         }
     });
+
     it('should shuffleBonuses but not find wanted bonus', () => {
         const stubInitBank = createSandbox()
             .stub(service, 'initializeBonusBank' as any)

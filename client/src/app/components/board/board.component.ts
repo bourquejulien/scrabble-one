@@ -54,6 +54,7 @@ export class BoardComponent implements OnDestroy, AfterViewInit {
             this.placeLetterService.backSpaceEnable(event.key, this.squareSelected) &&
             !this.placeLetterService.isPositionInit(this.placeLetterService.gridPosition) &&
             this.placeLetterService.inGrid(this.placeLetterService.gridPosition);
+
         const enterValid: boolean = event.key === 'Enter' && this.placeLetterService.tempRack.length > 0;
         const lastSquare =
             this.placeLetterService.gridPosition.x > Constants.GRID.GRID_SIZE || this.placeLetterService.gridPosition.y > Constants.GRID.GRID_SIZE;
@@ -126,9 +127,6 @@ export class BoardComponent implements OnDestroy, AfterViewInit {
 
         this.scale();
 
-        // 1. rendre new FontFaceObserver global
-        // 2. set ala valeur de font -> Et utiliser await;
-
         await new FontFaceObserver(this.gridService.letterFontFace.font).load();
 
         this.gridService.drawGrid(this.gridContext);
@@ -170,7 +168,6 @@ export class BoardComponent implements OnDestroy, AfterViewInit {
     private refresh(): void {
         this.gridService.resetCanvas(this.tempContext);
 
-        // TODO This only needs to be done once per game
         this.gridService.drawGrid(this.gridContext);
 
         this.gridService.drawSquares(this.squareContext);
