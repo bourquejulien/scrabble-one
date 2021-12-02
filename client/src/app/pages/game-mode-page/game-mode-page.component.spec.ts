@@ -8,6 +8,8 @@ import { of } from 'rxjs';
 import { GameModePageComponent } from './game-mode-page.component';
 import { RouterTestingModule } from '@angular/router/testing';
 import { AdminService } from '@app/services/admin/admin.service';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { PlayerNameService } from '@app/services/player-name/player-name.service';
 
 @Component({
     selector: 'app-init-game',
@@ -20,15 +22,17 @@ describe('GameModePageComponent', () => {
     let fixture: ComponentFixture<GameModePageComponent>;
 
     beforeEach(async () => {
-        const stubbedAdminService = jasmine.createSpyObj('AdminService', ['retrieveDictionaries', 'retrievePlayerNames'], { defaultDictionary: {} });
+        const stubbedAdminService = jasmine.createSpyObj('AdminService', ['retrieveDictionaries'], { defaultDictionary: {} });
+        const stubbedPlayerService = jasmine.createSpyObj('PlayerNameService', ['retrievePlayerNames'], { virtualPlayerNamesByLevel: [] });
 
         await TestBed.configureTestingModule({
             declarations: [GameModePageComponent, StubInitGameComponent],
-            imports: [AppMaterialModule, RouterTestingModule],
+            imports: [AppMaterialModule, RouterTestingModule, HttpClientTestingModule],
             schemas: [CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA],
             providers: [
                 { provide: MatDialogRef, useValue: {} },
                 { provide: AdminService, useValue: stubbedAdminService },
+                { provide: PlayerNameService, useValue: stubbedPlayerService },
             ],
         }).compileComponents();
     });
@@ -48,6 +52,7 @@ describe('GameModePageComponent', () => {
         const spy = spyOn(component.dialog, 'open').and.returnValue({
             afterClosed: () => of(true),
         } as MatDialogRef<typeof component>);
+
         await component.openDialog(type);
 
         expect(spy).toHaveBeenCalled();

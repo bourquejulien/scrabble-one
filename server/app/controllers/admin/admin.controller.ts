@@ -5,7 +5,7 @@ import { IncomingForm } from 'formidable';
 import { tmpdir } from 'os';
 import * as logger from 'winston';
 import { DictionaryService } from '@app/services/dictionary/dictionary.service';
-import { Answer, DictionaryMetadata, GameMode, VirtualPlayerLevel } from '@common';
+import { DictionaryMetadata, GameMode, VirtualPlayerLevel } from '@common';
 import { AdminPersistence } from '@app/services/admin/admin-persistence';
 import { ScoreService } from '@app/services/score/score.service';
 
@@ -50,11 +50,10 @@ export class AdminController {
                 logger.debug(`Dictionary uploaded : ${file.filepath}`);
 
                 try {
-                    await this.dictionaryService.add(file.filepath);
-
-                    res.sendStatus(Constants.HTTP_STATUS.OK);
+                    const answer = await this.dictionaryService.add(file.filepath);
+                    res.json(answer);
                 } catch (err) {
-                    logger.warn('Dictionary parsing error', err);
+                    logger.warn('Error while adding dictionnary', err);
                     res.sendStatus(Constants.HTTP_STATUS.BAD_REQUEST);
                 }
             });
@@ -64,15 +63,10 @@ export class AdminController {
             const metadataToUpdate: DictionaryMetadata[] = [];
 
             metadataToUpdate.push(...req.body);
-            const isSuccess = await this.dictionaryService.update(metadataToUpdate);
+            const answer = await this.dictionaryService.update(metadataToUpdate);
 
-            let names = ' ';
-            const metadata = await this.dictionaryService.getMetadata();
-            metadata.forEach((e) => (names = '«' + e.title + '» '));
+            logger.debug('Dictionary update ' + (answer.isSuccess ? 'succeeded' : 'failed'));
 
-            logger.debug(`Updated dictionary: ${names}`);
-
-            const answer: Answer<DictionaryMetadata[]> = { isSuccess, payload: metadata };
             res.json(answer);
         });
 

@@ -1,4 +1,4 @@
-import { DictionaryMetadata, JsonDictionary } from '@common';
+import { Answer, DictionaryMetadata, JsonDictionary } from '@common';
 import { Service } from 'typedi';
 import * as logger from 'winston';
 import path from 'path';
@@ -16,7 +16,7 @@ const schema = {
     required: ['title', 'description', 'words'],
 };
 
-const dictionaryPath = process.env.UPLOAD_DIR ?? process.cwd() + '/assets/dictionaries/upload/';
+const dictionaryPath = process.env.UPLOAD_DIR ?? process.cwd() + path.join('assets', 'dictionaries', 'upload');
 
 @Service()
 export class DictionaryService {
@@ -37,16 +37,8 @@ export class DictionaryService {
 
     private static async parse(filepath: string): Promise<JsonDictionary> {
         const data = await fs.promises.readFile(filepath, 'utf8');
-        let dictionary: JsonDictionary;
-
-        try {
-            dictionary = JSON.parse(data) as JsonDictionary;
-            logger.debug('Dictionary parsing successful');
-        } catch (err) {
-            const errorMessage = 'JSON.parse() cant parse the content of that dictionary';
-            logger.error(errorMessage);
-            return Promise.reject(errorMessage);
-        }
+        const dictionary = JSON.parse(data) as JsonDictionary;
+        logger.debug('Dictionary parsing successful');
 
         if (!this.validate(dictionary).valid) {
             return Promise.reject('Dictionary format invalid');
@@ -74,18 +66,32 @@ export class DictionaryService {
 
     async init(): Promise<void> {
         await this.createHandler(this.dictionaryPersistence.defaultMetadata);
-
-        if (!fs.existsSync(dictionaryPath)) {
-            await fs.promises.mkdir(dictionaryPath, { recursive: true });
-        }
+        await fs.promises.mkdir(dictionaryPath, { recursive: true });
     }
 
     async reset(): Promise<void> {
         await this.dictionaryPersistence.reset();
+        this.handlers.clear();
+        fs.promises
+            .rm(dictionaryPath, { recursive: true, force: true })
+            .then(() => {
+                fs.promises.mkdir(dictionaryPath, { recursive: true });
+                logger.debug('Successful Dictionary directory reset');
+            })
+            .catch((err) => {
+                logger.warn('Dictionary directory cannot be reset', err);
+            });
     }
 
-    async add(tempPath: string): Promise<boolean> {
-        const json = await DictionaryService.parse(tempPath);
+    async add(tempPath: string): Promise<Answer<DictionaryMetadata[], string>> {
+        let json;
+
+        try {
+            json = await DictionaryService.parse(tempPath);
+        } catch (err) {
+            return { isSuccess: false, payload: 'Le format du dictionnaire est invalide' };
+        }
+
         const id = generateId();
         const newFilepath = path.resolve(path.join(dictionaryPath, id));
 
@@ -101,33 +107,37 @@ export class DictionaryService {
 
         if (!isAdded) {
             logger.debug('Dictionary was not added because there was a duplicate');
-            return false;
+            return { isSuccess: false, payload: `Échec de l'ajout : le dictionnaire ${metadata.title} existe déjà` };
         }
 
         await fs.promises.unlink(tempPath);
         await fs.promises.writeFile(newFilepath, JSON.stringify(json.words), 'utf-8');
         logger.debug(`Dictionary moved/renamed to ${newFilepath}`);
 
-        return true;
+        return { isSuccess: true, payload: await this.getMetadata() };
     }
 
-    async update(metadata: DictionaryMetadata[]): Promise<boolean> {
-        const promises = metadata.map(async (m) => this.dictionaryPersistence.update(m));
-        return (await Promise.all(promises)).reduce((prev, curr) => prev && curr, false);
+    async update(metadataList: DictionaryMetadata[]): Promise<Answer<DictionaryMetadata[]>> {
+        let isSuccess = true;
+        for (const metadata of metadataList) {
+            isSuccess &&= await this.dictionaryPersistence.update(metadata);
+        }
+        return { isSuccess, payload: await this.getMetadata() };
     }
 
     async remove(id: string): Promise<boolean> {
-        const metadata = await this.dictionaryPersistence.getMetadataById(id);
-        const canRemove = await this.dictionaryPersistence.remove(id);
+        const metadata = await this.dictionaryPersistence.remove(id);
 
-        if (canRemove && metadata != null) {
+        this.handlers.delete(id);
+
+        if (metadata != null) {
             fs.promises
                 .unlink(metadata.path)
                 .then(() => {
                     logger.debug(`Successful Deletion: ${metadata.path}`);
                 })
                 .catch((err) => {
-                    logger.error(err.stack);
+                    logger.warn('Dictionary file cannot be deleted', err);
                 });
 
             return true;
@@ -137,20 +147,26 @@ export class DictionaryService {
         return false;
     }
 
-    async getHandler(id: string): Promise<DictionaryHandler | null> {
-        const handler = this.handlers.get(id);
+    async getHandler(id: string): Promise<Answer<DictionaryHandler, string>> {
+        let handler = this.handlers.get(id) ?? null;
 
-        if (handler !== undefined) {
-            return handler;
+        if (handler != null) {
+            return { isSuccess: true, payload: handler };
         }
 
         const metadata = await this.dictionaryPersistence.getMetadataById(id);
 
         if (metadata === null) {
-            return null;
+            return { isSuccess: false, payload: 'Le dictionnaire spécifié est introuvable' };
         }
 
-        return await this.createHandler(metadata);
+        handler = await this.createHandler(metadata);
+
+        if (handler == null) {
+            return { isSuccess: false, payload: "Le dictionnaire n'est pas actuellement disponible" };
+        }
+
+        return { isSuccess: true, payload: handler };
     }
 
     async getJsonDictionary(id: string): Promise<JsonDictionary | null> {
@@ -182,7 +198,7 @@ export class DictionaryService {
 
         if (words.length === 0) {
             logger.warn(`Cannot find dictionary ${metadata._id}`);
-            this.dictionaryPersistence.remove(metadata._id);
+            await this.dictionaryPersistence.remove(metadata._id);
             return null;
         }
 
