@@ -58,28 +58,29 @@ describe('InitGameComponent', () => {
     let component: InitGameComponent;
     let fixture: ComponentFixture<InitGameComponent>;
     let roomServiceSpyObj: jasmine.SpyObj<RoomService>;
-    let routerSpy: jasmine.SpyObj<Router>;    
+    let routerSpy: jasmine.SpyObj<Router>;
 
-    let dialogData =  { gameType: GameType.SinglePlayer, gameMode: GameMode.Classic };
+    let dialogData = { gameType: GameType.SinglePlayer, gameMode: GameMode.Classic };
 
     const NAMES = ['Jean', 'RenÉéÎîÉéÇçÏï', 'moulon', 'Jo', 'Josiannnnnnnnnnne', 'Jean123', 'A1', 'Alphonse', ''];
 
     beforeEach(async () => {
         // gameTypeVal = GameType.SinglePlayer;
         roomServiceSpyObj = jasmine.createSpyObj('RoomService', ['create']);
-        roomServiceSpyObj.create.and.returnValue(Promise.resolve());
+        roomServiceSpyObj.create.and.resolveTo();
         routerSpy = jasmine.createSpyObj('Router', ['navigate']);
-        
+
         await TestBed.configureTestingModule({
             declarations: [InitGameComponent],
             imports: [HttpClientTestingModule, AppMaterialModule, BrowserAnimationsModule, FormsModule],
             schemas: [CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA],
             providers: [
+                { provide: RoomService, useValue: roomServiceSpyObj },
                 { provide: Router, useValue: routerSpy },
                 { provide: GameService, useClass: GameServiceStub },
                 { provide: MatDialogRef, useClass: MatDialogStub },
-                { provide: NameValidator, useClass: NameValidatorStub},
-                { provide: MAT_DIALOG_DATA, useValue: dialogData},
+                { provide: NameValidator, useClass: NameValidatorStub },
+                { provide: MAT_DIALOG_DATA, useValue: dialogData },
             ],
         }).compileComponents();
     });
@@ -153,14 +154,14 @@ describe('InitGameComponent', () => {
         expect(component.seconds).not.toEqual(THIRTY_SECONDS);
     }));
 
-    it('should close dialog once init confirmed', async() => {
+    it('should close dialog once init confirmed', async () => {
         spyOn<any>(component, 'confirmInitialization').and.returnValue(true);
         const spy = spyOn(component.dialogRef, 'close');
         await component.init();
         expect(spy).toHaveBeenCalled();
     });
 
-    it('should init single player game if single player selected', async() => {
+    it('should init single player game if single player selected', async () => {
         const spy = spyOn<any>(component, 'initSinglePlayer');
         spyOn<any>(component, 'confirmInitialization').and.returnValue(true);
 
@@ -170,38 +171,37 @@ describe('InitGameComponent', () => {
         expect(spy).toHaveBeenCalled();
     });
 
-    it('should init multiplayer game if multiplayer selected', async() => {
+    it('should init multiplayer game if multiplayer selected', async () => {
         dialogData.gameType = GameType.Multiplayer;
         // fixture.detectChanges();
         const spy = spyOn<any>(component, 'initMultiplayer');
         spyOn<any>(component, 'confirmInitialization').and.returnValue(true);
-        
+
         await component.init();
         spy.and.callThrough();
 
         expect(spy).toHaveBeenCalled();
     });
 
-    
-    it('should init multiplayer game if multiplayer selected 2', async() => {
+    it('should init multiplayer game if multiplayer selected 2', async () => {
         dialogData.gameType = GameType.Multiplayer;
         spyOn<any>(component, 'confirmInitialization').and.returnValue(true);
-        
-        await component.init();
-        roomServiceSpyObj['create'].and.callThrough();
+        routerSpy['navigate'].and.resolveTo(true);
+        // eslint-disable-next-line @typescript-eslint/no-empty-function
+        routerSpy['navigate'].and.stub();
 
+        await component['initMultiplayer']();
     });
 
-    it('should confirm initialization if valid name', async() => {
+    it('should confirm initialization if valid name', async () => {
         spyOnProperty(component.nameValidator, 'isValid').and.returnValue(true);
-        let confirm = component['confirmInitialization']();
+        const confirm = component['confirmInitialization']();
         expect(confirm).toBe(true);
-
     });
 
-    it('should not confirm initialization if invalid name', async() => {
+    it('should not confirm initialization if invalid name', async () => {
         spyOnProperty(component.nameValidator, 'isValid').and.returnValue(false);
-        let confirm = component['confirmInitialization']();
+        const confirm = component['confirmInitialization']();
         expect(confirm).toBe(false);
     });
 
