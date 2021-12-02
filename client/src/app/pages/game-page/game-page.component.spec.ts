@@ -2,7 +2,7 @@
 // import { HttpClientTestingModule } from '@angular/common/http/testing';
 /* eslint-disable dot-notation -- Need to access private properties for testing*/
 /* eslint-disable @typescript-eslint/no-explicit-any */
-/*
+
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { Component, CUSTOM_ELEMENTS_SCHEMA, Injectable, NO_ERRORS_SCHEMA } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
@@ -18,7 +18,7 @@ import { PlayerType } from '@app/classes/player/player-type';
 import { TimeSpan } from '@app/classes/time/timespan';
 import { AppMaterialModule } from '@app/modules/material.module';
 import { GameService } from '@app/services/game/game.service';
-import { GameType, SessionStats } from '@common';
+import { GameMode, GameType, SessionStats } from '@common';
 import { BehaviorSubject, of, Subject } from 'rxjs';
 import { GamePageComponent } from './game-page.component';
 
@@ -35,6 +35,7 @@ class GameServiceStub {
     gameEnding: Subject<void> = new Subject<void>();
     currentTurn: PlayerType = PlayerType.Local;
     gameConfig: GameConfig = {
+        gameMode: GameMode.Classic,
         gameType: GameType.SinglePlayer,
         playTime: TimeSpan.fromSeconds(0),
         firstPlayerName: '',
@@ -182,4 +183,3 @@ describe('GamePageComponent', () => {
 
     afterAll(() => cleanStyles());
 });
-*/
