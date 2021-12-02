@@ -1,6 +1,10 @@
 FROM node:16-alpine AS base
 EXPOSE 3000
+
 ENV NODE_ENV=production
+ENV UPLOAD_DIR=/assets/dictionaries
+
+RUN mkdir /assets && chown -R node:node assets
 
 WORKDIR /app
 COPY ./server/package*.json ./

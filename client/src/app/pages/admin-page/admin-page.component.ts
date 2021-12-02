@@ -1,9 +1,8 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { AdminService } from '@app/services/admin/admin.service';
-import { ErrorDialogComponent } from '@app/components/error-dialog/error-dialog.component';
-import { MatDialog } from '@angular/material/dialog';
 import { Subscription } from 'rxjs';
+import { Answer } from '@common';
 
 @Component({
     selector: 'app-admin-page',
@@ -13,10 +12,10 @@ import { Subscription } from 'rxjs';
 export class AdminPageComponent implements OnInit, OnDestroy {
     private errorSubscription: Subscription;
 
-    constructor(public adminService: AdminService, private snackbar: MatSnackBar, private readonly dialog: MatDialog) {}
+    constructor(public adminService: AdminService, private snackbar: MatSnackBar) {}
 
     ngOnInit() {
-        this.errorSubscription = this.adminService.onerror.subscribe((message) => this.openErrorDialog(message));
+        this.errorSubscription = this.adminService.onNotify.subscribe((message) => this.notify(message));
     }
 
     ngOnDestroy() {
@@ -32,14 +31,7 @@ export class AdminPageComponent implements OnInit, OnDestroy {
     }
 
     updateDictionaries() {
-        this.adminService
-            .updateDictionaries()
-            .then(() => {
-                this.snackbar.open('Dictionnaires mis à jour', 'Fermer');
-            })
-            .catch(() => {
-                this.snackbar.open('Erreur lors de la mise à jour des dictionnaires', 'Fermer');
-            });
+        this.adminService.updateDictionaries();
     }
 
     downloadDictionary(id: string) {
@@ -66,10 +58,7 @@ export class AdminPageComponent implements OnInit, OnDestroy {
             });
     }
 
-    private openErrorDialog(warningMessage: string) {
-        this.dialog.open(ErrorDialogComponent, {
-            panelClass: 'app-error-dialog',
-            data: { warningMessage },
-        });
+    private notify(warningMessage: Answer<string>) {
+        this.snackbar.open(warningMessage.payload, 'Fermer');
     }
 }

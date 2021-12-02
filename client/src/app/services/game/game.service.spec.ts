@@ -2,7 +2,6 @@
 /* eslint-disable dot-notation -- Need to access private properties for testing*/
 /* eslint-disable max-classes-per-file -- Needs many stubbed classes in order to test*/
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { EndGameWinner } from '@app/classes/end-game-winner';
@@ -16,6 +15,10 @@ import { SessionService } from '@app/services/session/session.service';
 import { SocketClientService } from '@app/services/socket-client/socket-client.service';
 import { GameMode, GameType, ServerConfig, SessionStats, DictionaryMetadata, VirtualPlayerLevel } from '@common';
 import { Observable, Subject } from 'rxjs';
+import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
+import { environmentExt } from '@environment-ext';
+
+const localUrl = (base: string, call: string, id?: string) => `${environmentExt.apiUrl}${base}/${call}${id ? '/' + id : ''}`;
 
 const dictionary: DictionaryMetadata = {
     _id: 'dictionary.json',
@@ -31,6 +34,17 @@ const dictionary: DictionaryMetadata = {
 class SessionServiceStub {
     private _id: string;
     private _gameConfig: GameConfig;
+
+    constructor() {
+        this._gameConfig = {
+            gameType: GameType.Multiplayer,
+            gameMode: GameMode.Classic,
+            playTime: TimeSpan.fromMinutesSeconds(1, 0),
+            firstPlayerName: 'Alphonse',
+            secondPlayerName: 'Monique',
+        };
+    }
+
     get gameConfig(): GameConfig {
         return this._gameConfig;
     }
@@ -43,8 +57,8 @@ describe('GameService', () => {
     let service: GameService;
     let mockRack: string[];
     const session = new SessionServiceStub();
+    let httpMock: HttpTestingController;
 
-    let httpSpyObj: jasmine.SpyObj<HttpClient>;
     let playerServiceSpyObj: jasmine.SpyObj<PlayerService>;
     let rackServiceSpyObj: jasmine.SpyObj<RackService>;
     let serverConfigObservableSpyObj: jasmine.SpyObj<Observable<ServerConfig>>;
@@ -52,18 +66,15 @@ describe('GameService', () => {
     let socketService: jasmine.SpyObj<SocketClientService>;
 
     beforeEach(async () => {
-        socketService = jasmine.createSpyObj('SocketClientService', ['on', 'reset']);
+        socketService = jasmine.createSpyObj('SocketClientService', ['on', 'reset', 'join', 'send']);
         const callback = (event: string, action: (Param: any) => void) => {
             action({});
         };
         socketService.on.and.callFake(callback);
         mockRack = ['K', 'E', 'S', 'E', 'I', 'O', 'V'];
         rackServiceSpyObj = jasmine.createSpyObj('RackService', ['update', 'refresh']);
-        httpSpyObj = jasmine.createSpyObj('HttpModule', ['get', 'put']);
         sessionStatsObservableSpyObj = jasmine.createSpyObj('Observable<SessionStats>', ['toPromise']);
         serverConfigObservableSpyObj = jasmine.createSpyObj('Observable<ServerConfig>', ['toPromise']);
-        httpSpyObj.put.and.returnValue(serverConfigObservableSpyObj);
-        httpSpyObj.get.and.returnValue(sessionStatsObservableSpyObj);
 
         playerServiceSpyObj = jasmine.createSpyObj('playerService', ['startTurn', 'turnComplete', 'fillRack', 'reset', 'emptyRack', 'refresh'], {
             playerData: { score: 0, skippedTurns: 0, rack: [] },
@@ -73,16 +84,17 @@ describe('GameService', () => {
         playerServiceSpyObj.reset.and.returnValue();
 
         TestBed.configureTestingModule({
-            imports: [],
+            imports: [HttpClientTestingModule],
             providers: [
                 { provide: PlayerService, useValue: playerServiceSpyObj },
                 { provide: RackService, useValue: rackServiceSpyObj },
-                { provide: HttpClient, useValue: httpSpyObj },
                 { provide: SessionService, useValue: session },
+                { provide: SocketClientService, useValue: socketService },
             ],
         });
 
         service = TestBed.inject(GameService);
+        httpMock = TestBed.inject(HttpTestingController);
     });
 
     it('should be created', () => {
@@ -122,9 +134,13 @@ describe('GameService', () => {
         };
 
         serverConfigObservableSpyObj.toPromise.and.resolveTo(config);
-        const spy = spyOn(service, 'start').and.callThrough();
-        await service.startSinglePlayer(config);
-        expect(spy).toHaveBeenCalled();
+
+        service.startSinglePlayer(config).then(() => {
+            expect(socketService.join).toHaveBeenCalled();
+        });
+
+        const request = httpMock.expectOne(localUrl('game', 'init/single'));
+        request.flush({ isSuccess: true, payload: { id: '' } });
     });
 
     it('should reset playerService', async () => {
