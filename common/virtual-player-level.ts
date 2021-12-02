@@ -1,4 +1,4 @@
 export enum VirtualPlayerLevel {
-    Easy,
-    Expert,
+    Easy= 'Easy',
+    Expert = 'Expert',
 }

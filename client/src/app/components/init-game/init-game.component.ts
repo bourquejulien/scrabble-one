@@ -53,7 +53,7 @@ export class InitGameComponent implements OnInit {
         this.typeOfGameType = GameType;
 
         this.virtualPlayerLevelNames = Constants.VIRTUAL_PLAYERS_LEVELS_NAMES;
-        this.botNames = adminService.virtualPlayerNames.beginners;
+        this.botNames = this.adminService.virtualPlayerNamesByLevel(VirtualPlayerLevel.Easy);
         this.dictionary = adminService.defaultDictionary as DictionaryMetadata;
         this.minutesList = TURN_LENGTH_MINUTES;
         this.secondsList = TURN_LENGTH_SECONDS;
@@ -80,7 +80,7 @@ export class InitGameComponent implements OnInit {
     }
 
     updateVirtualPlayerNames() {
-        this.botNames = this.adminService.getVirtualPlayerNamesByLevel(this.virtualPlayerLevel);
+        this.botNames = this.adminService.virtualPlayerNamesByLevel(this.virtualPlayerLevel);
         this.formConfig.secondPlayerName = InitGameComponent.randomizeBotName(this.botNames);
     }
 

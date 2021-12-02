@@ -5,27 +5,26 @@ import { IncomingForm } from 'formidable';
 import { tmpdir } from 'os';
 import * as logger from 'winston';
 import { DictionaryService } from '@app/services/dictionary/dictionary.service';
-import { Answer, DictionaryMetadata } from '@common';
-
-interface Playernames {
-    experts: string[];
-    beginners: string[];
-}
+import { DictionaryMetadata, GameMode, VirtualPlayerLevel } from '@common';
+import { AdminPersistence } from '@app/services/admin/admin-persistence';
+import { ScoreService } from '@app/services/score/score.service';
 
 const UPLOAD_DIR = process.env.TEMP_DIR ?? tmpdir();
 
 @Service()
 export class AdminController {
-    readonly defaultBotNames: Playernames = {
-        beginners: ['Monique', 'Claudette', 'Alphonse'],
-        experts: ['Éléanor', 'Alfred', 'Jeaninne'],
-    };
-    virtualPlayerNames: Playernames;
     router: Router;
 
-    constructor(private dictionaryService: DictionaryService) {
-        this.virtualPlayerNames = this.defaultBotNames;
+    constructor(
+        private dictionaryService: DictionaryService,
+        private readonly adminService: AdminPersistence,
+        private readonly scoreService: ScoreService,
+    ) {
         this.configureRouter();
+    }
+
+    private static getPlayerLevel(level: string): VirtualPlayerLevel | null {
+        return VirtualPlayerLevel[level as keyof typeof GameMode];
     }
 
     private configureRouter(): void {
@@ -34,16 +33,16 @@ export class AdminController {
         this.router.post('/dictionary/upload', async (req: Request, res: Response) => {
             const form = new IncomingForm({ multiples: false, uploadDir: UPLOAD_DIR });
 
-            // form.parse(req, async (err: Error) => {
-            //     if (err) {
-            //         logger.error('Upload Error Caught', err);
-            //         return;
-            //     }
-            // });
+            form.parse(req, (err: Error) => {
+                if (err) {
+                    logger.warn('Upload Error Caught', err);
+                    return;
+                }
+            });
 
             form.on('file', async (formName, file) => {
                 if (file.mimetype !== 'application/json') {
-                    logger.error('Dictionary Upload Failed: non-JSON data received');
+                    logger.warn('Dictionary Upload Failed: non-JSON data received');
                     res.sendStatus(Constants.HTTP_STATUS.BAD_REQUEST);
                     return;
                 }
@@ -51,11 +50,11 @@ export class AdminController {
                 logger.debug(`Dictionary uploaded : ${file.filepath}`);
 
                 try {
-                    await this.dictionaryService.add(file.filepath);
-
-                    res.sendStatus(Constants.HTTP_STATUS.OK);
+                    const answer = await this.dictionaryService.add(file.filepath);
+                    res.json(answer);
                 } catch (err) {
-                    logger.error('Dictionary parsing error', err);
+                    logger.warn('Dictionary parsing error', err);
+                    res.sendStatus(Constants.HTTP_STATUS.BAD_REQUEST);
                 }
             });
         });
@@ -64,15 +63,10 @@ export class AdminController {
             const metadataToUpdate: DictionaryMetadata[] = [];
 
             metadataToUpdate.push(...req.body);
-            const isSuccess = await this.dictionaryService.update(metadataToUpdate);
+            const answer = await this.dictionaryService.update(metadataToUpdate);
 
-            let names = ' ';
-            const metadata = await this.dictionaryService.getMetadata();
-            metadata.forEach((e) => (names = '«' + e.title + '» '));
+            logger.debug('Dictionary update ' + (answer.isSuccess ? 'succeeded' : 'failed'));
 
-            logger.debug(`Updated dictionary: ${names}`);
-
-            const answer: Answer<DictionaryMetadata[]> = { isSuccess, payload: metadata };
             res.json(answer);
         });
 
@@ -100,21 +94,73 @@ export class AdminController {
             res.sendStatus(isSuccess ? Constants.HTTP_STATUS.DELETED : Constants.HTTP_STATUS.BAD_REQUEST);
         });
 
-        this.router.get('/playername', (req: Request, res: Response) => {
-            res.json(this.virtualPlayerNames);
+        this.router.get('/playername', async (req: Request, res: Response) => {
+            const names = await this.adminService.getPlayerNames();
+            res.json(names);
         });
 
-        this.router.post('/playername', (req: Request, res: Response) => {
-            this.virtualPlayerNames = req.body;
-            logger.debug('Virtual Player Names - length:' + this.virtualPlayerNames.experts.length + this.virtualPlayerNames.beginners.length);
-            res.sendStatus(Constants.HTTP_STATUS.OK);
+        this.router.post('/playername/set/:level', async (req: Request, res: Response) => {
+            const level = AdminController.getPlayerLevel(req.params.level);
+
+            if (level == null || req.body.name === undefined) {
+                res.sendStatus(Constants.HTTP_STATUS.BAD_REQUEST);
+                return;
+            }
+
+            const isAdded = await this.adminService.addVirtualPlayer(level, req.body.name);
+
+            if (!isAdded) {
+                res.sendStatus(Constants.HTTP_STATUS.BAD_REQUEST);
+                return;
+            }
+
+            const names = await this.adminService.getPlayerNames();
+            res.json(names);
+        });
+
+        this.router.post('/playername/rename', async (req: Request, res: Response) => {
+            const [oldName, newName] = req.body;
+
+            const level = await this.adminService.renameVirtualPlayer(oldName, newName);
+
+            if (level == null) {
+                res.sendStatus(Constants.HTTP_STATUS.BAD_REQUEST);
+                return;
+            }
+
+            const names = await this.adminService.getPlayerNames();
+            res.json(names);
+        });
+
+        this.router.delete('/playername/:name', async (req: Request, res: Response) => {
+            const name = req.params.name;
+
+            if (name === undefined) {
+                res.sendStatus(Constants.HTTP_STATUS.BAD_REQUEST);
+                return;
+            }
+
+            const level = await this.adminService.deleteVirtualPlayer(req.params.name);
+
+            if (level == null) {
+                res.sendStatus(Constants.HTTP_STATUS.BAD_REQUEST);
+                return;
+            }
+
+            const names = await this.adminService.getPlayerNames();
+            res.json(names);
         });
 
         this.router.get('/reset', async (req: Request, res: Response) => {
-            this.virtualPlayerNames = this.defaultBotNames;
-            await this.dictionaryService.reset();
+            const promises: Promise<void>[] = [];
+
+            promises.push(this.dictionaryService.reset());
+            promises.push(this.scoreService.reset());
+            promises.push(this.adminService.reset());
+            await Promise.all(promises);
+
             res.sendStatus(Constants.HTTP_STATUS.OK);
-            logger.debug('Reset');
+            logger.info('Persistent data reset');
         });
     }
 }

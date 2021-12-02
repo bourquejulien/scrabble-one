@@ -13,6 +13,4 @@ export const Constants = {
         NOT_FOUND: 404,
     },
     MIN_DICTIONARY_SIZE: 1,
-    DATABASE_COLLECTION_CLASSIC: 'classicScoreboard',
-    DATABASE_COLLECTION_LOG: 'logScoreboard',
 };

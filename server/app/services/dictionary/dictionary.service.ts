@@ -1,8 +1,8 @@
-import { DictionaryMetadata, JsonDictionary } from '@common';
+import { Answer, DictionaryMetadata, JsonDictionary } from '@common';
 import { Service } from 'typedi';
 import * as logger from 'winston';
 import path from 'path';
-import { Validator } from 'jsonschema';
+import { Validator, ValidatorResult } from 'jsonschema';
 import { Constants } from '@app/constants';
 import { DictionaryHandler } from '@app/handlers/dictionary-handler/dictionary-handler';
 import { DictionaryPersistence } from '@app/services/dictionary/dictionary-persistence';
@@ -30,7 +30,7 @@ export class DictionaryService {
         return path.join(dictionaryPath, metadata._id);
     }
 
-    private static validate(data: string) {
+    private static validate<T>(data: T): ValidatorResult {
         const validator = new Validator();
         return validator.validate(data, schema);
     }
@@ -38,10 +38,6 @@ export class DictionaryService {
     private static async parse(filepath: string): Promise<JsonDictionary> {
         const data = await fs.promises.readFile(filepath, 'utf8');
         let dictionary: JsonDictionary;
-
-        if (!DictionaryService.validate(data)) {
-            return Promise.reject('Dictionary format invalid');
-        }
 
         try {
             dictionary = JSON.parse(data) as JsonDictionary;
@@ -52,8 +48,12 @@ export class DictionaryService {
             return Promise.reject(errorMessage);
         }
 
+        if (!this.validate(dictionary).valid) {
+            return Promise.reject('Dictionary format invalid');
+        }
+
         if (dictionary.words.length < Constants.MIN_DICTIONARY_SIZE) {
-            throw new Error('Not enough words in the chosen dictionary');
+            return Promise.reject('Not enough words in the chosen dictionary');
         }
 
         return dictionary;
@@ -74,18 +74,23 @@ export class DictionaryService {
 
     async init(): Promise<void> {
         await this.createHandler(this.dictionaryPersistence.defaultMetadata);
-
-        if (!fs.existsSync(dictionaryPath)) {
-            await fs.promises.mkdir(dictionaryPath, { recursive: true });
-        }
+        await fs.promises.mkdir(dictionaryPath, { recursive: true });
     }
 
     async reset(): Promise<void> {
         await this.dictionaryPersistence.reset();
-        await this.add(this.dictionaryPersistence.defaultMetadata.path);
+        fs.promises
+            .rm(dictionaryPath, { recursive: true, force: true })
+            .then(() => {
+                fs.promises.mkdir(dictionaryPath, { recursive: true });
+                logger.debug('Successful Dictionary directory reset');
+            })
+            .catch((err) => {
+                logger.warn('Dictionary directory cannot be reset', err);
+            });
     }
 
-    async add(tempPath: string): Promise<boolean> {
+    async add(tempPath: string): Promise<Answer<DictionaryMetadata[], string>> {
         const json = await DictionaryService.parse(tempPath);
         const id = generateId();
         const newFilepath = path.resolve(path.join(dictionaryPath, id));
@@ -102,33 +107,37 @@ export class DictionaryService {
 
         if (!isAdded) {
             logger.debug('Dictionary was not added because there was a duplicate');
-            return false;
+            return { isSuccess: false, payload: `Échec de l'ajout : le dictionnaire ${metadata.title} existe déjà` };
         }
 
         await fs.promises.unlink(tempPath);
         await fs.promises.writeFile(newFilepath, JSON.stringify(json.words), 'utf-8');
         logger.debug(`Dictionary moved/renamed to ${newFilepath}`);
 
-        return true;
+        return { isSuccess: true, payload: await this.getMetadata() };
     }
 
-    async update(metadata: DictionaryMetadata[]): Promise<boolean> {
-        const promises = metadata.map(async (m) => this.dictionaryPersistence.update(m));
-        return (await Promise.all(promises)).reduce((prev, curr) => prev && curr, false);
+    async update(metadataList: DictionaryMetadata[]): Promise<Answer<DictionaryMetadata[]>> {
+        let isSuccess = true;
+        for (const metadata of metadataList) {
+            isSuccess &&= await this.dictionaryPersistence.update(metadata);
+        }
+        return { isSuccess, payload: await this.getMetadata() };
     }
 
     async remove(id: string): Promise<boolean> {
-        const metadata = await this.dictionaryPersistence.getMetadataById(id);
-        const canRemove = await this.dictionaryPersistence.remove(id);
+        const metadata = await this.dictionaryPersistence.remove(id);
 
-        if (canRemove && metadata != null) {
+        this.handlers.delete(id);
+
+        if (metadata != null) {
             fs.promises
                 .unlink(metadata.path)
                 .then(() => {
                     logger.debug(`Successful Deletion: ${metadata.path}`);
                 })
                 .catch((err) => {
-                    logger.error(err.stack);
+                    logger.warn('Dictionary file cannot be deleted', err);
                 });
 
             return true;
@@ -183,7 +192,7 @@ export class DictionaryService {
 
         if (words.length === 0) {
             logger.warn(`Cannot find dictionary ${metadata._id}`);
-            this.dictionaryPersistence.remove(metadata._id);
+            await this.dictionaryPersistence.remove(metadata._id);
             return null;
         }
 

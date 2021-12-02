@@ -41,15 +41,15 @@ export class DictionaryPersistence {
         return false;
     }
 
-    async remove(id: string): Promise<boolean> {
+    async remove(id: string): Promise<DictionaryMetadata | null> {
         if (this.isDefault(id)) {
-            return false;
+            return null;
         }
 
-        const result = await this.metaDataCollection.deleteOne({ _id: id });
+        const result = await this.metaDataCollection.findOneAndDelete({ _id: id });
         this.metaDataCache.delete(id);
 
-        return result.acknowledged;
+        return result.value;
     }
 
     async update(dictionaryMetadata: DictionaryMetadata): Promise<boolean> {
@@ -77,7 +77,7 @@ export class DictionaryPersistence {
     }
 
     async getMetadata(): Promise<DictionaryMetadata[]> {
-        const metaData = await this.metaDataCollection.find().toArray();
+        const metaData = await this.metaDataCollection.find().sort({ title: -1 }).toArray();
         metaData.forEach((m) => this.metaDataCache.set(m._id, m));
 
         return Array.from(this.metaDataCache.values());
@@ -94,7 +94,12 @@ export class DictionaryPersistence {
     }
 
     async reset(): Promise<void> {
-        await this.databaseService.database.dropCollection(COLLECTION_NAME);
+        const count = await this.metaDataCollection.countDocuments();
+
+        if (count > 0) {
+            await this.metaDataCollection.drop();
+        }
+
         this.metaDataCache.clear();
         this.metaDataCache.set(this.defaultMetadata._id, this.defaultMetadata);
     }

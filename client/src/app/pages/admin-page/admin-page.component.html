@@ -13,7 +13,7 @@
         <div>
             <mat-divider></mat-divider>
             <h3><b>Gérer les dictionnaires existants</b></h3>
-            <mat-selection-list>
+            <mat-selection-list (keydown.enter)="adminService.updateDictionaries()" >
                 <div class="dictionary-settings" *ngFor="let dictionary of adminService.dictionaries; let i = index">
                     <mat-list-item>
                         <mat-form-field appearance="outline">
@@ -24,7 +24,6 @@
                             <mat-label>Description du dictionnaire</mat-label>
                             <textarea class="dictionary-description" rows="1" [disabled]='adminService.isDefaultDictionary(dictionary)' matInput required [(ngModel)]="dictionary.description" (ngModelChange)="adminService.dictionaryUpdated(dictionary)" ></textarea>
                         </mat-form-field>
-                        <span></span>
                         Nombre de mots: {{ dictionary.nbWords | number }}
                         <button mat-stroked-button (click)="downloadDictionary(dictionary._id)">
                             <mat-icon>file_download</mat-icon>
@@ -64,53 +63,13 @@
             <mat-panel-title> Nom des joueurs virtuels </mat-panel-title>
             <mat-panel-description> Ajouter ou retirer des choix de noms pour des joueurs virtuels </mat-panel-description>
         </mat-expansion-panel-header>
-        <mat-grid-list [cols]="2">
-            <mat-grid-tile>
-                <mat-grid-tile-header>Noms des joueurs virtuels débutants</mat-grid-tile-header>
-                <mat-selection-list>
-                    <mat-list-item *ngFor="let player of adminService.virtualPlayerNames.beginners; let i = index">
-                        <div>
-                            <mat-form-field appearance="outline">
-                                <mat-label>Nom du joueur virtuel</mat-label>
-                                <input matInput required placeholder="Nom du joueur virtuel" [value]="player" />
-                            </mat-form-field>
-                            <button mat-stroked-button color="warn" (click)="adminService.removePlayername(player, true)" *ngIf="i >= 3">
-                                <mat-icon>delete</mat-icon>
-                            </button>
-                        </div>
-                    </mat-list-item>
-                </mat-selection-list>
-                <button mat-stroked-button (click)="adminService.virtualPlayerNames.beginners.push('')">
-                    Ajouter un joueur virtuel <mat-icon>add</mat-icon>
-                </button>
-            </mat-grid-tile>
-            <mat-grid-tile>
-                <mat-grid-tile-header>Noms des joueurs virtuels experts</mat-grid-tile-header>
-                <mat-selection-list>
-                    <mat-list-item *ngFor="let player of adminService.virtualPlayerNames.experts; let i = index">
-                        <div>
-                            <mat-form-field appearance="outline">
-                                <mat-label>Nom du joueur virtuel</mat-label>
-                                <input matInput required placeholder="Nom du joueur virtuel" [value]="player" />
-                            </mat-form-field>
-                            <button mat-stroked-button color="warn" (click)="adminService.removePlayername(player, true)" *ngIf="i >= 3">
-                                <mat-icon>delete</mat-icon>
-                            </button>
-                        </div>
-                    </mat-list-item>
-                </mat-selection-list>
-                <button mat-stroked-button (click)="adminService.virtualPlayerNames.experts.push('')">
-                    Ajouter un joueur virtuel <mat-icon>add</mat-icon>
-                </button>
-            </mat-grid-tile>
-        </mat-grid-list>
-        <button mat-stroked-button color="success" (click)="adminService.updateUsername()">
-            Accepter les modifications <mat-icon>done</mat-icon>
-        </button>
+
+        <app-virtual-player-name></app-virtual-player-name>
+
     </mat-expansion-panel>
     <mat-expansion-panel>
         <mat-expansion-panel-header>
-            <mat-panel-title> Réinitialiser les réglagles </mat-panel-title>
+            <mat-panel-title> Réinitialiser les réglages </mat-panel-title>
             <mat-panel-description> Zone dangereuse </mat-panel-description>
         </mat-expansion-panel-header>
         <b><i>Attention: </i></b>cette option supprime tous les dictionnaires ajoutés, les meilleurs scores ainsi que les noms personnalisés des
@@ -118,3 +77,4 @@
         <button mat-stroked-button color="warn" (click)="resetSettings()">Réinitialiser les réglages<mat-icon>warning</mat-icon></button>
     </mat-expansion-panel>
 </mat-accordion>
+

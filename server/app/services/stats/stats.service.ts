@@ -1,5 +1,4 @@
 import { EndGameData } from '@app/classes/end-game-data';
-import { Constants } from '@app/constants';
 import { ScoreService } from '@app/services/score/score.service';
 import { GameMode, Score } from '@common';
 import { Service } from 'typedi';
@@ -11,18 +10,17 @@ export class StatsService {
     constructor(readonly scoreService: ScoreService) {}
 
     async updateScoreboards(endGameData: EndGameData): Promise<void> {
-        const collectionName = endGameData.gameMode === GameMode.Classic ? Constants.DATABASE_COLLECTION_CLASSIC : Constants.DATABASE_COLLECTION_LOG;
-        const elligiblePlayers = await this.currentGreaterScores(endGameData.scores, collectionName);
+        const eligiblePlayers = await this.currentGreaterScores(endGameData.scores, endGameData.gameMode);
 
-        if (elligiblePlayers.length === 0) {
+        if (eligiblePlayers.length === 0) {
             return;
         }
 
-        await this.scoreService.updateScoreboard(elligiblePlayers, collectionName);
+        await this.scoreService.updateScoreboard(eligiblePlayers, endGameData.gameMode);
     }
 
-    async scoreToDisplay(collectionName: string): Promise<Score[]> {
-        const currentScores = await this.groupedScores(collectionName);
+    async getScoreToDisplay(gameMode: GameMode): Promise<Score[]> {
+        const currentScores = await this.groupedScores(gameMode);
 
         const sortedScores = Array.from(currentScores).sort((a: [number, string[]], b: [number, string[]]) => {
             return b[0] - a[0];
@@ -37,11 +35,11 @@ export class StatsService {
         return bestScores;
     }
 
-    private async currentGreaterScores(scoreList: Score[], collectionName: string): Promise<Score[]> {
+    private async currentGreaterScores(scoreList: Score[], gameMode: GameMode): Promise<Score[]> {
         const listScores: Score[] = [];
 
         for (const score of scoreList) {
-            if (await this.isNewScoreGreater(score, collectionName)) {
+            if (await this.isNewScoreGreater(score, gameMode)) {
                 listScores.push(score);
             }
         }
@@ -49,8 +47,8 @@ export class StatsService {
         return listScores;
     }
 
-    private async groupedScores(collectionName: string): Promise<Map<number, string[]>> {
-        const scores = collectionName === Constants.DATABASE_COLLECTION_CLASSIC ? await this.getScoreboardClassic() : await this.getScoreBoardLog();
+    private async groupedScores(gameMode: GameMode): Promise<Map<number, string[]>> {
+        const scores = gameMode === GameMode.Classic ? await this.getScoreboardClassic() : await this.getScoreBoardLog();
         const scoresToDisplay = new Map<number, string[]>();
 
         for (const score of scores) {
@@ -65,15 +63,15 @@ export class StatsService {
         return scoresToDisplay;
     }
 
-    private async isNewScoreGreater(score: Score, collectionName: string): Promise<boolean> {
-        const isInScoreboard = await this.scoreService.isPlayerInScoreboard(score.name, collectionName);
+    private async isNewScoreGreater(score: Score, gameMode: GameMode): Promise<boolean> {
+        const isInScoreboard = await this.scoreService.isPlayerInScoreboard(score.name, gameMode);
 
         if (isInScoreboard) {
-            const playerScoreInBoard = await this.scoreService.getPlayerScore(score.name, collectionName);
+            const playerScoreInBoard = await this.scoreService.getPlayerScore(score.name, gameMode);
             if (playerScoreInBoard > score.scoreValue) {
                 return false;
             }
-            this.scoreService.deleteElement(score.name, collectionName);
+            await this.scoreService.deleteElement(score.name, gameMode);
         }
         return true;
     }

@@ -30,7 +30,7 @@ describe('StatsController', () => {
     });
 
     it('GET /classic/ should return correct scores', async () => {
-        stubStatsService.scoreToDisplay.resolves(classicScore);
+        stubStatsService.getScoreToDisplay.resolves(classicScore);
         return request(expressApp)
             .get('/api/score/classic')
             .then((response) => {
@@ -40,7 +40,7 @@ describe('StatsController', () => {
     });
 
     it('GET /log/ should return correct scores', async () => {
-        stubStatsService.scoreToDisplay.resolves(logScore);
+        stubStatsService.getScoreToDisplay.resolves(logScore);
         return request(expressApp)
             .get('/api/score/log')
             .then((response) => {
@@ -50,7 +50,7 @@ describe('StatsController', () => {
     });
 
     it('GET /classic/ should return error message if scores undefined', async () => {
-        stubStatsService.scoreToDisplay.rejects(classicScore);
+        stubStatsService.getScoreToDisplay.rejects(classicScore);
         return request(expressApp)
             .get('/api/score/classic')
             .then((response) => {
@@ -59,7 +59,7 @@ describe('StatsController', () => {
     });
 
     it('GET /log/ should return error message if scores undefined', async () => {
-        stubStatsService.scoreToDisplay.rejects(logScore);
+        stubStatsService.getScoreToDisplay.rejects(logScore);
         return request(expressApp)
             .get('/api/score/log')
             .then((response) => {

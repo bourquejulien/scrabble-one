@@ -7,7 +7,6 @@ import { expect } from 'chai';
 import { DatabaseService } from '@app/services/database/database.service';
 import Sinon, { createSandbox, SinonSandbox } from 'sinon';
 import { Collection, Db, MongoClient } from 'mongodb';
-import { Constants } from '@app/constants';
 
 describe('DataBaseService', () => {
     let service: DatabaseService;
@@ -38,25 +37,6 @@ describe('DataBaseService', () => {
     });
     it('should be created', () => {
         expect(service).to.be.ok;
-    });
-    it('should initiate the classic collection', async () => {
-        const collectionStub = sandbox.stub(service['scrabbleDb'], 'createCollection');
-        const collectionName = Constants.DATABASE_COLLECTION_CLASSIC;
-        await service['initCollections'](collectionName);
-        sandbox.assert.calledWith(collectionStub, collectionName);
-    });
-    it('should initiate any other collections', async () => {
-        const collectionStub = sandbox.stub(service['scrabbleDb'], 'createCollection');
-        const collectionName = Constants.DATABASE_COLLECTION_LOG;
-        await service['initCollections'](collectionName);
-        sandbox.assert.calledWith(collectionStub, collectionName);
-    });
-    it('should reset', async () => {
-        sandbox.stub(service['scrabbleDb'], 'createCollection');
-        const dropStub = sandbox.stub(service['scrabbleDb'], 'dropCollection');
-        const collectionName = 'wtv';
-        await service['reset'](collectionName);
-        sandbox.assert.calledWith(dropStub, collectionName);
     });
     it('should run', async () => {
         sandbox.stub(service['scrabbleDb'], 'createCollection');
