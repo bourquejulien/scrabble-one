@@ -126,6 +126,7 @@ describe('BoardValidator', () => {
         expect(response.isSuccess).to.be.true;
         if (response.isSuccess) expect(response.score).to.equal(expectedScore);
     });
+
     it('should succeed and return correct score on valid combination', () => {
         // eslint-disable-next-line @typescript-eslint/no-magic-numbers -- Need to set expected score
         const expectedScores = [20, 13];
@@ -136,6 +137,7 @@ describe('BoardValidator', () => {
             { letter: 'h', position: { x: 7, y: 10 } },
             { letter: 'e', position: { x: 7, y: 11 } },
         ];
+
         let response = boardValidator.validate(FIRST_PLACEMENT);
         expect(response.isSuccess).to.be.true;
         if (response.isSuccess) expect(response.score).to.eql(expectedScores[0]);
@@ -254,6 +256,7 @@ describe('BoardValidator', () => {
         ];
         expect(BoardValidator['retrieveDirection'](BAD_PLACEMENT)).to.eql(Direction.None);
     });
+
     it('retrieve Direction should return Direction.None if weird placement modified', () => {
         const BAD_PLACEMENT_MODIFIED: Vec2[] = [
             { x: 0, y: 0 },
@@ -262,6 +265,7 @@ describe('BoardValidator', () => {
         ];
         expect(BoardValidator['retrieveDirection'](BAD_PLACEMENT_MODIFIED)).to.eql(Direction.None);
     });
+
     it('retrieve Direction should return Direction.None if weird placement modified again', () => {
         const BAD_PLACEMENT_MODIFIED: Vec2[] = [
             { x: 0, y: 0 },
