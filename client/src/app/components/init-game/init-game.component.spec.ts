@@ -15,8 +15,16 @@ import { PlayerType } from '@app/classes/player/player-type';
 import { AppMaterialModule } from '@app/modules/material.module';
 import { GameService } from '@app/services/game/game.service';
 import { RoomService } from '@app/services/room/room.service';
-import { GameType } from '@common';
+import { GameMode, GameType } from '@common';
 import { InitGameComponent } from './init-game.component';
+
+@Injectable({
+    providedIn: 'root',
+})
+class dataStub {
+    gameType: GameType =  GameType.SinglePlayer; 
+    gameMode: GameMode = GameMode.Classic;
+}
 
 @Injectable({
     providedIn: 'root',
@@ -58,16 +66,12 @@ fdescribe('InitGameComponent', () => {
     let component: InitGameComponent;
     let fixture: ComponentFixture<InitGameComponent>;
     let roomServiceSpyObj: jasmine.SpyObj<RoomService>;
-    let routerSpy: jasmine.SpyObj<Router>;
-    let gameTypeVal: GameType;
+    let routerSpy: jasmine.SpyObj<Router>;    
 
     const NAMES = ['Jean', 'RenÉéÎîÉéÇçÏï', 'moulon', 'Jo', 'Josiannnnnnnnnnne', 'Jean123', 'A1', 'Alphonse', ''];
-    // const routerMock = {
-    //     navigate: jasmine.createSpy('navigate').and.callThrough(),
-    // };
 
     beforeEach(async () => {
-        gameTypeVal = GameType.SinglePlayer;
+        // gameTypeVal = GameType.SinglePlayer;
         roomServiceSpyObj = jasmine.createSpyObj('RoomService', ['create']);
         roomServiceSpyObj.create.and.returnValue(Promise.resolve());
         routerSpy = jasmine.createSpyObj('Router', ['navigate']);
@@ -81,7 +85,7 @@ fdescribe('InitGameComponent', () => {
                 { provide: GameService, useClass: GameServiceStub },
                 { provide: MatDialogRef, useClass: MatDialogStub },
                 { provide: NameValidator, useClass: NameValidatorStub},
-                { provide: MAT_DIALOG_DATA, useValue: {gameType: gameTypeVal}},
+                { provide: MAT_DIALOG_DATA, useClass: dataStub},
             ],
         }).compileComponents();
     });
@@ -104,6 +108,11 @@ fdescribe('InitGameComponent', () => {
         component.botNameChange(FIRST_PLAYER_NAME);
         expect(component.formConfig.secondPlayerName).not.toEqual(FIRST_PLAYER_NAME);
     });
+
+    // it('should get virtualPlayer level depending on its name', () => {
+    //     component.formConfig.virtualPlayerLevelName = 'Éléanore';
+    //     expect(component.virtualPlayerLevel).toEqual(VirtualPlayerLevel.Expert);
+    // });
 
     it('should call forceSecondsToZero ', fakeAsync(() => {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -149,22 +158,6 @@ fdescribe('InitGameComponent', () => {
         expect(component.seconds).not.toEqual(THIRTY_SECONDS);
     }));
 
-    it('should confirm initialization if game initialized', async() => {
-        const spyConfirm = spyOn<any>(component, 'confirmInitialization');
-        await component.init();
-        expect(spyConfirm).toHaveBeenCalled();
-    });
-
-    // it('should confirm initialization if game initialized and valid name entered', async() => {
-    //     // const spyConfirm = spyOn<any>(component, 'confirmInitialization');
-    //     const spy = spyOn(component.dialogRef, 'close');
-
-    //     await component.init();
-    //     expect(spy).toHaveBeenCalled();
-
-    //     // expect(spyConfirm).toHaveBeenCalled();
-    // });
-
     it('should close dialog once init confirmed', async() => {
         spyOn<any>(component, 'confirmInitialization').and.returnValue(true);
         const spy = spyOn(component.dialogRef, 'close');
@@ -185,7 +178,7 @@ fdescribe('InitGameComponent', () => {
     it('should init multiplayer game if multiplayer selected', async() => {
         const spy = spyOn<any>(component, 'initMultiplayer');
         spyOn<any>(component, 'confirmInitialization').and.returnValue(true);
-        spyOn<any>(component.data, 'gameType').and.returnValue(GameType.Multiplayer);
+        component.data.gameType = GameType.Multiplayer;
         
         await component.init();
         spy.and.callThrough();
@@ -193,25 +186,18 @@ fdescribe('InitGameComponent', () => {
         expect(spy).toHaveBeenCalled();
     });
 
-    it('should init multiplayer game if multiplayer selected', async() => {
-        // expect(component['confirmInitialization']()).toBe(true)
-        // let confirm = component['confirmInitialization']();
-        // expect(confirm).toBe(true);
-        expect(component.nameValidator.isValid).toBe(true);
+    it('should confirm initialization if valid name', async() => {
+        spyOnProperty(component.nameValidator, 'isValid').and.returnValue(true);
+        let confirm = component['confirmInitialization']();
+        expect(confirm).toBe(true);
+
     });
 
-    // it('should init multiplayer game and route to waiting room', async() => {
-    //     await component['initMultiplayer']();
-    //     routerSpy['navigate'].and.callThrough();
-    //     roomServiceSpyObj['create'].and.callThrough();
-
-    //     // expect(routerMock['navigate']).toHaveBeenCalledWith(['waiting-room']);
-    //     expect(roomServiceSpyObj['create']).toHaveBeenCalled();
-    // });
-
-    // it('should confirm', async() => {
-        
-    // });
+    it('should not confirm initialization if invalid name', async() => {
+        spyOnProperty(component.nameValidator, 'isValid').and.returnValue(false);
+        let confirm = component['confirmInitialization']();
+        expect(confirm).toBe(false);
+    });
 
     afterAll(() => cleanStyles());
 });
