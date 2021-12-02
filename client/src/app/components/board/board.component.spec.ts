@@ -151,11 +151,11 @@ describe('BoardComponent', () => {
     });
 
     it('should return correct width', () => {
-        expect(component.width).toEqual(Constants.GRID.CANVAS_SIZE.x);
+        expect(component.canvasDrawSize).toEqual(Constants.GRID.CANVAS_SIZE.x);
     });
 
     it('should return correct height', () => {
-        expect(component.height).toEqual(Constants.GRID.CANVAS_SIZE.y);
+        expect(component.canvasDisplaySize).toEqual(Constants.GRID.CANVAS_SIZE.y);
     });
 
     it('should update font size if size provided', () => {

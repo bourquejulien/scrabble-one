@@ -11,6 +11,8 @@ import { RackService } from '@app/services/rack/rack.service';
 import FontFaceObserver from 'fontfaceobserver';
 import { Subscription } from 'rxjs';
 
+const RE_SCALE_FACTOR = 0.55;
+
 @Component({
     selector: 'app-board',
     templateUrl: './board.component.html',
@@ -42,6 +44,11 @@ export class BoardComponent implements OnDestroy, AfterViewInit {
         readonly placeLetterService: PlaceLetterService,
     ) {
         this.squareSelected = false;
+    }
+
+    @HostListener('window:resize')
+    onResize() {
+        this.mouseHandlingService.displaySize = this.canvasDisplaySize;
     }
 
     @HostListener('body:keydown', ['$event'])
@@ -126,9 +133,6 @@ export class BoardComponent implements OnDestroy, AfterViewInit {
 
         this.scale();
 
-        // 1. rendre new FontFaceObserver global
-        // 2. set ala valeur de font -> Et utiliser await;
-
         await new FontFaceObserver(this.gridService.letterFontFace.font).load();
 
         this.gridService.drawGrid(this.gridContext);
@@ -159,12 +163,12 @@ export class BoardComponent implements OnDestroy, AfterViewInit {
         this.resetPlaceSelection();
     }
 
-    get width(): number {
+    get canvasDrawSize(): number {
         return Constants.GRID.CANVAS_SIZE.x;
     }
 
-    get height(): number {
-        return Constants.GRID.CANVAS_SIZE.y;
+    get canvasDisplaySize(): number {
+        return Math.floor(Math.min(window.innerWidth * RE_SCALE_FACTOR, window.innerHeight * RE_SCALE_FACTOR));
     }
 
     private refresh(): void {
@@ -214,6 +218,7 @@ export class BoardComponent implements OnDestroy, AfterViewInit {
             this.isLetter = false;
             return;
         }
+
         if (this.rackService.rack.includes(key)) {
             this.isLetter = true;
             this.letter = key;
@@ -253,8 +258,10 @@ export class BoardComponent implements OnDestroy, AfterViewInit {
         ) {
             this.placeLetterService.isLastSquare = true;
         }
+
         this.placeLetterService.nextAvailableSquare(true);
         this.gridService.cleanInsideSquare(this.squareContext, this.placeLetterService.gridPosition);
+
         if (!lastSquare && !this.placeLetterService.isLastSquare) {
             this.gridService.drawSelectionSquare(this.tempContext, this.placeLetterService.gridPosition);
             this.gridService.drawDirectionArrow(this.tempContext, this.placeLetterService.gridPosition, this.placeLetterService.isHorizontal);
