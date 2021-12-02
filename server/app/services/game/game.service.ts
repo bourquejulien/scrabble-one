@@ -49,7 +49,6 @@ export class GameService {
             gameType: gameConfig.gameType,
         };
 
-        // TODO add a construction service?
         const answer = await this.dictionaryService.getHandler(gameConfig.dictionary._id);
 
         if (!answer.isSuccess) {
@@ -93,7 +92,6 @@ export class GameService {
             gameType: gameConfig.gameType,
         };
 
-        // TODO add a construction service?
         const answer = await this.dictionaryService.getHandler(gameConfig.dictionary._id);
 
         if (!answer.isSuccess) {
