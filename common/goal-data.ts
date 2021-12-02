@@ -9,5 +9,6 @@ export interface GoalData {
     isGlobal: boolean;
     name: string;
     score: number;
+    scoreDescription?: string;
     status: GoalStatus;
 }
