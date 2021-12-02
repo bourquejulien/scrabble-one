@@ -10,7 +10,8 @@
     <form class="playersFlex">
         <mat-form-field style="margin-right: 0.8vw" appearance="fill">
             <mat-label>Joueur 1</mat-label>
-            <input
+            <input 
+                required
                 matInput
                 placeholder="Joueur 1"
                 name="name"
@@ -21,7 +22,7 @@
         </mat-form-field>
         <mat-form-field appearance="fill" *ngIf="data.gameType === typeOfGameType.SinglePlayer">
             <mat-label>Joueur 2</mat-label>
-            <input matInput placeholder="Joueur 2" value="{{ formConfig.secondPlayerName }}" />
+            <input disabled="true" matInput placeholder="Joueur 2" value="{{ formConfig.secondPlayerName }}" />
         </mat-form-field>
     </form>
     <p class="inputPresentationText" *ngIf="data.gameType === typeOfGameType.SinglePlayer || data.gameType === typeOfGameType.Multiplayer">

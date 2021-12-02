@@ -85,7 +85,7 @@ export class GamePageComponent implements OnDestroy {
             {
                 color: 'accent',
                 icon: Icon.Message,
-                hover: 'Ouvrir/Fermer la boite de communication',
+                hover: 'Basculer le clavardage',
                 action: () => this.toggleDrawer(),
             },
             {

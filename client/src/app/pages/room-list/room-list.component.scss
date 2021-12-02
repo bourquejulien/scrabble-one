@@ -20,7 +20,7 @@ body {
 
 .container {
     width: 100%;
-    position: relative;
+    // position: relative;
     align-items: center;
 }
 
@@ -28,12 +28,14 @@ body {
     background: white;
     border-color: black;
     border-width: medium;
+    display: flex;
+    flex-direction: column;
 }
 
 .room-info {
     width: 55%;
     margin-top: 100px;
-    position: fixed;
+    // position: fixed;
     bottom: 100px;
     left: 22.5%;
     margin-left: auto;
@@ -78,24 +80,21 @@ body {
 }
 
 .exit-button {
-    padding: 15px 25px;
-    font-size: 15px;
-    background: white;
-    position: relative;
-    margin-top: 30px;
-    margin-left: 5vh;
-    text-align: center;
-    align-items: center;
+    background-color: white;
+    box-shadow: 2px 2px 2px 2px rgba(10, 10, 10, 0.25);
+}
+
+#home {
+    left: 0vw;
+    top: 0vh;
+    margin-top: 4vh;
+    margin-left: 2vw;
+    display: flex;
+    flex-direction: column;
+    gap: 5vh;
 }
 
 .random-game-button {
-    padding: 15px 25px;
-    font-size: 15px;
-    background: white;
-    float: right;
-    margin-top: 30px;
-    position: relative;
-    margin-right: 5vh;
-    text-align: center;
-    align-items: right;
+    background-color: white;
+    box-shadow: 2px 2px 2px 2px rgba(10, 10, 10, 0.25);
 }

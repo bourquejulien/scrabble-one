@@ -1,17 +1,17 @@
 <body>
     <mat-toolbar class="toolbar" color="primary">
-        <marquee width="65%" direction="left" height="40px">
-            Voici une liste de toutes les parties prêtent à être rejoint. Si aucune partie n'est disponible, nous vous proposons d'aller vous trouver
+        <marquee width="100%" direction="left" height="40px">
+            Voici une liste de toutes les parties prêtes à être rejoint. Si aucune partie n'est disponible, nous vous proposons d'aller vous trouver
             un ami avec qui jouer.
         </marquee>
     </mat-toolbar>
-    <div>
-        <button mat-raised-button mat-button routerLink="/settings" (click)="reset()" class="exit-button">
-            Retourner à la selection des modes de jeu!
-        </button>
+    <div id="home">
+    
+            <button class="exit-button" mat-fab routerLink="/home"><mat-icon style="transform: rotate(180deg)">exit_to_app</mat-icon></button>
 
-        <button mat-raised-button class="random-game-button" *ngIf="availableGameConfigs.length !== 0" (click)="randomJoin()">
-            Placement aléatoire
+
+        <button mat-fab [disabled]="availableGameConfigs.length === 1" class="random-game-button" matTooltip="Partie aléatoire" matTooltipPosition="right" *ngIf="availableGameConfigs.length !== 0" (click)="randomJoin()">
+            <mat-icon>youtube_searched_for</mat-icon>
         </button>
     </div>
     <div class="container" (click)="reset()">
