@@ -21,14 +21,6 @@ import { InitGameComponent } from './init-game.component';
 @Injectable({
     providedIn: 'root',
 })
-class dataStub {
-    gameType: GameType; 
-    gameMode: GameMode = GameMode.Classic;
-}
-
-@Injectable({
-    providedIn: 'root',
-})
 class GameServiceStub {
     currentTurn: PlayerType = PlayerType.Local;
     startSinglePlayer(): void {
@@ -62,11 +54,13 @@ const THIRTY_SECONDS = 30;
 const FIVE_MINUTES = 5;
 const FOUR_MINUTES = 4;
 
-fdescribe('InitGameComponent', () => {
+describe('InitGameComponent', () => {
     let component: InitGameComponent;
     let fixture: ComponentFixture<InitGameComponent>;
     let roomServiceSpyObj: jasmine.SpyObj<RoomService>;
     let routerSpy: jasmine.SpyObj<Router>;    
+
+    let dialogData =  { gameType: GameType.SinglePlayer, gameMode: GameMode.Classic };
 
     const NAMES = ['Jean', 'RenÉéÎîÉéÇçÏï', 'moulon', 'Jo', 'Josiannnnnnnnnnne', 'Jean123', 'A1', 'Alphonse', ''];
 
@@ -85,7 +79,7 @@ fdescribe('InitGameComponent', () => {
                 { provide: GameService, useClass: GameServiceStub },
                 { provide: MatDialogRef, useClass: MatDialogStub },
                 { provide: NameValidator, useClass: NameValidatorStub},
-                { provide: MAT_DIALOG_DATA, useClass: dataStub},
+                { provide: MAT_DIALOG_DATA, useValue: dialogData},
             ],
         }).compileComponents();
     });
@@ -177,8 +171,8 @@ fdescribe('InitGameComponent', () => {
     });
 
     it('should init multiplayer game if multiplayer selected', async() => {
-        component.data.gameType = GameType.Multiplayer;
-        fixture.detectChanges();
+        dialogData.gameType = GameType.Multiplayer;
+        // fixture.detectChanges();
         const spy = spyOn<any>(component, 'initMultiplayer');
         spyOn<any>(component, 'confirmInitialization').and.returnValue(true);
         
@@ -186,6 +180,16 @@ fdescribe('InitGameComponent', () => {
         spy.and.callThrough();
 
         expect(spy).toHaveBeenCalled();
+    });
+
+    
+    it('should init multiplayer game if multiplayer selected 2', async() => {
+        dialogData.gameType = GameType.Multiplayer;
+        spyOn<any>(component, 'confirmInitialization').and.returnValue(true);
+        
+        await component.init();
+        roomServiceSpyObj['create'].and.callThrough();
+
     });
 
     it('should confirm initialization if valid name', async() => {
