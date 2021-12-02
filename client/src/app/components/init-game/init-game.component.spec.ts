@@ -60,7 +60,7 @@ describe('InitGameComponent', () => {
     let roomServiceSpyObj: jasmine.SpyObj<RoomService>;
     let routerSpy: jasmine.SpyObj<Router>;
 
-    let dialogData = { gameType: GameType.SinglePlayer, gameMode: GameMode.Classic };
+    const dialogData = { gameType: GameType.SinglePlayer, gameMode: GameMode.Classic };
 
     const NAMES = ['Jean', 'RenÉéÎîÉéÇçÏï', 'moulon', 'Jo', 'Josiannnnnnnnnnne', 'Jean123', 'A1', 'Alphonse', ''];
 
@@ -187,9 +187,6 @@ describe('InitGameComponent', () => {
         dialogData.gameType = GameType.Multiplayer;
         spyOn<any>(component, 'confirmInitialization').and.returnValue(true);
         routerSpy['navigate'].and.resolveTo(true);
-        // eslint-disable-next-line @typescript-eslint/no-empty-function
-        routerSpy['navigate'].and.stub();
-
         await component['initMultiplayer']();
     });
 
