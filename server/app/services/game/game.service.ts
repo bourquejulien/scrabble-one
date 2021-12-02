@@ -122,8 +122,9 @@ export class GameService {
     async joinMultiplayer(gameConfig: MultiplayerJoinConfig): Promise<ServerConfig | null> {
         const sessionHandler = this.sessionHandlingService.getHandlerBySessionId(gameConfig.sessionId);
         const waitingPlayer = sessionHandler?.players[0];
+        const sessionNotAvailable = sessionHandler == null || waitingPlayer == null || sessionHandler.sessionData.isStarted;
 
-        if (sessionHandler == null || waitingPlayer == null || sessionHandler.sessionData.isStarted) {
+        if (sessionNotAvailable) {
             return null;
         }
 
