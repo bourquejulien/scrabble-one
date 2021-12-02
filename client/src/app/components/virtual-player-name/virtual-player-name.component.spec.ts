@@ -15,10 +15,32 @@ fdescribe('VirtualPlayerNameComponent', () => {
     let adminServiceMock: AdminService;
     let component: VirtualPlayerNameComponent;
     let fixture: ComponentFixture<VirtualPlayerNameComponent>;
-
+    let playerNameList: VirtualPlayerName[];
+    
     beforeEach(async () => {
         updateSubject = new BehaviorSubject<VirtualPlayerName[]>([]);
         adminServiceMock = jasmine.createSpyObj('AdminService', ['updatePlayerName'], { onVirtualPlayerUpdate: updateSubject.asObservable() });
+        playerNameList = [
+        {
+            name: 'Sailor Moon',
+            level: VirtualPlayerLevel.Easy,
+            isReadonly: true
+        },
+        {
+            name: 'Sailor Mars',
+            level: VirtualPlayerLevel.Expert,
+            isReadonly: true
+        },
+        {
+            name: 'Vegeta',
+            level: VirtualPlayerLevel.Expert,
+            isReadonly: true
+        },
+    ];
+    
+    // const playerNameServiceMock = {
+    //     of({playerNames: playerNameList}, updatedNameList);
+    // };
 
         await TestBed.configureTestingModule({
             declarations: [VirtualPlayerNameComponent],
@@ -69,9 +91,65 @@ fdescribe('VirtualPlayerNameComponent', () => {
         expect(component.nameValidator.name).toBe('Jean Pierre Polnareff');
     });
 
-    it('should reset validator if player name valid', () => { // TO DO: FIND GOOD TEST NAME
+    it('should reset validator if player name valid', () => {
         component.nameValidator.name = 'King Crimson';
         component.add();
         expect(component.nameValidator.name).toBe('');
+    });
+
+    it('should change player name if name valid and not in bot names list', () => { 
+        const virtPlayerName: VirtualPlayerName = {
+            name: 'Jean Pierre Polnareff',
+            level: VirtualPlayerLevel.Easy,
+            isReadonly: false,
+        };
+        const spy = spyOn(component.playerNameService, 'updatePlayerName');
+
+        spyOnProperty(component.nameValidator, 'isValid').and.returnValue(true);
+        component.playerNames = playerNameList;
+        component.nameValidator.name = 'ZaWarudo';
+        component.originName = virtPlayerName;
+
+        component.changeName();
+        expect(spy).toHaveBeenCalled();
+    });
+
+    it('should not change player name if name invalid', () => {
+        const spy = spyOn(component.playerNameService, 'updatePlayerName');
+        spyOnProperty(component.nameValidator, 'isValid').and.returnValue(false);
+
+        component.changeName();
+        expect(spy).not.toHaveBeenCalled();
+    });
+
+    it('should not change player name if name in bot name list', () => { 
+        const spy = spyOn(component.playerNameService, 'updatePlayerName');
+        spyOnProperty(component.nameValidator, 'isValid').and.returnValue(true);
+        component.playerNames = playerNameList;
+        component.nameValidator.name = 'Vegeta';
+
+        component.changeName();
+        expect(spy).not.toHaveBeenCalled();
+    });
+
+    it('should reset names before updating them', () => { 
+        component.playerNames = playerNameList;
+         
+        let updatedNameList: VirtualPlayerName[] = [
+            {
+                name: 'Future Trunks',
+                level: VirtualPlayerLevel.Easy,
+                isReadonly: true
+            },
+        ];
+
+        // component.playerNameService.onVirtualPlayerUpdate.subscribe((playerNames) => {
+        //     component['playerNamesUpdated'](playerNames);
+        // });
+        
+        // spyOn<any>(component.playerNameService, 'onVirtualPlayerUpdate').and.returnValue(updatedNameList);
+        
+        // component.ngOnInit();
+        expect(component.playerNames).toEqual(updatedNameList);
     });
 });
