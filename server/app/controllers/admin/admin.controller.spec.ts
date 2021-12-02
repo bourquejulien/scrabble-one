@@ -14,6 +14,7 @@ import { DictionaryService } from '@app/services/dictionary/dictionary.service';
 import { IncomingForm, File } from 'formidable';
 import { DictionaryMetadata, JsonDictionary, VirtualPlayerLevel, VirtualPlayerName } from '@common';
 import { AdminPersistence } from '@app/services/admin/admin-persistence';
+import { ScoreService } from '@app/services/score/score.service';
 const metadata: DictionaryMetadata = {
     _id: 'dictionary.json',
     path: 'dictionary.json',
@@ -33,11 +34,11 @@ describe('AdminController', () => {
     let adminServiceStub: SinonStubbedInstance<AdminPersistence>;
     let file: File;
     let incomingFormStub: SinonStub;
-    // let scoreServiceStub: SinonStubbedInstance<ScoreService>;
+    let scoreServiceStub: SinonStubbedInstance<ScoreService>;
     beforeEach(async () => {
         dictionaryServiceStub = createStubInstance(DictionaryService);
         adminServiceStub = createStubInstance(AdminPersistence);
-        // scoreServiceStub = createStubInstance(ScoreService);
+        scoreServiceStub = createStubInstance(ScoreService);
         dictionaryServiceStub.getMetadataById.resolves(metadata);
         file = createStubInstance(File) as unknown as File;
         file.mimetype = 'application/json';
@@ -49,6 +50,7 @@ describe('AdminController', () => {
         const app = Container.get(Application);
         Object.defineProperty(app['adminController'], 'dictionaryService', { value: dictionaryServiceStub });
         Object.defineProperty(app['adminController'], 'adminService', { value: adminServiceStub });
+        Object.defineProperty(app['adminController'], 'scoreService', { value: scoreServiceStub });
         expressApp = app.app;
     });
     afterEach(() => {
@@ -96,8 +98,6 @@ describe('AdminController', () => {
             });
     });
     it('POST /dictionary/upload fails to upload ', async () => {
-        // const payload = [metadata, metadata];
-        // dictionaryServiceStub.update.resolves({ isSuccess: false, payload });
         file.mimetype = ' ';
         return request(expressApp)
             .post('/api/admin/dictionary/upload')
@@ -107,7 +107,7 @@ describe('AdminController', () => {
             });
     });
 
-    it('POST /dictionary/upload fails to upload ', async () => {
+    it('POST /dictionary/upload fails to upload throwing error', async () => {
         dictionaryServiceStub.add.throws(new Error('Error test'));
         return request(expressApp)
             .post('/api/admin/dictionary/upload')
@@ -126,22 +126,100 @@ describe('AdminController', () => {
                 expect(response.text).to.be.equal('[{"name":"test1","level":"Easy","isReadonly":true}]');
             });
     });
-    // it('POST /playername/set/:level wrong level ', async () => {
-    //     adminServiceStub.addVirtualPlayer.resolves(true);
-    //     return request(expressApp)
-    //         .post('/api/admin/playername/set/test')
-    //         .then((response) => {
-    //             expect(response.status).to.be.equal(Constants.HTTP_STATUS.BAD_REQUEST);
-    //         });
-    // });
-    it('POST /playername/set/:level ', async () => {
+    it('POST /playername/set/:level wrong level ', async () => {
+        adminServiceStub.addVirtualPlayer.resolves(true);
+        return request(expressApp)
+            .post('/api/admin/playername/set/test')
+            .then((response) => {
+                expect(response.status).to.be.equal(Constants.HTTP_STATUS.BAD_REQUEST);
+            });
+    });
+    it('POST /playername/set/:level works ', async () => {
         adminServiceStub.addVirtualPlayer.resolves(true);
         return request(expressApp)
             .post('/api/admin/playername/set/Easy')
-            .send([{ name: 'test1', level: 'Expert', isReadonly: true }])
+            .send({ name: 'test1', level: 'Expert', isReadonly: true })
             .then((response) => {
-                console.log(response);
+                expect(response.status).to.be.equal(Constants.HTTP_STATUS.OK);
+            });
+    });
+    it('POST /playername/set/:level ', async () => {
+        adminServiceStub.addVirtualPlayer.resolves(false);
+        return request(expressApp)
+            .post('/api/admin/playername/set/Easy')
+            .send({ name: 'test1', level: 'Expert', isReadonly: true })
+            .then((response) => {
                 expect(response.status).to.be.equal(Constants.HTTP_STATUS.BAD_REQUEST);
+            });
+    });
+
+    it('POST /dictionary/update', async () => {
+        const payload = [metadata, metadata];
+        dictionaryServiceStub.update.resolves({ isSuccess: false, payload });
+        return request(expressApp)
+            .post('/api/admin/dictionary/update')
+            .send(payload)
+            .then((response) => {
+                expect(response.status).to.be.equal(Constants.HTTP_STATUS.OK);
+            });
+    });
+
+    it('POST /dictionary/update and success is true', async () => {
+        const payload = [metadata, metadata];
+        dictionaryServiceStub.update.resolves({ isSuccess: true, payload });
+        return request(expressApp)
+            .post('/api/admin/dictionary/update')
+            .send(payload)
+            .then((response) => {
+                expect(response.status).to.be.equal(Constants.HTTP_STATUS.OK);
+            });
+    });
+
+    it('POST /playername/rename', async () => {
+        adminServiceStub.renameVirtualPlayer.resolves(VirtualPlayerLevel.Easy);
+        return request(expressApp)
+            .post('/api/admin/playername/rename')
+            .send(['test1', 'test2'])
+            .then((response) => {
+                expect(response.status).to.be.equal(Constants.HTTP_STATUS.OK);
+            });
+    });
+
+    it('POST /playername/rename level null', async () => {
+        adminServiceStub.renameVirtualPlayer.resolves(null);
+        return request(expressApp)
+            .post('/api/admin/playername/rename')
+            .send(['test1', 'test2'])
+            .then((response) => {
+                expect(response.status).to.be.equal(Constants.HTTP_STATUS.BAD_REQUEST);
+            });
+    });
+
+    it('DELETE /playername/:name wrong name', async () => {
+        adminServiceStub.deleteVirtualPlayer.resolves(VirtualPlayerLevel.Easy);
+        return request(expressApp)
+            .delete('/api/admin/playername/test3')
+            .then((response) => {
+                expect(response.status).to.be.equal(Constants.HTTP_STATUS.OK);
+            });
+    });
+    it('DELETE /playername/:name level null', async () => {
+        adminServiceStub.deleteVirtualPlayer.resolves(null);
+        return request(expressApp)
+            .delete('/api/admin/playername/test3')
+            .then((response) => {
+                expect(response.status).to.be.equal(Constants.HTTP_STATUS.BAD_REQUEST);
+            });
+    });
+
+    it('GET /reset ', async () => {
+        dictionaryServiceStub.reset.resolves();
+        adminServiceStub.reset.resolves();
+        scoreServiceStub.reset.resolves();
+        return request(expressApp)
+            .get('/api/admin/reset')
+            .then((response) => {
+                expect(response.status).to.be.equal(Constants.HTTP_STATUS.OK);
             });
     });
     // it('GET /reset/ ', async () => {
