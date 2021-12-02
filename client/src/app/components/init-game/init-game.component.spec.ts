@@ -201,6 +201,10 @@ describe('InitGameComponent', () => {
         const confirm = component['confirmInitialization']();
         expect(confirm).toBe(false);
     });
+    it('should call init but does not need to reroute', async () => {
+        spyOn<any>(component, 'confirmInitialization').and.returnValue(false);
 
+        await component.init();
+    });
     afterAll(() => cleanStyles());
 });
