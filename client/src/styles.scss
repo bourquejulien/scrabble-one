@@ -25,6 +25,13 @@ body {
     font-family: Roboto, 'Helvetica Neue', sans-serif;
 }
 
+.mat-tooltip {
+    white-space: pre-line;
+    font-size: 125%;
+    text-align: justify;
+    justify-content: center;
+}
+
 // Removed border from MatDialog
 .init-game-dialog .mat-dialog-container {
     padding: 0px !important;
