@@ -27,7 +27,7 @@ h2 {
     gap: 3vh;
 }
 
-.button {
+.option-button {
     padding: 1.5vh 2.5vh;
     font-size: 2.5vh;
     text-align: center;
@@ -38,6 +38,8 @@ h2 {
 
 .exit-button {
     border-radius: 100%;
+    background-color: white;
+    // padding-top: 100%;
 }
 
 .game-mode-dialog .mat-dialog-container {

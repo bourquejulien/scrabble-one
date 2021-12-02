@@ -3,12 +3,11 @@
         <h2>Scrabble.one</h2>
         <section id="game">
             <div class="buttons">
-                    <button class="button" mat-raised-button (click)="openDialog(typeOfGameType.SinglePlayer)">Jouer une partie en solo</button>
-                    <button class="button" mat-raised-button (click)="openDialog(typeOfGameType.Multiplayer)">Créer une partie multijoueur</button>
-                    <button class="button" [routerLink]="['/room-list', gameMode]" mat-raised-button>Joindre une partie multijoueur</button>
+                    <button class="option-button" mat-raised-button (click)="openDialog(typeOfGameType.SinglePlayer)">Jouer une partie en solo</button>
+                    <button class="option-button" mat-raised-button (click)="openDialog(typeOfGameType.Multiplayer)">Créer une partie multijoueur</button>
+                    <button class="option-button" [routerLink]="['/room-list', gameMode]" mat-raised-button>Joindre une partie multijoueur</button>
             </div>
         </section>
-        <button class="exit-button" mat-raised-button routerLink="/home"> <mat-icon>exit_to_app</mat-icon></button>
+        <button class="exit-button" mat-fab routerLink="/home"><mat-icon>exit_to_app</mat-icon></button>
     </div>
 </body>
-<!-- why was <mat-icon>exit_to_app</mat-icon> inside? je voulais le mettre à coté pour remplacer accueil et mettre le bouton en haut à gauche. Les gars me parlaient et je me suis trompé de -->
