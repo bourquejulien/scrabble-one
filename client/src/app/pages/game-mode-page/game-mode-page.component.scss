@@ -9,7 +9,6 @@ body {
 .justified {
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
     align-items: center;
 }
 
@@ -25,6 +24,7 @@ h2 {
     flex-direction: column;
     justify-content: center;
     gap: 3vh;
+    margin-top: 28.5vh;
 }
 
 .option-button {
@@ -39,16 +39,15 @@ h2 {
 .exit-button {
     border-radius: 100%;
     background-color: white;
-    // padding-top: 100%;
+}
+
+#home {
+    left: 0vw;
+    margin-right: 96vw;
+    margin-top: -19.5vh;
 }
 
 .game-mode-dialog .mat-dialog-container {
     height: 56vh;
     width: 53vh;
-}
-
-#home {
-    left: 0vw;
-    margin-left: 96vw;
-    margin-bottom: 1vh;
 }
