@@ -4,7 +4,6 @@
 /* eslint-disable @typescript-eslint/no-empty-function */
 /* eslint-disable dot-notation */
 /* eslint-disable no-unused-vars */
-import { describe } from 'mocha';
 import { expect } from 'chai';
 import { ValidationResponse } from '@app/classes/validation/validation-response';
 import { Log2990GoalHandler } from '@app/handlers/goal-handler/log2990-goal-handler';

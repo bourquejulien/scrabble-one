@@ -4,7 +4,6 @@ no-unused-expressions,
 no-unused-vars,
 @typescript-eslint/no-empty-function,
 dot-notation */
-import { describe } from 'mocha';
 import { expect } from 'chai';
 import { GoalHandler } from '@app/handlers/goal-handler/goal-handler';
 import { ValidationResponse } from '@app/classes/validation/validation-response';

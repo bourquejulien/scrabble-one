@@ -5,7 +5,6 @@
 /* eslint-disable @typescript-eslint/no-empty-function */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable dot-notation */
-import { describe } from 'mocha';
 import { expect } from 'chai';
 import { SessionStatsHandler } from '@app/handlers/stats-handlers/session-stats-handler/session-stats-handler';
 import { GoalHandler } from '@app/handlers/goal-handler/goal-handler';

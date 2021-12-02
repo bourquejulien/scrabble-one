@@ -3,7 +3,6 @@
 /* eslint-disable @typescript-eslint/no-unused-expressions */
 /* eslint-disable @typescript-eslint/no-empty-function */
 /* eslint-disable dot-notation */
-import { describe } from 'mocha';
 import { expect } from 'chai';
 import { ManyLettersInRow } from '@app/classes/goal/goals/many-letters-in-row/many-letters-in-row';
 import { Goal } from '@app/classes/goal/base-goal';

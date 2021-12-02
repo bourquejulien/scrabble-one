@@ -6,7 +6,6 @@ import { BaseGoal, Goal } from '@app/classes/goal/base-goal';
 import { SkipWithAdvantage } from '@app/classes/goal/goals/skip-with-advantage/skip-with-advantage';
 import { PlayerStats } from '@common';
 import { expect } from 'chai';
-import { describe } from 'mocha';
 import { createSandbox } from 'sinon';
 
 describe('SkipWithAdvantage', () => {

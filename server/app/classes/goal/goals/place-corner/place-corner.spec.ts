@@ -2,7 +2,6 @@
 /* eslint-disable @typescript-eslint/no-unused-expressions */
 /* eslint-disable @typescript-eslint/no-empty-function */
 /* eslint-disable dot-notation */
-import { describe } from 'mocha';
 import { expect } from 'chai';
 import { PlaceCorner } from '@app/classes/goal/goals/place-corner/place-corner';
 import { BaseGoal, Goal } from '@app/classes/goal/base-goal';
