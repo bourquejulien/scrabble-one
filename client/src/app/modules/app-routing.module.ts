@@ -6,6 +6,7 @@ import { MainPageComponent } from '@app/pages/main-page/main-page.component';
 import { WaitingRoomPageComponent } from '@app/pages/waiting-room-page/waiting-room-page.component';
 import { RoomListComponent } from '@app/pages/room-list/room-list.component';
 import { AdminPageComponent } from '@app/pages/admin-page/admin-page.component';
+import { ConnectionErrorComponent } from '@app/pages/connection-error/connection-error.component';
 
 const routes: Routes = [
     { path: '', redirectTo: '/home', pathMatch: 'full' },
@@ -15,6 +16,7 @@ const routes: Routes = [
     { path: 'waiting-room', component: WaitingRoomPageComponent },
     { path: 'room-list/:game-mode', component: RoomListComponent },
     { path: 'admin', component: AdminPageComponent },
+    { path: 'error', component: ConnectionErrorComponent },
     { path: '**', redirectTo: '/home' },
 ];
 
