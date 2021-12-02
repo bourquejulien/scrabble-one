@@ -4,17 +4,17 @@
         <app-communication-box></app-communication-box>
     </mat-drawer>
     <div [ngClass]="isOpen ? 'open-side-bars' : 'close-side-bars'">
-        <mat-card [ngClass]="gameService.currentTurn === 'local' ? 'isTurn' : 'isNotTurn'" class="scoreboard-one">
+        <mat-card color="primary" [ngClass]="gameService.currentTurn === 'local' ? 'isTurn' : 'isNotTurn'" class="scoreboard-one">
             <span class="vertical-flex-items">{{ sessionService.gameConfig.firstPlayerName }}</span>
             <span class="vertical-flex-items">Score: {{ gameService.stats.localStats.points }} </span>
             <span class="vertical-flex-items" *ngIf="gameService.stats.localStats.rackSize < 7"
                 >Lettres: {{ gameService.stats.localStats.rackSize }}
             </span>
         </mat-card>
-        <mat-card id="scoreboard-reserve">
+        <mat-card color="primary" id="scoreboard-reserve">
             <span> Nombre de lettres dans la réserve : {{ reserveService.length }} </span>
         </mat-card>
-        <mat-card [ngClass]="gameService.currentTurn !== 'local' ? 'isTurn' : 'isNotTurn'" class="scoreboard-two">
+        <mat-card color="primary" [ngClass]="gameService.currentTurn !== 'local' ? 'isTurn' : 'isNotTurn'" class="scoreboard-two">
             <span class="vertical-flex-items">{{ sessionService.gameConfig.secondPlayerName }}</span>
             <span class="vertical-flex-items">Score: {{ gameService.stats.remoteStats.points }} </span>
             <span class="vertical-flex-items" *ngIf="gameService.stats.remoteStats.rackSize < 7"

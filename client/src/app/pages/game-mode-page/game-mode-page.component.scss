@@ -1,12 +1,9 @@
+body {
+    background: linear-gradient(135deg,#006896, #5bcbff 50%, #c9eeff 100%);
+}
 .container {
     min-height: 100vh;
     height: auto;
-}
-
-.game-mode-dialog .mat-dialog-container {
-    height: '530px';
-    width: '500px';
-    padding: 0px !important;
 }
 
 .justified {
@@ -16,116 +13,34 @@
     align-items: center;
 }
 
-.button-group .button1 {
-    padding: 15px 25px;
-    font-size: 24px;
-    cursor: pointer;
-    text-align: center;
-    text-decoration: none;
-    outline: none;
-    color: black;
-    background-color: white;
-    border: none;
-    border-radius: 1px;
-    box-shadow: 0 5px rgb(212, 212, 212);
-    margin: 25px;
-}
-
-.button-group .button1:hover {
-    background-color: #a8a8a8;
-    box-shadow: 0 5px #666;
-}
-
-.button-group .button1:active {
-    background-color: #a8a8a8;
-    box-shadow: 0 5px #666;
-    transform: translateY(4px);
-}
-.team-name {
-    margin-top: 0.25em;
-    margin-bottom: 0.25em;
-    color: black;
-}
-
-.header-item {
-    justify-content: center;
-    text-align: center;
-}
-
 h2 {
     color: #0B2E56;
     font-size: 100px;
     font-family: 'Permanent Marker', cursive;
     margin-top: 15vh;
 }
-h3 {
-    font-size: 20px;
+
+.buttons {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 3vh;
 }
 
-body {
-    background: linear-gradient(135deg,#006896, #5bcbff 50%, #c9eeff 100%);
-}
-
-.button-group .button1 {
-    padding: 15px 25px;
-    font-size: 24px;
-    cursor: pointer;
+.button {
+    padding: 1.5vh 2.5vh;
+    font-size: 2.5vh;
     text-align: center;
-    text-decoration: none;
-    outline: none;
-    color: black;
-    background-color: white;
-    border: none;
-    border-radius: 10px;
+    border-radius: 1vh;
     box-shadow: 0 5px rgb(212, 212, 212);
-    margin: 25px;
+    margin: 2.5vh;
 }
 
-.button1 {
-    padding: 15px 25px;
-    font-size: 24px;
-    cursor: pointer;
-    text-align: center;
-    text-decoration: none;
-    outline: none;
-    color: black;
-    background-color: white;
-    border: none;
-    border-radius: 10px;
-    box-shadow: 0 5px rgb(212, 212, 212);
-    margin: 25px;
+.exit-button {
+    border-radius: 100%;
 }
 
-.button1:hover {
-    background-color: #a8a8a8;
-    box-shadow: 0 5px #666;
-}
-
-.button1:active {
-    background-color: #a8a8a8;
-    box-shadow: 0 5px #666;
-    transform: translateY(4px);
-}
-
-.dropdown {
-    position: relative;
-    display: inline-block;
-}
-
-.dropdown-content2 {
-    display: none;
-    position: absolute;
-    left: 100px;
-    background-color: #8e8d8a;
-    min-width: 150px;
-    box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
-    padding: 12px 16px;
-    z-index: 1;
-    border-radius: 10px;
-}
-
-.dropdown:hover .dropdown-content2 {
-    display: block;
-    border-color: #eae7dc;
-    border-width: 3px;
+.game-mode-dialog .mat-dialog-container {
+    height: 56vh;
+    width: 53vh;
 }

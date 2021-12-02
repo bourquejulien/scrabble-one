@@ -1,3 +1,6 @@
+body {
+    background: linear-gradient(135deg,#006896, #5bcbff 50%, #c9eeff 100%);
+}
 .container {
     min-height: 100vh;
     height: auto;
@@ -10,17 +13,6 @@
     align-items: center;
 }
 
-.buttons {
-    display: flexbox;
-    justify-content: center;
-    margin: 8px;
-}
-
-.header-item {
-    justify-content: center;
-    text-align: center;
-}
-
 h2 {
     color: #0B2E56;
     font-size: 100px;
@@ -28,61 +20,28 @@ h2 {
     margin-top: 15vh;
 }
 
-h3 {
-    font-size: 20px;
+.buttons {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 3vh;
 }
 
-body {
-    background: linear-gradient(135deg,#006896, #5bcbff 50%, #c9eeff 100%);
-}
-
-.dropbtn {
-    padding-bottom: 10px;
-    position: relative;
-    left: 700px;
-}
-
-.dropup-content {
-    display: none;
-    position: absolute;
-    left: 500px;
-    bottom: 50px;
-    background-color: #eae7dc;
-    min-width: 250px;
-    box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
-    z-index: 1;
-    border-radius: 10px;
-}
-
-.dropup {
-    position: relative;
-    display: inline-block;
-    padding-bottom: 10px;
-}
-
-.button1,
-.button-group .button1 {
-    padding: 15px 25px;
-    font-size: 24px;
-    cursor: pointer;
+.button {
+    padding: 1.5vh 2.5vh;
+    font-size: 2.5vh;
     text-align: center;
-    text-decoration: none;
-    outline: none;
-    color: black;
-    background-color: white;
-    border: none;
-    border-radius: 10px;
+    border-radius: 1vh;
     box-shadow: 0 5px rgb(212, 212, 212);
-    margin: 25px;
+    margin: 2.5vh;
 }
 
-.button1:hover {
-    background-color: #a8a8a8;
-    box-shadow: 0 5px #666;
+.team-button {
+    padding: 1vh;
+    border-radius: 100%;
 }
 
-.button1:active {
-    background-color: #a8a8a8;
-    box-shadow: 0 5px #666;
-    transform: translateY(4px);
+div.group {
+    // display: inline-block;
+    float: right;
 }

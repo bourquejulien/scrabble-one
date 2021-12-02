@@ -2,18 +2,13 @@
     <div class="container justified">
         <h2>Scrabble.one</h2>
         <section id="game">
-            <div class="button-group">
-                <div class="dropdown">
-                    <button class="button1" mat-raised-button (click)="openDialog(typeOfGameType.SinglePlayer)">Jouer une partie en solo</button>
-                </div>
-                <div class="dropdown">
-                    <button class="button1" mat-raised-button (click)="openDialog(typeOfGameType.Multiplayer)">Créer une partie multijoueur</button>
-                </div>
-                <div class="dropdown">
-                    <button class="button1" [routerLink]="['/room-list', gameMode]" mat-raised-button>Joindre une partie multijoueur</button>
-                </div>
+            <div class="buttons">
+                    <button class="button" mat-raised-button (click)="openDialog(typeOfGameType.SinglePlayer)">Jouer une partie en solo</button>
+                    <button class="button" mat-raised-button (click)="openDialog(typeOfGameType.Multiplayer)">Créer une partie multijoueur</button>
+                    <button class="button" [routerLink]="['/room-list', gameMode]" mat-raised-button>Joindre une partie multijoueur</button>
             </div>
         </section>
-        <button class="button1" mat-raised-button routerLink="/home">Accueil</button>
+        <button class="exit-button" mat-raised-button routerLink="/home"> <mat-icon>exit_to_app</mat-icon></button>
     </div>
 </body>
+<!-- why was <mat-icon>exit_to_app</mat-icon> inside? je voulais le mettre à coté pour remplacer accueil et mettre le bouton en haut à gauche. Les gars me parlaient et je me suis trompé de -->

@@ -77,7 +77,7 @@ export class GamePageComponent implements OnDestroy {
                 action: () => this.toggleDarkMode(),
             },
             {
-                color: 'warn',
+                color: 'accent',
                 icon: Icon.Logout,
                 hover: 'Quitter la partie',
                 action: () => this.confirmQuit(),

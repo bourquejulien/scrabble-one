@@ -11,27 +11,8 @@
 
 :root {
     // Colors
-    --game-red: #f44336;
-    --game-green: #45cb85;
-}
-
-$mat-light-theme: mat.define-light-theme(
-    (
-        color: (
-            primary: mat.define-palette(mat.$indigo-palette),
-            accent: mat.define-palette(mat.$pink-palette, A200, A100, A400),
-            warn: mat.define-palette(mat.$red-palette),
-        ),
-    )
-);
-
-// Include theme styles for core and each component used in your app.
-// Alternatively, you can import and @include the theme mixins for each component
-// that you are using.
-@include mat.all-component-themes($mat-light-theme);
-
-.mat-light-theme {
-    // Nothing to do. This is the default theme
+    --game-red: blue;
+    --game-green: #ab47bc;
 }
 
 html,
@@ -65,15 +46,7 @@ body {
     color: #fff;
 }
 
-$mat-dark-theme: mat.define-dark-theme(
-    (
-        color: (
-            primary: mat.define-palette(mat.$purple-palette, 700, 500, 800),
-            accent: mat.define-palette(mat.$blue-grey-palette, A200, A100, A400),
-            warn: mat.define-palette(mat.$red-palette),
-        ),
-    )
-);
+@include mat.all-component-themes($mat-light-theme);
 
 .darkMode {
     @include mat.all-component-colors($mat-dark-theme);

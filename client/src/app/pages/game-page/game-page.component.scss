@@ -1,3 +1,4 @@
+@use '@angular/material' as mat;
 mat-drawer-container {
     height: 100%;
 }
@@ -10,81 +11,10 @@ mat-drawer-container {
     position: absolute;
 }
 
-// .scoreboard.player-one-open {
-//     background-color: var(--game-green);
-//     margin-left: 85%;
-//     right: 15rem;
-//     top: 8rem;
-//     width: 7.5rem;
-//     height: 5rem;
-//     transition: 0.45s;
-// }
-
-// .scoreboard.player-one-closed {
-//     background-color: var(--game-green);
-//     margin-left: 85%;
-//     right: 15rem;
-//     top: 8rem;
-//     width: 7.5rem;
-//     height: 5rem;
-//     transition: 0.45s;
-// }
-
-// .scoreboard.reserve-length-open {
-//     font-size: large;
-//     color: #fff;
-//     background-color: #3f51b5;
-//     text-align: center;
-//     margin-left: 85%;
-//     right: 9.5rem;
-//     top: 18rem;
-//     width: 7.5rem;
-//     height: 5rem;
-//     transition: 0.45s;
-// }
-
-// .scoreboard.reserve-length-closed {
-//     font-size: large;
-//     color: #fff;
-//     background-color: #3f51b5;
-//     text-align: center;
-//     margin-left: 85%;
-//     right: 9.5rem;
-//     top: 18rem;
-//     width: 7.5rem;
-//     height: 5rem;
-//     transition: 0.45s;
-// }
-
-// .scoreboard.player-two-open {
-//     margin-left: 85%;
-//     left: 0rem;
-//     top: 8rem;
-//     width: 7.5rem;
-//     height: 5rem;
-//     transition: 0.45s;
-// }
-
-// .scoreboard.player-two-closed {
-//     margin-left: 85%;
-//     left: 0rem;
-//     top: 8rem;
-//     width: 7.5rem;
-//     height: 5rem;
-//     transition: 0.45s;
-// }
-
-// .scoreboard {
-//     &.player-two-open,
-//     &.player-two-closed.singlePlayer {
-//         background-color: var(--game-red);
-//     }
-// }
-
 .vertical-flex-items {
     margin-top: 20px;
     font-size: large;
-    color: #fff;
+    // color: #fff;
 }
 
 .play-area-container-open {
@@ -192,7 +122,7 @@ mat-drawer-container {
 }
 
 .scoreboard-one {
-    background-color: var(--game-green);
+    // background-color: mat-color($primary);
     width: 7.5rem;
     height: 5rem;
     display: flex;
@@ -202,7 +132,7 @@ mat-drawer-container {
 }
 
 .scoreboard-two {
-    background-color: var(--game-red);
+    // background-color: var(--game-red);
     width: 7.5rem;
     height: 5rem;
     display: flex;
@@ -213,8 +143,8 @@ mat-drawer-container {
 
 #scoreboard-reserve {
     font-size: large;
-    color: #fff;
-    background-color: #3f51b5;
+    // color: #fff;
+    // background-color: #3f51b5;
     text-align: center;
     width: 7.5rem;
     height: 5rem;

@@ -3,26 +3,30 @@
 @include mat-core();
 
 
-// @mixin mat-light-theme($theme) {
+@mixin mat-light-theme($theme) {
+    $primary: map-get($theme, primary);
+    $accent: map-get($theme, accent);
+    $warn: map-get($theme, accent);
+    $background: map-get($theme, background);
+}
 
-//     // retrieve variables from theme
-//     // (all possible variables, use only what you really need)
-//     $primary: map-get($theme, primary);
-//     $accent: map-get($theme, accent);
-//     $warn: map-get($theme, accent);
-//     $foreground: map-get($theme, foreground);
-//     $background: map-get($theme, background);
-// }
+$mat-light-theme: mat-light-theme(
+    (
+        color: (
+            primary: mat.define-palette($mat-light-blue, 200, 100, 900),
+            accent: mat.define-palette($mat-deep-orange, 300),
+            warn: mat.define-palette($mat-red, 200),
+            // foreground: mat.define-palette(mat.$gray-palette),
+        )
+    )
+);
 
-// // define 3 theme color
-// // mat-palette accepts $palette-name, main, lighter and darker variants
-// $my-theme-primary: mat-palette($mat-indigo);
-// $my-theme-accent: mat-palette($mat-light-blue);
-// $my-theme-warn: mat-palette($mat-deep-orange, A200);
-
-// // create theme (use mat-dark-theme for themes with dark backgrounds)
-// $mat-light-theme: mat-light-theme(
-//     $my-theme-primary,
-//     $my-theme-accent,
-//     $my-theme-warn
-// );
+$mat-dark-theme: mat.define-dark-theme(
+    (
+        color: (
+            primary: mat.define-palette(mat.$purple-palette, 700, 500, 800),
+            accent: mat.define-palette(mat.$blue-grey-palette, A200, A100, A400),
+            warn: mat.define-palette(mat.$red-palette),
+        ),
+    )
+);
