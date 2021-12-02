@@ -3,6 +3,7 @@ import { StatsService } from '@app/services/stats/stats.service';
 import { Request, Response, Router } from 'express';
 import { Service } from 'typedi';
 import logger from 'winston';
+import { GameMode } from '@common';
 
 @Service()
 export class StatsController {
@@ -17,7 +18,7 @@ export class StatsController {
 
         this.router.get('/classic', (req: Request, res: Response) => {
             this.statsService
-                .scoreToDisplay(Constants.DATABASE_COLLECTION_CLASSIC)
+                .getScoreToDisplay(GameMode.Classic)
                 .then((scores) => res.json(scores))
                 .catch((e) => {
                     logger.warn('', e);
@@ -27,7 +28,7 @@ export class StatsController {
 
         this.router.get('/log', (req: Request, res: Response) => {
             this.statsService
-                .scoreToDisplay(Constants.DATABASE_COLLECTION_LOG)
+                .getScoreToDisplay(GameMode.Log2990)
                 .then((scores) => res.json(scores))
                 .catch((e) => {
                     logger.warn('', e);

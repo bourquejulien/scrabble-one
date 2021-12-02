@@ -16,9 +16,9 @@ describe('GameController', () => {
     let expressApp: Express.Application;
 
     const dictionary: DictionaryMetadata = {
-        path: 'dictionary.json',
         description: 'Blablabla',
         _id: 'dictionary.json',
+        path: 'test/dic.json',
         nbWords: 1024,
         title: 'My cool dictionary',
     };

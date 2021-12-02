@@ -2,7 +2,7 @@ import { DictionaryMetadata, JsonDictionary } from '@common';
 import { Service } from 'typedi';
 import * as logger from 'winston';
 import path from 'path';
-import { Validator } from 'jsonschema';
+import { Validator, ValidatorResult } from 'jsonschema';
 import { Constants } from '@app/constants';
 import { DictionaryHandler } from '@app/handlers/dictionary-handler/dictionary-handler';
 import { DictionaryPersistence } from '@app/services/dictionary/dictionary-persistence';
@@ -30,7 +30,7 @@ export class DictionaryService {
         return path.join(dictionaryPath, metadata._id);
     }
 
-    private static validate(data: string) {
+    private static validate<T>(data: T): ValidatorResult {
         const validator = new Validator();
         return validator.validate(data, schema);
     }
@@ -38,10 +38,6 @@ export class DictionaryService {
     private static async parse(filepath: string): Promise<JsonDictionary> {
         const data = await fs.promises.readFile(filepath, 'utf8');
         let dictionary: JsonDictionary;
-
-        if (!DictionaryService.validate(data)) {
-            return Promise.reject('Dictionary format invalid');
-        }
 
         try {
             dictionary = JSON.parse(data) as JsonDictionary;
@@ -52,8 +48,12 @@ export class DictionaryService {
             return Promise.reject(errorMessage);
         }
 
+        if (!this.validate(dictionary).valid) {
+            return Promise.reject('Dictionary format invalid');
+        }
+
         if (dictionary.words.length < Constants.MIN_DICTIONARY_SIZE) {
-            throw new Error('Not enough words in the chosen dictionary');
+            return Promise.reject('Not enough words in the chosen dictionary');
         }
 
         return dictionary;
@@ -82,7 +82,6 @@ export class DictionaryService {
 
     async reset(): Promise<void> {
         await this.dictionaryPersistence.reset();
-        await this.add(this.dictionaryPersistence.defaultMetadata.path);
     }
 
     async add(tempPath: string): Promise<boolean> {
