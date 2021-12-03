@@ -8,6 +8,7 @@ import { PlayerType } from '@app/classes/player/player-type';
 import { ConfirmQuitDialogComponent } from '@app/components/confirm-quit-dialog/confirm-quit-dialog.component';
 import { EndGameComponent } from '@app/components/end-game/end-game.component';
 import { OpponentQuitComponent } from '@app/components/opponent-quit/opponent-quit.component';
+import { TutorialComponent } from '@app/components/tutorial/tutorial.component';
 import { CommandsService } from '@app/services/commands/commands.service';
 import { GameService } from '@app/services/game/game.service';
 import { ReserveService } from '@app/services/reserve/reserve.service';
@@ -20,7 +21,7 @@ export enum Icon {
     Home = 'home',
     Message = 'question_answer',
     Skip = 'skip_next',
-    Dark = 'dark_mode',
+    Info = 'info',
 }
 
 interface ButtonConfig {
@@ -78,9 +79,9 @@ export class GamePageComponent implements OnDestroy {
             },
             {
                 color: 'primary',
-                icon: Icon.Dark,
-                hover: 'Activer le mode sombre',
-                action: () => this.toggleDarkMode(),
+                icon: Icon.Info,
+                hover: 'Information sur le jeu',
+                action: () => this.openTutorial(),
             },
             {
                 color: 'accent',
@@ -110,6 +111,14 @@ export class GamePageComponent implements OnDestroy {
         this.drawer.toggle();
         this.isOpen = !this.isOpen;
     }
+
+    private openTutorial() {
+        this.dialog.open(TutorialComponent, {
+            panelClass: 'init-game-dialog',
+            autoFocus: false,
+        });
+    }
+
     private endGame(winner: EndGameWinner) {
         const dialogRef = this.dialog.open(EndGameComponent, { panelClass: 'end-game-dialog', data: { winner } });
         dialogRef.afterClosed().subscribe((result) => {
@@ -121,15 +130,6 @@ export class GamePageComponent implements OnDestroy {
 
     private opponentQuit() {
         this.dialog.open(OpponentQuitComponent);
-    }
-
-    private toggleDarkMode(): void {
-        const darkMode = 'darkMode';
-        if (this.cssClassName === darkMode) {
-            this.cssClassName = '';
-        } else {
-            this.cssClassName = 'darkMode';
-        }
     }
 
     private confirmQuit(): void {

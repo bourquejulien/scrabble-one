@@ -5,26 +5,26 @@
     </mat-drawer>
     <div id="tools-container">
         <!-- <div> -->
-            <div class="comm-box-sidenav-content">
-                <div class="button-bar" *ngFor="let config of buttonConfig">
-                    <button
-                        mat-fab
-                        matTooltipPosition="right"
-                        *ngIf="playerType === 'local' || config.icon !== 'skip_next'"
-                        class="fab-button"
-                        [color]="config.color"
-                        (click)="config.action()"
-                        [matTooltip]="config.hover"
-                    >
-                        <mat-icon>
-                            {{ config.icon }}
-                        </mat-icon>
-                    </button>
-                </div>
+        <div class="comm-box-sidenav-content">
+            <div class="button-bar" *ngFor="let config of buttonConfig">
+                <button
+                    mat-fab
+                    matTooltipPosition="right"
+                    *ngIf="playerType === 'local' || config.icon !== 'skip_next'"
+                    class="fab-button"
+                    [color]="config.color"
+                    (click)="config.action()"
+                    [matTooltip]="config.hover"
+                >
+                    <mat-icon>
+                        {{ config.icon }}
+                    </mat-icon>
+                </button>
             </div>
-            <section [ngClass]="isOpen ? 'play-area-container-open' : 'play-area-container-closed'">
-                <app-play-area class="play-area"></app-play-area>
-            </section>
+        </div>
+        <section [ngClass]="isOpen ? 'play-area-container-open' : 'play-area-container-closed'">
+            <app-play-area class="play-area"></app-play-area>
+        </section>
         <!-- </div> -->
         <div id="info-cards">
             <div [ngClass]="isOpen ? 'open-side-bars' : 'close-side-bars'">

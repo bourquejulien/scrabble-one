@@ -27,7 +27,7 @@ export class BoardComponent implements OnDestroy, AfterViewInit {
     isMouseOnBoard: boolean;
     isUpper: boolean;
     letter: string;
-    squareSelected: boolean
+    squareSelected: boolean;
 
     private gridContext: CanvasRenderingContext2D;
     private squareContext: CanvasRenderingContext2D;
@@ -43,7 +43,7 @@ export class BoardComponent implements OnDestroy, AfterViewInit {
         private readonly gameService: GameService,
         readonly placeLetterService: PlaceLetterService,
     ) {
-        this.squareSelected = false; 
+        this.squareSelected = false;
     }
 
     @HostListener('window:resize')

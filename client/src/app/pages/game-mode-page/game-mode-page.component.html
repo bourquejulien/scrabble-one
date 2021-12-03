@@ -6,9 +6,9 @@
         </div>
         <section id="game">
             <div class="buttons">
-                    <button class="option-button" mat-raised-button (click)="openDialog(typeOfGameType.SinglePlayer)">Jouer une partie en solo</button>
-                    <button class="option-button" mat-raised-button (click)="openDialog(typeOfGameType.Multiplayer)">Créer une partie multijoueur</button>
-                    <button class="option-button" [routerLink]="['/room-list', gameMode]" mat-raised-button>Joindre une partie multijoueur</button>
+                <button class="option-button" mat-raised-button (click)="openDialog(typeOfGameType.SinglePlayer)">Jouer une partie en solo</button>
+                <button class="option-button" mat-raised-button (click)="openDialog(typeOfGameType.Multiplayer)">Créer une partie multijoueur</button>
+                <button class="option-button" [routerLink]="['/room-list', gameMode]" mat-raised-button>Joindre une partie multijoueur</button>
             </div>
         </section>
     </div>

@@ -1,5 +1,5 @@
 body {
-    background: linear-gradient(135deg,#006896, #5bcbff 50%, #c9eeff 100%);
+    background: linear-gradient(135deg, #006896, #5bcbff 50%, #c9eeff 100%);
 }
 
 .room-container {
@@ -26,11 +26,12 @@ body {
     margin: 2rem;
     top: 0;
     margin-top: 4vh;
-    width:max-content;
+    width: max-content;
     float: right;
 }
 
-.info-card, .form-card {
+.info-card,
+.form-card {
     justify-content: center;
 }
 
@@ -59,14 +60,15 @@ body {
     margin-top: 1rem;
 }
 
-.exit-button, .random-game-button {
+.exit-button,
+.random-game-button {
     background-color: white;
     box-shadow: 2px 2px 2px 2px rgba(10, 10, 10, 0.25);
 }
 
 .join-container {
-    display: flex; 
-    flex-direction: column; 
+    display: flex;
+    flex-direction: column;
     align-items: center;
     align-content: center;
 }

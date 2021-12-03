@@ -23,14 +23,14 @@
                 'row-succeeded': goal.status === goalStatus.Succeeded
             }"
         >
-        <span class="score-description" *ngIf="goal.score !== -1; else elseBlockPublic">
-            {{ goal.score }}
-        </span>
-        <ng-template #elseBlockPublic>
-            <span class="score-description">
-                {{ goal.scoreDescription }}
+            <span class="score-description" *ngIf="goal.score !== -1; else elseBlockPublic">
+                {{ goal.score }}
             </span>
-        </ng-template>
+            <ng-template #elseBlockPublic>
+                <span class="score-description">
+                    {{ goal.scoreDescription }}
+                </span>
+            </ng-template>
         </mat-cell>
     </ng-container>
 
@@ -79,33 +79,33 @@
                 'row-succeeded': goal.status === goalStatus.Succeeded
             }"
         >
-        <span class="score-description"  *ngIf="goal.score !== -1; else elseBlockPrivate">
-            {{ goal.score }}
-        </span>
-        <ng-template #elseBlockPrivate>
-            <span class="score-description">
-                {{ goal.scoreDescription }}
+            <span class="score-description" *ngIf="goal.score !== -1; else elseBlockPrivate">
+                {{ goal.score }}
             </span>
-        </ng-template>
+            <ng-template #elseBlockPrivate>
+                <span class="score-description">
+                    {{ goal.scoreDescription }}
+                </span>
+            </ng-template>
         </mat-cell>
     </ng-container>
 
     <ng-container matColumnDef="succeeded">
         <mat-header-cell *matHeaderCellDef class="header"> Complété </mat-header-cell>
         <mat-cell
-        *matCellDef="let goal"
-        [ngClass]="{
-            'row-pending': goal.status === goalStatus.Pending,
-            'row-failed': goal.status === goalStatus.Failed,
-            'row-succeeded': goal.status === goalStatus.Succeeded
-        }"
+            *matCellDef="let goal"
+            [ngClass]="{
+                'row-pending': goal.status === goalStatus.Pending,
+                'row-failed': goal.status === goalStatus.Failed,
+                'row-succeeded': goal.status === goalStatus.Succeeded
+            }"
         >
-        <div *ngIf="goal.status === goalStatus.Pending">En cours</div>
-        <div *ngIf="goal.status === goalStatus.Failed">Échoué</div>
-        <div *ngIf="goal.status === goalStatus.Succeeded">Réussi</div>
-    </mat-cell>
-</ng-container>
+            <div *ngIf="goal.status === goalStatus.Pending">En cours</div>
+            <div *ngIf="goal.status === goalStatus.Failed">Échoué</div>
+            <div *ngIf="goal.status === goalStatus.Succeeded">Réussi</div>
+        </mat-cell>
+    </ng-container>
 
-<mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
-<mat-row *matRowDef="let row; columns: displayedColumns"></mat-row>
+    <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+    <mat-row *matRowDef="let row; columns: displayedColumns"></mat-row>
 </mat-table>

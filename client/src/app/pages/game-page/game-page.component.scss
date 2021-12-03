@@ -2,22 +2,13 @@ mat-drawer-container {
     height: 100%;
 }
 
-.bckg{
-    background: linear-gradient(180deg,#466f81, #8ebcd1 60%, #c5dae4 100%);
+.bckg {
+    background: linear-gradient(180deg, #466f81, #8ebcd1 60%, #c5dae4 100%);
 }
-
-// .scoreboard {
-//     display: flex;
-//     flex-direction: column;
-//     align-items: center;
-//     justify-content: center;
-//     position: absolute;
-// }
 
 .vertical-flex-items {
     margin-top: 20px;
     font-size: large;
-    // color: #fff;
 }
 
 .play-area-container-open {
@@ -81,15 +72,9 @@ mat-drawer-container {
 .objectives {
     flex: 1 1 auto;
     align-items: center;
-    // position: absolute;
     z-index: 1;
-    // margin-top: 5rem;
-    // top: 20rem;
-    // right: 40vw;
-    // top: 25
-    margin-top: 15vh;
+    margin-top: 20vh;
     margin-left: -35.05em;
-    // transition: 0.55s;
 }
 
 .isTurn {
@@ -107,12 +92,10 @@ mat-drawer-container {
     display: flex;
     justify-content: flex-start;
     gap: 3vw;
-    // margin-left: 53%;
     left: 0rem;
     width: 7.5rem;
     height: 5rem;
     transition: 0.45s;
-    // padding-top: 2vh;
 }
 
 .close-side-bars {
@@ -121,16 +104,13 @@ mat-drawer-container {
     gap: 3vw;
     margin-left: 25vw;
     left: 0rem;
-    // top: 8rem;
     width: 7.5rem;
     height: 5rem;
     transition: 0.45s;
-    // padding-top: 2vh;
 }
 
 .scoreboard-one {
     background-color: var(--player-one-color);
-    // width: 25vw;
     height: 5rem;
     display: flex;
     flex-direction: column;
@@ -140,7 +120,6 @@ mat-drawer-container {
 
 .scoreboard-two {
     background-color: var(--player-two-color);
-    // width: 25vw;
     height: 5rem;
     display: flex;
     flex-direction: column;
@@ -157,21 +136,15 @@ mat-drawer-container {
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    // position:relative;
 }
 
 #info-cards {
-    // right:-5vw;
     display: flex;
-    // flex-direction: column;
-    flex-wrap:wrap;
-    // align-items: center;
-    // justify-content: center;
-    // gap: 0vw 10vh;
+    flex-wrap: wrap;
     margin-top: 2vh;
 }
 
-.open-side-bars > mat-card{
+.open-side-bars > mat-card {
     min-width: 80%;
 }
 
