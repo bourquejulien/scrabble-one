@@ -3,6 +3,8 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { AdminService } from '@app/services/admin/admin.service';
 import { Subscription } from 'rxjs';
 import { Answer } from '@common';
+import { Router } from '@angular/router';
+import { HealthService } from '@app/services/health/health.service';
 
 @Component({
     selector: 'app-admin-page',
@@ -12,10 +14,16 @@ import { Answer } from '@common';
 export class AdminPageComponent implements OnInit, OnDestroy {
     private errorSubscription: Subscription;
 
-    constructor(public adminService: AdminService, private snackbar: MatSnackBar) {}
+    constructor(
+        public adminService: AdminService,
+        private snackbar: MatSnackBar,
+        private readonly healthService: HealthService,
+        private readonly router: Router,
+    ) {}
 
     ngOnInit() {
         this.errorSubscription = this.adminService.onNotify.subscribe((message) => this.notify(message));
+        this.healthService.isServerOk().catch(async () => this.router.navigate(['/error']));
     }
 
     ngOnDestroy() {

@@ -15,7 +15,6 @@ export class Server {
     private server: http.Server;
 
     constructor(
-        // TODO Abomination
         private readonly application: Application,
         private readonly socketService: SocketService,
         private readonly roomController: RoomController,
