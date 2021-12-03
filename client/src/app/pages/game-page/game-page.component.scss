@@ -1,6 +1,9 @@
-@use '@angular/material' as mat;
 mat-drawer-container {
     height: 100%;
+}
+
+.bckg{
+    background: linear-gradient(180deg,#466f81, #8ebcd1 60%, #c5dae4 100%);
 }
 
 .scoreboard {
@@ -87,7 +90,7 @@ mat-drawer-container {
 
 .isTurn {
     outline-style: double;
-    outline-color: coral;
+    outline-color: #b60347;
     outline-width: thick;
     box-shadow: 5rem;
 }
@@ -122,7 +125,7 @@ mat-drawer-container {
 }
 
 .scoreboard-one {
-    // background-color: mat-color($primary);
+    background-color: var(--player-one-color);
     width: 7.5rem;
     height: 5rem;
     display: flex;
@@ -132,7 +135,7 @@ mat-drawer-container {
 }
 
 .scoreboard-two {
-    // background-color: var(--game-red);
+    background-color: var(--player-two-color);
     width: 7.5rem;
     height: 5rem;
     display: flex;
@@ -143,8 +146,7 @@ mat-drawer-container {
 
 #scoreboard-reserve {
     font-size: large;
-    // color: #fff;
-    // background-color: #3f51b5;
+    background-color: #81d4fa;
     text-align: center;
     width: 7.5rem;
     height: 5rem;

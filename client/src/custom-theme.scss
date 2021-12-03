@@ -16,7 +16,6 @@ $mat-light-theme: mat-light-theme(
             primary: mat.define-palette($mat-light-blue, 200, 100, 900),
             accent: mat.define-palette($mat-deep-orange, 300),
             warn: mat.define-palette($mat-red, 200),
-            // foreground: mat.define-palette(mat.$gray-palette),
         )
     )
 );

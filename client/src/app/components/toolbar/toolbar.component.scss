@@ -1,11 +1,11 @@
 .local.mat-toolbar {
-    background: var(--game-green);
+    background: var(--player-one-color);
     color: #fff;
 }
 
 .virtual.mat-toolbar.mat-primary,
 .remote.mat-toolbar {
-    background: var(--game-red);
+    background: var(--player-two-color);
     color: #fff;
 }
 
