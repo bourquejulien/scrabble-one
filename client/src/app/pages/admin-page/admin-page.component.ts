@@ -35,7 +35,6 @@ export class AdminPageComponent implements OnInit, OnDestroy {
         if (input.files?.length) {
             this.adminService.uploadFile(input.files[0]);
         }
-        return;
     }
 
     updateDictionaries() {
