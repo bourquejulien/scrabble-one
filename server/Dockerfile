@@ -4,6 +4,11 @@ EXPOSE 3000
 ENV NODE_ENV=production
 ENV UPLOAD_DIR=/assets/dictionaries
 
+RUN apk --no-cache add curl
+
+HEALTHCHECK --interval=1m --timeout=3s \
+  CMD curl -f "http://127.0.0.1:3000/status" || exit 1
+
 RUN mkdir /assets && chown -R node:node assets
 
 WORKDIR /app
