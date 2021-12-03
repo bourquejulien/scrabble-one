@@ -13,9 +13,10 @@ import { AppMaterialModule } from '@app/modules/material.module';
 import { GameService } from '@app/services/game/game.service';
 import { InitGameComponent } from './init-game.component';
 import { PlayerType } from '@app/classes/player/player-type';
-import { GameType } from '@common';
+import { DictionaryMetadata, GameType } from '@common';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { RoomService } from '@app/services/room/room.service';
+import { AdminService } from '@app/services/admin/admin.service';
 
 @Injectable({
     providedIn: 'root',
@@ -44,10 +45,19 @@ const THIRTY_SECONDS = 30;
 const FIVE_MINUTES = 5;
 const FOUR_MINUTES = 4;
 
+const metadata: DictionaryMetadata = {
+    _id: '0',
+    path: '1',
+    title: '2',
+    description: '3',
+    nbWords: 3,
+};
+
 describe('InitGameComponent', () => {
     let component: InitGameComponent;
     let fixture: ComponentFixture<InitGameComponent>;
     let roomServiceSpyObj: jasmine.SpyObj<RoomService>;
+    let adminServiceSpy: jasmine.SpyObj<AdminService>;
     const NAMES = ['Jean', 'RenÉéÎîÉéÇçÏï', 'moulon', 'Jo', 'Josiannnnnnnnnnne', 'Jean123', 'A1', 'Alphonse', ''];
     const routerMock = {
         navigate: jasmine.createSpy('navigate').and.callThrough(),
@@ -55,6 +65,7 @@ describe('InitGameComponent', () => {
 
     beforeEach(async () => {
         roomServiceSpyObj = jasmine.createSpyObj('RoomService', ['create']);
+        adminServiceSpy = jasmine.createSpyObj('AdminService', ['retrieveDictionaries'], { defaultDictionary: metadata });
         roomServiceSpyObj.create.and.returnValue(Promise.resolve());
         await TestBed.configureTestingModule({
             declarations: [InitGameComponent],
@@ -64,6 +75,7 @@ describe('InitGameComponent', () => {
                 { provide: Router, useValue: routerMock },
                 { provide: GameService, useClass: GameServiceStub },
                 { provide: MatDialogRef, useClass: MatDialogStub },
+                { provide: AdminService, useValue: adminServiceSpy },
                 { provide: MAT_DIALOG_DATA, useValue: { gameType: GameType.SinglePlayer } },
             ],
         }).compileComponents();

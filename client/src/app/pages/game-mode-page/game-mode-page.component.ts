@@ -33,29 +33,28 @@ export class GameModePageComponent implements OnInit {
         this.isDialogOpen = false;
     }
 
-    openDialog(gameType: GameType): void {
+    async openDialog(gameType: GameType): Promise<void> {
         if (this.isDialogOpen) {
             return;
         }
 
         this.isDialogOpen = true;
 
-        const promises: Promise<void>[] = [];
-        promises.push(this.playerNameService.retrievePlayerNames());
-        promises.push(this.adminService.retrieveDictionaries());
+        try {
+            await this.playerNameService.retrievePlayerNames();
+            await this.adminService.retrieveDictionaries();
 
-        Promise.all(promises)
-            .then(() => {
-                if (this.adminService.defaultDictionary === null) {
-                    throw new Error('Cannot retrieve default dictionnary');
-                }
+            if (this.adminService.defaultDictionary === null) {
+                throw new Error('Cannot retrieve default dictionnary');
+            }
 
-                this.dialog.open(InitGameComponent, {
-                    panelClass: 'init-game-dialog',
-                    autoFocus: false,
-                    data: { gameType, gameMode: this.gameMode },
-                });
-            })
-            .finally(() => (this.isDialogOpen = false));
+            this.dialog.open(InitGameComponent, {
+                panelClass: 'init-game-dialog',
+                autoFocus: false,
+                data: { gameType, gameMode: this.gameMode },
+            });
+        } finally {
+            this.isDialogOpen = false;
+        }
     }
 }
