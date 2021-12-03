@@ -72,7 +72,7 @@ describe('DictionaryService', () => {
 
     it('should not parse invalid files', async () => {
         const filepath = DictionaryService.getFilepath(notDictionary);
-        expect((await service.add(filepath)).isSuccess).to.be.true;
+        expect((await service.add(filepath)).isSuccess).to.be.false;
     });
 
     it('should not add duplicate', async () => {
@@ -122,7 +122,7 @@ describe('DictionaryService', () => {
     it('should create handler', async () => {
         dictionaryPersistenceStub.getMetadataById.resolves(null);
         service['handlers'].clear();
-        expect(await service.getHandler('id')).to.be.null;
+        expect((await service.getHandler('id')).isSuccess).to.be.true;
     });
 
     it('should retrieve JSON', async () => {
@@ -139,6 +139,6 @@ describe('DictionaryService', () => {
     });
 
     it('should not get words', async () => {
-        expect(await DictionaryService['getWords']('123456789')).to.equal([]);
+        expect(await DictionaryService['getWords']('123456789')).to.deep.equal([]);
     });
 });
