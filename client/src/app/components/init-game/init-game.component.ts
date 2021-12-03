@@ -1,14 +1,14 @@
 import { Component, Inject, OnInit } from '@angular/core';
-import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
+import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { Router } from '@angular/router';
-import { TimeSpan } from '@app/classes/time/timespan';
-import { GameService } from '@app/services/game/game.service';
-import { DictionaryMetadata, GameMode, GameType, MultiplayerCreateConfig, SinglePlayerConfig, VirtualPlayerLevel } from '@common';
-import { RoomService } from '@app/services/room/room.service';
-import { Constants } from '@app/constants/global.constants';
 import { NameValidator } from '@app/classes/form-validation/name-validator';
+import { TimeSpan } from '@app/classes/time/timespan';
+import { Constants } from '@app/constants/global.constants';
 import { AdminService } from '@app/services/admin/admin.service';
+import { GameService } from '@app/services/game/game.service';
 import { PlayerNameService } from '@app/services/player-name/player-name.service';
+import { RoomService } from '@app/services/room/room.service';
+import { DictionaryMetadata, GameMode, GameType, MultiplayerCreateConfig, SinglePlayerConfig, VirtualPlayerLevel } from '@common';
 
 interface FormConfig {
     virtualPlayerLevelName: string;
