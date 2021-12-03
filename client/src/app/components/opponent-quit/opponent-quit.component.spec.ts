@@ -18,7 +18,6 @@ class MatDialogStub {
 }
 
 describe('OpponentQuitComponent', () => {
-    let matDialogSpy: jasmine.SpyObj<MatDialog>;
     let component: OpponentQuitComponent;
     let fixture: ComponentFixture<OpponentQuitComponent>;
     let gameServiceSpy: jasmine.SpyObj<GameService>;
