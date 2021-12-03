@@ -31,6 +31,14 @@ describe('DictionaryService', () => {
         nbWords: 2048,
     };
 
+    const loadedDictionary: DictionaryMetadata = {
+        _id: 'id',
+        path: 'assets/dictionaries/upload/id.json',
+        title: '',
+        description: '',
+        nbWords: 1000,
+    };
+
     beforeEach(() => {
         dictionaryPersistenceStub = createStubInstance(DictionaryPersistence);
         dictionaryPersistenceStub.add.resolves(true);
@@ -39,6 +47,7 @@ describe('DictionaryService', () => {
         mock({
             'assets/dictionaries/upload': {
                 'dictionary.json': '{"title":"Dico", "description":"French dictionary", "words":["alpha", "beta", "gamma"]}',
+                'id.json': '["alpha", "beta", "gamma"]',
                 'not.json': Buffer.from([1, 2, 3]),
             },
         });
@@ -54,15 +63,9 @@ describe('DictionaryService', () => {
 
     it('should be initiated', async () => {
         const handlersSize = service['handlers'].size;
-        dictionaryPersistenceStub.defaultMetadata = {
-            _id: 'dictionary.json',
-            path: 'assets/dictionaries/upload/dictionary.json',
-            description: 'Default Dictionary',
-            title: 'Dictionnaire du serveur',
-            nbWords: 2048,
-        };
+        dictionaryPersistenceStub.defaultMetadata = loadedDictionary;
         await service.init();
-        expect(handlersSize).to.equal(handlersSize + 1);
+        expect(service['handlers'].size).to.equal(handlersSize + 1);
     });
 
     it('should parse correctly', async () => {
@@ -104,23 +107,27 @@ describe('DictionaryService', () => {
     });
 
     it('should get handler', async () => {
-        dictionaryPersistenceStub.getMetadataById.resolves(defaultDictionary);
+        dictionaryPersistenceStub.getMetadataById.resolves(loadedDictionary);
         const handlerStub = createStubInstance(DictionaryHandler) as unknown as DictionaryHandler;
         service['handlers'].set('id', handlerStub);
-        expect(await service.getHandler('id')).to.equal(handlerStub);
+
+        const answer = await service.getHandler('id');
+        expect(answer.payload).to.equal(handlerStub);
     });
 
     it('should not return handler', async () => {
         const originalPath = DictionaryService['dictionaryPath'];
         DictionaryService['dictionaryPath'] = 'assets/dictionary/upload';
-        dictionaryPersistenceStub.getMetadataById.resolves(defaultDictionary);
+        dictionaryPersistenceStub.getMetadataById.resolves(null);
         service['handlers'].clear();
-        expect(await service.getHandler('id')).to.be.null;
+
+        const handler = await service.getHandler('id');
+        expect(handler.isSuccess).to.be.false;
         DictionaryService['dictionaryPath'] = originalPath;
     });
 
     it('should create handler', async () => {
-        dictionaryPersistenceStub.getMetadataById.resolves(null);
+        dictionaryPersistenceStub.getMetadataById.resolves(loadedDictionary);
         service['handlers'].clear();
         expect((await service.getHandler('id')).isSuccess).to.be.true;
     });
