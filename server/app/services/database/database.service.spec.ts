@@ -40,6 +40,10 @@ describe('DataBaseService', () => {
         expect(service).to.be.ok;
     });
 
+    it('should return a database', () => {
+        expect(service.database).to.be.instanceof(Db);
+    });
+
     it('should run', async () => {
         sandbox.stub(service['scrabbleDb'], 'createCollection');
         sandbox.stub(service['client'], 'connect');

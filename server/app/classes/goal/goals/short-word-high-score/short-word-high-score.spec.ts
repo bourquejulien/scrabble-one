@@ -2,13 +2,12 @@
 /* eslint-disable no-unused-expressions */
 /* eslint-disable @typescript-eslint/no-unused-expressions */
 /* eslint-disable dot-notation */
+import { expect } from 'chai';
 import { BaseGoal, Goal } from '@app/classes/goal/base-goal';
-import { PlacePalindrome } from '@app/classes/goal/goals/place-palindrome/place-palindrome';
 import { ShortWordHighScore } from '@app/classes/goal/goals/short-word-high-score/short-word-high-score';
 import { ValidationFailed, ValidationResponse } from '@app/classes/validation/validation-response';
+import { PlacePalindrome } from '@app/classes/goal/goals/place-palindrome/place-palindrome';
 import { Config } from '@app/config';
-import { expect } from 'chai';
-import { describe } from 'mocha';
 
 describe('ShortWordHighScore', () => {
     let goal: Goal;

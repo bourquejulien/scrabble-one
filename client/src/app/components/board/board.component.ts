@@ -46,11 +46,6 @@ export class BoardComponent implements OnDestroy, AfterViewInit {
         this.squareSelected = false;
     }
 
-    @HostListener('window:resize')
-    onResize() {
-        this.mouseHandlingService.displaySize = this.canvasDisplaySize;
-    }
-
     @HostListener('body:keydown', ['$event'])
     onKeyDown(event: KeyboardEvent): void {
         if (this.placeLetterService.gridPosition === undefined) {
@@ -251,7 +246,9 @@ export class BoardComponent implements OnDestroy, AfterViewInit {
             this.rackService.rack.splice(this.rackService.indexOf(this.letter), 1);
             this.placeLetterService.myRack.push(this.letter);
         }
+
         this.placeLetterService.tempRack.push(this.letter);
+
         if (
             this.placeLetterService.gridPosition.x === Constants.GRID.GRID_SIZE - 1 ||
             this.placeLetterService.gridPosition.y === Constants.GRID.GRID_SIZE - 1

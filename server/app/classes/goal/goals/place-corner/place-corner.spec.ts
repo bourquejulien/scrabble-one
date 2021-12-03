@@ -2,12 +2,11 @@
 /* eslint-disable @typescript-eslint/no-unused-expressions */
 /* eslint-disable @typescript-eslint/no-empty-function */
 /* eslint-disable dot-notation */
-import { BaseGoal, Goal } from '@app/classes/goal/base-goal';
-import { PlaceCorner } from '@app/classes/goal/goals/place-corner/place-corner';
-import { ValidationFailed, ValidationResponse } from '@app/classes/validation/validation-response';
-import { Config } from '@app/config';
 import { expect } from 'chai';
-import { describe } from 'mocha';
+import { PlaceCorner } from '@app/classes/goal/goals/place-corner/place-corner';
+import { BaseGoal, Goal } from '@app/classes/goal/base-goal';
+import { Config } from '@app/config';
+import { ValidationFailed, ValidationResponse } from '@app/classes/validation/validation-response';
 
 describe('PlaceCorner', () => {
     let goal: Goal;

@@ -75,17 +75,14 @@ describe('RackService', () => {
     });
 
     it('should refresh rack if refresh function called', fakeAsync(() => {
-        // const rack = ['a', 'a', 'b', 'c'];
-        // service['rack'] = ['z', 'y'];
-        // const firstLetterInRack = service['rack'][0];
-        //
-        // service.refresh();
-        // const request = httpMock.match(localUrl('rack', `${sessionId}`));
-        // request[0].flush(rack);
-        // tick();
-        //
-        // expect(firstLetterInRack).not.toBe(service['rack'][0]);
-        // expect(service.rack[0]).toBe('a');
+        const rack = ['a', 'a', 'b', 'c'];
+        service['rack'] = ['z', 'y'];
+        const firstLetterInRack = service['rack'][0];
+
+        service['refresh'](rack);
+
+        expect(firstLetterInRack).not.toBe(service['rack'][0]);
+        expect(service.rack[0]).toBe('a');
     }));
 
     it('should return error if trying to swap letters in empty rack', () => {

@@ -1,11 +1,11 @@
 /* eslint-disable no-unused-expressions */
 /* eslint-disable @typescript-eslint/no-unused-expressions */
 /* eslint-disable dot-notation */
+import { expect } from 'chai';
 import { BaseGoal, Goal } from '@app/classes/goal/base-goal';
 import { PlacePalindrome } from '@app/classes/goal/goals/place-palindrome/place-palindrome';
 import { ValidationFailed, ValidationResponse } from '@app/classes/validation/validation-response';
 import { Config } from '@app/config';
-import { expect } from 'chai';
 import { describe } from 'mocha';
 
 describe('PlacePalindrome', () => {

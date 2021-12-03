@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { NameValidator } from './name-validator';
 
 const NAMES = ['Jean', 'RenÉéÎîÉéÇçÏï', 'moulon', 'Jo', 'Josiannnnnnnnnnne', 'Jean123', 'A1', 'Alphonse', ''];
@@ -60,5 +61,10 @@ describe('NameValidator', () => {
         validator.reset();
         expect(validator.errors.length).toBe(0);
         expect(validator.name).toBe('');
+    });
+
+    it('should return if name isValid', () => {
+        validator.name = NAMES[0];
+        expect(validator.isValid).toBe(true);
     });
 });
