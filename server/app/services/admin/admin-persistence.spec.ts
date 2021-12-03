@@ -7,9 +7,19 @@ import { expect } from 'chai';
 import { DatabaseService } from '@app/services/database/database.service';
 import { assert, createSandbox, SinonSandbox, SinonStubbedInstance, stub } from 'sinon';
 import { Collection, Db, FindCursor, InsertOneResult, ModifyResult, WithId } from 'mongodb';
-import { DictionaryMetadata, VirtualPlayerLevel } from '@common';
+import { DictionaryMetadata, VirtualPlayerLevel, VirtualPlayerName } from '@common';
 import { AdminPersistence } from '@app/services/admin/admin-persistence';
-const names = ['Éléanor', 'Alfred', 'Jeannine'];
+
+const virtualPlayernames: VirtualPlayerName[] = [
+    { name: 'Éléanor', level: VirtualPlayerLevel.Easy, isReadonly: true },
+    { name: 'Alfred', level: VirtualPlayerLevel.Easy, isReadonly: true },
+    { name: 'Jeannine', level: VirtualPlayerLevel.Easy, isReadonly: true },
+];
+const virtualPlayernamesWithId = [
+    { _id: 'Éléanor', level: VirtualPlayerLevel.Easy, isReadonly: true },
+    { _id: 'Alfred', level: VirtualPlayerLevel.Easy, isReadonly: true },
+    { _id: 'Jeannine', level: VirtualPlayerLevel.Easy, isReadonly: true },
+];
 describe('AdminPersistence', () => {
     let service: AdminPersistence;
     let dbServiceStub: SinonStubbedInstance<DatabaseService>;
@@ -26,13 +36,13 @@ describe('AdminPersistence', () => {
         collectionStub = sandbox.createStubInstance(Collection);
         collectionStub.insertOne.resolves({ acknowledged: true } as unknown as InsertOneResult);
         collectionStub.insertMany.resolves();
+        collectionStub.drop.resolves();
         collectionStub.deleteOne.resolves();
         collectionStub.find.returns({
             toArray: () => {
-                return names;
+                return virtualPlayernamesWithId;
             },
         } as unknown as FindCursor);
-        collectionStub.findOne.resolves({ _id: 'dictionary.json' } as unknown as WithId<DictionaryMetadata>);
         collectionStub.findOneAndDelete.resolves({ value: true } as unknown as ModifyResult);
         collectionStub.countDocuments.resolves(1);
         dbStub.collection.returns(collectionStub as unknown as Collection);
@@ -51,24 +61,32 @@ describe('AdminPersistence', () => {
     });
     it('should reset', async () => {
         await service.reset();
-        assert.calledOnce(dbStub.dropCollection);
+        assert.calledOnce(collectionStub.drop);
     });
     it('should delete player', async () => {
+        collectionStub.findOneAndDelete.resolves({ value: { nom: 'Monique', level: VirtualPlayerLevel.Easy } } as unknown as ModifyResult);
         expect(await service.deleteVirtualPlayer('Monique')).to.equal(VirtualPlayerLevel.Easy);
     });
     it('should get metadata by id from database', async () => {
         await service.addVirtualPlayer(VirtualPlayerLevel.Easy, 'Éléanor');
         await service.addVirtualPlayer(VirtualPlayerLevel.Easy, 'Alfred');
-        expect(await service.getPlayerNames()).to.equal(names);
+        expect(await service.getPlayerNames()).to.deep.equal(virtualPlayernames);
     });
-    it('should not add duplicates', async () => {
+    it('should not add duplicate playername', async () => {
         try {
             collectionStub.insertOne.resolves(new Error(''));
         } catch (err) {
             expect(await service.addVirtualPlayer(VirtualPlayerLevel.Easy, 'Alfred')).to.be.false;
         }
     });
-    it('should get metadata by id from database', async () => {
+    it('should rename', async () => {
+        const player = {
+            _id: 'Alfredo',
+            level: VirtualPlayerLevel.Expert,
+            isReadonly: false,
+        };
+        collectionStub.findOneAndDelete.resolves({ value: player } as unknown as ModifyResult);
+        collectionStub.findOne.resolves(player as unknown as WithId<DictionaryMetadata>);
         expect(await service.renameVirtualPlayer('Alfred', 'Alfredo')).to.equal(VirtualPlayerLevel.Expert);
     });
     it('should not rename playername', async () => {
