@@ -17,12 +17,17 @@ const BONUSES = [
     { bonus: Bonus.Star, position: { x: 7, y: 7 } },
 ];
 
-const generateData = (size: number): BoardData => {
+const generateBoardData = (size: number, isEmpty: boolean = false): BoardData => {
     const data: BoardData = { board: [], filledPositions: [] };
     for (let x = 0; x < size; x++) {
         data.board[x] = [];
         for (let y = 0; y < size; y++) {
             const bonus = BONUSES.find((e) => e.position.x === x && e.position.y === y)?.bonus ?? Bonus.None;
+            if (isEmpty) {
+                data.board[x][y] = { position: { x, y }, letter: '', bonus };
+                continue;
+            }
+
             data.board[x][y] = { position: { x, y }, letter: bonus === Bonus.None ? 'a' : '', bonus };
         }
     }
@@ -49,7 +54,7 @@ describe('GridService', () => {
 
     beforeEach(() => {
         TestBed.configureTestingModule({
-            providers: [{ provide: BoardService, useValue: new BoardServiceStub(generateData(Constants.GRID.GRID_SIZE)) }],
+            providers: [{ provide: BoardService, useValue: new BoardServiceStub(generateBoardData(Constants.GRID.GRID_SIZE)) }],
         });
         service = TestBed.inject(GridService);
         ctxStub = CanvasTestHelper.createCanvas(CANVAS_WIDTH, CANVAS_HEIGHT).getContext('2d') as CanvasRenderingContext2D;
@@ -150,17 +155,18 @@ describe('GridService', () => {
     it('should draw image if image provided', () => {
         service['playGridSize'] = 4;
         const spy = spyOn<any>(service, 'drawImage');
-        service['boardService']['boardData'].board[2][2].letter = '';
+        service['boardService']['boardData'].board = generateBoardData(Constants.GRID.GRID_SIZE, true).board;
         service.drawSquares(ctxStub);
-        expect(spy).toHaveBeenCalled();
+        expect(spy).toHaveBeenCalledTimes(1);
     });
 
-    it('should not draw star image if center not empty', () => {
+    it('should not draw star image if center filled', () => {
+        const EXPECTED_CALLS = 12;
         service['playGridSize'] = 4;
         const spy = spyOn<any>(service, 'drawImage');
-        service['boardService']['boardData'].board[2][2].letter = 'b';
+        service['boardService']['boardData'].board[6][6].letter = 'b';
         service.drawSquares(ctxStub);
-        expect(spy).not.toHaveBeenCalled();
+        expect(spy).toHaveBeenCalledTimes(EXPECTED_CALLS);
     });
 
     it(' clearRect should be called when clearSquare', () => {

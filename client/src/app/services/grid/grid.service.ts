@@ -5,6 +5,7 @@ import { BoardService } from '@app/services/board/board.service';
 import { Bonus, Vec2 } from '@common';
 
 const STAR_IMAGE_PATH = 'assets/img/star.svg';
+const TILE_IMAGE_PATH = '/assets/img/tile-texture.jpeg';
 const LINE_WIDTH = 3;
 const STROKE_STYLE = 'black';
 const STROKE_STYLE_SELECTION = 'red';
@@ -34,13 +35,17 @@ export class GridService {
     readonly maxFontSize: number;
     letterFontFace: FontFace;
 
-    private readonly canvasSize: Vec2;
     private playGridSize: number;
+    private readonly canvasSize: Vec2;
     private readonly starImage: HTMLImageElement;
+    private readonly tileImage: HTMLImageElement;
 
     constructor(private readonly boardService: BoardService) {
         this.starImage = new Image();
         this.starImage.src = STAR_IMAGE_PATH;
+        this.tileImage = new Image();
+        this.tileImage.src = TILE_IMAGE_PATH;
+
         this.letterFontFace = FONT_FACE;
         this.canvasSize = Constants.GRID.CANVAS_SIZE;
         this.playGridSize = Constants.GRID.GRID_SIZE;
@@ -160,6 +165,10 @@ export class GridService {
     drawSymbol(letter: string, gridPosition: Vec2, context: CanvasRenderingContext2D) {
         if (letter.length === 0) {
             return;
+        }
+
+        if (gridPosition.x > 0 && gridPosition.y > 0) {
+            this.drawImage(this.tileImage, gridPosition, context);
         }
 
         const canvasPosition: Vec2 = this.computeCanvasCoord(gridPosition);
