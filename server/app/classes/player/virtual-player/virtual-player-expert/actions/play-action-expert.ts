@@ -8,10 +8,10 @@ import { Action } from '@app/classes/player/virtual-player/actions/action';
 import { PlaceAction } from '@app/classes/player/virtual-player/actions/place-action';
 import { ExchangeAction } from '@app/classes/player/virtual-player/actions/exchange-action';
 import { ReserveHandler } from '@app/handlers/reserve-handler/reserve-handler';
-import { PlayAction } from '@app/classes/player/virtual-player/actions/play-action';
 import { PlayerStatsNotifier } from '@app/handlers/stats-handlers/player-stats-handler/player-stats-notifier';
+import { ConsoleFormatter } from '@app/classes/player/console-formatter/console-formatter';
 
-export class PlayActionExpert extends PlayAction {
+export class PlayActionExpert implements Action {
     constructor(
         private readonly boardHandler: BoardHandler,
         private readonly playGenerator: PlayGenerator,
@@ -19,9 +19,7 @@ export class PlayActionExpert extends PlayAction {
         private readonly statsNotifier: PlayerStatsNotifier,
         private readonly socketHandler: SocketHandler,
         private readonly reserveHandler: ReserveHandler,
-    ) {
-        super();
-    }
+    ) {}
 
     execute(): Action | null {
         logger.debug('Generating plays - Expert');
@@ -37,10 +35,10 @@ export class PlayActionExpert extends PlayAction {
 
         const play = orderedPlays[0];
 
-        this.socketHandler.sendMessage({ title: 'Mot placé', body: this.formatPlay(play), messageType: MessageType.Message });
+        this.socketHandler.sendMessage({ title: 'Mot placé', body: ConsoleFormatter.formatPlay(play), messageType: MessageType.Message });
         this.socketHandler.sendMessage({
             title: 'Mot alternatifs',
-            body: this.formatPlays(orderedPlays.slice(1, Config.VIRTUAL_PLAYER.NB_ALTERNATIVES + 1)),
+            body: ConsoleFormatter.formatPlays(orderedPlays.slice(1, Config.VIRTUAL_PLAYER.NB_ALTERNATIVES + 1)),
             messageType: MessageType.Log,
         });
 

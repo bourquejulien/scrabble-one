@@ -23,28 +23,23 @@ const generatePlacement = (word: string, initialPosition: Vec2, direction: Direc
             xIncr = 0;
             yIncr = 1;
             break;
-
         case Direction.Up:
             xIncr = 0;
             yIncr = -1;
             break;
-
         case Direction.Right:
             xIncr = 1;
             yIncr = 0;
             break;
-
         case Direction.Left:
             xIncr = -1;
             yIncr = 0;
             break;
-
         default:
             xIncr = 0;
             yIncr = 0;
             break;
     }
-
     for (let i = 0; i < word.length; i++) {
         letters.push({ letter: word[i], position: { x: initialPosition.x + xIncr * i, y: initialPosition.y + yIncr * i } });
     }
@@ -88,13 +83,11 @@ class StubDictionary implements Dictionary {
         throw new Error('Method not implemented.');
     }
 }
-
 describe('BoardValidator', () => {
     let board: Board;
     let boardValidator: BoardValidator;
     let stubDictionaryService: StubDictionary;
     let centerPosition: Vec2;
-
     beforeEach(() => {
         board = new Board(Config.GRID.GRID_SIZE, retrieveBonuses());
         stubDictionaryService = new StubDictionary();
@@ -111,27 +104,22 @@ describe('BoardValidator', () => {
         const response = boardValidator.validate(generatePlacement(WORDS[0], centerPosition, Direction.Right));
         expect(response.isSuccess).to.be.true;
     });
-
     it('should fail to add an invalid word', () => {
         const response = boardValidator.validate(generatePlacement('thisisnotaword', centerPosition, Direction.Right));
         expect(response.isSuccess).to.be.false;
     });
-
     it('should fail to add a word written from right to left', () => {
         const response = boardValidator.validate(generatePlacement(WORDS[0], centerPosition, Direction.Left));
         expect(response.isSuccess).to.be.false;
     });
-
     it('should fail to overflow the board', () => {
         const response = boardValidator.validate(generatePlacement('aaaaaaaaaaaaaaa', centerPosition, Direction.Right));
         expect(response.isSuccess).to.be.false;
     });
-
     it('should fail to add an un-centered first word', () => {
         const response = boardValidator.validate(generatePlacement(WORDS[0], { x: 0, y: 0 }, Direction.Right));
         expect(response.isSuccess).to.be.false;
     });
-
     it('should succeed and return correct score on valid placement', () => {
         const expectedScore = 18;
         const response = boardValidator.validate(generatePlacement(WORDS[5], centerPosition, Direction.Down));
@@ -154,18 +142,15 @@ describe('BoardValidator', () => {
         expect(response.isSuccess).to.be.true;
         if (response.isSuccess) expect(response.score).to.eql(expectedScores[0]);
         board.merge(FIRST_PLACEMENT);
-
         response = boardValidator.validate(COMBINED_WORD);
         expect(response.isSuccess).to.be.true;
         if (response.isSuccess) expect(response.score).to.eql(expectedScores[1]);
     });
-
     it('should fail if word combination is invalid', () => {
         board.merge(generatePlacement('pomme', centerPosition, Direction.Right));
         expect(boardValidator.validate(generatePlacement('raisin', { x: centerPosition.x - 1, y: centerPosition.y }, Direction.Down)).isSuccess)
             .false;
     });
-
     it('should fail if word coherence is invalid', () => {
         const COMBINED_WORD: Vec2[] = [
             { x: 11, y: 3 },

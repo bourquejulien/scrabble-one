@@ -15,11 +15,7 @@ const UPLOAD_DIR = process.env.TEMP_DIR ?? tmpdir();
 export class AdminController {
     router: Router;
 
-    constructor(
-        private dictionaryService: DictionaryService,
-        private readonly adminService: AdminPersistence,
-        private readonly scoreService: ScoreService,
-    ) {
+    constructor(private dictionaryService: DictionaryService, private adminService: AdminPersistence, private scoreService: ScoreService) {
         this.configureRouter();
     }
 
@@ -66,7 +62,6 @@ export class AdminController {
             const answer = await this.dictionaryService.update(metadataToUpdate);
 
             logger.debug('Dictionary update ' + (answer.isSuccess ? 'succeeded' : 'failed'));
-
             res.json(answer);
         });
 
@@ -109,13 +104,12 @@ export class AdminController {
 
             const isAdded = await this.adminService.addVirtualPlayer(level, req.body.name);
 
-            if (!isAdded) {
-                res.sendStatus(Constants.HTTP_STATUS.BAD_REQUEST);
+            if (isAdded) {
+                const names = await this.adminService.getPlayerNames();
+                res.json(names);
                 return;
             }
-
-            const names = await this.adminService.getPlayerNames();
-            res.json(names);
+            res.sendStatus(Constants.HTTP_STATUS.BAD_REQUEST);
         });
 
         this.router.post('/playername/rename', async (req: Request, res: Response) => {
@@ -133,13 +127,6 @@ export class AdminController {
         });
 
         this.router.delete('/playername/:name', async (req: Request, res: Response) => {
-            const name = req.params.name;
-
-            if (name === undefined) {
-                res.sendStatus(Constants.HTTP_STATUS.BAD_REQUEST);
-                return;
-            }
-
             const level = await this.adminService.deleteVirtualPlayer(req.params.name);
 
             if (level == null) {

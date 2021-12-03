@@ -25,7 +25,7 @@ export class BoardComponent implements OnDestroy, AfterViewInit {
     isMouseOnBoard: boolean;
     isUpper: boolean;
     letter: string;
-    squareSelected: boolean
+    squareSelected: boolean;
 
     private gridContext: CanvasRenderingContext2D;
     private squareContext: CanvasRenderingContext2D;
@@ -41,7 +41,7 @@ export class BoardComponent implements OnDestroy, AfterViewInit {
         private readonly gameService: GameService,
         readonly placeLetterService: PlaceLetterService,
     ) {
-        this.squareSelected = false; 
+        this.squareSelected = false;
     }
 
     @HostListener('body:keydown', ['$event'])
@@ -242,7 +242,9 @@ export class BoardComponent implements OnDestroy, AfterViewInit {
             this.rackService.rack.splice(this.rackService.indexOf(this.letter), 1);
             this.placeLetterService.myRack.push(this.letter);
         }
+
         this.placeLetterService.tempRack.push(this.letter);
+
         if (
             this.placeLetterService.gridPosition.x === Constants.GRID.GRID_SIZE - 1 ||
             this.placeLetterService.gridPosition.y === Constants.GRID.GRID_SIZE - 1
