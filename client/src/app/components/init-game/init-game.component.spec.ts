@@ -65,7 +65,6 @@ describe('InitGameComponent', () => {
     const NAMES = ['Jean', 'RenÉéÎîÉéÇçÏï', 'moulon', 'Jo', 'Josiannnnnnnnnnne', 'Jean123', 'A1', 'Alphonse', ''];
 
     beforeEach(async () => {
-        // gameTypeVal = GameType.SinglePlayer;
         roomServiceSpyObj = jasmine.createSpyObj('RoomService', ['create']);
         roomServiceSpyObj.create.and.resolveTo();
         routerSpy = jasmine.createSpyObj('Router', ['navigate']);
@@ -182,10 +181,13 @@ describe('InitGameComponent', () => {
         expect(spy).toHaveBeenCalled();
     });
 
-    it('should init multiplayer game if multiplayer selected 2', async () => {
+    it('should init multiplayer game if confirm initialization succeeds', async () => {
         dialogData.gameType = GameType.Multiplayer;
+        const spy = spyOn(component.dialogRef, 'close');
         spyOn<any>(component, 'confirmInitialization').and.returnValue(true);
-        await component['initMultiplayer']();
+        await component.init();
+
+        expect(spy).toHaveBeenCalled();
     });
 
     it('should confirm initialization if valid name', async () => {
@@ -199,10 +201,14 @@ describe('InitGameComponent', () => {
         const confirm = component['confirmInitialization']();
         expect(confirm).toBe(false);
     });
+
     it('should call init but does not need to reroute', async () => {
         spyOn<any>(component, 'confirmInitialization').and.returnValue(false);
+        const spy = spyOn(component['playerNameService'], 'retrievePlayerNames');
 
         await component.init();
+        expect(spy).not.toHaveBeenCalled();
     });
+    
     afterAll(() => cleanStyles());
 });
