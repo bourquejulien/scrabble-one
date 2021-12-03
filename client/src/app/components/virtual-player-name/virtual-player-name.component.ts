@@ -1,8 +1,8 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { VirtualPlayerLevel, VirtualPlayerName } from '@common';
 import { NameValidator } from '@app/classes/form-validation/name-validator';
-import { Subscription } from 'rxjs';
 import { PlayerNameService } from '@app/services/player-name/player-name.service';
+import { VirtualPlayerLevel, VirtualPlayerName } from '@common';
+import { Subscription } from 'rxjs';
 
 @Component({
     selector: 'app-virtual-player-name',
@@ -79,10 +79,9 @@ export class VirtualPlayerNameComponent implements OnInit, OnDestroy {
                 return;
             }
             this.playerNameService.updatePlayerName(this.originName.name, this.nameValidator.name);
-        } else {
-            this.nameValidator.errors.push('Le nom existe déjà');
-            return;
         }
+        this.nameValidator.errors.push('Le nom existe déjà');
+        return;
     }
 
     private playerNamesUpdated(playerNames: VirtualPlayerName[]) {
