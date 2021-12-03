@@ -32,10 +32,10 @@ export class AdminPageComponent implements OnInit, OnDestroy {
 
     onFileSelected(event: Event) {
         const input = event.target as HTMLInputElement;
-        if (!input.files?.length) {
-            return;
+        if (input.files?.length) {
+            this.adminService.uploadFile(input.files[0]);
         }
-        this.adminService.uploadFile(input.files[0]);
+        return;
     }
 
     updateDictionaries() {
