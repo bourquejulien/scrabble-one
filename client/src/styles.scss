@@ -22,7 +22,6 @@ body {
 
 body {
     margin: 0;
-    font-family: Roboto, 'Helvetica Neue', sans-serif;
 }
 
 .mat-tooltip {
@@ -46,11 +45,6 @@ body {
 // Prevents black border on focus
 :focus {
     outline: none;
-}
-
-.mat-success {
-    background-color: green;
-    color: #fff;
 }
 
 @include mat.all-component-themes($mat-light-theme);

@@ -3,45 +3,50 @@
     <mat-drawer #drawer autoFocus class="comm-box-sidenav" mode="side" opened>
         <app-communication-box></app-communication-box>
     </mat-drawer>
-    <div [ngClass]="isOpen ? 'open-side-bars' : 'close-side-bars'">
-        <mat-card color="primary" [ngClass]="gameService.currentTurn === 'local' ? 'isTurn' : 'isNotTurn'" class="scoreboard-one">
-            <span class="vertical-flex-items">{{ sessionService.gameConfig.firstPlayerName }}</span>
-            <span class="vertical-flex-items">Score: {{ gameService.stats.localStats.points }} </span>
-            <span class="vertical-flex-items" *ngIf="gameService.stats.localStats.rackSize < 7"
-                >Lettres: {{ gameService.stats.localStats.rackSize }}
-            </span>
-        </mat-card>
-        <mat-card color="primary" id="scoreboard-reserve">
-            <span> {{ reserveService.length }} lettre(s) dans la réserve </span>
-        </mat-card>
-        <mat-card color="primary" [ngClass]="gameService.currentTurn !== 'local' ? 'isTurn' : 'isNotTurn'" class="scoreboard-two">
-            <span class="vertical-flex-items">{{ sessionService.gameConfig.secondPlayerName }}</span>
-            <span class="vertical-flex-items">Score: {{ gameService.stats.remoteStats.points }} </span>
-            <span class="vertical-flex-items" *ngIf="gameService.stats.remoteStats.rackSize < 7"
-                >Lettres: {{ gameService.stats.remoteStats.rackSize }}
-            </span>
-        </mat-card>
-        <app-objectives class="objectives" *ngIf="this.sessionService.gameConfig.gameMode === gameMode.Log2990"></app-objectives>
-    </div>
     <div id="tools-container">
-        <div class="comm-box-sidenav-content">
-            <div class="button-bar" *ngFor="let config of buttonConfig">
-                <button
-                    mat-fab
-                    matTooltipPosition="right"
-                    *ngIf="playerType === 'local' || config.icon !== 'skip_next'"
-                    class="fab-button"
-                    [color]="config.color"
-                    (click)="config.action()"
-                    [matTooltip]="config.hover">
-                    <mat-icon>
-                        {{ config.icon }}
-                    </mat-icon>
-                </button>
+        <!-- <div> -->
+            <div class="comm-box-sidenav-content">
+                <div class="button-bar" *ngFor="let config of buttonConfig">
+                    <button
+                        mat-fab
+                        matTooltipPosition="right"
+                        *ngIf="playerType === 'local' || config.icon !== 'skip_next'"
+                        class="fab-button"
+                        [color]="config.color"
+                        (click)="config.action()"
+                        [matTooltip]="config.hover"
+                    >
+                        <mat-icon>
+                            {{ config.icon }}
+                        </mat-icon>
+                    </button>
+                </div>
+            </div>
+            <section [ngClass]="isOpen ? 'play-area-container-open' : 'play-area-container-closed'">
+                <app-play-area class="play-area"></app-play-area>
+            </section>
+        <!-- </div> -->
+        <div id="info-cards">
+            <div [ngClass]="isOpen ? 'open-side-bars' : 'close-side-bars'">
+                <mat-card [ngClass]="gameService.currentTurn === 'local' ? 'isTurn' : 'isNotTurn'" class="scoreboard-one">
+                    <span class="vertical-flex-items">{{ sessionService.gameConfig.firstPlayerName }}</span>
+                    <span class="vertical-flex-items">Score: {{ gameService.stats.localStats.points }} </span>
+                    <span class="vertical-flex-items" *ngIf="gameService.stats.localStats.rackSize < 7"
+                        >Lettres: {{ gameService.stats.localStats.rackSize }}
+                    </span>
+                </mat-card>
+                <mat-card [ngClass]="gameService.currentTurn !== 'local' ? 'isTurn' : 'isNotTurn'" class="scoreboard-two">
+                    <span class="vertical-flex-items">{{ sessionService.gameConfig.secondPlayerName }}</span>
+                    <span class="vertical-flex-items">Score: {{ gameService.stats.remoteStats.points }} </span>
+                    <span class="vertical-flex-items" *ngIf="gameService.stats.remoteStats.rackSize < 7"
+                        >Lettres: {{ gameService.stats.remoteStats.rackSize }}
+                    </span>
+                </mat-card>
+                <mat-card class="scoreboard-reserve">
+                    <span> {{ reserveService.length }} lettre(s) dans la réserve </span>
+                </mat-card>
+                <app-objectives class="objectives" *ngIf="this.sessionService.gameConfig.gameMode === gameMode.Log2990"></app-objectives>
             </div>
         </div>
-        <section [ngClass]="isOpen ? 'play-area-container-open' : 'play-area-container-closed'">
-            <app-play-area class="play-area"></app-play-area>
-        </section>
     </div>
 </mat-drawer-container>

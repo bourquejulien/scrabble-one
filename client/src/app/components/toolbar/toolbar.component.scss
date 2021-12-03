@@ -1,18 +1,21 @@
 .local.mat-toolbar {
     background: var(--player-one-color);
-    color: #fff;
+    color: black;
 }
 
 .virtual.mat-toolbar.mat-primary,
 .remote.mat-toolbar {
     background: var(--player-two-color);
-    color: #fff;
+    color: black;
 }
 
 .tool-bar {
-    justify-content: center;
     z-index: 2;
     font-family: 'digital-clock-font';
-    font-size:xx-large;
+    font-size: 300%;
     font-weight: bolder;
+    justify-content: center;
+    align-items: center;
+    display: flex;
+    align-content: center;
 }

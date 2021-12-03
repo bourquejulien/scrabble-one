@@ -6,13 +6,13 @@ mat-drawer-container {
     background: linear-gradient(180deg,#466f81, #8ebcd1 60%, #c5dae4 100%);
 }
 
-.scoreboard {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    position: absolute;
-}
+// .scoreboard {
+//     display: flex;
+//     flex-direction: column;
+//     align-items: center;
+//     justify-content: center;
+//     position: absolute;
+// }
 
 .vertical-flex-items {
     margin-top: 20px;
@@ -73,7 +73,9 @@ mat-drawer-container {
 
 #tools-container {
     display: flex;
-    margin-top: -10vh;
+    flex-direction: row;
+    margin-top: 4vh;
+    gap: 37vw;
 }
 
 .objectives {
@@ -82,9 +84,10 @@ mat-drawer-container {
     // position: absolute;
     z-index: 1;
     // margin-top: 5rem;
-    top: 20rem;
-    margin-left: -40%;
-    right: -5vw;
+    // top: 20rem;
+    // right: 40vw;
+    margin-top: 15vh;
+    margin-left: -29.5vw;
     // transition: 0.55s;
 }
 
@@ -101,32 +104,32 @@ mat-drawer-container {
 
 .open-side-bars {
     display: flex;
-    flex-direction: column;
-    gap: 2vh;
-    margin-left: 85%;
+    justify-content: flex-start;
+    gap: 3vw;
+    // margin-left: 53%;
     left: 0rem;
     width: 7.5rem;
     height: 5rem;
     transition: 0.45s;
-    padding-top: 2vh;
+    // padding-top: 2vh;
 }
 
 .close-side-bars {
     display: flex;
-    flex-direction: column;
-    gap: 5vh;
-    margin-left: 85%;
+    justify-content: flex-start;
+    gap: 3vw;
+    margin-left: 25vw;
     left: 0rem;
-    top: 8rem;
+    // top: 8rem;
     width: 7.5rem;
     height: 5rem;
     transition: 0.45s;
-    padding-top: 2vh;
+    // padding-top: 2vh;
 }
 
 .scoreboard-one {
     background-color: var(--player-one-color);
-    width: 7.5rem;
+    // width: 25vw;
     height: 5rem;
     display: flex;
     flex-direction: column;
@@ -136,7 +139,7 @@ mat-drawer-container {
 
 .scoreboard-two {
     background-color: var(--player-two-color);
-    width: 7.5rem;
+    // width: 25vw;
     height: 5rem;
     display: flex;
     flex-direction: column;
@@ -144,14 +147,33 @@ mat-drawer-container {
     justify-content: center;
 }
 
-#scoreboard-reserve {
+.scoreboard-reserve {
     font-size: large;
     background-color: #81d4fa;
     text-align: center;
-    width: 7.5rem;
     height: 5rem;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
+    // position:relative;
+}
+
+#info-cards {
+    // right:-5vw;
+    display: flex;
+    // flex-direction: column;
+    flex-wrap:wrap;
+    // align-items: center;
+    // justify-content: center;
+    // gap: 0vw 10vh;
+    margin-top: 2vh;
+}
+
+.open-side-bars > mat-card{
+    min-width: 80%;
+}
+
+.close-side-bars > mat-card {
+    min-width: 80%;
 }

@@ -1,22 +1,22 @@
 .table {
-    width: 22.5rem;
-    background-color: #3f51b5;
+    width: 25rem;
+    background-color: #81d4fa;
     margin-top: 2rem;
 }
 
 .row-pending {
-    background-color: chocolate;
-    color: white;
+    background-color: #ff8a65;
+    color: black;
 }
 
 .row-succeeded {
-    background-color: #45cb85;
-    color: white;
+    background-color: (var(--player-one-color));
+    color: black;
 }
 
 .row-failed {
-    background-color: #f44336;
-    color: white;
+    background-color: (var(--player-two-color));
+    color: black;
 }
 
 .mat-column-objectives {
@@ -32,5 +32,6 @@
 }
 
 .header {
-    color: white;
+    color: black;
+    font-size: medium;
 }
