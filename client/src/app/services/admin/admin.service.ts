@@ -94,12 +94,12 @@ export class AdminService {
         return this.httpClient.get<Blob>(localUrl('dictionary', id));
     }
 
-    isDefaultDictionary(metadata: DictionaryMetadata): boolean {
-        return metadata._id === DEFAULT_DICTIONARY;
-    }
-
     async resetSettings(): Promise<void> {
         await this.httpClient.get<string[]>(localUrl('reset', '')).toPromise();
+    }
+
+    isDefaultDictionary(metadata: DictionaryMetadata): boolean {
+        return metadata._id === DEFAULT_DICTIONARY;
     }
 
     get defaultDictionary(): DictionaryMetadata | null {
