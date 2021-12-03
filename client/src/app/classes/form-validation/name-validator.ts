@@ -36,7 +36,6 @@ export class NameValidator {
         }
 
         for (let index = 0; index < playerName.length; index++) {
-            // look if playerName contain only letter and not number
             const containsOnlyLetters = !/[a-zA-ZÉéÎîÉéÇçÏï]/.test(playerName.charAt(index));
             if (containsOnlyLetters) {
                 return { ['containsOnlyLetters']: true };

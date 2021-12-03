@@ -27,6 +27,7 @@ import { RoomListComponent } from './pages/room-list/room-list.component';
 import { WaitingRoomPageComponent } from './pages/waiting-room-page/waiting-room-page.component';
 import { VirtualPlayerNameComponent } from './components/virtual-player-name/virtual-player-name.component';
 import { ErrorDialogComponent } from './components/error-dialog/error-dialog.component';
+import { ConnectionErrorComponent } from './pages/connection-error/connection-error.component';
 
 /**
  * Main module that is used in main.ts.
@@ -59,6 +60,7 @@ import { ErrorDialogComponent } from './components/error-dialog/error-dialog.com
         ObjectivesComponent,
         VirtualPlayerNameComponent,
         ErrorDialogComponent,
+        ConnectionErrorComponent,
     ],
     imports: [AppMaterialModule, AppRoutingModule, BrowserAnimationsModule, BrowserModule, FormsModule, HttpClientModule],
     providers: [],
