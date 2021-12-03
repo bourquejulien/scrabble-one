@@ -1,14 +1,13 @@
+body {
+    background: linear-gradient(135deg,#006896, #5bcbff 50%, #c9eeff 100%);
+}
+
 .room-container {
     background-color: white;
-    margin: auto;
+    margin-top: 4vh;
     width: 50%;
     width: max-content;
     height: min-content;
-    padding: 32px;
-}
-
-body {
-    background: linear-gradient(135deg,#006896, #5bcbff 50%, #c9eeff 100%);
 }
 
 .toolbar {
@@ -20,8 +19,19 @@ body {
 
 .container {
     width: 100%;
-    // position: relative;
     align-items: center;
+}
+
+.room-info {
+    margin: 2rem;
+    top: 0;
+    margin-top: 4vh;
+    width:max-content;
+    float: right;
+}
+
+.info-card, .form-card {
+    justify-content: center;
 }
 
 .room-info-bg {
@@ -30,38 +40,8 @@ body {
     border-width: medium;
     display: flex;
     flex-direction: column;
-}
-
-.room-info {
-    width: 55%;
-    margin-top: 100px;
-    // position: fixed;
-    bottom: 100px;
-    left: 22.5%;
-    margin-left: auto;
-    margin-right: auto;
-}
-
-.info-card {
-    margin: 10px;
-    justify-content: center;
-    width: 30%;
-    padding: 30px;
-    display: inline-block;
-}
-
-.form-card {
-    width: 310px;
-    height: auto;
-    margin-top: 10px;
-    margin: auto;
-    justify-content: center;
-    text-align: center;
-    align-content: center;
-    margin-left: 100px;
-    padding: 32px;
-    display: inline-block;
-    bottom: 10px;
+    position: sticky;
+    align-items: center;
 }
 
 .error {
@@ -79,9 +59,21 @@ body {
     margin-top: 1rem;
 }
 
-.exit-button {
+.exit-button, .random-game-button {
     background-color: white;
     box-shadow: 2px 2px 2px 2px rgba(10, 10, 10, 0.25);
+}
+
+.join-container {
+    display: flex; 
+    flex-direction: column; 
+    align-items: center;
+    align-content: center;
+}
+
+.room-list-content {
+    display: flex;
+    gap: 33.33%;
 }
 
 #home {
@@ -92,9 +84,4 @@ body {
     display: flex;
     flex-direction: column;
     gap: 5vh;
-}
-
-.random-game-button {
-    background-color: white;
-    box-shadow: 2px 2px 2px 2px rgba(10, 10, 10, 0.25);
 }

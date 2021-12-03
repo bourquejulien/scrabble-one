@@ -1,7 +1,7 @@
 <div class="background-img">
     <div class="selector">
         <mat-form-field class="difficulty-selector">
-            <mat-label>Profil du JV</mat-label>
+            <mat-label>Profil du joueur virtuel</mat-label>
             <mat-select [(ngModel)]="virtualPlayerLevelName">
                 <mat-option *ngFor="let gameType of virtualPlayerLevelNames" [value]="gameType">{{ gameType }}</mat-option>
             </mat-select>
