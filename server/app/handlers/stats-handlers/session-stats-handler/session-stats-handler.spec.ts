@@ -8,35 +8,36 @@
 import { expect } from 'chai';
 import { SessionStatsHandler } from '@app/handlers/stats-handlers/session-stats-handler/session-stats-handler';
 import { GoalHandler } from '@app/handlers/goal-handler/goal-handler';
-import { createSandbox, createStubInstance, stub } from 'sinon';
+import { assert, createSandbox, createStubInstance, SinonStubbedInstance, stub } from 'sinon';
 import { SocketHandler } from '@app/handlers/socket-handler/socket-handler';
 import { ReserveHandler } from '@app/handlers/reserve-handler/reserve-handler';
 import { PlayerStatsHandler } from '@app/handlers/stats-handlers/player-stats-handler/player-stats-handler';
 import { Subject } from 'rxjs';
 import { Config } from '@app/config';
-
+import { PlayerStats } from '@common';
+const playerStats: PlayerStats = { points: 100, rackSize: 0 };
 describe('SessionStatsHandler', () => {
     let handler: SessionStatsHandler;
     let goalHandlerStub: GoalHandler;
-    let socketHandlerStub: SocketHandler;
+    let socketHandlerStub: SinonStubbedInstance<SocketHandler>;
     let reserveHandlerStub: ReserveHandler;
     let goalUpdateSubject: Subject<any>;
 
     beforeEach(() => {
-        socketHandlerStub = createStubInstance(SocketHandler) as unknown as SocketHandler;
-        socketHandlerStub['sendMessage'] = () => {};
+        socketHandlerStub = createStubInstance(SocketHandler);
+        socketHandlerStub['sendMessage'].callsFake(() => {});
         goalHandlerStub = createStubInstance(GoalHandler) as unknown as GoalHandler;
         goalUpdateSubject = new Subject<unknown>();
         goalHandlerStub['updateSubject'] = goalUpdateSubject;
         goalHandlerStub['start'] = () => {};
         reserveHandlerStub = createStubInstance(ReserveHandler) as unknown as ReserveHandler;
-        handler = new SessionStatsHandler(socketHandlerStub, reserveHandlerStub, goalHandlerStub);
+        handler = new SessionStatsHandler(socketHandlerStub as unknown as SocketHandler, reserveHandlerStub, goalHandlerStub);
         const playerStatsHandlerStub1 = createStubInstance(PlayerStatsHandler);
         playerStatsHandlerStub1['id'] = 'id';
         playerStatsHandlerStub1['rackScore'] = 7;
         playerStatsHandlerStub1['scoreAdjustment'] = 10;
         stub(playerStatsHandlerStub1, 'stats').get(() => {
-            return { points: 100, rackSize: 0 };
+            return playerStats;
         });
         handler['playerStatsHandlers'].push(playerStatsHandlerStub1 as unknown as PlayerStatsHandler);
         handler['playerStatsHandlers'].push(playerStatsHandlerStub1 as unknown as PlayerStatsHandler);
@@ -65,7 +66,7 @@ describe('SessionStatsHandler', () => {
         const sandbox = createSandbox();
         const spy = sandbox.spy(goalHandlerStub, 'start');
         handler.start();
-        sandbox.assert.calledWith(spy, ['id']);
+        sandbox.assert.calledWith(spy, ['id', 'id']);
         sandbox.restore();
     });
     it('should end', () => {
@@ -73,12 +74,15 @@ describe('SessionStatsHandler', () => {
         sandbox.stub(reserveHandlerStub, 'length').get(() => 0);
         handler.end();
         sandbox.restore();
-        // TODO
+        assert.called(socketHandlerStub.sendData);
     });
     it('should end and adjust scores', () => {
-        const playerStatsHandlerStub1 = createStubInstance(PlayerStatsHandler);
-        playerStatsHandlerStub1['rackSize'] = 0;
         const sandbox = createSandbox();
+        const playerStatsHandlerStub1 = createStubInstance(PlayerStatsHandler);
+        sandbox.stub(playerStatsHandlerStub1, 'stats').get(() => {
+            return { points: 100, rackSize: 0 };
+        });
+        playerStatsHandlerStub1['rackSize'] = 0;
         handler.playerStatsHandlers = [
             playerStatsHandlerStub1 as unknown as PlayerStatsHandler,
             playerStatsHandlerStub1 as unknown as PlayerStatsHandler,
@@ -86,7 +90,7 @@ describe('SessionStatsHandler', () => {
         sandbox.stub(reserveHandlerStub, 'length').get(() => 0);
         handler.end();
         sandbox.restore();
-        // TODO
+        assert.called(socketHandlerStub.sendData);
     });
     it('should tell when it has skipped', () => {
         const playerStatsHandlerStub1 = createStubInstance(PlayerStatsHandler) as unknown as PlayerStatsHandler;
@@ -99,7 +103,6 @@ describe('SessionStatsHandler', () => {
         expect(handler['isOverSkipLimit']).to.be.false;
     });
     it('should update data when triggered by events', () => {
-        // TODO passes randomly...
         const sandbox = createSandbox();
         const playerStatsHandlerStub2 = createStubInstance(PlayerStatsHandler) as unknown as PlayerStatsHandler;
         playerStatsHandlerStub2['id'] = 'id';
@@ -109,7 +112,6 @@ describe('SessionStatsHandler', () => {
         handler['playerStatsHandlers'].push(playerStatsHandlerStub2);
         handler['getPlayerStatsHandler']('id');
         goalUpdateSubject.next(undefined);
-
         // TODO
         sandbox.restore();
     });
