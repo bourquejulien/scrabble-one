@@ -106,7 +106,7 @@ export class DictionaryPersistence {
 
     private async isDuplicate(dictionaryMetadata: DictionaryMetadata): Promise<boolean> {
         for (const metadata of this.metaDataCache.values()) {
-            if (metadata.title === dictionaryMetadata.title) {
+            if (metadata.title === dictionaryMetadata.title && metadata._id !== dictionaryMetadata._id) {
                 return true;
             }
         }
