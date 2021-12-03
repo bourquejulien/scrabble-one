@@ -66,24 +66,24 @@ describe('ReserveHandler', () => {
     it('should decrease length of reserve if letter successfully drawn', () => {
         mathRandomSandbox.stub(Math, 'random').returns(0);
         const currentLength = reserveHandler.length;
-        reserveHandler.drawLetter();
+        reserveHandler.drawLetterFromReserve();
         expect(reserveHandler.length).to.equal(currentLength - 1);
     });
 
     it('should successfully return the drawn letter from reserve', () => {
         const RANDOM_STUB_VALUE = 0.7;
         mathRandomSandbox.stub(Math, 'random').returns(RANDOM_STUB_VALUE);
-        expect(reserveHandler.drawLetter()).to.equal('b');
+        expect(reserveHandler.drawLetterFromReserve()).to.equal('b');
     });
 
     it('should return letter at first index in reserve', () => {
         mathRandomSandbox.stub(Math, 'random').returns(0);
-        expect(reserveHandler.drawLetter()).to.equal('a');
+        expect(reserveHandler.drawLetterFromReserve()).to.equal('a');
     });
 
     it('should return letter at last index in reserve', () => {
         mathRandomSandbox.stub(Math, 'random').returns(1);
-        expect(reserveHandler.drawLetter()).to.equal('c');
+        expect(reserveHandler.drawLetterFromReserve()).to.equal('c');
     });
 
     it('should return reserve length', () => {

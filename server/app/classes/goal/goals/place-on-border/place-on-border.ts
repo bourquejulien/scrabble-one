@@ -1,6 +1,6 @@
+import { BaseGoal, Goal } from '@app/classes/goal/base-goal';
 import { PlacementNotifier } from '@app/classes/goal/notifiers/placement-notifier';
 import { ValidatedWord, ValidationResponse } from '@app/classes/validation/validation-response';
-import { BaseGoal, Goal } from '@app/classes/goal/base-goal';
 import { Config } from '@app/config';
 
 const GRID_MAX_POSITION = Config.GRID.GRID_SIZE - 1;
@@ -34,7 +34,7 @@ export class PlaceOnBorder extends BaseGoal implements PlacementNotifier {
     }
 
     notifyPlacement(validationResponse: ValidationResponse, id: string): void {
-        if (!validationResponse.isSuccess || this.guard(id)) {
+        if (this.guard(id) || !validationResponse.isSuccess) {
             return;
         }
 

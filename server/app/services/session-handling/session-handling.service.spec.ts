@@ -49,6 +49,7 @@ describe('SessionHandlingService', () => {
     afterEach(() => {
         handler = new SessionHandlingService();
     });
+
     it('should be created', () => {
         expect(handler).to.be.ok;
     });
@@ -67,11 +68,13 @@ describe('SessionHandlingService', () => {
             expect(handler.getHandlerBySessionId(idAsString)).to.be.not.null;
         }
     });
+
     it('should remove handlers when theres some', () => {
         handler['playerIds'].set('0', '0');
         handler.removeHandler('0');
         expect(handler.getHandlerByPlayerId('0')).to.be.null;
     });
+
     it('should remove handlers when theres some with players in handler', () => {
         handler['playerIds'].set('0', '0');
         playerA.playerInfo = playerInfo;
@@ -79,11 +82,13 @@ describe('SessionHandlingService', () => {
         handler.removeHandler('0');
         expect(handler.getHandlerByPlayerId('0')).to.be.null;
     });
+
     it('should update entries', () => {
         handler['playerIds'].set('0', '0');
         const beforeCallingUpdate = handler['playerIds'];
         expect(beforeCallingUpdate).to.not.eql(handler.updateEntries(stubSessionHandler as unknown as SessionHandler));
     });
+
     it('should update entries with player in SessionHandler', () => {
         handler['playerIds'].set('0', '0');
         playerA.playerInfo = playerInfo;
@@ -91,11 +96,13 @@ describe('SessionHandlingService', () => {
         const beforeCallingUpdate = handler['playerIds'];
         expect(beforeCallingUpdate).to.not.eql(handler.updateEntries(stubSessionHandler as unknown as SessionHandler));
     });
+
     it('should update entries but with wrong sessionId', () => {
         handler['playerIds'].set('0', 'badOne');
         const beforeCallingUpdate = handler['playerIds'];
         expect(beforeCallingUpdate).to.not.eql(handler.updateEntries(stubSessionHandler as unknown as SessionHandler));
     });
+
     it('should get session that are started', () => {
         expect(handler.getAvailableSessions().length).to.eql(1);
     });

@@ -3,11 +3,11 @@
 /* eslint-disable @typescript-eslint/no-unused-expressions */
 /* eslint-disable @typescript-eslint/no-empty-function */
 /* eslint-disable dot-notation */
-import { describe } from 'mocha';
-import { expect } from 'chai';
-import { ManyLettersInRow } from '@app/classes/goal/goals/many-letters-in-row/many-letters-in-row';
 import { Goal } from '@app/classes/goal/base-goal';
+import { ManyLettersInRow } from '@app/classes/goal/goals/many-letters-in-row/many-letters-in-row';
 import { ValidationFailed, ValidationResponse } from '@app/classes/validation/validation-response';
+import { expect } from 'chai';
+import { describe } from 'mocha';
 
 describe('ManyLettersInRow', () => {
     let goal: Goal;
@@ -48,6 +48,7 @@ describe('ManyLettersInRow', () => {
         // const size = goal['consecutiveTurnCount'].size;
         // expect(size).to.eq(0);
     });
+
     it('should return early if validation is unsuccessful', () => {
         // eslint-disable-next-line @typescript-eslint/no-magic-numbers
         const validationResponse: ValidationFailed = {
@@ -58,6 +59,7 @@ describe('ManyLettersInRow', () => {
         // TODO const size = goal['consecutiveTurnCount'].size;
         // expect(size).to.eq(0);
     });
+
     it('should clear when the objective is met', () => {
         // eslint-disable-next-line @typescript-eslint/no-magic-numbers
         goal['consecutiveTurnCount'].set('id', 5);

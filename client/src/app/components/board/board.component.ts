@@ -27,7 +27,7 @@ export class BoardComponent implements OnDestroy, AfterViewInit {
     isMouseOnBoard: boolean;
     isUpper: boolean;
     letter: string;
-    squareSelected: boolean;
+    squareSelected: boolean
 
     private gridContext: CanvasRenderingContext2D;
     private squareContext: CanvasRenderingContext2D;
@@ -43,7 +43,7 @@ export class BoardComponent implements OnDestroy, AfterViewInit {
         private readonly gameService: GameService,
         readonly placeLetterService: PlaceLetterService,
     ) {
-        this.squareSelected = false;
+        this.squareSelected = false; 
     }
 
     @HostListener('window:resize')
@@ -61,6 +61,7 @@ export class BoardComponent implements OnDestroy, AfterViewInit {
             this.placeLetterService.backSpaceEnable(event.key, this.squareSelected) &&
             !this.placeLetterService.isPositionInit(this.placeLetterService.gridPosition) &&
             this.placeLetterService.inGrid(this.placeLetterService.gridPosition);
+
         const enterValid: boolean = event.key === 'Enter' && this.placeLetterService.tempRack.length > 0;
         const lastSquare =
             this.placeLetterService.gridPosition.x > Constants.GRID.GRID_SIZE || this.placeLetterService.gridPosition.y > Constants.GRID.GRID_SIZE;
@@ -97,7 +98,7 @@ export class BoardComponent implements OnDestroy, AfterViewInit {
                 this.placeLetterService.positionInit = { x: this.placeLetterService.gridPosition.x, y: this.placeLetterService.gridPosition.y };
                 this.gridService.resetCanvas(this.tempContext);
             } else {
-                this.placeLetterService.samePosition(this.mouseHandlingService.position);
+                this.placeLetterService.isSameSquare(this.mouseHandlingService.position);
                 this.gridService.resetCanvas(this.tempContext);
                 this.gridService.drawSquares(this.squareContext);
             }
@@ -175,7 +176,6 @@ export class BoardComponent implements OnDestroy, AfterViewInit {
     private refresh(): void {
         this.gridService.resetCanvas(this.tempContext);
 
-        // TODO This only needs to be done once per game
         this.gridService.drawGrid(this.gridContext);
 
         this.gridService.drawSquares(this.squareContext);
@@ -198,7 +198,8 @@ export class BoardComponent implements OnDestroy, AfterViewInit {
         const input = SPECIAL_CHARACTERS.get(key);
 
         if (input === undefined) {
-            if (key.length !== 1 || !key.match('([a-zA-Z])')) {
+            const isNotLetter = key.length !== 1 || !key.match('([a-zA-Z])');
+            if (isNotLetter) {
                 this.isLetter = false;
                 return;
             }
@@ -245,14 +246,12 @@ export class BoardComponent implements OnDestroy, AfterViewInit {
 
         if (this.isUpper) {
             this.rackService.rack.splice(this.rackService.indexOf('*'), 1);
-            this.placeLetterService.tempRack.push(this.letter);
             this.placeLetterService.myRack.push('*');
         } else {
             this.rackService.rack.splice(this.rackService.indexOf(this.letter), 1);
-            this.placeLetterService.tempRack.push(this.letter);
             this.placeLetterService.myRack.push(this.letter);
         }
-
+        this.placeLetterService.tempRack.push(this.letter);
         if (
             this.placeLetterService.gridPosition.x === Constants.GRID.GRID_SIZE - 1 ||
             this.placeLetterService.gridPosition.y === Constants.GRID.GRID_SIZE - 1

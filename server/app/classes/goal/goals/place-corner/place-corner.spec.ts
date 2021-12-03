@@ -2,12 +2,12 @@
 /* eslint-disable @typescript-eslint/no-unused-expressions */
 /* eslint-disable @typescript-eslint/no-empty-function */
 /* eslint-disable dot-notation */
-import { describe } from 'mocha';
-import { expect } from 'chai';
-import { PlaceCorner } from '@app/classes/goal/goals/place-corner/place-corner';
 import { BaseGoal, Goal } from '@app/classes/goal/base-goal';
-import { Config } from '@app/config';
+import { PlaceCorner } from '@app/classes/goal/goals/place-corner/place-corner';
 import { ValidationFailed, ValidationResponse } from '@app/classes/validation/validation-response';
+import { Config } from '@app/config';
+import { expect } from 'chai';
+import { describe } from 'mocha';
 
 describe('PlaceCorner', () => {
     let goal: Goal;
@@ -18,9 +18,11 @@ describe('PlaceCorner', () => {
     it('should be created', () => {
         expect(goal).to.be.ok;
     });
+
     it('should tell that it is on the edge', () => {
         expect(PlaceCorner['isOnEdge']({ x: Config.GRID.GRID_SIZE - 1, y: Config.GRID.GRID_SIZE - 1 })).to.be.true;
     });
+
     it('should tell that it is on the edge', () => {
         const id = 'id';
         const validationResponse: ValidationResponse = {
@@ -32,6 +34,7 @@ describe('PlaceCorner', () => {
         (goal as PlaceCorner).notifyPlacement(validationResponse, id);
         expect((goal as BaseGoal)['successId']).to.equal(id);
     });
+
     it('should not set successId if it receives a validation failed answer', () => {
         const id = 'id';
         const validationResponse: ValidationFailed = {
@@ -41,6 +44,7 @@ describe('PlaceCorner', () => {
         (goal as PlaceCorner).notifyPlacement(validationResponse, id);
         expect((goal as BaseGoal)['successId']).to.equal('');
     });
+
     it('should not set successId if the placement is not on the edge', () => {
         const id = 'id';
         const validationResponse: ValidationResponse = {

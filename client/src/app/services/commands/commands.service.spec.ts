@@ -136,7 +136,6 @@ describe('CommandsService', () => {
         spyOn<any>(service, 'isUsersTurn').and.returnValue(true);
         const spy = spyOn<any>(service['messagingService'], 'send');
         service['checkPlaceCommand']('h8s5sh', 'test');
-        // spyOn<any>(service, 'isUsersTurn').and.returnValue(false);
         expect(spy).toHaveBeenCalledWith('', SystemMessages.InvalidOptions, MessageType.Error);
     });
 

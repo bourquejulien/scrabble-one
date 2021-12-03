@@ -9,6 +9,7 @@
             [attr.width]="canvasDrawSize"
             [attr.height]="canvasDrawSize"
         ></canvas>
+
         <canvas
             class="board-display"
             id="square-canvas"
@@ -19,6 +20,7 @@
             [attr.width]="canvasDrawSize"
             [attr.height]="canvasDrawSize"
         ></canvas>
+
         <canvas
             class="board-display"
             id="temp-canvas"
@@ -30,10 +32,12 @@
             [attr.height]="canvasDrawSize"
         ></canvas>
     </div>
+
     <div class="parent">
         <div id="play-button" class="inline-block-child">
             <button mat-button *ngIf="placeLetterService.tempRack.length > 0" (click)="play(); $event.stopImmediatePropagation()">Jouer</button>
         </div>
+
         <app-size-selector
             id="size-selector"
             class="inline-block-child"

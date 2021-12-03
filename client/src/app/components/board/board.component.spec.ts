@@ -72,7 +72,6 @@ class GridServiceStub {
 }
 
 class BoardServiceMock {
-    iteration = 0;
     readonly boardSubject: BehaviorSubject<BoardData> = new BehaviorSubject<BoardData>({} as BoardData);
 
     isPositionAvailable() {
@@ -90,7 +89,6 @@ class BoardServiceMock {
 
 describe('BoardComponent', () => {
     const playerType = PlayerType.Local;
-    // let fontfaceobserverSpy: jasmine.SpyObj<FontFaceObserver>;
     let component: BoardComponent;
     let fixture: ComponentFixture<BoardComponent>;
     let gridServiceStub: GridServiceStub;
@@ -99,8 +97,6 @@ describe('BoardComponent', () => {
     let placeLetter: jasmine.SpyObj<PlaceLetterService>;
 
     beforeEach(async () => {
-        // const mockMyRack = ['e', 's', 't', '*', 'a', 'b', 'c'];
-        // fontfaceobserverSpy = jasmine.createSpyObj('FontFaceObserver', ['load']);
         rackServiceSpy = jasmine.createSpyObj('RackService', ['indexOf']);
         gameServiceSpy = jasmine.createSpyObj('GameService', [], { currentTurn: playerType });
         placeLetter = jasmine.createSpyObj('PlaceLetterService', [
@@ -109,7 +105,7 @@ describe('BoardComponent', () => {
             'isPositionInit',
             'backSpaceEnable',
             'escapeOperation',
-            'samePosition',
+            'isSameSquare',
             'backSpaceOperation',
             'nextAvailableSquare',
             'placeLetters',
@@ -123,6 +119,7 @@ describe('BoardComponent', () => {
         placeLetter.positionInit = { x: 7, y: 8 };
         placeLetter.isHorizontal = true;
         rackServiceSpy.rack = ['e', 's', 't', '*', 'a', 'b', 'c'];
+
         await TestBed.configureTestingModule({
             declarations: [BoardComponent],
             providers: [
@@ -161,7 +158,6 @@ describe('BoardComponent', () => {
 
     it('should update font size if size provided', () => {
         const NEW_SIZE = 17;
-
         component.updateFontSize(NEW_SIZE);
 
         expect(gridServiceStub.letterFontFace.size).toEqual(NEW_SIZE);
@@ -172,6 +168,7 @@ describe('BoardComponent', () => {
     it('should resetCanvas and enterOperation when play', () => {
         const spyReset = spyOn(gridServiceStub, 'resetCanvas');
         component.play();
+
         expect(spyReset).toHaveBeenCalled();
     });
 
@@ -181,6 +178,7 @@ describe('BoardComponent', () => {
         const mouseEvent = new MouseEvent('mousedown');
         component.isMouseOnBoard = false;
         component.onMouseDown(mouseEvent);
+
         expect(spyReset).toHaveBeenCalled();
     });
 
@@ -189,6 +187,7 @@ describe('BoardComponent', () => {
         const mouseEvent = new MouseEvent('mousedown');
         component.isMouseOnBoard = true;
         component.onMouseDown(mouseEvent);
+
         expect(spy).toHaveBeenCalled();
     });
 
@@ -197,6 +196,7 @@ describe('BoardComponent', () => {
         const mouseEvent = new MouseEvent('mousedown');
         component.isMouseOnBoard = true;
         component.onMouseDown(mouseEvent);
+
         expect(spy).toHaveBeenCalled();
     });
 
@@ -207,6 +207,7 @@ describe('BoardComponent', () => {
         const mouseEvent = new MouseEvent('mousedown');
         component.isMouseOnBoard = true;
         component.onMouseDown(mouseEvent);
+
         expect(spy).not.toHaveBeenCalled();
     });
 
@@ -216,6 +217,7 @@ describe('BoardComponent', () => {
         const mouseEvent = new MouseEvent('mousedown');
         component.isMouseOnBoard = true;
         component.onMouseDown(mouseEvent);
+
         expect(spy).toHaveBeenCalled();
     });
 
@@ -226,6 +228,7 @@ describe('BoardComponent', () => {
         const mouseEvent = new MouseEvent('mousedown');
         component.isMouseOnBoard = true;
         component.onMouseDown(mouseEvent);
+
         expect(spy).toHaveBeenCalled();
     });
 
@@ -236,6 +239,7 @@ describe('BoardComponent', () => {
         const spy = spyOn(gridServiceStub, 'drawBonusOfPosition');
         const keyBoardEvent = new KeyboardEvent('backspace');
         component.onKeyDown(keyBoardEvent);
+
         expect(spy).toHaveBeenCalled();
     });
 
@@ -244,6 +248,7 @@ describe('BoardComponent', () => {
         component.placeLetterService.gridPosition = { x: 15, y: 9 };
         const spy = spyOn(gridServiceStub, 'drawSquares');
         component.onKeyDown(new KeyboardEvent('keydown', { key: LETTER }));
+
         expect(spy).toHaveBeenCalled();
     });
 
@@ -252,22 +257,21 @@ describe('BoardComponent', () => {
         component.placeLetterService.tempRack = ['e', 's', 't', 'a'];
         component.placeLetterService.gridPosition = { x: 15, y: 9 };
         component.onKeyDown(new KeyboardEvent('keydown', { key: LETTER }));
+
         expect(placeLetter.placeLetters).toHaveBeenCalled();
     });
 
     it('put a in myRack when onKeyDown', () => {
+        const LETTER = 'a';
+        const spy = spyOn<any>(gridServiceStub, 'drawSymbol');
         component.squareSelected = true;
         component.placeLetterService.positionInit = { x: 8, y: 9 };
         component.placeLetterService.gridPosition = { x: 8, y: 9 };
         component.isLetter = true;
         component.placeLetterService.isLastSquare = false;
-        const LETTER = 'a';
-
-        // const spy = spyOn<any>(component, 'handleKeyDown');
-        const spy2 = spyOn<any>(gridServiceStub, 'drawSymbol');
         component.onKeyDown(new KeyboardEvent('keydown', { key: LETTER }));
 
-        expect(spy2).toHaveBeenCalled();
+        expect(spy).toHaveBeenCalled();
     });
 
     it('put shift in myRack is disable when onKeyDown', () => {
@@ -277,123 +281,121 @@ describe('BoardComponent', () => {
         component.isLetter = true;
         component.placeLetterService.isLastSquare = false;
         const LETTER = 'Shift';
-
         component.onKeyDown(new KeyboardEvent('keydown', { key: LETTER }));
+
         expect(component.isLetter).toBeFalse();
     });
 
     it('put d is disable in myRack when onKeyDown', () => {
+        const LETTER = 'd';
         component.squareSelected = true;
         component.placeLetterService.positionInit = { x: 8, y: 9 };
         component.placeLetterService.gridPosition = { x: 8, y: 9 };
         component.isLetter = true;
         component.placeLetterService.isLastSquare = false;
-        const LETTER = 'd';
-
         component.onKeyDown(new KeyboardEvent('keydown', { key: LETTER }));
+
         expect(component.isLetter).toBeFalse();
     });
 
     it('put A put * in myRack when onKeyDown', () => {
+        const LETTER = 'A';
+        const spy = spyOn<any>(gridServiceStub, 'drawSymbol');
         component.squareSelected = true;
         component.placeLetterService.positionInit = { x: 8, y: 9 };
         component.placeLetterService.gridPosition = { x: 8, y: 9 };
         component.isLetter = true;
         component.placeLetterService.isLastSquare = false;
-        const LETTER = 'A';
-
-        const spy2 = spyOn<any>(gridServiceStub, 'drawSymbol');
         component.onKeyDown(new KeyboardEvent('keydown', { key: LETTER }));
 
-        expect(spy2).toHaveBeenCalled();
+        expect(spy).toHaveBeenCalled();
     });
 
     it('put A is disable in myRack when onKeyDown', () => {
+        const LETTER = 'A';
         rackServiceSpy.rack = ['e', 's', 't', 'q', 'a', 'b', 'c'];
         component.squareSelected = true;
         component.placeLetterService.positionInit = { x: 8, y: 9 };
         component.placeLetterService.gridPosition = { x: 8, y: 9 };
         component.isLetter = true;
         component.placeLetterService.isLastSquare = false;
-        const LETTER = 'A';
-
         component.onKeyDown(new KeyboardEvent('keydown', { key: LETTER }));
+
         expect(component.isLetter).toBeFalse();
     });
 
     it('put "à" is disable in myRack when onKeyDown', () => {
+        const LETTER = 'à';
+        const spy = spyOn<any>(gridServiceStub, 'drawSelectionSquare');
         component.squareSelected = true;
         component.placeLetterService.positionInit = { x: 8, y: 9 };
         component.placeLetterService.gridPosition = { x: 14, y: 9 };
         component.isLetter = true;
         component.placeLetterService.isLastSquare = false;
-
-        const LETTER = 'à';
-
-        const spy = spyOn<any>(gridServiceStub, 'drawSelectionSquare');
         component.onKeyDown(new KeyboardEvent('keydown', { key: LETTER }));
+
         expect(spy).toHaveBeenCalled();
         expect(component.placeLetterService.isLastSquare).toBeTrue();
     });
 
     it('put ï is disable in myRack when onKeyDown', () => {
+        const LETTER = 'ï';
         component.squareSelected = true;
         component.placeLetterService.positionInit = { x: 8, y: 9 };
         component.placeLetterService.gridPosition = { x: 8, y: 9 };
         component.isLetter = true;
         component.placeLetterService.isLastSquare = false;
-        const LETTER = 'ï';
-
         component.onKeyDown(new KeyboardEvent('keydown', { key: LETTER }));
         expect(component.isLetter).toBeFalse();
     });
 
     it('put À is disable in myRack when onKeyDown', () => {
+        const LETTER = 'À';
+        const spy = spyOn<any>(component, 'handleKeyDown');
         component.squareSelected = true;
         component.placeLetterService.positionInit = { x: 8, y: 9 };
         component.placeLetterService.gridPosition = { x: 8, y: 9 };
         component.isLetter = true;
         component.placeLetterService.isLastSquare = false;
-        const LETTER = 'À';
-
-        const spy = spyOn<any>(component, 'handleKeyDown');
         component.onKeyDown(new KeyboardEvent('keydown', { key: LETTER }));
+
         expect(spy).toHaveBeenCalled();
     });
 
     it('put Ï is disable in myRack when onKeyDown', () => {
+        const LETTER = 'Ï';
         rackServiceSpy.rack = ['e', 's', 't', 'q', 'a', 'b', 'c'];
         component.squareSelected = true;
         component.placeLetterService.positionInit = { x: 8, y: 9 };
         component.placeLetterService.gridPosition = { x: 8, y: 9 };
         component.isLetter = true;
         component.placeLetterService.isLastSquare = false;
-        const LETTER = 'Ï';
-
         component.onKeyDown(new KeyboardEvent('keydown', { key: LETTER }));
+
         expect(component.isLetter).toBeFalse();
     });
 
     it('put a return nothing if gridposition undefined  onKeyDown', () => {
-        component.squareSelected = true;
         const LETTER = 'a';
-
+        component.squareSelected = true;
         component.onKeyDown(new KeyboardEvent('keydown', { key: LETTER }));
 
         expect(component.placeLetterService.backSpaceEnable).not.toHaveBeenCalled();
     });
 
     it('put a return nothing if gridposition undefined  onKeyDown', () => {
-        component.isMouseOnBoard = true;
         const spy = spyOn<any>(component, 'resetPlaceSelection');
+        component.isMouseOnBoard = true;
         component.lostFocus();
+
         expect(spy).not.toHaveBeenCalled();
     });
 
     it('put a return nothing if gridposition undefined  onKeyDown', () => {
-        component.isMouseOnBoard = false;
         const spy = spyOn<any>(component, 'resetPlaceSelection');
+        component.isMouseOnBoard = false;
         component.lostFocus();
+
         expect(spy).toHaveBeenCalled();
     });
 
