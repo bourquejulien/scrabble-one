@@ -184,6 +184,7 @@ describe('CommunicationBoxComponent', () => {
         const pushSpy = spyOn(component.messages, 'push').and.callThrough();
 
         onMessage.next(dummyMessage);
+        fixture.detectChanges();
 
         expect(scrollSpy).toHaveBeenCalled();
         expect(pushSpy).toHaveBeenCalled();

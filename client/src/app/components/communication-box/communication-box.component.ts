@@ -82,6 +82,7 @@ export class CommunicationBoxComponent implements OnInit, OnDestroy {
             behavior: 'smooth',
         });
     }
+
     private onMessage(message: Message) {
         if (!this.messagingService.isDebug && message.messageType === MessageType.Log) {
             return;
