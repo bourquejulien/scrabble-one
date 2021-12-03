@@ -12,8 +12,8 @@ import { CommandsService } from '@app/services/commands/commands.service';
 import { GameService } from '@app/services/game/game.service';
 import { ReserveService } from '@app/services/reserve/reserve.service';
 import { SessionService } from '@app/services/session/session.service';
-import { GameMode } from '@common';
 import { SocketClientService } from '@app/services/socket-client/socket-client.service';
+import { GameMode } from '@common';
 import { Subscription } from 'rxjs';
 
 export enum Icon {
@@ -106,21 +106,11 @@ export class GamePageComponent implements OnDestroy {
         this.opponentQuitSubscription.unsubscribe();
     }
 
-    toggleDrawer(): void {
+    private toggleDrawer(): void {
         this.drawer.toggle();
         this.isOpen = !this.isOpen;
     }
-
-    toggleDarkMode(): void {
-        const darkMode = 'darkMode';
-        if (this.cssClassName === darkMode) {
-            this.cssClassName = '';
-        } else {
-            this.cssClassName = 'darkMode';
-        }
-    }
-
-    endGame(winner: EndGameWinner) {
+    private endGame(winner: EndGameWinner) {
         const dialogRef = this.dialog.open(EndGameComponent, { panelClass: 'end-game-dialog', data: { winner } });
         dialogRef.afterClosed().subscribe((result) => {
             if (result) {
@@ -129,8 +119,17 @@ export class GamePageComponent implements OnDestroy {
         });
     }
 
-    opponentQuit() {
+    private opponentQuit() {
         this.dialog.open(OpponentQuitComponent);
+    }
+
+    private toggleDarkMode(): void {
+        const darkMode = 'darkMode';
+        if (this.cssClassName === darkMode) {
+            this.cssClassName = '';
+        } else {
+            this.cssClassName = 'darkMode';
+        }
     }
 
     private confirmQuit(): void {

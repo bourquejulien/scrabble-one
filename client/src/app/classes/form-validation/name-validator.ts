@@ -30,13 +30,15 @@ export class NameValidator {
     private static validateName(control: FormControl): { [key: string]: boolean } | null {
         // We make sure that player name is considered as a string
         const playerName = control.value as string;
-
-        if (playerName === undefined || playerName === null || playerName === '') {
+        const validateName = playerName === undefined || playerName === null || playerName === '';
+        if (validateName) {
             return null;
         }
 
         for (let index = 0; index < playerName.length; index++) {
-            if (!/[a-zA-ZÉéÎîÉéÇçÏï]/.test(playerName.charAt(index))) {
+            // look if playerName contain only letter and not number
+            const containsOnlyLetters = !/[a-zA-ZÉéÎîÉéÇçÏï]/.test(playerName.charAt(index));
+            if (containsOnlyLetters) {
                 return { ['containsOnlyLetters']: true };
             }
         }

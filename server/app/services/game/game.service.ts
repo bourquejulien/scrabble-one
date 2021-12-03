@@ -3,23 +3,21 @@ import { PlayerInfo } from '@app/classes/player-info';
 import { HumanPlayer } from '@app/classes/player/human-player/human-player';
 import { Action } from '@app/classes/player/virtual-player/actions/action';
 import { VirtualPlayer } from '@app/classes/player/virtual-player/virtual-player';
+import { VirtualPlayerEasy } from '@app/classes/player/virtual-player/virtual-player-easy/virtual-player-easy';
+import { VirtualPlayerExpert } from '@app/classes/player/virtual-player/virtual-player-expert/virtual-player-expert';
+import { SessionInfo } from '@app/classes/session-info';
 import { DisabledGoalHandler } from '@app/handlers/goal-handler/disabled-goal-handler';
+import { GoalHandler } from '@app/handlers/goal-handler/goal-handler';
 import { Log2990GoalHandler } from '@app/handlers/goal-handler/log2990-goal-handler';
 import { PlayerHandler } from '@app/handlers/player-handler/player-handler';
 import { ReserveHandler } from '@app/handlers/reserve-handler/reserve-handler';
 import { SessionHandler } from '@app/handlers/session-handler/session-handler';
+import { SessionStatsHandler } from '@app/handlers/stats-handlers/session-stats-handler/session-stats-handler';
 import { BoardGeneratorService } from '@app/services/board/board-generator.service';
 import { DictionaryService } from '@app/services/dictionary/dictionary.service';
+import { SessionHandlingService } from '@app/services/session-handling/session-handling.service';
 import { SocketService } from '@app/services/socket/socket-service';
 import { StatsService } from '@app/services/stats/stats.service';
-import { VirtualPlayerExpert } from '@app/classes/player/virtual-player/virtual-player-expert/virtual-player-expert';
-import { Service } from 'typedi';
-import * as logger from 'winston';
-import { SessionInfo } from '@app/classes/session-info';
-import { GoalHandler } from '@app/handlers/goal-handler/goal-handler';
-import { SessionStatsHandler } from '@app/handlers/stats-handlers/session-stats-handler/session-stats-handler';
-import { VirtualPlayerEasy } from '@app/classes/player/virtual-player/virtual-player-easy/virtual-player-easy';
-import { SessionHandlingService } from '@app/services/session-handling/session-handling.service';
 import {
     Answer,
     ConvertConfig,
@@ -31,6 +29,8 @@ import {
     SinglePlayerConfig,
     VirtualPlayerLevel,
 } from '@common';
+import { Service } from 'typedi';
+import * as logger from 'winston';
 
 @Service()
 export class GameService {
@@ -49,7 +49,6 @@ export class GameService {
             gameType: gameConfig.gameType,
         };
 
-        // TODO add a construction service?
         const answer = await this.dictionaryService.getHandler(gameConfig.dictionary._id);
 
         if (!answer.isSuccess) {
@@ -93,7 +92,6 @@ export class GameService {
             gameType: gameConfig.gameType,
         };
 
-        // TODO add a construction service?
         const answer = await this.dictionaryService.getHandler(gameConfig.dictionary._id);
 
         if (!answer.isSuccess) {
@@ -124,9 +122,12 @@ export class GameService {
 
     async joinMultiplayer(gameConfig: MultiplayerJoinConfig): Promise<ServerConfig | null> {
         const sessionHandler = this.sessionHandlingService.getHandlerBySessionId(gameConfig.sessionId);
+        if (sessionHandler == null || sessionHandler.sessionData.isStarted) {
+            return null;
+        }
         const waitingPlayer = sessionHandler?.players[0];
 
-        if (sessionHandler == null || waitingPlayer == null || sessionHandler.sessionData.isStarted) {
+        if (waitingPlayer == null) {
             return null;
         }
 
@@ -180,8 +181,9 @@ export class GameService {
             logger.warn(`Failed to abandon game: ${id}`);
             return false;
         }
-
-        if (handler.sessionData.isStarted && handler.sessionData.isActive && handler.sessionInfo.gameType === GameType.Multiplayer) {
+        const canConvertPlayer =
+            handler.sessionData.isStarted && handler.sessionData.isActive && handler.sessionInfo.gameType === GameType.Multiplayer;
+        if (canConvertPlayer) {
             logger.info(`Converting player: ${id}`);
             handler.convertWhileRunning(id);
             return true;

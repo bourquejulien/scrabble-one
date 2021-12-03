@@ -1,8 +1,8 @@
+import { BaseGoal, Goal } from '@app/classes/goal/base-goal';
 import { ExchangeNotifier } from '@app/classes/goal/notifiers/exchange-notifier';
 import { PlacementNotifier } from '@app/classes/goal/notifiers/placement-notifier';
 import { SkipNotifier } from '@app/classes/goal/notifiers/skip-notifier';
 import { ValidationResponse } from '@app/classes/validation/validation-response';
-import { BaseGoal, Goal } from '@app/classes/goal/base-goal';
 
 const REWARDED_PLACEMENT_SIZE = 5;
 const REWARDED_CONSECUTIVE_TURN = 3;
@@ -32,7 +32,7 @@ export class ManyLettersInRow extends BaseGoal implements PlacementNotifier, Exc
     }
 
     notifyPlacement(validationResponse: ValidationResponse, id: string): void {
-        if (!validationResponse.isSuccess || this.guard(id)) {
+        if (this.guard(id) || !validationResponse.isSuccess) {
             return;
         }
 

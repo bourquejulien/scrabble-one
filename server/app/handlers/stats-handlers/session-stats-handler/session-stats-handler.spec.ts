@@ -5,16 +5,16 @@
 /* eslint-disable @typescript-eslint/no-empty-function */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable dot-notation */
-import { describe } from 'mocha';
-import { expect } from 'chai';
-import { SessionStatsHandler } from '@app/handlers/stats-handlers/session-stats-handler/session-stats-handler';
-import { GoalHandler } from '@app/handlers/goal-handler/goal-handler';
-import { createSandbox, createStubInstance } from 'sinon';
-import { SocketHandler } from '@app/handlers/socket-handler/socket-handler';
-import { ReserveHandler } from '@app/handlers/reserve-handler/reserve-handler';
-import { PlayerStatsHandler } from '@app/handlers/stats-handlers/player-stats-handler/player-stats-handler';
-import { Subject } from 'rxjs';
 import { Config } from '@app/config';
+import { GoalHandler } from '@app/handlers/goal-handler/goal-handler';
+import { ReserveHandler } from '@app/handlers/reserve-handler/reserve-handler';
+import { SocketHandler } from '@app/handlers/socket-handler/socket-handler';
+import { PlayerStatsHandler } from '@app/handlers/stats-handlers/player-stats-handler/player-stats-handler';
+import { SessionStatsHandler } from '@app/handlers/stats-handlers/session-stats-handler/session-stats-handler';
+import { expect } from 'chai';
+import { describe } from 'mocha';
+import { Subject } from 'rxjs';
+import { createSandbox, createStubInstance } from 'sinon';
 
 describe('SessionStatsHandler', () => {
     let handler: SessionStatsHandler;
@@ -58,6 +58,7 @@ describe('SessionStatsHandler', () => {
         sandbox.assert.calledOnce(spy);
         sandbox.restore();
     });
+
     it('should start correctly', () => {
         const sandbox = createSandbox();
         const spy = sandbox.spy(goalHandlerStub, 'start');
@@ -65,12 +66,14 @@ describe('SessionStatsHandler', () => {
         sandbox.assert.calledWith(spy, ['id']);
         sandbox.restore();
     });
+
     it('should end correctly', () => {
         const sandbox = createSandbox();
         sandbox.stub(reserveHandlerStub, 'length').get(() => 0);
         handler.end();
         sandbox.restore();
     });
+
     it('should tell when it has skipped', () => {
         const playerStatsHandlerStub1 = createStubInstance(PlayerStatsHandler) as unknown as PlayerStatsHandler;
         playerStatsHandlerStub1['skippedTurns'] = Config.MAX_SKIP_TURN + 1;
@@ -81,6 +84,7 @@ describe('SessionStatsHandler', () => {
         handler['playerStatsHandlers'] = [playerStatsHandlerStub1];
         expect(handler['isOverSkipLimit']).to.be.false;
     });
+
     // it('should update data when triggered by events', () => { // TODO passes randomly...
     //     const sandbox = createSandbox();
     //     const playerStatsHandlerStub2 = createStubInstance(PlayerStatsHandler) as unknown as PlayerStatsHandler;
@@ -95,6 +99,7 @@ describe('SessionStatsHandler', () => {
     //     });
     //     sandbox.restore();
     // });
+
     it('should tell when there is no winner', () => {
         const sandbox = createSandbox();
         handler['playerStatsHandlers'] = [];

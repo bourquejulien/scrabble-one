@@ -1,13 +1,13 @@
 import { Application } from '@app/app';
 import { RoomController } from '@app/controllers/room/room.controller';
+import { AdminPersistence } from '@app/services/admin/admin-persistence';
 import { DatabaseService } from '@app/services/database/database.service';
+import { DictionaryService } from '@app/services/dictionary/dictionary.service';
+import { ScoreService } from '@app/services/score/score.service';
 import { SocketService } from '@app/services/socket/socket-service';
 import * as http from 'http';
 import { Service } from 'typedi';
 import logger from 'winston';
-import { DictionaryService } from '@app/services/dictionary/dictionary.service';
-import { AdminPersistence } from '@app/services/admin/admin-persistence';
-import { ScoreService } from '@app/services/score/score.service';
 
 @Service()
 export class Server {

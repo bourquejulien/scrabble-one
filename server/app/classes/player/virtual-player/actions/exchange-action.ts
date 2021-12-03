@@ -1,10 +1,10 @@
-import { Action } from './action';
+import { SkipAction } from '@app/classes/player/virtual-player/actions/skip-action';
 import { ReserveHandler } from '@app/handlers/reserve-handler/reserve-handler';
 import { SocketHandler } from '@app/handlers/socket-handler/socket-handler';
-import { MessageType } from '@common';
-import { SkipAction } from '@app/classes/player/virtual-player/actions/skip-action';
-import * as logger from 'winston';
 import { PlayerStatsNotifier } from '@app/handlers/stats-handlers/player-stats-handler/player-stats-notifier';
+import { MessageType } from '@common';
+import * as logger from 'winston';
+import { Action } from './action';
 
 export class ExchangeAction implements Action {
     constructor(
@@ -31,7 +31,7 @@ export class ExchangeAction implements Action {
         }
 
         // Add back letters from reserve
-        lettersToExchange.forEach(() => this.rack.push(this.reserve.drawLetter()));
+        lettersToExchange.forEach(() => this.rack.push(this.reserve.drawLetterFromReserve()));
 
         // Put back letters in reserve
         lettersToExchange.forEach((letter) => this.reserve.putBackLetter(letter));

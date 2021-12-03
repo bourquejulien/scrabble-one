@@ -1,12 +1,12 @@
 /* eslint-disable no-unused-expressions */
 /* eslint-disable @typescript-eslint/no-unused-expressions */
 /* eslint-disable dot-notation */
-import { describe } from 'mocha';
-import { expect } from 'chai';
 import { BaseGoal, Goal } from '@app/classes/goal/base-goal';
 import { PlacePalindrome } from '@app/classes/goal/goals/place-palindrome/place-palindrome';
 import { ValidationFailed, ValidationResponse } from '@app/classes/validation/validation-response';
 import { Config } from '@app/config';
+import { expect } from 'chai';
+import { describe } from 'mocha';
 
 describe('PlacePalindrome', () => {
     let goal: Goal;
@@ -17,6 +17,7 @@ describe('PlacePalindrome', () => {
     it('should be created', () => {
         expect(goal).to.be.ok;
     });
+
     it('should not set successId if it receives a validation failed answer', () => {
         const id = 'id';
         const validationResponse: ValidationFailed = {
@@ -26,6 +27,7 @@ describe('PlacePalindrome', () => {
         (goal as PlacePalindrome).notifyPlacement(validationResponse, id);
         expect((goal as BaseGoal)['successId']).to.equal('');
     });
+
     it('should not set successId if there is not enough letters', () => {
         const id = 'id';
         const validationResponse: ValidationResponse = {
@@ -42,6 +44,7 @@ describe('PlacePalindrome', () => {
         (goal as PlacePalindrome).notifyPlacement(validationResponse, id);
         expect((goal as BaseGoal)['successId']).to.equal('');
     });
+
     it('should set successId if there is a palindrome', () => {
         const id = 'id';
         const validationResponse: ValidationResponse = {
@@ -64,6 +67,7 @@ describe('PlacePalindrome', () => {
         (goal as PlacePalindrome).notifyPlacement(validationResponse, id);
         expect((goal as BaseGoal)['successId']).to.equal(id);
     });
+
     it('should not set successId if there is no palindrome', () => {
         const id = 'id';
         const validationResponse: ValidationResponse = {

@@ -60,8 +60,7 @@ describe('AdminPageComponent', () => {
     });
 
     it('should select file selected', () => {
-        component.onFileSelected(new Event('')); // TODO
-    });
+        component.onFileSelected(new Event('')); 
 
     it('should reset', () => {
         adminServiceSpyObj.resetSettings.and.returnValue(Promise.resolve());

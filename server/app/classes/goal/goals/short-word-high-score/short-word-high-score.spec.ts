@@ -2,13 +2,13 @@
 /* eslint-disable no-unused-expressions */
 /* eslint-disable @typescript-eslint/no-unused-expressions */
 /* eslint-disable dot-notation */
-import { describe } from 'mocha';
-import { expect } from 'chai';
 import { BaseGoal, Goal } from '@app/classes/goal/base-goal';
+import { PlacePalindrome } from '@app/classes/goal/goals/place-palindrome/place-palindrome';
 import { ShortWordHighScore } from '@app/classes/goal/goals/short-word-high-score/short-word-high-score';
 import { ValidationFailed, ValidationResponse } from '@app/classes/validation/validation-response';
-import { PlacePalindrome } from '@app/classes/goal/goals/place-palindrome/place-palindrome';
 import { Config } from '@app/config';
+import { expect } from 'chai';
+import { describe } from 'mocha';
 
 describe('ShortWordHighScore', () => {
     let goal: Goal;
@@ -29,6 +29,7 @@ describe('ShortWordHighScore', () => {
         (goal as ShortWordHighScore).notifyPlacement(validationResponse, id);
         expect((goal as BaseGoal)['successId']).to.equal('');
     });
+
     it('should not set successId if there is not enough letters', () => {
         const id = 'id';
         const validationResponse: ValidationResponse = {
@@ -45,6 +46,7 @@ describe('ShortWordHighScore', () => {
         (goal as ShortWordHighScore).notifyPlacement(validationResponse, id);
         expect((goal as BaseGoal)['successId']).to.equal('');
     });
+
     it('should not set successId if it receives a validation failed answer', () => {
         const id = 'id';
         const validationResponse: ValidationFailed = {
@@ -54,6 +56,7 @@ describe('ShortWordHighScore', () => {
         (goal as PlacePalindrome).notifyPlacement(validationResponse, id);
         expect((goal as BaseGoal)['successId']).to.equal('');
     });
+
     it('should not set successId if there is not enough letters', () => {
         const id = 'id';
         const validationResponse: ValidationResponse = {
@@ -70,6 +73,7 @@ describe('ShortWordHighScore', () => {
         (goal as PlacePalindrome).notifyPlacement(validationResponse, id);
         expect((goal as BaseGoal)['successId']).to.equal('');
     });
+
     it('should set successId if there is a short word with a high score', () => {
         const id = 'id';
         const validationResponse: ValidationResponse = {
