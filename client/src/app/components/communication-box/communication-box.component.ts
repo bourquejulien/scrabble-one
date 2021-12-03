@@ -61,10 +61,6 @@ export class CommunicationBoxComponent implements OnInit, OnDestroy {
         }
     }
 
-    getFontColor(message: Message): string {
-        return message.messageType === MessageType.Message ? Constants.BLACK_FONT : Constants.WHITE_FONT;
-    }
-
     getTitle(message: Message): string {
         switch (message.messageType) {
             case MessageType.Message:

@@ -15,7 +15,7 @@
     box-sizing: border-box;
     width: 14%;
     min-width: 2.5rem;
-    height: 2.5rem;
+    height: 3rem;
     margin-right: 0.25rem;
     box-shadow: 5px 5px 5px rgba(10, 10, 10, 0.5);
     background-image: url('~src/assets/img/tile-texture.jpeg');
@@ -36,7 +36,7 @@
 
 .border-selected {
     border-style: solid;
-    border-color: #f44336;
+    border-color: #ad1457;
 }
 
 .invisible {
