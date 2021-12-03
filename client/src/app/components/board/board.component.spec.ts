@@ -105,7 +105,7 @@ describe('BoardComponent', () => {
             'isPositionInit',
             'backSpaceEnable',
             'escapeOperation',
-            'samePosition',
+            'isSameSquare',
             'backSpaceOperation',
             'nextAvailableSquare',
             'placeLetters',

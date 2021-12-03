@@ -27,7 +27,7 @@ import {
     MultiplayerJoinConfig,
     ServerConfig,
     SinglePlayerConfig,
-    VirtualPlayerLevel
+    VirtualPlayerLevel,
 } from '@common';
 import { Service } from 'typedi';
 import * as logger from 'winston';
@@ -181,7 +181,8 @@ export class GameService {
             logger.warn(`Failed to abandon game: ${id}`);
             return false;
         }
-        const canConvertPlayer = handler.sessionData.isStarted && handler.sessionData.isActive && handler.sessionInfo.gameType === GameType.Multiplayer;
+        const canConvertPlayer =
+            handler.sessionData.isStarted && handler.sessionData.isActive && handler.sessionInfo.gameType === GameType.Multiplayer;
         if (canConvertPlayer) {
             logger.info(`Converting player: ${id}`);
             handler.convertWhileRunning(id);

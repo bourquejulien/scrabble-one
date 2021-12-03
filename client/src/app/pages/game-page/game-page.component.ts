@@ -110,9 +110,6 @@ export class GamePageComponent implements OnDestroy {
         this.drawer.toggle();
         this.isOpen = !this.isOpen;
     }
-
-    
-
     private endGame(winner: EndGameWinner) {
         const dialogRef = this.dialog.open(EndGameComponent, { panelClass: 'end-game-dialog', data: { winner } });
         dialogRef.afterClosed().subscribe((result) => {

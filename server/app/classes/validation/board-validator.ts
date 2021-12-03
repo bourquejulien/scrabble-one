@@ -71,7 +71,7 @@ export class BoardValidator {
                 if (direction !== Direction.Down) {
                     return Direction.None;
                 }
-            } else if (previousPosition.y ===currentPosition.y) {
+            } else if (previousPosition.y === currentPosition.y) {
                 if (direction !== Direction.Right) {
                     return Direction.None;
                 }

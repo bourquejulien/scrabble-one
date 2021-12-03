@@ -227,7 +227,7 @@ export class BoardComponent implements OnDestroy, AfterViewInit {
         this.squareSelected = false;
         this.placeLetterService.isHorizontal = true;
     }
-    
+
     private handleKeyDown(lastSquare: boolean): void {
         this.gridService.cleanInsideSquare(this.tempContext, this.placeLetterService.gridPosition);
         this.gridService.cleanInsideSquare(this.squareContext, this.placeLetterService.gridPosition);
