@@ -10,7 +10,7 @@
     <form class="playersFlex">
         <mat-form-field style="margin-right: 0.8vw" appearance="fill">
             <mat-label>Joueur 1</mat-label>
-            <input 
+            <input
                 required
                 matInput
                 placeholder="Joueur 1"
@@ -29,13 +29,13 @@
         Temps maximum par tour
     </p>
     <div class="playersFlex" *ngIf="data.gameType === typeOfGameType.SinglePlayer || data.gameType === typeOfGameType.Multiplayer">
-        <mat-form-field class="inputs" style="margin-right: 0.8vw" appearance="fill">
+        <mat-form-field color="primary-darker" class="inputs" style="margin-right: 0.8vw" appearance="fill">
             <mat-label>Minutes</mat-label>
             <mat-select name="minutesPerTurn" id="selectMinutes" [(ngModel)]="minutes" (selectionChange)="manageTimeLimits()">
                 <mat-option *ngFor="let minutes of minutesList" [value]="minutes">{{ minutes }} </mat-option>
             </mat-select>
         </mat-form-field>
-        <mat-form-field class="inputs" appearance="fill">
+        <mat-form-field color="primary-darker" class="inputs" appearance="fill">
             <mat-label>Secondes</mat-label>
             <mat-select name="secondsPerTurn" [(ngModel)]="seconds" [disabled]="minutes === 5 || minutes === 0">
                 <mat-option *ngFor="let seconds of secondsList" [value]="seconds">{{ seconds }}</mat-option>
@@ -46,24 +46,24 @@
         Choix de la difficulté et du dictionnaire
     </p>
     <div class="last-line-flex">
-    <mat-form-field color="primary-darker" class="inputs" appearance="fill" *ngIf="data.gameType === typeOfGameType.SinglePlayer">
-        <mat-label>Profil du joueur virtuel</mat-label>
-        <mat-select
-            name="gameTypes"
-            appearance="fill"
-            [ngModel]="formConfig.virtualPlayerLevelName"
-            (valueChange)="formConfig.virtualPlayerLevelName = $event; updateVirtualPlayerNames()"
-        >
-            <mat-option *ngFor="let gameType of virtualPlayerLevelNames" [value]="gameType">{{ gameType }}</mat-option>
-        </mat-select>
-    </mat-form-field>
-    <mat-form-field class="inputs" appearance="fill">
-        <mat-label>Dictionnaire</mat-label>
-        <mat-select name="gameDictionary" [(ngModel)]="dictionary" required>
-            <mat-option *ngFor="let d of adminService.dictionaries" [value]="d">{{ d.title }}</mat-option>
-        </mat-select>
-    </mat-form-field>
-</div>
+        <mat-form-field color="primary-darker" class="inputs" appearance="fill" *ngIf="data.gameType === typeOfGameType.SinglePlayer">
+            <mat-label>Profil du joueur virtuel</mat-label>
+            <mat-select
+                name="gameTypes"
+                appearance="fill"
+                [ngModel]="formConfig.virtualPlayerLevelName"
+                (valueChange)="formConfig.virtualPlayerLevelName = $event; updateVirtualPlayerNames()"
+            >
+                <mat-option *ngFor="let gameType of virtualPlayerLevelNames" [value]="gameType">{{ gameType }}</mat-option>
+            </mat-select>
+        </mat-form-field>
+        <mat-form-field color="primary-darker" class="inputs" appearance="fill">
+            <mat-label>Dictionnaire</mat-label>
+            <mat-select name="gameDictionary" [(ngModel)]="dictionary" [matTooltip]="dictionary.description" matTooltipClass="smaller-tooltip" matTooltipPosition="right" required>
+                <mat-option  *ngFor="let d of adminService.dictionaries" [matTooltip]="d.description" matTooltipPosition="right" matTooltipClass="smaller-tooltip" [value]="d">{{ d.title }}</mat-option>
+            </mat-select>
+        </mat-form-field>
+    </div>
     <ng-template #elseBlock>
         <label class="inputPresentationText">Nom du joueur</label>
     </ng-template>

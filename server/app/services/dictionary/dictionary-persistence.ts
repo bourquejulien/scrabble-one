@@ -15,8 +15,8 @@ export class DictionaryPersistence {
         this.defaultMetadata = {
             _id: 'dictionary.json',
             path: DEFAULT_PATH,
-            description: 'Default Dictionary',
             title: 'Dictionnaire du serveur',
+            description: 'Le dictionnaire par défaut',
             nbWords: 402503,
         };
 
