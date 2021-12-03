@@ -7,20 +7,18 @@ import * as logger from 'winston';
 import { SkipAction } from '@app/classes/player/virtual-player/actions/skip-action';
 import { Action } from '@app/classes/player/virtual-player/actions/action';
 import { PlaceAction } from '@app/classes/player/virtual-player/actions/place-action';
-import { PlayAction } from '@app/classes/player/virtual-player/actions/play-action';
 import { Play } from '@app/classes/virtual-player/play';
 import { PlayerStatsNotifier } from '@app/handlers/stats-handlers/player-stats-handler/player-stats-notifier';
+import { ConsoleFormatter } from '@app/classes/player/console-formatter/console-formatter';
 
-export class PlayActionEasy extends PlayAction {
+export class PlayActionEasy implements Action {
     constructor(
         private readonly boardHandler: BoardHandler,
         private readonly playGenerator: PlayGenerator,
         private readonly statsNotifier: PlayerStatsNotifier,
         private readonly socketHandler: SocketHandler,
         private readonly rack: string[],
-    ) {
-        super();
-    }
+    ) {}
 
     private static getScoreRange(): { min: number; max: number } {
         let random = Math.random();
@@ -58,8 +56,8 @@ export class PlayActionEasy extends PlayAction {
             alternatives.push(filteredPlays[alternativeIndex]);
         }
 
-        this.socketHandler.sendMessage({ title: 'Mot placé', body: this.formatPlay(play), messageType: MessageType.Message });
-        this.socketHandler.sendMessage({ title: 'Mot alternatifs', body: this.formatPlays(alternatives), messageType: MessageType.Log });
+        this.socketHandler.sendMessage({ title: 'Mot placé', body: ConsoleFormatter.formatPlay(play), messageType: MessageType.Message });
+        this.socketHandler.sendMessage({ title: 'Mot alternatifs', body: ConsoleFormatter.formatPlays(alternatives), messageType: MessageType.Log });
 
         return new PlaceAction(this.boardHandler, this.statsNotifier, this.rack, play);
     }
