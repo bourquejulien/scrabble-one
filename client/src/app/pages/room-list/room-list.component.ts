@@ -51,6 +51,12 @@ export class RoomListComponent implements AfterViewInit, OnInit, OnDestroy {
         this.nameValidator = new NameValidator();
     }
 
+    private static getRandomInt(min: number, max: number): number {
+        min = Math.ceil(min);
+        max = Math.floor(max);
+        return Math.floor(Math.random() * (max - min)) + min;
+    }
+
     ngOnInit() {
         this.gameMode = GameMode[this.route.snapshot.paramMap.get('game-mode') as keyof typeof GameMode] ?? GameMode.Classic;
     }
@@ -75,7 +81,7 @@ export class RoomListComponent implements AfterViewInit, OnInit, OnDestroy {
         if (this.availableGameConfigs.length <= 1) {
             return;
         }
-        const randomGame: number = this.getRandomInt(0, this.availableGameConfigs.length);
+        const randomGame: number = RoomListComponent.getRandomInt(0, this.availableGameConfigs.length);
         this.selectedConfig = this.availableGameConfigs[randomGame];
     }
 
@@ -117,12 +123,6 @@ export class RoomListComponent implements AfterViewInit, OnInit, OnDestroy {
         }
 
         return this.errorsList.length === 0;
-    }
-
-    private getRandomInt(min: number, max: number): number {
-        min = Math.ceil(min);
-        max = Math.floor(max);
-        return Math.floor(Math.random() * (max - min)) + min;
     }
 
     private refreshConfig(availableGameConfigs: AvailableGameConfig[]) {
