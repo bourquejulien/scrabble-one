@@ -174,7 +174,7 @@ export class GameService {
     }
 
     async convertOrDispose(id: string): Promise<boolean> {
-        logger.debug(`Abandon - PlayerId: ${id}`);
+        logger.debug(`ConvertOrDispose - PlayerId: ${id}`);
         const handler = this.sessionHandlingService.getHandlerByPlayerId(id);
 
         if (handler == null) {
@@ -189,8 +189,14 @@ export class GameService {
             return true;
         }
 
+        const isEndGame = handler.sessionData.isStarted && !handler.sessionData.isActive;
         const endGameData = handler.dispose();
-        this.statsService.updateScoreboards(endGameData);
+
+        if (isEndGame) {
+            this.statsService.updateScoreboards(endGameData);
+            logger.debug(`Session added to leaderboard: ${handler.sessionInfo.id}`);
+        }
+
         this.sessionHandlingService.removeHandler(id);
 
         logger.info(`Game disposed: ${id}`);
