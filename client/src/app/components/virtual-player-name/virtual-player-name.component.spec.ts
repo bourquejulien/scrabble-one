@@ -39,10 +39,6 @@ describe('VirtualPlayerNameComponent', () => {
             },
         ];
 
-        // const playerNameServiceMock = {
-        //     of({playerNames: playerNameList}, updatedNameList);
-        // };
-
         await TestBed.configureTestingModule({
             declarations: [VirtualPlayerNameComponent],
             providers: [{ provider: AdminService, useValue: adminServiceMock }],
@@ -66,8 +62,7 @@ describe('VirtualPlayerNameComponent', () => {
         expect(spy).toHaveBeenCalled();
     });
 
-    it('should not change player name', () => {
-        // TO DO: FIND GOOD TEST NAME
+    it('should not change player name if readonly property true', () => {
         component.nameValidator.name = 'Chariot Requiem';
 
         const virtPlayerName: VirtualPlayerName = {
@@ -80,8 +75,7 @@ describe('VirtualPlayerNameComponent', () => {
         expect(component.nameValidator.name).toBe('Chariot Requiem');
     });
 
-    it('should change player name', () => {
-        // TO DO: FIND GOOD TEST NAME
+    it('should change player name if readonly property false', () => {
         component.nameValidator.name = 'Chariot Requiem';
 
         const virtPlayerName: VirtualPlayerName = {
