@@ -23,7 +23,7 @@ export class ReserveHandler {
         }
     }
 
-    drawLetter(): string {
+    drawLetterFromReserve(): string {
         const randomLetterIndex = Math.floor(Math.random() * (this.reserve.length - 1));
         return this.reserve.splice(randomLetterIndex, 1)[0];
     }

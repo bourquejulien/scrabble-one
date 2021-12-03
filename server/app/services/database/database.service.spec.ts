@@ -3,10 +3,10 @@
 @typescript-eslint/no-empty-function,
 no-unused-expressions,
 */
-import { expect } from 'chai';
 import { DatabaseService } from '@app/services/database/database.service';
-import Sinon, { createSandbox, SinonSandbox } from 'sinon';
+import { expect } from 'chai';
 import { Collection, Db, MongoClient } from 'mongodb';
+import Sinon, { createSandbox, SinonSandbox } from 'sinon';
 
 describe('DataBaseService', () => {
     let service: DatabaseService;
@@ -35,12 +35,15 @@ describe('DataBaseService', () => {
     afterEach(() => {
         sandbox.restore();
     });
+
     it('should be created', () => {
         expect(service).to.be.ok;
     });
+
     it('should return a database', () => {
         expect(service.database).to.be.instanceof(Db);
     });
+
     it('should run', async () => {
         sandbox.stub(service['scrabbleDb'], 'createCollection');
         sandbox.stub(service['client'], 'connect');
@@ -52,6 +55,7 @@ describe('DataBaseService', () => {
         await service['run']();
         sandbox.assert.notCalled(closeStub);
     });
+
     it('should close connection if an error is caught', async () => {
         sandbox.stub(service['scrabbleDb'], 'createCollection');
         sandbox.stub(service['client'], 'connect').throws(new Error('error'));

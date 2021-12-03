@@ -62,6 +62,7 @@ describe('SessionStatsHandler', () => {
         sandbox.assert.calledOnce(spy);
         sandbox.restore();
     });
+
     it('should start', () => {
         const sandbox = createSandbox();
         const spy = sandbox.spy(goalHandlerStub, 'start');
@@ -69,6 +70,7 @@ describe('SessionStatsHandler', () => {
         sandbox.assert.calledWith(spy, ['id', 'id']);
         sandbox.restore();
     });
+
     it('should end', () => {
         const sandbox = createSandbox();
         sandbox.stub(reserveHandlerStub, 'length').get(() => 0);
@@ -76,6 +78,7 @@ describe('SessionStatsHandler', () => {
         sandbox.restore();
         assert.called(socketHandlerStub.sendData);
     });
+
     it('should end and adjust scores', () => {
         const sandbox = createSandbox();
         const playerStatsHandlerStub1 = createStubInstance(PlayerStatsHandler);
@@ -92,6 +95,7 @@ describe('SessionStatsHandler', () => {
         sandbox.restore();
         assert.called(socketHandlerStub.sendData);
     });
+
     it('should tell when it has skipped', () => {
         const playerStatsHandlerStub1 = createStubInstance(PlayerStatsHandler) as unknown as PlayerStatsHandler;
         playerStatsHandlerStub1['skippedTurns'] = Config.MAX_SKIP_TURN + 1;
@@ -102,6 +106,7 @@ describe('SessionStatsHandler', () => {
         handler['playerStatsHandlers'] = [playerStatsHandlerStub1];
         expect(handler['isOverSkipLimit']).to.be.false;
     });
+
     it('should update data when triggered by events', () => {
         const sandbox = createSandbox();
         const playerStatsHandlerStub2 = createStubInstance(PlayerStatsHandler) as unknown as PlayerStatsHandler;
@@ -115,6 +120,7 @@ describe('SessionStatsHandler', () => {
         // TODO
         sandbox.restore();
     });
+
     it('should tell when there is no winner', () => {
         const sandbox = createSandbox();
         handler['playerStatsHandlers'] = [];
@@ -135,6 +141,7 @@ describe('SessionStatsHandler', () => {
         expect(handler['winnerId']).to.be.eq('');
         sandbox.restore();
     });
+
     it('should tell when game is finished', () => {
         expect(handler.isEndGame).to.be.true;
     });

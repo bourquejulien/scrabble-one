@@ -2,10 +2,11 @@
 /* eslint-disable @typescript-eslint/no-unused-expressions */
 /* eslint-disable @typescript-eslint/no-empty-function */
 /* eslint-disable dot-notation */
-import { expect } from 'chai';
 import { BaseGoal, Goal } from '@app/classes/goal/base-goal';
 import { PlaceLetterTwice } from '@app/classes/goal/goals/place-letter-twice/place-letter-twice';
 import { ValidationFailed, ValidationResponse } from '@app/classes/validation/validation-response';
+import { expect } from 'chai';
+import { describe } from 'mocha';
 
 describe('PlaceLetterTwice', () => {
     let goal: Goal;
@@ -36,6 +37,7 @@ describe('PlaceLetterTwice', () => {
         (goal as PlaceLetterTwice).notifyPlacement(validationResponse, id);
         expect((goal as BaseGoal)['successId']).to.equal(id);
     });
+
     it('should not set successId if the same letter is not there twice', () => {
         const id = 'id';
         const validationResponse: ValidationResponse = {
@@ -55,6 +57,7 @@ describe('PlaceLetterTwice', () => {
         (goal as PlaceLetterTwice).notifyPlacement(validationResponse, id);
         expect((goal as BaseGoal)['successId']).to.equal('');
     });
+
     it('should not set successId if it receives a validation failed answer', () => {
         const id = 'id';
         const validationResponse: ValidationFailed = {

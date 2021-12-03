@@ -28,6 +28,7 @@ describe('ShortWordHighScore', () => {
         (goal as ShortWordHighScore).notifyPlacement(validationResponse, id);
         expect((goal as BaseGoal)['successId']).to.equal('');
     });
+
     it('should not set successId if there is not enough letters', () => {
         const id = 'id';
         const validationResponse: ValidationResponse = {
@@ -44,6 +45,7 @@ describe('ShortWordHighScore', () => {
         (goal as ShortWordHighScore).notifyPlacement(validationResponse, id);
         expect((goal as BaseGoal)['successId']).to.equal('');
     });
+
     it('should not set successId if it receives a validation failed answer', () => {
         const id = 'id';
         const validationResponse: ValidationFailed = {
@@ -53,6 +55,7 @@ describe('ShortWordHighScore', () => {
         (goal as PlacePalindrome).notifyPlacement(validationResponse, id);
         expect((goal as BaseGoal)['successId']).to.equal('');
     });
+
     it('should not set successId if there is not enough letters', () => {
         const id = 'id';
         const validationResponse: ValidationResponse = {
@@ -69,6 +72,7 @@ describe('ShortWordHighScore', () => {
         (goal as PlacePalindrome).notifyPlacement(validationResponse, id);
         expect((goal as BaseGoal)['successId']).to.equal('');
     });
+
     it('should set successId if there is a short word with a high score', () => {
         const id = 'id';
         const validationResponse: ValidationResponse = {

@@ -5,6 +5,7 @@ import { expect } from 'chai';
 import { BaseGoal, Goal } from '@app/classes/goal/base-goal';
 import { PlaceLongWord } from '@app/classes/goal/goals/place-long-word/place-long-word';
 import { ValidationFailed, ValidationResponse } from '@app/classes/validation/validation-response';
+import { describe } from 'mocha';
 
 describe('PlaceLongWord', () => {
     let goal: Goal;
@@ -15,6 +16,7 @@ describe('PlaceLongWord', () => {
     it('should be created', () => {
         expect(goal).to.be.ok;
     });
+
     it('should not set successId if it receives a validation failed answer', () => {
         const id = 'id';
         const validationResponse: ValidationFailed = {
@@ -24,6 +26,7 @@ describe('PlaceLongWord', () => {
         (goal as PlaceLongWord).notifyPlacement(validationResponse, id);
         expect((goal as BaseGoal)['successId']).to.equal('');
     });
+
     it('should set successId if there is a long word', () => {
         const id = 'id';
         const validationResponse: ValidationResponse = {
@@ -50,6 +53,7 @@ describe('PlaceLongWord', () => {
         (goal as PlaceLongWord).notifyPlacement(validationResponse, id);
         expect((goal as BaseGoal)['successId']).to.equal(id);
     });
+
     it('should set successId if there is a long word', () => {
         const id = 'id';
         const validationResponse: ValidationResponse = {

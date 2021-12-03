@@ -3,9 +3,9 @@ import { Config } from '@app/config';
 import { BoardHandler } from '@app/handlers/board-handler/board-handler';
 import { ReserveHandler } from '@app/handlers/reserve-handler/reserve-handler';
 import { SocketHandler } from '@app/handlers/socket-handler/socket-handler';
-import { Observable, Subject } from 'rxjs';
-import { SessionStatsHandler } from '@app/handlers/stats-handlers/session-stats-handler/session-stats-handler';
 import { PlayerStatsNotifier } from '@app/handlers/stats-handlers/player-stats-handler/player-stats-notifier';
+import { SessionStatsHandler } from '@app/handlers/stats-handlers/session-stats-handler/session-stats-handler';
+import { Observable, Subject } from 'rxjs';
 
 export abstract class Player {
     isTurn: boolean;
@@ -31,7 +31,7 @@ export abstract class Player {
 
     fillRack(): void {
         while (this.reserveHandler.length > 0 && this.rack.length < Config.RACK_SIZE) {
-            this.rack.push(this.reserveHandler.drawLetter());
+            this.rack.push(this.reserveHandler.drawLetterFromReserve());
         }
         this.statsNotifier.notifyRackUpdate(this.rack);
     }

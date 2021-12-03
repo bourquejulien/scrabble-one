@@ -1,6 +1,6 @@
+import { BaseGoal, Goal } from '@app/classes/goal/base-goal';
 import { PlacementNotifier } from '@app/classes/goal/notifiers/placement-notifier';
 import { ValidatedLetter, ValidationResponse } from '@app/classes/validation/validation-response';
-import { BaseGoal, Goal } from '@app/classes/goal/base-goal';
 
 export class PlaceLetterTwice extends BaseGoal implements PlacementNotifier {
     constructor(ownerId: string) {
@@ -33,7 +33,7 @@ export class PlaceLetterTwice extends BaseGoal implements PlacementNotifier {
     }
 
     notifyPlacement(validationResponse: ValidationResponse, id: string): void {
-        if (!validationResponse.isSuccess || this.guard(id)) {
+        if (this.guard(id) || !validationResponse.isSuccess) {
             return;
         }
 

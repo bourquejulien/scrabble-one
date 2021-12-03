@@ -17,9 +17,11 @@ describe('PlaceCorner', () => {
     it('should be created', () => {
         expect(goal).to.be.ok;
     });
+
     it('should tell that it is on the edge', () => {
         expect(PlaceCorner['isOnEdge']({ x: Config.GRID.GRID_SIZE - 1, y: Config.GRID.GRID_SIZE - 1 })).to.be.true;
     });
+
     it('should tell that it is on the edge', () => {
         const id = 'id';
         const validationResponse: ValidationResponse = {
@@ -31,6 +33,7 @@ describe('PlaceCorner', () => {
         (goal as PlaceCorner).notifyPlacement(validationResponse, id);
         expect((goal as BaseGoal)['successId']).to.equal(id);
     });
+
     it('should not set successId if it receives a validation failed answer', () => {
         const id = 'id';
         const validationResponse: ValidationFailed = {
@@ -40,6 +43,7 @@ describe('PlaceCorner', () => {
         (goal as PlaceCorner).notifyPlacement(validationResponse, id);
         expect((goal as BaseGoal)['successId']).to.equal('');
     });
+
     it('should not set successId if the placement is not on the edge', () => {
         const id = 'id';
         const validationResponse: ValidationResponse = {

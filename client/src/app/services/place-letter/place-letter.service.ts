@@ -48,6 +48,7 @@ export class PlaceLetterService {
             this.gridPosition.y = 16;
         }
         this.gridService.clearSquare(tempContext, this.gridPosition);
+
         if (this.isHorizontal) {
             this.gridService.cleanInsideSquare(tempContext, { x: this.gridPosition.x - 1, y: this.gridPosition.y });
         } else {
@@ -79,7 +80,7 @@ export class PlaceLetterService {
         return key === 'Backspace' && squareSelected;
     }
 
-    samePosition(position: Vec2): void {
+    isSameSquare(position: Vec2): void {
         if (this.gridPosition.x === position.x && this.gridPosition.y === position.y) {
             this.isHorizontal = !this.isHorizontal;
 

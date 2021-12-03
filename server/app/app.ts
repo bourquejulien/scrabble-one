@@ -6,11 +6,12 @@ import { StatsController } from '@app/controllers/stats/stats.controller';
 import { DictionaryService } from '@app/services/dictionary/dictionary.service';
 import cookieParser from 'cookie-parser';
 import cors from 'cors';
-import express from 'express';
+import express, { Request, Response } from 'express';
 import { StatusCodes } from 'http-status-codes';
 import morgan from 'morgan';
 import { Service } from 'typedi';
 import * as logger from 'winston';
+import { Constants } from '@app/constants';
 
 @Service()
 export class Application {
@@ -26,20 +27,12 @@ export class Application {
     ) {
         this.internalError = StatusCodes.INTERNAL_SERVER_ERROR;
         this.app = express();
-        this.validateEnv();
+        Application.validateEnv();
         this.config();
         this.bindRoutes();
     }
 
-    private bindRoutes(): void {
-        this.app.use('/api/game', this.gameController.router);
-        this.app.use('/api/player', this.playerController.router);
-        this.app.use('/api/score', this.statsController.router);
-        this.app.use('/api/admin', this.adminController.router);
-        this.errorHandling();
-    }
-
-    private validateEnv(): void {
+    private static validateEnv(): void {
         const REQUIRED_ENV_VARIABLES = ['DB_URL'];
 
         for (const envVariable of REQUIRED_ENV_VARIABLES) {
@@ -50,6 +43,15 @@ export class Application {
         }
     }
 
+    private bindRoutes(): void {
+        this.app.use('/api/game', this.gameController.router);
+        this.app.use('/api/player', this.playerController.router);
+        this.app.use('/api/score', this.statsController.router);
+        this.app.use('/api/admin', this.adminController.router);
+        this.app.get('/status', async (req: Request, res: Response) => res.status(Constants.HTTP_STATUS.OK).send('ok'));
+        this.errorHandling();
+    }
+
     private config(): void {
         // Middlewares configuration
         this.app.use(
@@ -57,6 +59,7 @@ export class Application {
                 stream: {
                     write: (msg) => logger.http(msg.slice(0, -1)),
                 },
+                skip: (req: Request) => req.path === '/status',
             }),
         );
         this.app.use(express.json());

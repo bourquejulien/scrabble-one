@@ -1,7 +1,7 @@
 import { BaseGoal, Goal } from '@app/classes/goal/base-goal';
-import { PlayerStats } from '@common';
 import { SkipNotifier } from '@app/classes/goal/notifiers/skip-notifier';
 import { StatsNotifier } from '@app/classes/goal/notifiers/stats-notifier';
+import { PlayerStats } from '@common';
 
 export class SkipWithAdvantage extends BaseGoal implements SkipNotifier, StatsNotifier {
     private readonly isEligible: Set<string>;
@@ -39,7 +39,6 @@ export class SkipWithAdvantage extends BaseGoal implements SkipNotifier, StatsNo
 
     notifyStats(stats: PlayerStats, id: string): void {
         this.lastStats.set(id, stats);
-
         if (this.guard(id) || !this.isEligible.has(id) || !this.isInAdvance(id)) {
             this.isEligible.delete(id);
             return;

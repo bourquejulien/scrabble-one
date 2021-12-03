@@ -1,6 +1,6 @@
+import { BaseGoal, Goal } from '@app/classes/goal/base-goal';
 import { PlacementNotifier } from '@app/classes/goal/notifiers/placement-notifier';
 import { ValidationResponse } from '@app/classes/validation/validation-response';
-import { BaseGoal, Goal } from '@app/classes/goal/base-goal';
 
 const WORD_SIZE = 8;
 
@@ -21,7 +21,7 @@ export class PlaceLongWord extends BaseGoal implements PlacementNotifier {
     }
 
     notifyPlacement(validationResponse: ValidationResponse, id: string): void {
-        if (!validationResponse.isSuccess || this.guard(id)) {
+        if (this.guard(id) || !validationResponse.isSuccess) {
             return;
         }
 

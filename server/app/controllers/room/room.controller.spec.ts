@@ -9,6 +9,7 @@ import { SocketMock } from '@app/classes/helpers/socket-test-helper';
 import { BoardHandler } from '@app/handlers/board-handler/board-handler';
 import { PlayerHandler } from '@app/handlers/player-handler/player-handler';
 import { SessionHandler } from '@app/handlers/session-handler/session-handler';
+import { SessionStatsHandler } from '@app/handlers/stats-handlers/session-stats-handler/session-stats-handler';
 import { GameService } from '@app/services/game/game.service';
 import { SessionHandlingService } from '@app/services/session-handling/session-handling.service';
 import { SocketService } from '@app/services/socket/socket-service';
@@ -17,7 +18,6 @@ import { expect } from 'chai';
 import { assert, createStubInstance, SinonFakeTimers, SinonStubbedInstance, spy, stub, useFakeTimers } from 'sinon';
 import { Server, Socket } from 'socket.io';
 import { RoomController } from './room.controller';
-import { SessionStatsHandler } from '@app/handlers/stats-handlers/session-stats-handler/session-stats-handler';
 
 const IDS = {
     player: '123',
@@ -164,7 +164,6 @@ describe('RoomController', () => {
         assert.called(emitSpy);
     });
 
-    // TODO : Fix test
     it('should join the correct rooms', async () => {
         const stubSessionHandler = createStubInstance(SessionHandler) as unknown as SessionHandler;
         stubSessionHandler['sessionInfo'] = {

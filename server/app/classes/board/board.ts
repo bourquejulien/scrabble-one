@@ -129,7 +129,8 @@ export class Board implements ImmutableBoard {
     }
 
     private positionGuard(position: Vec2) {
-        if (position.x + 1 > this.board.length || position.y + 1 > this.board[0].length) {
+        const boardCapacityExceeded = position.x + 1 > this.board.length || position.y + 1 > this.board[0].length;
+        if (boardCapacityExceeded) {
             throw new BoardOverflowError('Board capacity exceeded');
         }
         if (position.x < 0 || position.y < 0) {

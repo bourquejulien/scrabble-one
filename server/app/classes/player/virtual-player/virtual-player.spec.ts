@@ -1,31 +1,19 @@
 /* eslint-disable dot-notation,@typescript-eslint/no-unused-expressions,no-unused-expressions,max-classes-per-file */
+import { Timer } from '@app/classes/delay';
+import { VirtualPlayer } from '@app/classes/player/virtual-player/virtual-player';
 import { BoardHandler } from '@app/handlers/board-handler/board-handler';
 import { ReserveHandler } from '@app/handlers/reserve-handler/reserve-handler';
 import { SocketHandler } from '@app/handlers/socket-handler/socket-handler';
+import { PlayerStatsHandler } from '@app/handlers/stats-handlers/player-stats-handler/player-stats-handler';
+import { SessionStatsHandler } from '@app/handlers/stats-handlers/session-stats-handler/session-stats-handler';
 import { expect } from 'chai';
+import { Observable } from 'rxjs';
 import Sinon, { createSandbox, createStubInstance, SinonSandbox } from 'sinon';
 import { Action } from './actions/action';
-import { Observable } from 'rxjs';
-import { Timer } from '@app/classes/delay';
-import { PlayActionEasy } from './virtual-player-easy/actions/play-action-easy';
 import { ExchangeAction } from './actions/exchange-action';
 import { PlaceAction } from './actions/place-action';
-import { SessionStatsHandler } from '@app/handlers/stats-handlers/session-stats-handler/session-stats-handler';
-import { PlayerStatsHandler } from '@app/handlers/stats-handlers/player-stats-handler/player-stats-handler';
 import { SkipAction } from './actions/skip-action';
-import { VirtualPlayer } from '@app/classes/player/virtual-player/virtual-player';
-
-// class TestAction implements Action {
-//     maxCallCount = 3;
-//     callCount = 0;
-//     execute(): Action | null {
-//         this.callCount++;
-//         if (this.callCount >= this.maxCallCount) {
-//             return null;
-//         }
-//         return this;
-//     }
-// }
+import { PlayActionEasy } from './virtual-player-easy/actions/play-action-easy';
 
 class ActionRunner {
     ranActionCount = 0;
