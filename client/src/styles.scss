@@ -52,3 +52,7 @@ body {
 .darkMode {
     @include mat.all-component-colors($mat-dark-theme);
 }
+
+.mat-tooltip.smaller-tooltip {
+    font-size: 0.8rem !important;
+}

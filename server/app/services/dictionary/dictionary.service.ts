@@ -16,7 +16,7 @@ const schema = {
     required: ['title', 'description', 'words'],
 };
 
-const dictionaryPath = process.env.UPLOAD_DIR ?? process.cwd() + path.join('assets', 'dictionaries', 'upload');
+const dictionaryPath = process.env.UPLOAD_DIR ?? path.join(process.cwd(), 'assets', 'dictionaries', 'upload');
 
 @Service()
 export class DictionaryService {
