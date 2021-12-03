@@ -13,7 +13,7 @@ export class ShortWordHighScore extends BaseGoal implements PlacementNotifier {
                 id: 'short-word-high-score',
                 name: `Obtenir ${MIN_SCORE} points ou plus en plaçant ${MIN_LETTER_COUNT} lettres ou moins en un tour`,
                 score: -1,
-                scoreDescription: `X${SCORE_MULTIPLIER}`,
+                scoreDescription: `x${SCORE_MULTIPLIER}`,
             },
             ownerId,
         );

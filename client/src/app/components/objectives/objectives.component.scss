@@ -1,7 +1,7 @@
 .table {
     width: 25rem;
-    background-color: #81d4fa;
     margin-top: 2rem;
+    background-color: #ff8a65;
 }
 
 .row-pending {
@@ -21,17 +21,34 @@
 
 .mat-column-objectives {
     height: auto;
-    flex: 9rem;
-    min-width: 9rem;
+    // flex: 9rem;
+    min-width: 12rem;
+    text-align: justify;
 }
 
 .mat-column-succeeded {
     height: auto;
-    flex: 3rem;
-    max-width: 3rem;
+    // flex: 4.5rem;
+    // max-width: 4.5rem;
+    justify-content: center;
+}
+
+.mat-column-points {
+    height: auto;
+    flex: 4.5rem;
+    max-width: 4.5rem;
+    justify-content: center;
 }
 
 .header {
     color: black;
     font-size: medium;
+    // justify-content: center;
+    text-align: center;
+    background-color: #81d4fa;
 }
+
+// .score-description {
+//     justify-content: center;
+//     text-align: center;
+// }

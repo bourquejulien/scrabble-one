@@ -12,7 +12,7 @@ export class PlacePalindrome extends BaseGoal implements PlacementNotifier {
                 id: 'place-palindrome',
                 name: `Former un palindrome de ${MIN_WORD_SIZE} lettres ou plus`,
                 score: -1,
-                scoreDescription: `X${SCORE_MULTIPLIER}`,
+                scoreDescription: `x${SCORE_MULTIPLIER}`,
             },
             ownerId,
         );
