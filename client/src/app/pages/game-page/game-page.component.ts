@@ -68,7 +68,7 @@ export class GamePageComponent implements OnDestroy {
             }
         });
 
-        this.playerType = gameService.onTurn.getValue();
+        this.playerType = gameService.currentTurn;
         this.buttonConfig = [
             {
                 color: 'warn',
@@ -95,8 +95,8 @@ export class GamePageComponent implements OnDestroy {
                 action: () => this.toggleDarkMode(),
             },
         ];
-        this.opponentQuitSubscription = gameService.opponentQuiting.subscribe(() => this.opponentQuit());
-        this.gameEndingSubscription = gameService.gameEnding.subscribe((winner) => this.endGame(winner));
+        this.opponentQuitSubscription = gameService.onOpponentQuit.subscribe(() => this.opponentQuit());
+        this.gameEndingSubscription = gameService.onGameEnding.subscribe((winner) => this.endGame(winner));
         this.onTurnSubscription = gameService.onTurn.subscribe((e) => (this.playerType = e));
     }
 
@@ -110,6 +110,7 @@ export class GamePageComponent implements OnDestroy {
         this.drawer.toggle();
         this.isOpen = !this.isOpen;
     }
+
     private endGame(winner: EndGameWinner) {
         const dialogRef = this.dialog.open(EndGameComponent, { panelClass: 'end-game-dialog', data: { winner } });
         dialogRef.afterClosed().subscribe((result) => {

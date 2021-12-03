@@ -9,7 +9,7 @@ import { SessionService } from '@app/services/session/session.service';
 import { SocketClientService } from '@app/services/socket-client/socket-client.service';
 import { Answer, Failure, GameType, MessageType, ServerConfig, SessionStats, SinglePlayerConfig } from '@common';
 import { environmentExt } from '@environment-ext';
-import { BehaviorSubject, Subject } from 'rxjs';
+import { BehaviorSubject, Observable, Subject } from 'rxjs';
 
 const localUrl = (base: string, call: string, id?: string) => `${environmentExt.apiUrl}${base}/${call}${id ? '/' + id : ''}`;
 
@@ -19,9 +19,10 @@ const localUrl = (base: string, call: string, id?: string) => `${environmentExt.
 export class GameService {
     stats: SessionStats;
     currentTurn: PlayerType;
-    onTurn: BehaviorSubject<PlayerType>;
-    gameEnding: Subject<EndGameWinner>;
-    opponentQuiting: Subject<boolean>;
+
+    private readonly turnSubject: BehaviorSubject<PlayerType>;
+    private readonly gameEndingSubject: Subject<EndGameWinner>;
+    private readonly opponentQuitingSubject: Subject<boolean>;
 
     private gameRunning: boolean;
 
@@ -38,10 +39,10 @@ export class GameService {
             remoteStats: { points: 0, rackSize: 0 },
         };
 
-        this.onTurn = new BehaviorSubject<PlayerType>(PlayerType.Local);
-        this.gameEnding = new Subject<EndGameWinner>();
-        this.opponentQuiting = new Subject<boolean>();
-        this.socketService.on('opponentQuit', () => this.opponentQuiting.next(true));
+        this.turnSubject = new BehaviorSubject<PlayerType>(PlayerType.Local);
+        this.gameEndingSubject = new Subject<EndGameWinner>();
+        this.opponentQuitingSubject = new Subject<boolean>();
+        this.socketService.on('opponentQuit', () => this.opponentQuitingSubject.next(true));
         this.socketService.on('onTurn', async (id: string) => this.onNextTurn(id));
         this.socketService.on('endGame', async (winnerId: string) => this.endGame(winnerId));
         this.socketService.on('stats', (sessionStats: SessionStats) => this.refresh(sessionStats));
@@ -74,6 +75,18 @@ export class GameService {
         this.socketService.reset();
     }
 
+    get onTurn(): Observable<PlayerType> {
+        return this.turnSubject.asObservable();
+    }
+
+    get onGameEnding(): Observable<EndGameWinner> {
+        return this.gameEndingSubject.asObservable();
+    }
+
+    get onOpponentQuit(): Observable<boolean> {
+        return this.opponentQuitingSubject.asObservable();
+    }
+
     private async onNextTurn(id: string): Promise<void> {
         if (!this.gameRunning) return;
 
@@ -90,7 +103,7 @@ export class GameService {
         }
 
         this.currentTurn = playerType;
-        this.onTurn.next(this.currentTurn);
+        this.turnSubject.next(this.currentTurn);
     }
 
     private async endGame(winnerId: string) {
@@ -102,7 +115,7 @@ export class GameService {
             winner = winnerId === this.sessionService.id ? EndGameWinner.Local : EndGameWinner.Remote;
         }
 
-        this.gameEnding.next(winner);
+        this.gameEndingSubject.next(winner);
 
         this.messagingService.send(
             'Fin de partie - lettres restantes',
