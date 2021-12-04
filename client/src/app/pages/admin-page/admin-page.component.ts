@@ -58,10 +58,10 @@ export class AdminPageComponent implements OnInit, OnDestroy {
         this.adminService
             .resetSettings()
             .then(() => {
-                window.location.reload();
+                window.location.reload(); /* WON'T TEST - this method can neither be spied upon nor be provided in the testbed */
             })
             .catch(() => {
-                window.location.reload();
+                window.location.reload(); /* WON'T TEST - this method can neither be spied upon nor be provided in the testbed */
             });
     }
 
