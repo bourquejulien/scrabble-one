@@ -12,8 +12,8 @@ import { Subject } from 'rxjs';
 import { AdminPageComponent } from './admin-page.component';
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { NO_ERRORS_SCHEMA } from '@angular/compiler';
-import { HttpClient } from '@angular/common/http';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { HealthService } from '@app/services/health/health.service';
 
 const dictionary: DictionaryMetadata = {
     _id: 'dictionary.json',
@@ -27,6 +27,7 @@ describe('AdminPageComponent', () => {
     let component: AdminPageComponent;
     let fixture: ComponentFixture<AdminPageComponent>;
     let adminServiceSpyObj: jasmine.SpyObj<AdminService>;
+    let healthServiceSpyyObj: jasmine.SpyObj<HealthService>;
     let eventSpyObj: jasmine.SpyObj<Event>;
     let subject: Subject<Answer<string>>;
 
@@ -35,20 +36,21 @@ describe('AdminPageComponent', () => {
         const routerMock = {
             navigate: jasmine.createSpy('navigate'),
         };
-        adminServiceSpyObj = jasmine.createSpyObj('AdminService', ['downloadDictionary', 'resetSettings', 'updateDictionaries'], {
+        adminServiceSpyObj = jasmine.createSpyObj('AdminService', ['downloadDictionary', 'resetSettings', 'updateDictionaries', 'uploadFile'], {
             onNotify: subject.asObservable(),
         });
+        healthServiceSpyyObj = jasmine.createSpyObj('HealthService', ['isServerOk']);
+        healthServiceSpyyObj.isServerOk.and.returnValue(Promise.reject());
         eventSpyObj = jasmine.createSpyObj('Event', [''], { target: new EventTarget() });
         await TestBed.configureTestingModule({
             declarations: [AdminPageComponent],
             imports: [AppMaterialModule, BrowserAnimationsModule, HttpClientTestingModule],
             providers: [
-                { provide: HttpClient, useClass: HttpClient },
                 { provide: AdminService, useValue: adminServiceSpyObj },
+                { provide: HealthService, useValue: healthServiceSpyyObj },
                 { provide: Router, useValue: routerMock },
                 { provide: Event, useValue: eventSpyObj },
                 { provide: Blob, useClass: BlobMock },
-                { provide: Window, useClass: jasmine.createSpyObj('Window', ['']) },
             ],
             schemas: [CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA],
         }).compileComponents();
@@ -77,22 +79,29 @@ describe('AdminPageComponent', () => {
         expect(adminServiceSpyObj.updateDictionaries).toHaveBeenCalled();
     });
 
-    // it('should select file selected', () => {
-    //     component.onFileSelected(new Event(''));
-    // });
+    it('should select file selected', () => {
+        const event = {
+            target: { files: [{} as unknown as File] },
+        };
+        component.onFileSelected(event as unknown as Event);
+        expect(adminServiceSpyObj.uploadFile).toHaveBeenCalled();
+    });
+    it('should not upload', () => {
+        const event = {
+            target: { files: null },
+        };
+        component.onFileSelected(event as unknown as Event);
+        expect(adminServiceSpyObj.uploadFile).not.toHaveBeenCalled();
+    });
 
     it('should reset', () => {
-        adminServiceSpyObj.resetSettings.and.resolveTo();
         component.resetSettings();
         expect(adminServiceSpyObj.resetSettings).toHaveBeenCalled();
     });
-    it('should not reset', () => {
-        // adminServiceSpyObj.resetSettings.and.returnValue();
-        component.resetSettings();
-        expect(adminServiceSpyObj.resetSettings).toHaveBeenCalled();
-    });
+
     it('ngOnInit should call notify', () => {
         const spyNotify = spyOn<any>(component, 'notify');
+        spyNotify.and.callThrough();
         component.ngOnInit();
         subject.next({ payload: 'value', isSuccess: true });
         expect(spyNotify).toHaveBeenCalled();
