@@ -2,7 +2,9 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    width: 32rem;
+    margin-left: 1.8vw;
+    min-height: 2.5rem;
+    max-height: 2.5rem;
     box-shadow: 2px 2px 2px rgba(10, 10, 10, 0.5);
     background-image: url('~src/assets/img/rack-texture.png');
 }
@@ -12,13 +14,14 @@
     justify-content: center;
     align-items: center;
     box-sizing: border-box;
-    width: 4rem;
-    height: 4rem;
+    width: 13%;
+    min-width: 2rem;
+    height: 3rem;
     margin-right: 0.25rem;
     box-shadow: 5px 5px 5px rgba(10, 10, 10, 0.5);
     background-image: url('~src/assets/img/tile-texture.jpeg');
     font-family: 'BenchNine', sans-serif;
-    font-size: 2.5rem;
+    font-size: 2.2rem;
     font-weight: 600;
     padding: 0.625rem 0 0 0.25rem;
 }
@@ -34,7 +37,7 @@
 
 .border-selected {
     border-style: solid;
-    border-color: #f44336;
+    border-color: #ad1457;
 }
 
 .invisible {
@@ -46,11 +49,10 @@
     margin: 1rem;
     width: 7rem;
     height: 3rem;
-    font-size: 1rem;
+    font-size: small;
     text-align: center;
     padding: 0;
     display: inline-block;
-
     transition: all 0.3s;
 }
 
@@ -58,4 +60,5 @@
     display: flex;
     justify-content: center;
     align-items: center;
+    margin-left: 1.8vw;
 }

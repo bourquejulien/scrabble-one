@@ -1,23 +1,15 @@
 <body class="background">
     <div class="container justified">
-        <h1 class="header-item">Réalisé dans le cadre du cours LOG2990</h1>
         <h2>Scrabble.one</h2>
+        <div id="home">
+            <button class="exit-button" mat-fab routerLink="/home"><mat-icon style="transform: rotate(180deg)">exit_to_app</mat-icon></button>
+        </div>
         <section id="game">
-            <h1>Mode de jeu {{ gameMode === typeOfGameMode.Classic ? 'classique' : 'LOG2990' }}</h1>
-            <br />
-            <h1>Options de jeu</h1>
-            <div class="button-group">
-                <div class="dropdown">
-                    <button class="button1" mat-raised-button (click)="openDialog(typeOfGameType.SinglePlayer)">Jouer une partie en solo</button>
-                </div>
-                <div class="dropdown">
-                    <button class="button1" mat-raised-button (click)="openDialog(typeOfGameType.Multiplayer)">Créer une partie multijoueur</button>
-                </div>
-                <div class="dropdown">
-                    <button class="button1" [routerLink]="['/room-list', gameMode]" mat-raised-button>Joindre une partie multijoueur</button>
-                </div>
+            <div class="buttons">
+                <button class="option-button" mat-raised-button (click)="openDialog(typeOfGameType.SinglePlayer)">Jouer une partie en solo</button>
+                <button class="option-button" mat-raised-button (click)="openDialog(typeOfGameType.Multiplayer)">Créer une partie multijoueur</button>
+                <button class="option-button" [routerLink]="['/room-list', gameMode]" mat-raised-button>Joindre une partie multijoueur</button>
             </div>
         </section>
-        <button class="button1" mat-raised-button routerLink="/home">Accueil</button>
     </div>
 </body>

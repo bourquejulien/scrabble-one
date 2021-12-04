@@ -2,9 +2,10 @@ import { Service } from 'typedi';
 import { DatabaseService } from '@app/services/database/database.service';
 import { DictionaryMetadata } from '@common';
 import { Collection } from 'mongodb';
+import path from 'path';
 
 const COLLECTION_NAME = 'dictionary.metadata';
-const DEFAULT_PATH = 'assets/dictionaries/dictionary.json';
+const DEFAULT_PATH = path.join(process.cwd(), 'assets', 'dictionaries', 'dictionary.json');
 
 @Service()
 export class DictionaryPersistence {
@@ -15,8 +16,8 @@ export class DictionaryPersistence {
         this.defaultMetadata = {
             _id: 'dictionary.json',
             path: DEFAULT_PATH,
-            description: 'Default Dictionary',
             title: 'Dictionnaire du serveur',
+            description: 'Le dictionnaire par défaut',
             nbWords: 402503,
         };
 

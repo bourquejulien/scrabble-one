@@ -1,34 +1,16 @@
-<mat-drawer-container autosize>
+<mat-drawer-container class="bckg" autosize>
     <app-toolbar [playerType]="playerType"></app-toolbar>
     <mat-drawer #drawer autoFocus class="comm-box-sidenav" mode="side" opened>
         <app-communication-box></app-communication-box>
     </mat-drawer>
-    <div>
-        <mat-card [ngClass]="isOpen ? 'player-one-open' : 'player-one-closed'" class="scoreboard">
-            <span class="vertical-flex-items">{{ sessionService.gameConfig.firstPlayerName }}</span>
-            <span class="vertical-flex-items">Score: {{ gameService.stats.localStats.points }} </span>
-            <span class="vertical-flex-items" *ngIf="gameService.stats.localStats.rackSize < 7"
-                >Lettres: {{ gameService.stats.localStats.rackSize }}
-            </span>
-        </mat-card>
-        <mat-card [ngClass]="isOpen ? 'reserve-length-open' : 'reserve-length-closed'" class="scoreboard">
-            <span> Nombre de lettres dans la réserve : {{ reserveService.length }} </span>
-        </mat-card>
-        <mat-card [ngClass]="[isOpen ? 'player-two-open' : 'player-two-closed', sessionService.gameConfig.gameType]" class="scoreboard">
-            <span class="vertical-flex-items">{{ sessionService.gameConfig.secondPlayerName }}</span>
-            <span class="vertical-flex-items">Score: {{ gameService.stats.remoteStats.points }} </span>
-            <span class="vertical-flex-items" *ngIf="gameService.stats.remoteStats.rackSize < 7"
-                >Lettres: {{ gameService.stats.remoteStats.rackSize }}
-            </span>
-        </mat-card>
-    </div>
-    <app-objectives class="objectives" *ngIf="this.sessionService.gameConfig.gameMode === gameMode.Log2990"></app-objectives>
     <div id="tools-container">
+        <!-- <div> -->
         <div class="comm-box-sidenav-content">
             <div class="button-bar" *ngFor="let config of buttonConfig">
                 <button
                     mat-fab
-                    *ngIf="playerType === 'local' || config.icon !== 'block'"
+                    matTooltipPosition="right"
+                    *ngIf="playerType === 'local' || config.icon !== 'skip_next'"
                     class="fab-button"
                     [color]="config.color"
                     (click)="config.action()"
@@ -43,5 +25,28 @@
         <section [ngClass]="isOpen ? 'play-area-container-open' : 'play-area-container-closed'">
             <app-play-area class="play-area"></app-play-area>
         </section>
+        <!-- </div> -->
+        <div id="info-cards">
+            <div [ngClass]="isOpen ? 'open-side-bars' : 'close-side-bars'">
+                <mat-card [ngClass]="gameService.currentTurn === 'local' ? 'isTurn' : 'isNotTurn'" class="scoreboard-one">
+                    <span class="vertical-flex-items">{{ sessionService.gameConfig.firstPlayerName }}</span>
+                    <span class="vertical-flex-items">Score: {{ gameService.stats.localStats.points }} </span>
+                    <span class="vertical-flex-items" *ngIf="gameService.stats.localStats.rackSize < 7"
+                        >Lettres: {{ gameService.stats.localStats.rackSize }}
+                    </span>
+                </mat-card>
+                <mat-card [ngClass]="gameService.currentTurn !== 'local' ? 'isTurn' : 'isNotTurn'" class="scoreboard-two">
+                    <span class="vertical-flex-items">{{ sessionService.gameConfig.secondPlayerName }}</span>
+                    <span class="vertical-flex-items">Score: {{ gameService.stats.remoteStats.points }} </span>
+                    <span class="vertical-flex-items" *ngIf="gameService.stats.remoteStats.rackSize < 7"
+                        >Lettres: {{ gameService.stats.remoteStats.rackSize }}
+                    </span>
+                </mat-card>
+                <mat-card class="scoreboard-reserve">
+                    <span> {{ reserveService.length }} lettre(s) dans la réserve </span>
+                </mat-card>
+                <app-objectives class="objectives" *ngIf="this.sessionService.gameConfig.gameMode === gameMode.Log2990"></app-objectives>
+            </div>
+        </div>
     </div>
 </mat-drawer-container>

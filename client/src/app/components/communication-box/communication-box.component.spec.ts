@@ -179,21 +179,12 @@ describe('CommunicationBoxComponent', () => {
         expect(component.getMessageColor(dummyMessage)).toBe(Constants.SYSTEM_COLOR);
     });
 
-    it('should return the correct font color', () => {
-        expect(component.getFontColor(dummyMessage)).toBe(Constants.WHITE_FONT);
-        dummyMessage.messageType = MessageType.Message;
-        expect(component.getFontColor(dummyMessage)).toBe(Constants.BLACK_FONT);
-        dummyMessage.messageType = MessageType.System;
-        expect(component.getFontColor(dummyMessage)).toBe(Constants.WHITE_FONT);
-        dummyMessage.messageType = MessageType.Log;
-        expect(component.getFontColor(dummyMessage)).toBe(Constants.WHITE_FONT);
-    });
-
     it('should push new messages and call scroll', () => {
         const scrollSpy = spyOn<any>(component, 'scroll').and.callThrough();
         const pushSpy = spyOn(component.messages, 'push').and.callThrough();
 
         onMessage.next(dummyMessage);
+        fixture.detectChanges();
 
         expect(scrollSpy).toHaveBeenCalled();
         expect(pushSpy).toHaveBeenCalled();

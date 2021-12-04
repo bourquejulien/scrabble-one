@@ -39,7 +39,7 @@ describe('SkipWithAdvantage', () => {
             rackSize: 6,
         };
         (goal as SkipWithAdvantage).notifyStats(playerStats, id);
-        expect((goal as BaseGoal)['successId']).to.equal(''); // TODO changed the expected so the test won't fail
+        expect((goal as BaseGoal)['successId']).to.equal('');
     });
 
     it('should notify skip ', () => {

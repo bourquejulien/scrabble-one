@@ -6,7 +6,6 @@ import { BaseGoal, Goal } from '@app/classes/goal/base-goal';
 import { PlaceLetterTwice } from '@app/classes/goal/goals/place-letter-twice/place-letter-twice';
 import { ValidationFailed, ValidationResponse } from '@app/classes/validation/validation-response';
 import { expect } from 'chai';
-import { describe } from 'mocha';
 
 describe('PlaceLetterTwice', () => {
     let goal: Goal;

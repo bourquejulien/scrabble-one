@@ -1,7 +1,7 @@
 export enum SystemMessages {
     DebugOff = 'Affichage du débogage désactivé',
     DebugOn = 'Affichage du débogage activé',
-    HelpMessage = `!placer <rangée><colonne><direction: h ou v> <mot>: permet de placer un mot aux coordonnées spécifiées\n!aide: permet d'afficher ce dialogue\n!debug: permet d'aficher davantage de messages sur l'exécution de la partie\n!réserve: affiche la quantité restantes de chaque lettre\n!échanger <lettre>: permet d'échanger une lettre de votre rchevalet pour une lettre pigée aléatoirement\n`,
+    HelpMessage = `!aide: permet d'afficher ce dialogue\n!debug: permet d'aficher davantage de messages sur l'exécution de la partie\n!placer <rangée><colonne><direction: h ou v> <mot>: permet de placer un mot aux coordonnées spécifiées\n!réserve: affiche la quantité restante de chaque lettre dans la réserve\n!échanger <lettre>: permet d'échanger des lettres de votre chevalet pour des lettres pigées aléatoirement\n\nPour connaître les autres actions possibles, consultez le bouton d'information`,
     HelpTitle = "Capsule d'aide - Commandes disponibles",
     InvalidCommand = 'Entrée invalide',
     InvalidFormat = 'Erreur de syntaxe',

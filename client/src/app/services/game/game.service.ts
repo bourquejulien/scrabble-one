@@ -11,7 +11,7 @@ import { Answer, Failure, GameType, MessageType, ServerConfig, SessionStats, Sin
 import { environmentExt } from '@environment-ext';
 import { BehaviorSubject, Observable, Subject } from 'rxjs';
 
-const localUrl = (base: string, call: string, id?: string) => `${environmentExt.apiUrl}${base}/${call}${id ? '/' + id : ''}`;
+const localUrl = (base: string, call: string) => `${environmentExt.apiUrl}${base}/${call}`;
 
 @Injectable({
     providedIn: 'root',
@@ -22,7 +22,7 @@ export class GameService {
 
     private readonly turnSubject: BehaviorSubject<PlayerType>;
     private readonly gameEndingSubject: Subject<EndGameWinner>;
-    private readonly opponentQuitingSubject: Subject<boolean>;
+    private readonly opponentQuitingSubject: Subject<string>;
 
     private gameRunning: boolean;
 
@@ -41,8 +41,8 @@ export class GameService {
 
         this.turnSubject = new BehaviorSubject<PlayerType>(PlayerType.Local);
         this.gameEndingSubject = new Subject<EndGameWinner>();
-        this.opponentQuitingSubject = new Subject<boolean>();
-        this.socketService.on('opponentQuit', () => this.opponentQuitingSubject.next(true));
+        this.opponentQuitingSubject = new Subject<string>();
+        this.socketService.on('opponentQuit', (newOpponentName: string) => this.opponentQuit(newOpponentName));
         this.socketService.on('onTurn', async (id: string) => this.onNextTurn(id));
         this.socketService.on('endGame', async (winnerId: string) => this.endGame(winnerId));
         this.socketService.on('stats', (sessionStats: SessionStats) => this.refresh(sessionStats));
@@ -83,8 +83,13 @@ export class GameService {
         return this.gameEndingSubject.asObservable();
     }
 
-    get onOpponentQuit(): Observable<boolean> {
+    get onOpponentQuit(): Observable<string> {
         return this.opponentQuitingSubject.asObservable();
+    }
+
+    private opponentQuit(newOpponentName: string): void {
+        this.sessionService.gameConfig.secondPlayerName = newOpponentName;
+        this.opponentQuitingSubject.next(newOpponentName);
     }
 
     private async onNextTurn(id: string): Promise<void> {

@@ -22,6 +22,7 @@ export abstract class BaseGoal {
             id: this.data.id,
             name: this.data.name,
             score: this.data.score,
+            scoreDescription: this.data.scoreDescription,
             isGlobal: this.ownerId === '',
             status: this.getStatus(id),
         };

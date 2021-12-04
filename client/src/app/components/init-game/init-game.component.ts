@@ -55,8 +55,6 @@ export class InitGameComponent implements OnInit {
         this.typeOfGameType = GameType;
 
         this.virtualPlayerLevelNames = Constants.VIRTUAL_PLAYERS_LEVELS_NAMES;
-        this.botNames = this.playerNameService.virtualPlayerNamesByLevel(VirtualPlayerLevel.Easy);
-        this.dictionary = adminService.defaultDictionary as DictionaryMetadata;
         this.minutesList = TURN_LENGTH_MINUTES;
         this.secondsList = TURN_LENGTH_SECONDS;
 
@@ -79,6 +77,8 @@ export class InitGameComponent implements OnInit {
 
     ngOnInit(): void {
         this.updateVirtualPlayerNames();
+        this.botNames = this.playerNameService.virtualPlayerNamesByLevel(VirtualPlayerLevel.Easy);
+        this.dictionary = this.adminService.defaultDictionary as DictionaryMetadata;
     }
 
     updateVirtualPlayerNames() {
