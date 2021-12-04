@@ -1,16 +1,19 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/semi */
 /* eslint-disable dot-notation */
-import { HttpClient, HttpHandler } from '@angular/common/http';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/compiler';
+import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { Router } from '@angular/router';
 import { AppMaterialModule } from '@app/modules/material.module';
 import { AdminService } from '@app/services/admin/admin.service';
+import { HealthService } from '@app/services/health/health.service';
 import { Answer, DictionaryMetadata } from '@common';
-import { Observable, Subject } from 'rxjs';
-
+import { Subject } from 'rxjs';
 import { AdminPageComponent } from './admin-page.component';
+
 
 const dictionary: DictionaryMetadata = {
     _id: 'dictionary.json',
@@ -19,31 +22,37 @@ const dictionary: DictionaryMetadata = {
     description: 'cool dictionary',
     title: 'Dictionary',
 };
-
+class BlobMock {}
 describe('AdminPageComponent', () => {
     let component: AdminPageComponent;
     let fixture: ComponentFixture<AdminPageComponent>;
     let adminServiceSpyObj: jasmine.SpyObj<AdminService>;
+    let healthServiceSpyyObj: jasmine.SpyObj<HealthService>;
     let eventSpyObj: jasmine.SpyObj<Event>;
+    let subject: Subject<Answer<string>>;
 
     beforeEach(async () => {
+        subject = new Subject<Answer<string>>();
         const routerMock = {
-            navigate: jasmine.createSpy('navigate').and.callThrough(),
+            navigate: jasmine.createSpy('navigate'),
         };
-        adminServiceSpyObj = jasmine.createSpyObj('AdminService', ['downloadDictionary', 'resetSettings', 'updateDictionaries'], {
-            onNotify: new Observable<Answer<string>>(),
+        adminServiceSpyObj = jasmine.createSpyObj('AdminService', ['downloadDictionary', 'resetSettings', 'updateDictionaries', 'uploadFile'], {
+            onNotify: subject.asObservable(),
         });
-        eventSpyObj = jasmine.createSpyObj('Event', [], { target: new EventTarget() });
+        healthServiceSpyyObj = jasmine.createSpyObj('HealthService', ['isServerOk']);
+        healthServiceSpyyObj.isServerOk.and.returnValue(Promise.reject());
+        eventSpyObj = jasmine.createSpyObj('Event', [''], { target: new EventTarget() });
         await TestBed.configureTestingModule({
             declarations: [AdminPageComponent],
-            imports: [AppMaterialModule, BrowserAnimationsModule],
+            imports: [AppMaterialModule, BrowserAnimationsModule, HttpClientTestingModule],
             providers: [
-                { provide: HttpClient, useClass: HttpClient },
                 { provide: AdminService, useValue: adminServiceSpyObj },
+                { provide: HealthService, useValue: healthServiceSpyyObj },
                 { provide: Router, useValue: routerMock },
                 { provide: Event, useValue: eventSpyObj },
-                HttpHandler,
+                { provide: Blob, useClass: BlobMock },
             ],
+            schemas: [CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA],
         }).compileComponents();
     });
 
@@ -58,14 +67,11 @@ describe('AdminPageComponent', () => {
     });
 
     it('should download dictionary', () => {
-        const subject = new Subject<Blob>();
-        adminServiceSpyObj.downloadDictionary.and.returnValue(subject.asObservable());
+        const blobSubject = new Subject<Blob>();
+        adminServiceSpyObj.downloadDictionary.and.returnValue(blobSubject.asObservable());
         component.downloadDictionary(dictionary._id);
-        subject.next(new Blob(['{}'], { type: 'application/json' }));
-    });
-
-    it('should download dictionary', () => {
-        // adminServiceSpyObj.
+        blobSubject.next(new Blob(['{}'], { type: 'application/json' }));
+        expect(adminServiceSpyObj.downloadDictionary).toHaveBeenCalled();
     });
 
     it('updateDictionaries should call on adminService', () => {
@@ -74,25 +80,25 @@ describe('AdminPageComponent', () => {
     });
 
     it('should select file selected', () => {
-        component.onFileSelected(new Event(''));
+        const event = {
+            target: { files: [{} as unknown as File] },
+        };
+        component.onFileSelected(event as unknown as Event);
+        expect(adminServiceSpyObj.uploadFile).toHaveBeenCalled();
+    });
+    it('should not upload', () => {
+        const event = {
+            target: { files: null },
+        };
+        component.onFileSelected(event as unknown as Event);
+        expect(adminServiceSpyObj.uploadFile).not.toHaveBeenCalled();
     });
 
-    // it('should reset', () => {
-    //     const spyA = adminServiceSpyObj.resetSettings.and.returnValue(Promise.resolve());
-    //     component.resetSettings();
-    //     expect(spyA).toHaveBeenCalled();
-    //     const spyB = adminServiceSpyObj.resetSettings.and.returnValue(Promise.reject());
-    //     component.resetSettings();
-    //     expect(spyB).toHaveBeenCalled();
-    // });
-    
     it('ngOnInit should call notify', () => {
         const spyNotify = spyOn<any>(component, 'notify');
-        const message = new Subject<Answer<string>>();
-        adminServiceSpyObj = jasmine.createSpyObj('AdminService', ['downloadDictionary', 'resetSettings', 'updateDictionaries'], {
-            onNotify: message.asObservable(),
-        });
+        spyNotify.and.callThrough();
         component.ngOnInit();
+        subject.next({ payload: 'value', isSuccess: true });
         expect(spyNotify).toHaveBeenCalled();
     });
 });

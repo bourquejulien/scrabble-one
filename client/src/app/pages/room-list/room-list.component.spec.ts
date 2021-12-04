@@ -74,21 +74,6 @@ describe('RoomListComponent', () => {
         expect(component).toBeTruthy();
     });
 
-    // it('should call reset when a error dialog pops up', () => {
-    //     const resetSpy = spyOn(component, 'reset');
-    //     component['openErrorDialog']();
-    //     expect(resetSpy).toHaveBeenCalled();
-    // });
-
-    // it('should call reset all values', () => {
-    //     component['selectedConfig'] = { id: '1', isRandomBonus: true, playTimeMs: 1000, waitingPlayerName: 'playerName' };
-    //     component['errorsList'].push('error');
-    //     component.reset();
-    //     expect(component['selectedConfig']).toBeNull();
-    //     expect(component['errorsList'].length).toBe(0);
-    //     expect(nameValidationSpy.reset).toHaveBeenCalled();
-    // });
-
     it('should not join a random game if number of availableGame<=1', () => {
         component.availableGameConfigs.length = 1;
         component.randomJoin();
@@ -107,6 +92,7 @@ describe('RoomListComponent', () => {
     });
 
     it('should join a new game if the correct info is provided', async () => {
+        const spy = spyOn<any>(component, 'reset');
         component.nameValidator.name = playerName;
         component['selectedConfig'] = null;
         component.join();
@@ -115,6 +101,9 @@ describe('RoomListComponent', () => {
 
         component['selectedConfig'] = { id: '1', gameMode: GameMode.Classic, isRandomBonus: true, playTimeMs: 1000, waitingPlayerName: playerName };
         component.join();
+
+        expect(spy).toHaveBeenCalled();
+        expect(spy).toHaveBeenCalled();
     });
 
     it('should refresh configs', () => {
@@ -127,6 +116,6 @@ describe('RoomListComponent', () => {
 
         component['selectedConfig'] = null;
         roomServiceSubject.next(availableConfigs);
-        // component.dialog.subject.next('something');
+        expect(component.availableGameConfigs.length).toBe(2);
     });
 });

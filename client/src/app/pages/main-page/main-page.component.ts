@@ -1,9 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
-import { BestScoresComponent } from '@app/components/best-scores/best-scores.component';
-import { GameMode } from '@common';
-import { HealthService } from '@app/services/health/health.service';
 import { Router } from '@angular/router';
+import { BestScoresComponent } from '@app/components/best-scores/best-scores.component';
+import { HealthService } from '@app/services/health/health.service';
+import { GameMode } from '@common';
 
 @Component({
     selector: 'app-main-page',

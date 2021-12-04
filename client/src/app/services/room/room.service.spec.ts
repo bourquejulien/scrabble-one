@@ -44,7 +44,7 @@ describe('RoomService', () => {
         expect(service).toBeTruthy();
     });
 
-    it('should join correctly', async () => {
+    it('should join correctly', fakeAsync(() => {
         const config: MultiplayerJoinConfig = {
             playerName: 'Claudette',
             sessionId: '1',
@@ -65,15 +65,15 @@ describe('RoomService', () => {
             firstPlayerName: '',
             secondPlayerName: '',
         });
-    });
+    }));
 
-    it('should init correctly', async () => {
+    it('should init correctly', fakeAsync(() => {
         service['pendingRoomId'] = 'abc';
         service.init();
         expect(service['pendingRoomId']).toBe('');
-    });
+    }));
 
-    it('should abort', async () => {
+    it('should abort', fakeAsync(() => {
         service['pendingRoomId'] = '';
         service['abort']();
         expect(gameServiceSpyObj.start).not.toHaveBeenCalled();
@@ -82,19 +82,19 @@ describe('RoomService', () => {
         service['abort']();
         expect(gameServiceSpyObj.start).not.toHaveBeenCalled();
         expect(service['pendingRoomId']).toBe('');
-    });
+    }));
 
-    it('should handle turns', async () => {
+    it('should handle turns', fakeAsync(() => {
         service['pendingRoomId'] = '';
-        await service['onTurn']({} as unknown as ServerConfig);
+        service['onTurn']({} as unknown as ServerConfig);
         expect(socketClientSpyObj.reset).not.toHaveBeenCalled();
 
         service['pendingRoomId'] = 'pendingRoomId';
-        await service['onTurn']({} as unknown as ServerConfig);
+        service['onTurn']({} as unknown as ServerConfig);
         expect(gameServiceSpyObj.start).toHaveBeenCalled();
-    });
+    }));
 
-    it('should convert room to single player', async () => {
+    it('should convert room to single player', fakeAsync(() => {
         const config = {
             gameType: GameType.SinglePlayer,
             playTimeMs: 1000,
@@ -106,7 +106,7 @@ describe('RoomService', () => {
         serverConfigObservableSpyObj.toPromise.and.resolveTo(config);
 
         service['pendingRoomId'] = '';
-        await service['toSinglePlayer'](VirtualPlayerLevel.Easy);
+        service['toSinglePlayer'](VirtualPlayerLevel.Easy);
         expect(socketClientSpyObj.reset).not.toHaveBeenCalled();
 
         service['pendingRoomId'] = 'pendingRoomId';
@@ -124,7 +124,7 @@ describe('RoomService', () => {
             firstPlayerName: '',
             secondPlayerName: '',
         });
-    });
+    }));
 
     it('should return observables', () => {
         expect(service.onGameFull).toBeInstanceOf(Observable);
@@ -140,7 +140,7 @@ describe('RoomService', () => {
         expect(socketClientSpyObj['on']).toHaveBeenCalled();
     });
 
-    it('should create a multiplayer game', async () => {
+    it('should create a multiplayer game', fakeAsync(() => {
         const multiplayerConfig: MultiplayerCreateConfig = {
             gameType: GameType.Multiplayer,
             gameMode: GameMode.Classic,
@@ -157,9 +157,9 @@ describe('RoomService', () => {
         const request = httpMock.expectOne(localUrl('game', 'init/multi'));
         const answer: Success<string> = { isSuccess: true, payload: '0' };
         request.flush(answer);
-    });
+    }));
 
-    it('should not create a multiplayer game if bad PUT request', fakeAsync(async ()  => {
+    it('should not create a multiplayer game if bad PUT request', fakeAsync(async () => {
         const multiplayerConfig: MultiplayerCreateConfig = {
             gameType: GameType.Multiplayer,
             gameMode: GameMode.Classic,
