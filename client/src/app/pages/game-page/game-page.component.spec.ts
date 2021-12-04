@@ -2,6 +2,7 @@
 // import { HttpClientTestingModule } from '@angular/common/http/testing';
 /* eslint-disable dot-notation -- Need to access private properties for testing*/
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import { LocationChangeEvent, LocationStrategy } from '@angular/common';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { Component, CUSTOM_ELEMENTS_SCHEMA, ElementRef, Injectable, NO_ERRORS_SCHEMA } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
@@ -20,7 +21,6 @@ import { GameService } from '@app/services/game/game.service';
 import { GameMode, GameType, SessionStats } from '@common';
 import { BehaviorSubject, Observable, of, Subject } from 'rxjs';
 import { GamePageComponent } from './game-page.component';
-import { LocationChangeEvent, LocationStrategy } from '@angular/common';
 
 @Injectable({
     providedIn: 'root',

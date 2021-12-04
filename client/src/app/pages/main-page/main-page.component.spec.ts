@@ -1,10 +1,12 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { Injectable } from '@angular/core';
+import { ComponentFixture, fakeAsync, TestBed } from '@angular/core/testing';
+import { MatDialogRef } from '@angular/material/dialog';
 import { RouterTestingModule } from '@angular/router/testing';
 import { cleanStyles } from '@app/classes/helpers/cleanup.helper';
 import { AppMaterialModule } from '@app/modules/material.module';
 import { MainPageComponent } from '@app/pages/main-page/main-page.component';
 import { HealthService } from '@app/services/health/health.service';
-import { Injectable } from '@angular/core';
+import { of } from 'rxjs';
 
 @Injectable({
     providedIn: 'root',
@@ -21,17 +23,29 @@ class StubHealthService {
     }
 }
 
+@Injectable({
+    providedIn: 'root',
+})
+class MatDialogStub {
+    close() {
+        // Does Nothing
+    }
+}
+
 describe('MainPageComponent', () => {
     let component: MainPageComponent;
     let fixture: ComponentFixture<MainPageComponent>;
-    // let stubbedHealthService: StubHealthService;
-    // let router: Router;
+    let stubbedHealthService: StubHealthService;
 
     beforeEach(async () => {
+
         await TestBed.configureTestingModule({
-            imports: [RouterTestingModule, AppMaterialModule],
+            imports: [RouterTestingModule, RouterTestingModule.withRoutes([{ path: 'error', component: MainPageComponent}]), AppMaterialModule],
             declarations: [MainPageComponent],
-            providers: [{ provide: HealthService, useClass: StubHealthService }],
+            providers: [
+                { provide: HealthService, useClass: StubHealthService },
+                { provide: MatDialogRef, useClass: MatDialogStub },
+            ],
         }).compileComponents();
     });
 
@@ -40,21 +54,30 @@ describe('MainPageComponent', () => {
         component = fixture.componentInstance;
         fixture.detectChanges();
         // router = TestBed.inject(Router);
-        // stubbedHealthService = TestBed.inject(HealthService) as unknown as StubHealthService;
+        stubbedHealthService = TestBed.inject(HealthService) as unknown as StubHealthService;
     });
 
     it('should create', () => {
         expect(component).toBeTruthy();
     });
 
-    // it('should go to error page', async () => {
-    //     stubbedHealthService.isHealthy = false;
-    //     const spy = spyOn(router, 'navigate');
-    //
-    //     component.ngOnInit();
-    //
-    //     expect(spy).toHaveBeenCalled();
-    // });
+    it('should open dialog window when best scores button clicked', () => {
+        const spy = spyOn(component.dialog, 'open').and.returnValue({
+            afterClosed: () => of(true),
+        } as MatDialogRef<typeof component>);
+
+        component.openScoresDialog();
+        expect(spy).toHaveBeenCalled();
+    });
+
+    it('should go to error page', fakeAsync(() => {
+        stubbedHealthService.isHealthy = false;
+        const spy = spyOn(component['router'], 'navigate');
+
+        component.ngOnInit();
+
+        expect(spy).not.toHaveBeenCalled();
+    }));
 
     afterAll(() => cleanStyles());
 });
