@@ -112,7 +112,6 @@ export class GamePageComponent implements OnDestroy {
         this.isOpen = !this.isOpen;
     }
 
-
     private openTutorial() {
         this.dialog.open(TutorialComponent, {
             panelClass: 'init-game-dialog',
