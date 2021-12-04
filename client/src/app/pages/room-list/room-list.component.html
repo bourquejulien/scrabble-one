@@ -1,61 +1,68 @@
 <body>
     <mat-toolbar class="toolbar" color="primary">
-        <marquee width="65%" direction="left" height="40px">
-            Voici une liste de toutes les parties prêtent à être rejoint. Si aucune partie n'est disponible, nous vous proposons d'aller vous trouver
+        <marquee width="100%" direction="left" height="40px">
+            Voici une liste de toutes les parties prêtes à être jointes. Si aucune partie n'est disponible, nous vous proposons d'aller vous trouver
             un ami avec qui jouer.
         </marquee>
     </mat-toolbar>
-    <div>
-        <button mat-raised-button mat-button routerLink="/settings" (click)="reset()" class="exit-button">
-            Retourner à la selection des modes de jeu!
-        </button>
+    <div class="room-list-content">
+        <div id="home">
+            <button class="exit-button" mat-fab routerLink="/home">
+                <mat-icon style="transform: rotate(180deg)">exit_to_app</mat-icon>
+            </button>
+            <button
+                mat-fab
+                [disabled]="availableGameConfigs.length === 1"
+                class="random-game-button"
+                matTooltip="Placement aléatoire"
+                matTooltipPosition="right"
+                *ngIf="availableGameConfigs.length !== 0"
+                (click)="randomJoin()"
+            >
+                <mat-icon>youtube_searched_for</mat-icon>
+            </button>
+        </div>
 
-        <button mat-raised-button class="random-game-button" *ngIf="availableGameConfigs.length !== 0" (click)="randomJoin()">
-            Placement aléatoire
-        </button>
-    </div>
-    <div class="container" (click)="reset()">
-        <mat-card class="room-container">
-            <div class="list" *ngIf="availableGameConfigs.length !== 0">
-                <mat-action-list *ngFor="let config of availableGameConfigs; let i = index">
-                    <button mat-list-item (click)="selectedConfig = config; $event.stopPropagation()">
-                        <mat-icon matListIcon>groups</mat-icon>
-                        <h3 matLine>Salle {{ i + 1 }}</h3>
-                        <p matLine>
-                            <span> Une personne en attente : {{ config.waitingPlayerName }} </span>
-                        </p>
-                    </button>
-                </mat-action-list>
-            </div>
-            <div class="empty-list" *ngIf="availableGameConfigs.length === 0">
-                <mat-icon matListIcon>groups</mat-icon>
-                <h3 matLine>Aucune salle à rejoindre</h3>
-            </div>
-        </mat-card>
-
-        <div class="room-info" *ngIf="selectedConfig !== null" [@slideAnimation] (click)="$event.stopPropagation()" color="#eae7dc" z-index="1">
-            <mat-card class="room-info-bg">
-                <div class="info-card" color="#eae7dc">
-                    <mat-icon matListIcon>infos</mat-icon>
-                    <br />
-                    <mat-label>Partie classique</mat-label>
-                    <h3 matLine>Nom : {{ selectedConfig.waitingPlayerName }}</h3>
-                    <h3 matLine>Durée des tours : {{ selectedConfig.playTimeMs | date: 'mm:ss' }}</h3>
-                    <h3 matLine>Mode de jeu : {{ selectedConfig.gameMode === gameModeType.Classic ? 'Classique' : 'LOG2990' }}</h3>
-                    <h3 matLine>Type de bonus : {{ selectedConfig.isRandomBonus ? 'Aléatoires' : 'Standards' }}</h3>
-                </div>
-                <mat-card class="form-card" (keydown.enter)="join()">
-                    <div>
-                        <mat-form-field style="margin-right: 15px" appearance="fill">
+        <div class="container" (click)="reset()">
+            <div class="room-info" *ngIf="selectedConfig !== null" [@slideAnimation] (click)="$event.stopPropagation()">
+                <mat-card class="room-info-bg">
+                    <div class="info-card">
+                        <mat-icon matListIcon>infos</mat-icon>
+                        <br />
+                        <mat-label>Partie classique</mat-label>
+                        <h3 matLine>Nom : {{ selectedConfig.waitingPlayerName }}</h3>
+                        <h3 matLine>Durée des tours : {{ selectedConfig.playTimeMs | date: 'mm:ss' }}</h3>
+                        <h3 matLine>Mode de jeu : {{ selectedConfig.gameMode === gameModeType.Classic ? 'Classique' : 'LOG2990' }}</h3>
+                        <h3 matLine>Type de bonus : {{ selectedConfig.isRandomBonus ? 'Aléatoires' : 'Standards' }}</h3>
+                    </div>
+                    <mat-card class="join-container" (keydown.enter)="join()">
+                        <mat-form-field appearance="fill">
                             <mat-label>Joueur</mat-label>
                             <input matInput placeholder="Joueur" name="name" id="inputName" [(ngModel)]="this.nameValidator.name" />
                         </mat-form-field>
-                    </div>
-                    <div *ngFor="let error of this.errorsList" class="error">{{ error }}</div>
-                    <div>
-                        <button id="join-button" mat-raised-button (click)="this.join()" color="primary">Rejoindre</button>
-                    </div>
+                        <div *ngFor="let error of this.errorsList" class="error">{{ error }}</div>
+                        <div>
+                            <button id="join-button" mat-raised-button (click)="this.join()" color="primary">Rejoindre</button>
+                        </div>
+                    </mat-card>
                 </mat-card>
+            </div>
+            <mat-card class="room-container">
+                <div class="list" *ngIf="availableGameConfigs.length !== 0; else elseBlock">
+                    <mat-action-list *ngFor="let config of availableGameConfigs; let i = index">
+                        <button mat-list-item (click)="selectedConfig = config; $event.stopPropagation()">
+                            <mat-icon matListIcon>groups</mat-icon>
+                            <h3 matLine>Salle {{ i + 1 }}</h3>
+                            <p matLine>
+                                <span> Une personne en attente : {{ config.waitingPlayerName }} </span>
+                            </p>
+                        </button>
+                    </mat-action-list>
+                </div>
+                <ng-template #elseBlock>
+                    <mat-icon matListIcon>groups</mat-icon>
+                    <h3 matLine>Aucune salle à joindre</h3>
+                </ng-template>
             </mat-card>
         </div>
     </div>

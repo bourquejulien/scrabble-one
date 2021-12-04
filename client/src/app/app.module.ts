@@ -28,6 +28,7 @@ import { WaitingRoomPageComponent } from './pages/waiting-room-page/waiting-room
 import { VirtualPlayerNameComponent } from './components/virtual-player-name/virtual-player-name.component';
 import { ErrorDialogComponent } from './components/error-dialog/error-dialog.component';
 import { ConnectionErrorComponent } from './pages/connection-error/connection-error.component';
+import { TutorialComponent } from './components/tutorial/tutorial.component';
 
 /**
  * Main module that is used in main.ts.
@@ -61,6 +62,7 @@ import { ConnectionErrorComponent } from './pages/connection-error/connection-er
         VirtualPlayerNameComponent,
         ErrorDialogComponent,
         ConnectionErrorComponent,
+        TutorialComponent,
     ],
     imports: [AppMaterialModule, AppRoutingModule, BrowserAnimationsModule, BrowserModule, FormsModule, HttpClientModule],
     providers: [],

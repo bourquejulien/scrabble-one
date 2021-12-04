@@ -1,12 +1,12 @@
-import { Answer, DictionaryMetadata, JsonDictionary } from '@common';
-import { Service } from 'typedi';
-import * as logger from 'winston';
-import path from 'path';
-import { Validator, ValidatorResult } from 'jsonschema';
+import { generateId } from '@app/classes/id';
 import { DictionaryHandler } from '@app/handlers/dictionary-handler/dictionary-handler';
 import { DictionaryPersistence } from '@app/services/dictionary/dictionary-persistence';
+import { Answer, DictionaryMetadata, JsonDictionary } from '@common';
 import * as fs from 'fs';
-import { generateId } from '@app/classes/id';
+import { Validator, ValidatorResult } from 'jsonschema';
+import path from 'path';
+import { Service } from 'typedi';
+import * as logger from 'winston';
 
 const schema = {
     title: 'string',

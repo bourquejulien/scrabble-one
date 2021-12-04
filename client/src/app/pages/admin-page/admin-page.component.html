@@ -43,7 +43,7 @@
                         <button mat-stroked-button (click)="downloadDictionary(dictionary._id)">
                             <mat-icon>file_download</mat-icon>
                         </button>
-                        <button *ngIf="i > 0" mat-stroked-button color="warn" (click)="adminService.removeDictionary(dictionary)">
+                        <button *ngIf="i > 0" mat-stroked-button color="accent" (click)="adminService.removeDictionary(dictionary)">
                             <mat-icon>delete</mat-icon>
                         </button>
                     </mat-list-item>
@@ -88,6 +88,6 @@
         </mat-expansion-panel-header>
         <b><i>Attention: </i></b>cette option supprime tous les dictionnaires ajoutés, les meilleurs scores ainsi que les noms personnalisés des
         joueurs virtuels.
-        <button mat-stroked-button color="warn" (click)="resetSettings()">Réinitialiser les réglages<mat-icon>warning</mat-icon></button>
+        <button mat-stroked-button color="accent" (click)="resetSettings()">Réinitialiser les réglages<mat-icon>warning</mat-icon></button>
     </mat-expansion-panel>
 </mat-accordion>
