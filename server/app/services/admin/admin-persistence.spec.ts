@@ -67,6 +67,10 @@ describe('AdminPersistence', () => {
         collectionStub.findOneAndDelete.resolves({ value: { nom: 'Monique', level: VirtualPlayerLevel.Easy } } as unknown as ModifyResult);
         expect(await service.deleteVirtualPlayer('Monique')).to.equal(VirtualPlayerLevel.Easy);
     });
+    it('should return false if addVirtualPlayer get an erro', () => {
+        collectionStub.insertOne.throws('test error');
+        expect(service.addVirtualPlayer(VirtualPlayerLevel.Easy, 'Boris')).to.be.true;
+    });
     it('should get metadata by id from database', async () => {
         await service.addVirtualPlayer(VirtualPlayerLevel.Easy, 'Éléanor');
         await service.addVirtualPlayer(VirtualPlayerLevel.Easy, 'Alfred');
@@ -89,8 +93,39 @@ describe('AdminPersistence', () => {
         collectionStub.findOne.resolves(player as unknown as WithId<DictionaryMetadata>);
         expect(await service.renameVirtualPlayer('Alfred', 'Alfredo')).to.equal(VirtualPlayerLevel.Expert);
     });
+    it('should rename but deleted player is null', async () => {
+        const player = {
+            _id: 'Alfredo',
+            level: VirtualPlayerLevel.Expert,
+            isReadonly: false,
+        };
+        collectionStub.findOneAndDelete.resolves({ value: null } as unknown as ModifyResult);
+        collectionStub.findOne.resolves(player as unknown as WithId<DictionaryMetadata>);
+        expect(await service.renameVirtualPlayer('Alfred', 'Alfredo')).to.equal(null);
+    });
+    it('should rename but return null', async () => {
+        createSandbox().stub(service, 'addVirtualPlayer').resolves(false);
+        const player = {
+            _id: 'Alfredo',
+            level: VirtualPlayerLevel.Expert,
+            isReadonly: false,
+        };
+        collectionStub.findOneAndDelete.resolves({ value: player } as unknown as ModifyResult);
+        collectionStub.findOne.resolves(player as unknown as WithId<DictionaryMetadata>);
+        expect(await service.renameVirtualPlayer('Alfred', 'Alfredo')).to.equal(null);
+    });
     it('should not rename playername', async () => {
         collectionStub.findOne.resolves(null);
         expect(await service.renameVirtualPlayer('Alfred', 'Alfredo')).to.be.null;
+    });
+    it('reset should not call drop if count is 0', () => {
+        collectionStub.countDocuments.resolves(0);
+        service.reset();
+        expect(collectionStub.drop.called).to.be.false;
+    });
+    it('init should not call insert if count is 0', () => {
+        collectionStub.countDocuments.resolves(1);
+        service.init();
+        expect(collectionStub.insertMany.called).to.be.false;
     });
 });
