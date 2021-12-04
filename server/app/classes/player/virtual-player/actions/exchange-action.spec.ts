@@ -7,6 +7,7 @@ import { expect } from 'chai';
 import Sinon, { createStubInstance } from 'sinon';
 import { ExchangeAction } from './exchange-action';
 import { PlayerStatsHandler } from '@app/handlers/stats-handlers/player-stats-handler/player-stats-handler';
+import { SkipAction } from '@app/classes/player/virtual-player/actions/skip-action';
 
 const LETTERS = ['a', 'b', 'c', 'd', 'e', 'f', 'g'];
 
@@ -38,5 +39,19 @@ describe('Exchange Action', () => {
         action = new ExchangeAction(reserveHandler, socketHandler as unknown as SocketHandler, statsHandler, rack, true);
         action.execute();
         expect(rack).to.not.eql(LETTERS);
+    });
+
+    it('should return a skip action', () => {
+        reserveHandler.reserve.length = 0;
+        expect(action.execute()).to.be.instanceof(SkipAction);
+    });
+
+    it('should not use random', () => {
+        action['isRandom'] = false;
+        const min = 5;
+        const max = 10;
+        reserveHandler.reserve.length = max;
+        action['rack'].length = min;
+        expect(action['exchangeSize']).to.equal(min);
     });
 });

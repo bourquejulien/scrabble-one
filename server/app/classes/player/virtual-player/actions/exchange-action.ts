@@ -12,7 +12,7 @@ export class ExchangeAction implements Action {
         private readonly socketHandler: SocketHandler,
         private readonly statsNotifier: PlayerStatsNotifier,
         private readonly rack: string[],
-        private readonly isRandom: boolean,
+        private isRandom: boolean,
     ) {}
 
     execute(): Action | null {

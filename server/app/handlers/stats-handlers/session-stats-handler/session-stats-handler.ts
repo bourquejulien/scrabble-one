@@ -12,11 +12,7 @@ export class SessionStatsHandler {
 
     private readonly subscriptions: Subscription[];
 
-    constructor(
-        private readonly socketHandler: SocketHandler,
-        private readonly reserveHandler: ReserveHandler,
-        private readonly goalHandler: GoalHandler,
-    ) {
+    constructor(private readonly socketHandler: SocketHandler, private readonly reserveHandler: ReserveHandler, private goalHandler: GoalHandler) {
         this.subscriptions = [];
         this.playerStatsHandlers = [];
         this.subscriptions.push(goalHandler.onUpdate.subscribe(() => this.onUpdatedBonus()));

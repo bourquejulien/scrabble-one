@@ -3,12 +3,12 @@
 @typescript-eslint/no-empty-function,
 no-unused-expressions,
 */
-import { expect } from 'chai';
-import { DatabaseService } from '@app/services/database/database.service';
-import { assert, createSandbox, SinonSandbox, SinonStubbedInstance, stub } from 'sinon';
-import { Collection, Db, FindCursor, InsertOneResult, ModifyResult, WithId } from 'mongodb';
-import { DictionaryMetadata, VirtualPlayerLevel, VirtualPlayerName } from '@common';
 import { AdminPersistence } from '@app/services/admin/admin-persistence';
+import { DatabaseService } from '@app/services/database/database.service';
+import { DictionaryMetadata, VirtualPlayerLevel, VirtualPlayerName } from '@common';
+import { expect } from 'chai';
+import { Collection, Db, FindCursor, InsertOneResult, ModifyResult, WithId } from 'mongodb';
+import { assert, createSandbox, SinonSandbox, SinonStubbedInstance, stub } from 'sinon';
 
 const virtualPlayernames: VirtualPlayerName[] = [
     { name: 'Éléanor', level: VirtualPlayerLevel.Easy, isReadonly: true },
@@ -59,18 +59,27 @@ describe('AdminPersistence', () => {
         await service.init();
         assert.calledOnce(collectionStub.insertMany);
     });
+    it('should not create new data on init', async () => {
+        collectionStub.countDocuments.resolves(1);
+        await service.init();
+        assert.notCalled(collectionStub.insertMany);
+    });
     it('should reset', async () => {
         await service.reset();
         assert.calledOnce(collectionStub.drop);
     });
-    it('should delete player', async () => {
+    it('should not reset', async () => {
+        collectionStub.countDocuments.resolves(0);
+        await service.reset();
+        assert.notCalled(collectionStub.drop);
+    });
+    it('should delete playername', async () => {
         collectionStub.findOneAndDelete.resolves({ value: { nom: 'Monique', level: VirtualPlayerLevel.Easy } } as unknown as ModifyResult);
         expect(await service.deleteVirtualPlayer('Monique')).to.equal(VirtualPlayerLevel.Easy);
     });
-    it('should return false if addVirtualPlayer get an error', () => {
-        collectionStub.insertOne.throws('test error');
-        service.addVirtualPlayer(VirtualPlayerLevel.Easy, 'Boris');
-        expect(collectionStub.insertOne.threw()).to.be.true;
+    it('should not delete playername', async () => {
+        collectionStub.findOneAndDelete.resolves({ value: null } as unknown as ModifyResult);
+        expect(await service.deleteVirtualPlayer('Monique')).to.equal(null);
     });
     it('should get metadata by id from database', async () => {
         await service.addVirtualPlayer(VirtualPlayerLevel.Easy, 'Éléanor');
@@ -119,14 +128,19 @@ describe('AdminPersistence', () => {
         collectionStub.findOne.resolves(null);
         expect(await service.renameVirtualPlayer('Alfred', 'Alfredo')).to.be.null;
     });
-    it('reset should not call drop if count is 0', () => {
-        collectionStub.countDocuments.resolves(0);
-        service.reset();
-        expect(collectionStub.drop.called).to.be.false;
-    });
-    it('init should not call insert if count is 0', () => {
-        collectionStub.countDocuments.resolves(1);
-        service.init();
-        expect(collectionStub.insertMany.called).to.be.false;
+
+    it('should not rename inexistant names', async () => {
+        const player = {
+            _id: 'Alfredo',
+            level: VirtualPlayerLevel.Expert,
+            isReadonly: false,
+        };
+        collectionStub.findOne.resolves(player as unknown as WithId<DictionaryMetadata>);
+        collectionStub.insertOne.throws(new Error(''));
+        try {
+            await service.renameVirtualPlayer('Alfred', 'Alfredo');
+        } catch (err) {
+            expect(err).to.not.null;
+        }
     });
 });

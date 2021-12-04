@@ -11,7 +11,7 @@ export class PlayerStatsHandler implements PlayerStatsNotifier {
     rackScore: number;
     rackSize: number;
 
-    private readonly updateSubject: Subject<void>;
+    private updateSubject: Subject<void>;
 
     constructor(private readonly goalHandler: GoalHandler, public id: string) {
         this.baseScore = 0;
