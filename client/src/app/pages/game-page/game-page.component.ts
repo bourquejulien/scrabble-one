@@ -8,6 +8,7 @@ import { PlayerType } from '@app/classes/player/player-type';
 import { ConfirmQuitDialogComponent } from '@app/components/confirm-quit-dialog/confirm-quit-dialog.component';
 import { EndGameComponent } from '@app/components/end-game/end-game.component';
 import { OpponentQuitComponent } from '@app/components/opponent-quit/opponent-quit.component';
+import { TutorialComponent } from '@app/components/tutorial/tutorial.component';
 import { CommandsService } from '@app/services/commands/commands.service';
 import { GameService } from '@app/services/game/game.service';
 import { ReserveService } from '@app/services/reserve/reserve.service';
@@ -17,10 +18,10 @@ import { GameMode } from '@common';
 import { Subscription } from 'rxjs';
 
 export enum Icon {
-    Logout = 'exit_to_app',
+    Home = 'home',
     Message = 'question_answer',
-    Skip = 'block',
-    Dark = 'dark_mode',
+    Skip = 'skip_next',
+    Info = 'info',
 }
 
 interface ButtonConfig {
@@ -71,19 +72,25 @@ export class GamePageComponent implements OnDestroy {
         this.playerType = gameService.currentTurn;
         this.buttonConfig = [
             {
-                color: 'warn',
-                icon: Icon.Logout,
+                color: 'accent',
+                icon: Icon.Home,
                 hover: 'Quitter la partie',
                 action: () => this.confirmQuit(),
             },
             {
                 color: 'primary',
+                icon: Icon.Info,
+                hover: 'Information sur le jeu',
+                action: () => this.openTutorial(),
+            },
+            {
+                color: 'accent',
                 icon: Icon.Message,
-                hover: 'Ouvrir/Fermer la boite de communication',
+                hover: 'Basculer le clavardage',
                 action: () => this.toggleDrawer(),
             },
             {
-                color: 'warn',
+                color: 'primary',
                 icon: Icon.Skip,
                 hover: 'Passer son tour',
                 action: async () => this.commandService.parseInput('!passer'),
@@ -103,6 +110,14 @@ export class GamePageComponent implements OnDestroy {
     private toggleDrawer(): void {
         this.drawer.toggle();
         this.isOpen = !this.isOpen;
+    }
+
+
+    private openTutorial() {
+        this.dialog.open(TutorialComponent, {
+            panelClass: 'init-game-dialog',
+            autoFocus: false,
+        });
     }
 
     private endGame(winner: EndGameWinner) {

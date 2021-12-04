@@ -4,11 +4,11 @@
     justify-content: center;
     align-items: center;
     position: relative;
+    box-sizing: border-box;
 }
 
 .rack {
-    margin-top: 1rem;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+    padding-top: 1rem;
+    box-sizing: border-box;
+    width: 90%;
 }
