@@ -20,7 +20,7 @@ export class AdminService {
     private uploadSub: Subscription;
 
     private readonly updatedDictionaries: Set<string>;
-    private readonly notifySubject: Subject<Answer<string>>;
+    private notifySubject: Subject<Answer<string>>;
 
     constructor(private httpClient: HttpClient) {
         this.dictionaries = [];
