@@ -5,18 +5,21 @@
 }
 
 .row-pending {
-    background-color: #ff8a65;
+    background: #ff8a65;
     color: black;
+    min-height: 4.8em;
 }
 
 .row-succeeded {
-    background-color: (var(--player-one-color));
+    background: (var(--player-one-color));
     color: black;
+    min-height: 4.8em;
 }
 
 .row-failed {
-    background-color: (var(--player-two-color));
+    background: (var(--player-two-color));
     color: black;
+    min-height: 4.8em;
 }
 
 .mat-column-objectives {
