@@ -4,6 +4,7 @@ import { HttpClientTestingModule, HttpTestingController } from '@angular/common/
 import { fakeAsync, TestBed } from '@angular/core/testing';
 import { ReserveService } from '@app/services/reserve/reserve.service';
 import { SessionService } from '@app/services/session/session.service';
+import { SocketClientService } from '../socket-client/socket-client.service';
 
 class SessionServiceStub {
     private _id: string = '1';
@@ -15,10 +16,20 @@ class SessionServiceStub {
 describe('ReserveService', () => {
     let service: ReserveService;
     let httpMock: HttpTestingController;
+    let socketService: jasmine.SpyObj<SocketClientService>;
 
     beforeEach(() => {
+        socketService = jasmine.createSpyObj('SocketClientService', ['on']);
+        const callback = (event: string, action: (Param: any) => void) => {
+            action({});
+        };
+        socketService.on.and.callFake(callback);
+
         TestBed.configureTestingModule({
-            providers: [{ provide: SessionService, useClass: SessionServiceStub }],
+            providers: [
+                { provide: SessionService, useClass: SessionServiceStub },
+                { provide: SocketClientService, useValue: socketService },
+            ],
             imports: [HttpClientTestingModule],
         });
         service = TestBed.inject(ReserveService);
@@ -34,17 +45,14 @@ describe('ReserveService', () => {
     });
 
     it('should refresh reserve if refresh function called', fakeAsync(() => {
-        // const response = ['a', 'b', 'c'];
-        // service['reserve'] = ['z', 'y', 'x'];
-        // const firstLetter = service['reserve'][0];
-        //
-        // service.refresh();
-        // const request = httpMock.match(localUrl('retrieve', `${sessionId}`));
-        // request[0].flush(response);
-        // tick();
-        //
-        // expect(firstLetter).not.toBe(service['reserve'][0]);
-        // expect(service['reserve'][0]).toBe('a');
+        const reserve = ['a', 'b', 'c'];
+        service['reserve'] = ['z', 'y', 'x'];
+        const firstLetter = service['reserve'][0];
+
+        service['refresh'](reserve);
+
+        expect(firstLetter).not.toBe(service['reserve'][0]);
+        expect(service['reserve'][0]).toBe('a');
     }));
 
     it('should return letter quantity if valid letter', () => {
@@ -66,4 +74,11 @@ describe('ReserveService', () => {
         service.reset();
         expect(service.length).toBe(0);
     });
+
+    // it('shouldFKUEWHRFQWEIUDHQEIUDHWEID', () => {
+    //     const spy = spyOn<any>(service, 'refresh');
+    //     new ReserveService(socketService).then(() => {
+    //         expect(socketService.join).toHaveBeenCalled();
+    //     });
+    // });
 });
