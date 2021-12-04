@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 /* eslint-disable @typescript-eslint/no-magic-numbers,no-unused-vars */
 /* eslint-disable @typescript-eslint/no-empty-function */
 /* eslint-disable no-unused-expressions */
@@ -15,7 +16,7 @@ import { SessionHandlingService } from '@app/services/session-handling/session-h
 import { SocketService } from '@app/services/socket/socket-service';
 import { GameMode, GameType, Message, MessageType } from '@common';
 import { expect } from 'chai';
-import { assert, createStubInstance, SinonFakeTimers, SinonStubbedInstance, spy, stub, useFakeTimers } from 'sinon';
+import { assert, createSandbox, createStubInstance, SinonFakeTimers, SinonStubbedInstance, spy, stub, useFakeTimers } from 'sinon';
 import { Server, Socket } from 'socket.io';
 import { RoomController } from './room.controller';
 
@@ -118,13 +119,11 @@ describe('RoomController', () => {
 
     it('should log when receiving a disconnect message', async () => {
         controller['handleSockets']();
-
         const clientSocket = new SocketMock();
         controller['socketIdToPlayerId'].set('321', '321');
         socketServerMock.triggerEndpoint('connection', clientSocket);
         clientSocket.triggerEndpoint('disconnect');
         controller['handleSockets']();
-
         const clientSocket2 = new SocketMock();
         controller['socketIdToPlayerId'].set('123', '123');
         socketServerMock.triggerEndpoint('connection', clientSocket2);
@@ -202,7 +201,7 @@ describe('RoomController', () => {
         stubSessionHandlingService.getHandlerByPlayerId.returns(null);
         await socketServerMock.triggerEndpoint('connection', clientSocket);
         await clientSocket.triggerEndpoint('joinRoom', 'full');
-        // assert.called(stubSessionHandlingService.getHandlerByPlayerId); // TODO
+        // assert.called(stubSessionHandlingService.getHandlerByPlayerId);
     });
 
     it('should exit room', async () => {
@@ -224,31 +223,6 @@ describe('RoomController', () => {
         socketServerMock.triggerEndpoint('connection', clientSocket);
         clientSocket.triggerEndpoint('exit', 'dummy param');
         assert.notCalled(gameService.convertOrDispose);
-    });
-
-    it('should not join if the room is full', async () => {
-        // Sorry for the copy-paste: it is the simplest way to go to change the attributes of the stub once it was created
-        const stubSocketService = createStubInstance(SocketService);
-        socketServerMock = new SocketMock();
-        stubSocketService['socketServer'] = socketServerMock as unknown as Server;
-
-        stubSessionHandlingService = createStubInstance(SessionHandlingService, {
-            getSessionId: 'full',
-        });
-        controller = new RoomController(
-            stubSocketService,
-            stubSessionHandlingService as unknown as SessionHandlingService,
-            gameService as unknown as GameService,
-        );
-        // End of copy-paste
-
-        controller['handleSockets']();
-        stubSessionHandlingService.getHandlerByPlayerId.returns(createStubInstance(SessionHandler) as unknown as SessionHandler);
-        const clientSocket = new SocketMock();
-        const joinSpy = spy(clientSocket, 'join');
-        socketServerMock.triggerEndpoint('connection', clientSocket);
-        clientSocket.triggerEndpoint('joinRoom', 'playerId');
-        assert.notCalled(joinSpy);
     });
 
     it('should join a room', async () => {
@@ -340,5 +314,70 @@ describe('RoomController', () => {
 
         await controller['convertOrDispose'](socket as unknown as Socket, playerId);
         expect(socket.leaveCallCount).to.equal(2);
+    });
+
+    it('onRoomJoined should call start on session handler if game is not started', async () => {
+        const playerId = 'id';
+        const socket = new SocketMock();
+        const stubSessionHandler = createStubInstance(SessionHandler);
+        stubSessionHandler['sessionInfo'] = {
+            id: '',
+            playTimeMs: 0,
+            gameType: GameType.SinglePlayer,
+        };
+        stubSessionHandler['statsHandler'] = {
+            gameMode: GameMode.Classic,
+        } as unknown as SessionStatsHandler;
+        stubSessionHandler['boardHandler'] = {
+            isRandomBonus: false,
+        } as BoardHandler;
+        stubSessionHandler['playerHandler'] = {
+            players: [{ playerInfo: { name: '' } }],
+        } as PlayerHandler;
+        stub(controller, 'sessionInfos' as any).get(() => {
+            return { id: '0', gameMode: GameMode.Classic, playTimeMs: 0, waitingPlayerName: 'test', isRandomBonus: false };
+        });
+        stubSessionHandler.sessionData = { isActive: true, isStarted: false, timeLimitEpoch: 0 };
+        stubSessionHandlingService.getHandlerByPlayerId.returns(stubSessionHandler as unknown as SessionHandler);
+        await controller['onRoomJoined'](socket as unknown as Socket, playerId);
+        expect(stubSessionHandler.start.called).to.be.true;
+    });
+
+    it('onMessage supports that socketIdToPlayer didnt get', () => {
+        createSandbox().stub(controller['socketIdToPlayerId'], 'get').returns(undefined);
+        const message: Message = {
+            title: 'Title',
+            body: 'body',
+            messageType: MessageType.Message,
+            fromId: 'user1',
+        };
+
+        controller['socketIdToPlayerId'].set(IDS.socket, '');
+
+        controller['handleSockets']();
+
+        const clientSocket = new SocketMock();
+
+        const toRoomSpy = spy(socketServerMock, 'to');
+        const inRoomSpy = spy(socketServerMock, 'in');
+
+        socketServerMock.triggerEndpoint('connection', clientSocket);
+        clientSocket.triggerEndpoint('message', message);
+        message.messageType = MessageType.System;
+        clientSocket.triggerEndpoint('message', message);
+
+        message.messageType = MessageType.RemoteMessage;
+        clientSocket.triggerEndpoint('message', message);
+        stubSessionHandlingService.getHandlerByPlayerId.returns(null);
+        clientSocket.triggerEndpoint('message', message);
+
+        const dummySessionHandler = {
+            players: [{ id: '123' }, { id: '321' }],
+        } as unknown as SessionHandler;
+        stubSessionHandlingService.getHandlerByPlayerId.returns(dummySessionHandler);
+        clientSocket.triggerEndpoint('message', message);
+
+        assert.calledOnce(toRoomSpy);
+        assert.calledThrice(inRoomSpy);
     });
 });

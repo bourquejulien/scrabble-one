@@ -117,7 +117,6 @@ describe('SessionStatsHandler', () => {
         handler['playerStatsHandlers'].push(playerStatsHandlerStub2);
         handler['getPlayerStatsHandler']('id');
         goalUpdateSubject.next(undefined);
-        // TODO
         sandbox.restore();
     });
 
@@ -144,5 +143,24 @@ describe('SessionStatsHandler', () => {
 
     it('should tell when game is finished', () => {
         expect(handler.isEndGame).to.be.true;
+    });
+
+    it('should tell when game is finished 2', () => {
+        handler['reserveHandler'].reserve = [];
+        createSandbox()
+            .stub(handler, 'rackEmptied' as any)
+            .get(() => {
+                return true;
+            });
+        createSandbox()
+            .stub(handler, 'isOverSkipLimit' as any)
+            .get(() => {
+                return false;
+            });
+        expect(handler.isEndGame).to.be.true;
+    });
+    it('should return null', () => {
+        handler['playerStatsHandlers'].length = 0;
+        expect(handler['getStats']('ada')).to.be.null;
     });
 });

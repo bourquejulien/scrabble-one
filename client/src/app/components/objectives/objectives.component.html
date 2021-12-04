@@ -1,6 +1,6 @@
-<mat-table [dataSource]="this.goalService.publicObjectives" class="table mat-elevation-z8" #tablePublic>
+<mat-table [dataSource]="this.goalService.publicObjectives" class="table mat-elevation-z2" #tablePublic>
     <ng-container matColumnDef="objectives">
-        <mat-header-cell *matHeaderCellDef class="header"> Objectifs Publics </mat-header-cell>
+        <mat-header-cell *matHeaderCellDef class="header"> Objectifs publics </mat-header-cell>
         <mat-cell
             *matCellDef="let goal"
             [ngClass]="{
@@ -14,7 +14,7 @@
     </ng-container>
 
     <ng-container matColumnDef="points">
-        <mat-header-cell *matHeaderCellDef class="header"> Points Bonus </mat-header-cell>
+        <mat-header-cell *matHeaderCellDef class="header"> Points bonus </mat-header-cell>
         <mat-cell
             *matCellDef="let goal"
             [ngClass]="{
@@ -23,7 +23,14 @@
                 'row-succeeded': goal.status === goalStatus.Succeeded
             }"
         >
-            {{ goal.score }}
+            <span class="score-description" *ngIf="goal.score !== -1; else elseBlockPublic">
+                {{ goal.score }}
+            </span>
+            <ng-template #elseBlockPublic>
+                <span class="score-description">
+                    {{ goal.scoreDescription }}
+                </span>
+            </ng-template>
         </mat-cell>
     </ng-container>
 
@@ -47,9 +54,9 @@
     <mat-row *matRowDef="let row; columns: displayedColumns"></mat-row>
 </mat-table>
 
-<mat-table [dataSource]="this.goalService.privateObjectives" class="table mat-elevation-z8" #tablePrivate>
+<mat-table [dataSource]="this.goalService.privateObjectives" class="table mat-elevation-z2" #tablePrivate>
     <ng-container matColumnDef="objectives">
-        <mat-header-cell *matHeaderCellDef class="header"> Objectifs Privés </mat-header-cell>
+        <mat-header-cell *matHeaderCellDef class="header"> Objectifs privés </mat-header-cell>
         <mat-cell
             *matCellDef="let goal"
             [ngClass]="{
@@ -63,7 +70,7 @@
     </ng-container>
 
     <ng-container matColumnDef="points">
-        <mat-header-cell *matHeaderCellDef class="header"> Points Bonus </mat-header-cell>
+        <mat-header-cell *matHeaderCellDef class="header"> Points bonus </mat-header-cell>
         <mat-cell
             *matCellDef="let goal"
             [ngClass]="{
@@ -72,7 +79,14 @@
                 'row-succeeded': goal.status === goalStatus.Succeeded
             }"
         >
-            {{ goal.score }}
+            <span class="score-description" *ngIf="goal.score !== -1; else elseBlockPrivate">
+                {{ goal.score }}
+            </span>
+            <ng-template #elseBlockPrivate>
+                <span class="score-description">
+                    {{ goal.scoreDescription }}
+                </span>
+            </ng-template>
         </mat-cell>
     </ng-container>
 

@@ -74,12 +74,22 @@ describe('BoardService', () => {
     });
 
     it('should refresh board', fakeAsync(() => {
-        // service.refresh();
-        // const request = httpMock.match(localUrl('retrieve', `${session.id}`));
-        // request[0].flush([]);
-        // tick();
-        //
-        // expect(request[0].request.method).toEqual('GET');
+        const BOARD_DATA: BoardData = {
+            board: [],
+            filledPositions: [],
+        };
+
+        let isFirstCall = true;
+
+        service.boardUpdated.subscribe((boardData) => {
+            if (isFirstCall) {
+                isFirstCall = false;
+            } else {
+                expect(boardData).toEqual(BOARD_DATA);
+            }
+        });
+
+        service['refresh'](BOARD_DATA);
     }));
 
     it('should retrieve placements of letters to place in word', () => {

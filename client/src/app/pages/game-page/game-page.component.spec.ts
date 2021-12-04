@@ -2,6 +2,7 @@
 // import { HttpClientTestingModule } from '@angular/common/http/testing';
 /* eslint-disable dot-notation -- Need to access private properties for testing*/
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import { LocationChangeEvent, LocationStrategy } from '@angular/common';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { Component, CUSTOM_ELEMENTS_SCHEMA, ElementRef, Injectable, NO_ERRORS_SCHEMA } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
@@ -20,7 +21,6 @@ import { GameService } from '@app/services/game/game.service';
 import { GameMode, GameType, SessionStats } from '@common';
 import { BehaviorSubject, Observable, of, Subject } from 'rxjs';
 import { GamePageComponent } from './game-page.component';
-import { LocationChangeEvent, LocationStrategy } from '@angular/common';
 
 @Injectable({
     providedIn: 'root',
@@ -135,15 +135,21 @@ describe('GamePageComponent', () => {
         expect(spy).toHaveBeenCalled();
     });
 
-    it('should call toggleDrawer if second button is clicked', () => {
-        const spy = spyOn<any>(component, 'toggleDrawer');
+    it('should call open if second button is clicked', () => {
+        const spy = spyOn<any>(matDialog, 'open');
         component['buttonConfig'][1].action();
         expect(spy).toHaveBeenCalled();
     });
 
-    it('should call parseInput if third button is clicked', async () => {
-        const spy = spyOn<any>(component['commandService'], 'parseInput');
+    it('should call toggleDrawer if third button is clicked', () => {
+        const spy = spyOn<any>(component, 'toggleDrawer');
         component['buttonConfig'][2].action();
+        expect(spy).toHaveBeenCalled();
+    });
+
+    it('should call parseInput if fourth button is clicked', async () => {
+        const spy = spyOn<any>(component['commandService'], 'parseInput');
+        component['buttonConfig'][3].action();
         spy.and.callThrough();
         expect(spy).toHaveBeenCalled();
     });

@@ -1,7 +1,6 @@
 /* eslint-disable no-unused-expressions */
 /* eslint-disable @typescript-eslint/no-unused-expressions */
 /* eslint-disable dot-notation */
-import { describe } from 'mocha';
 import { ManyLettersInRow } from '@app/classes/goal/goals/many-letters-in-row/many-letters-in-row';
 import { expect } from 'chai';
 import { BaseGoal, Goal } from '@app/classes/goal/base-goal';
@@ -24,6 +23,7 @@ describe('BaseGoal', () => {
             score: 50,
             name: 'Placer 5 lettres du chevalet ou plus lors de 3 tours consécutifs',
             status: GoalStatus.Pending,
+            scoreDescription: undefined,
             isGlobal: false,
         };
         expect(goal.getGoalData('id')).to.eql(goalDescription);

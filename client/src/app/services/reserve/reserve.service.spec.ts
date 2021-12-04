@@ -74,11 +74,4 @@ describe('ReserveService', () => {
         service.reset();
         expect(service.length).toBe(0);
     });
-
-    // it('shouldFKUEWHRFQWEIUDHQEIUDHWEID', () => {
-    //     const spy = spyOn<any>(service, 'refresh');
-    //     new ReserveService(socketService).then(() => {
-    //         expect(socketService.join).toHaveBeenCalled();
-    //     });
-    // });
 });

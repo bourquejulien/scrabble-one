@@ -15,7 +15,7 @@ import { PlayerType } from '@app/classes/player/player-type';
 import { AppMaterialModule } from '@app/modules/material.module';
 import { GameService } from '@app/services/game/game.service';
 import { RoomService } from '@app/services/room/room.service';
-import { Failure, GameMode, GameType, VirtualPlayerLevel } from '@common';
+import { DictionaryMetadata, Failure, GameMode, GameType, VirtualPlayerLevel } from '@common';
 import { InitGameComponent } from './init-game.component';
 import { AdminService } from '@app/services/admin/admin.service';
 import { PlayerNameService } from '@app/services/player-name/player-name.service';
@@ -62,6 +62,14 @@ const THIRTY_SECONDS = 30;
 const FIVE_MINUTES = 5;
 const FOUR_MINUTES = 4;
 
+const METADATA: DictionaryMetadata = {
+    _id: 'dictionary2.json',
+    path: '2',
+    title: '2',
+    description: '',
+    nbWords: 1,
+};
+
 describe('InitGameComponent', () => {
     let component: InitGameComponent;
     let fixture: ComponentFixture<InitGameComponent>;
@@ -84,7 +92,7 @@ describe('InitGameComponent', () => {
         routerSpy = jasmine.createSpyObj('Router', ['navigate']);
         routerSpy.navigate.and.resolveTo(true);
 
-        const adminService = jasmine.createSpyObj('AdminService', { retrieveDictionaries: Promise.resolve() }, [{ defaultDictionary: {} }]);
+        const adminService = jasmine.createSpyObj('AdminService', { retrieveDictionaries: Promise.resolve() }, { defaultDictionary: METADATA });
 
         await TestBed.configureTestingModule({
             declarations: [InitGameComponent],
@@ -105,8 +113,10 @@ describe('InitGameComponent', () => {
     beforeEach(() => {
         fixture = TestBed.createComponent(InitGameComponent);
         component = fixture.componentInstance;
+        component.dictionary = METADATA;
         component.data.gameType = GameType.SinglePlayer;
         fixture.detectChanges();
+        component.dictionary = METADATA;
         gameServiceStub = TestBed.inject(GameService) as unknown as GameServiceStub;
         playerNameService = TestBed.inject(PlayerNameService);
     });
