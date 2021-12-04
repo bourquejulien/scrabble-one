@@ -67,9 +67,10 @@ describe('AdminPersistence', () => {
         collectionStub.findOneAndDelete.resolves({ value: { nom: 'Monique', level: VirtualPlayerLevel.Easy } } as unknown as ModifyResult);
         expect(await service.deleteVirtualPlayer('Monique')).to.equal(VirtualPlayerLevel.Easy);
     });
-    it('should return false if addVirtualPlayer get an erro', () => {
+    it('should return false if addVirtualPlayer get an error', () => {
         collectionStub.insertOne.throws('test error');
-        expect(service.addVirtualPlayer(VirtualPlayerLevel.Easy, 'Boris')).to.be.true;
+        service.addVirtualPlayer(VirtualPlayerLevel.Easy, 'Boris');
+        expect(collectionStub.insertOne.threw()).to.be.true;
     });
     it('should get metadata by id from database', async () => {
         await service.addVirtualPlayer(VirtualPlayerLevel.Easy, 'Éléanor');
