@@ -37,6 +37,7 @@ describe('MouseHandlingService', () => {
 
     it('mouseHitDetect should assign the mouse position to mousePosition variable', () => {
         const expectedPosition: Vec2 = { x: gridService.boardGridSize, y: gridService.boardGridSize };
+        service.displaySize = gridService.height;
         mouseEvent = {
             offsetX: gridService.height,
             offsetY: gridService.width,

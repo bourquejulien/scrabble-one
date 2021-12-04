@@ -1,15 +1,15 @@
 <div class="background-img">
     <div class="selector">
         <mat-form-field class="difficulty-selector">
-            <mat-label>Profil du JV</mat-label>
+            <mat-label>Profil du joueur virtuel</mat-label>
             <mat-select [(ngModel)]="virtualPlayerLevelName">
                 <mat-option *ngFor="let gameType of virtualPlayerLevelNames" [value]="gameType">{{ gameType }}</mat-option>
             </mat-select>
         </mat-form-field>
-        <button mat-button class="convertion" (click)="convertToSoloMode()">Convertir en partie solo</button>
+        <button mat-button class="waiting-room-buttons" (click)="convertToSoloMode()">Convertir en partie solo</button>
     </div>
     <p>En attente d'un second joueur!</p>
     <div id="buttons">
-        <button mat-button class="abandon" id="left" (click)="abort()">Abandonner</button>
+        <button mat-button class="waiting-room-buttons" (click)="abort()">Abandonner</button>
     </div>
 </div>
