@@ -11,7 +11,7 @@ import { Answer, Failure, GameType, MessageType, ServerConfig, SessionStats, Sin
 import { environmentExt } from '@environment-ext';
 import { BehaviorSubject, Observable, Subject } from 'rxjs';
 
-const localUrl = (base: string, call: string, id?: string) => `${environmentExt.apiUrl}${base}/${call}${id ? '/' + id : ''}`;
+const localUrl = (base: string, call: string) => `${environmentExt.apiUrl}${base}/${call}`;
 
 @Injectable({
     providedIn: 'root',
