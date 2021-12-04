@@ -48,7 +48,6 @@ describe('PlayerController', () => {
         const player3: Player = { id: '1', isTurn: false, playerInfo: { id: '3', isHuman: false, name: 'Alphonse' } } as Player;
         const stubPlayerHandler = createStubInstance(PlayerHandler) as unknown as PlayerHandler;
         stubPlayerHandler['players'] = [player1, player2, player3];
-
         stubSessionHandler['playerHandler'] = stubPlayerHandler;
         stubSessionHandlingService.getHandlerByPlayerId.returns(stubSessionHandler as unknown as SessionHandler);
 
@@ -77,6 +76,47 @@ describe('PlayerController', () => {
             });
     });
 
+    it('POST /place/2 with valid user but response is false', async () => {
+        const stubSessionHandler = createStubInstance(SessionHandler);
+        const player1: Player = {
+            id: '1',
+            isTurn: false,
+            playerInfo: { id: '1', isHuman: true, name: 'Monique' },
+            rack,
+        } as Player;
+        const player2: HumanPlayer = {
+            id: '2',
+            isTurn: false,
+            playerInfo: { id: '2', isHuman: true, name: 'Claudette' },
+            playerData: {
+                rack,
+            },
+            // eslint-disable-next-line @typescript-eslint/no-empty-function
+            skipTurn: () => true,
+            exchangeLetters: () => {
+                return exchangeLettersResponse;
+            },
+            placeLetters: () => {
+                return false;
+            },
+        } as unknown as HumanPlayer;
+        const player3: Player = { id: '1', isTurn: false, playerInfo: { id: '3', isHuman: false, name: 'Alphonse' } } as Player;
+        const stubPlayerHandler = createStubInstance(PlayerHandler) as unknown as PlayerHandler;
+        stubPlayerHandler['players'] = [player1, player2, player3];
+        stubSessionHandler['playerHandler'] = stubPlayerHandler;
+        stubSessionHandlingService.getHandlerByPlayerId.returns(stubSessionHandler as unknown as SessionHandler);
+        const app = Container.get(Application);
+        Object.defineProperty(app['playerController'], 'sessionHandlingService', { value: stubSessionHandlingService });
+        expressApp = app.app;
+        const placement: Placement[] = [{ letter: 'A', position: { x: 8, y: 8 } }];
+        return request(expressApp)
+            .post('/api/player/place/2')
+            .send(placement)
+            .then((response) => {
+                expect(response.status).to.be.equal(Constants.HTTP_STATUS.BAD_REQUEST);
+            });
+    });
+
     it('POST /api/player/exchange/2   ', async () => {
         const exchange = ['words', 'are', 'great'];
         return request(expressApp)
@@ -84,6 +124,48 @@ describe('PlayerController', () => {
             .send(exchange)
             .then((response) => {
                 expect(response.status).to.be.equal(Constants.HTTP_STATUS.OK);
+                expect(response.body).to.deep.equal({});
+            });
+    });
+
+    it('POST /api/player/exchange/2 but response is false  ', async () => {
+        const stubSessionHandler = createStubInstance(SessionHandler);
+        const player1: Player = {
+            id: '1',
+            isTurn: false,
+            playerInfo: { id: '1', isHuman: true, name: 'Monique' },
+            rack,
+        } as Player;
+        const player2: HumanPlayer = {
+            id: '2',
+            isTurn: false,
+            playerInfo: { id: '2', isHuman: true, name: 'Claudette' },
+            playerData: {
+                rack,
+            },
+            // eslint-disable-next-line @typescript-eslint/no-empty-function
+            skipTurn: () => true,
+            exchangeLetters: () => {
+                return false;
+            },
+            placeLetters: () => {
+                return false;
+            },
+        } as unknown as HumanPlayer;
+        const player3: Player = { id: '1', isTurn: false, playerInfo: { id: '3', isHuman: false, name: 'Alphonse' } } as Player;
+        const stubPlayerHandler = createStubInstance(PlayerHandler) as unknown as PlayerHandler;
+        stubPlayerHandler['players'] = [player1, player2, player3];
+        stubSessionHandler['playerHandler'] = stubPlayerHandler;
+        stubSessionHandlingService.getHandlerByPlayerId.returns(stubSessionHandler as unknown as SessionHandler);
+        const app = Container.get(Application);
+        Object.defineProperty(app['playerController'], 'sessionHandlingService', { value: stubSessionHandlingService });
+        expressApp = app.app;
+        const exchange = ['words', 'are', 'great'];
+        return request(expressApp)
+            .post('/api/player/exchange/2')
+            .send(exchange)
+            .then((response) => {
+                expect(response.status).to.be.equal(Constants.HTTP_STATUS.BAD_REQUEST);
                 expect(response.body).to.deep.equal({});
             });
     });
@@ -104,6 +186,45 @@ describe('PlayerController', () => {
             .post('/api/player/skip/2')
             .then((response) => {
                 expect(response.status).to.be.equal(Constants.HTTP_STATUS.OK);
+                expect(response.body).to.deep.equal({});
+            });
+    });
+    it('POST /api/player/skip/ skip humanPlayer turn but response is false ', async () => {
+        const stubSessionHandler = createStubInstance(SessionHandler);
+        const player1: Player = {
+            id: '1',
+            isTurn: false,
+            playerInfo: { id: '1', isHuman: true, name: 'Monique' },
+            rack,
+        } as Player;
+        const player2: HumanPlayer = {
+            id: '2',
+            isTurn: false,
+            playerInfo: { id: '2', isHuman: true, name: 'Claudette' },
+            playerData: {
+                rack,
+            },
+            // eslint-disable-next-line @typescript-eslint/no-empty-function
+            skipTurn: () => false,
+            exchangeLetters: () => {
+                return exchangeLettersResponse;
+            },
+            placeLetters: () => {
+                return true;
+            },
+        } as unknown as HumanPlayer;
+        const player3: Player = { id: '1', isTurn: false, playerInfo: { id: '3', isHuman: false, name: 'Alphonse' } } as Player;
+        const stubPlayerHandler = createStubInstance(PlayerHandler) as unknown as PlayerHandler;
+        stubPlayerHandler['players'] = [player1, player2, player3];
+        stubSessionHandler['playerHandler'] = stubPlayerHandler;
+        stubSessionHandlingService.getHandlerByPlayerId.returns(stubSessionHandler as unknown as SessionHandler);
+        const app = Container.get(Application);
+        Object.defineProperty(app['playerController'], 'sessionHandlingService', { value: stubSessionHandlingService });
+        expressApp = app.app;
+        return request(expressApp)
+            .post('/api/player/skip/2')
+            .then((response) => {
+                expect(response.status).to.be.equal(Constants.HTTP_STATUS.BAD_REQUEST);
                 expect(response.body).to.deep.equal({});
             });
     });
