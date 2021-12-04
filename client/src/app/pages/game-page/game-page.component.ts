@@ -68,7 +68,7 @@ export class GamePageComponent implements OnDestroy {
             }
         });
 
-        this.playerType = gameService.onTurn.getValue();
+        this.playerType = gameService.currentTurn;
         this.buttonConfig = [
             {
                 color: 'warn',
@@ -88,15 +88,9 @@ export class GamePageComponent implements OnDestroy {
                 hover: 'Passer son tour',
                 action: async () => this.commandService.parseInput('!passer'),
             },
-            {
-                color: 'primary',
-                icon: Icon.Dark,
-                hover: 'Activer le mode sombre',
-                action: () => this.toggleDarkMode(),
-            },
         ];
-        this.opponentQuitSubscription = gameService.opponentQuiting.subscribe(() => this.opponentQuit());
-        this.gameEndingSubscription = gameService.gameEnding.subscribe((winner) => this.endGame(winner));
+        this.opponentQuitSubscription = gameService.onOpponentQuit.subscribe(() => this.opponentQuit());
+        this.gameEndingSubscription = gameService.onGameEnding.subscribe((winner) => this.endGame(winner));
         this.onTurnSubscription = gameService.onTurn.subscribe((e) => (this.playerType = e));
     }
 
@@ -110,6 +104,7 @@ export class GamePageComponent implements OnDestroy {
         this.drawer.toggle();
         this.isOpen = !this.isOpen;
     }
+
     private endGame(winner: EndGameWinner) {
         const dialogRef = this.dialog.open(EndGameComponent, { panelClass: 'end-game-dialog', data: { winner } });
         dialogRef.afterClosed().subscribe((result) => {
@@ -121,15 +116,6 @@ export class GamePageComponent implements OnDestroy {
 
     private opponentQuit() {
         this.dialog.open(OpponentQuitComponent);
-    }
-
-    private toggleDarkMode(): void {
-        const darkMode = 'darkMode';
-        if (this.cssClassName === darkMode) {
-            this.cssClassName = '';
-        } else {
-            this.cssClassName = 'darkMode';
-        }
     }
 
     private confirmQuit(): void {

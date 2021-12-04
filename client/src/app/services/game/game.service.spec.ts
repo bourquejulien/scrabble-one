@@ -188,7 +188,7 @@ describe('GameService', () => {
         await service['start'](serverConfig);
         spyOn<any>(service, 'onNextTurn').and.callThrough();
         await service['endGame'](winnerId);
-        service['gameEnding'].next();
+        service['gameEndingSubject'].next();
         expect(session['_gameConfig'].firstPlayerName).toBe(gameConfig.firstPlayerName);
     });
 
@@ -205,7 +205,7 @@ describe('GameService', () => {
         const winner = EndGameWinner.Draw;
         session['_gameConfig'] = gameConfig;
 
-        const spy = spyOn<any>(service.gameEnding, 'next');
+        const spy = spyOn<any>(service['gameEndingSubject'], 'next');
         await service['endGame'](winnerId);
         expect(spy).toHaveBeenCalledWith(winner);
     });
@@ -224,7 +224,7 @@ describe('GameService', () => {
         session['_id'] = '2';
         session['_gameConfig'] = gameConfig;
 
-        const spy = spyOn<any>(service.gameEnding, 'next');
+        const spy = spyOn<any>(service['gameEndingSubject'], 'next');
         await service['endGame'](winnerId);
         expect(spy).toHaveBeenCalledWith(winner);
     });
@@ -259,7 +259,7 @@ describe('GameService', () => {
         service.stats = stats;
         service['currentTurn'] = playerType;
 
-        const spy = spyOn<any>(service.gameEnding, 'next');
+        const spy = spyOn<any>(service['gameEndingSubject'], 'next');
         await service['start'](serverConfig);
         spy.and.callThrough();
         await service['onNextTurn'](id);

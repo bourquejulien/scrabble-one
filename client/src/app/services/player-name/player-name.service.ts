@@ -4,7 +4,7 @@ import { BehaviorSubject, Observable } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 import { environmentExt } from '@environment-ext';
 
-const localUrl = (call: string, id: string) => `${environmentExt.apiUrl}admin/${call}/${id}`;
+const localUrl = (call: string, param: string) => `${environmentExt.apiUrl}admin/${call}/${param}`;
 
 @Injectable({
     providedIn: 'root',
@@ -49,6 +49,7 @@ export class PlayerNameService {
         if (virtualPlayerNames.length === 0) {
             return;
         }
+
         this.virtualPlayerNames.push(...virtualPlayerNames);
         this.virtualPlayerSubject.next(virtualPlayerNames);
     }
