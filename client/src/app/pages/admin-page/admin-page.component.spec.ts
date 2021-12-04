@@ -94,11 +94,6 @@ describe('AdminPageComponent', () => {
         expect(adminServiceSpyObj.uploadFile).not.toHaveBeenCalled();
     });
 
-    it('should reset', () => {
-        component.resetSettings();
-        expect(adminServiceSpyObj.resetSettings).toHaveBeenCalled();
-    });
-
     it('ngOnInit should call notify', () => {
         const spyNotify = spyOn<any>(component, 'notify');
         spyNotify.and.callThrough();
