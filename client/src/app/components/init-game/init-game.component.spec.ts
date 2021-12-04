@@ -211,21 +211,24 @@ describe('InitGameComponent', () => {
         expect(spy).toHaveBeenCalled();
     });
 
-    it('should init  singlePlayer game if multiplayer config invalid', async () => {
-        dialogData.gameType = GameType.Multiplayer;
-        const spy = spyOn<any>(component, 'initMultiplayer');
+    it('should init singlePlayer game if multiplayer config valid', async () => {
+        const spy = spyOn<any>(playerNameService, 'retrievePlayerNames').and.returnValue(true);
         spyOn<any>(component, 'confirmInitialization').and.returnValue(true);
 
-        spy.and.callThrough();
+        gameServiceStub.shouldFail = false;
+        isRoomCreateFail = false;
+        component.data.gameType = GameType.Multiplayer;
         await component.init();
 
-        expect(spy).toHaveBeenCalled();
+        expect(spy).not.toHaveBeenCalled();
     });
 
     it('should init multiplayer game if confirm initialization succeeds', async () => {
         dialogData.gameType = GameType.Multiplayer;
         const spy = spyOn(component.dialogRef, 'close');
         spyOn<any>(component, 'confirmInitialization').and.returnValue(true);
+        gameServiceStub.shouldFail = false;
+        isRoomCreateFail = false;
         await component.init();
 
         expect(spy).toHaveBeenCalled();
