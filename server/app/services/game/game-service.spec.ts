@@ -141,7 +141,7 @@ describe('GameService', () => {
     it('should join multiplayer', async () => {
         sessionHandlerStub['sessionData'] = {
             isActive: true,
-            isStarted: true,
+            isStarted: false,
             timeLimitEpoch: 1000,
         };
         const playerStub = createStubInstance(HumanPlayer);

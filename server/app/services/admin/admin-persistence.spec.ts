@@ -59,13 +59,27 @@ describe('AdminPersistence', () => {
         await service.init();
         assert.calledOnce(collectionStub.insertMany);
     });
+    it('should not create new data on init', async () => {
+        collectionStub.countDocuments.resolves(1);
+        await service.init();
+        assert.notCalled(collectionStub.insertMany);
+    });
     it('should reset', async () => {
         await service.reset();
         assert.calledOnce(collectionStub.drop);
     });
-    it('should delete player', async () => {
+    it('should not reset', async () => {
+        collectionStub.countDocuments.resolves(0);
+        await service.reset();
+        assert.notCalled(collectionStub.drop);
+    });
+    it('should delete playername', async () => {
         collectionStub.findOneAndDelete.resolves({ value: { nom: 'Monique', level: VirtualPlayerLevel.Easy } } as unknown as ModifyResult);
         expect(await service.deleteVirtualPlayer('Monique')).to.equal(VirtualPlayerLevel.Easy);
+    });
+    it('should not delete playername', async () => {
+        collectionStub.findOneAndDelete.resolves({ value: null } as unknown as ModifyResult);
+        expect(await service.deleteVirtualPlayer('Monique')).to.equal(null);
     });
     it('should get metadata by id from database', async () => {
         await service.addVirtualPlayer(VirtualPlayerLevel.Easy, 'Éléanor');
@@ -92,5 +106,20 @@ describe('AdminPersistence', () => {
     it('should not rename playername', async () => {
         collectionStub.findOne.resolves(null);
         expect(await service.renameVirtualPlayer('Alfred', 'Alfredo')).to.be.null;
+    });
+
+    it('should not rename inexistant names', async () => {
+        const player = {
+            _id: 'Alfredo',
+            level: VirtualPlayerLevel.Expert,
+            isReadonly: false,
+        };
+        collectionStub.findOne.resolves(player as unknown as WithId<DictionaryMetadata>);
+        collectionStub.insertOne.throws(new Error(''));
+        try {
+            await service.renameVirtualPlayer('Alfred', 'Alfredo');
+        } catch (err) {
+            expect(err).to.not.null;
+        }
     });
 });
