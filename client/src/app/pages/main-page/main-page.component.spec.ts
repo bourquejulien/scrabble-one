@@ -53,7 +53,6 @@ describe('MainPageComponent', () => {
         fixture = TestBed.createComponent(MainPageComponent);
         component = fixture.componentInstance;
         fixture.detectChanges();
-        // router = TestBed.inject(Router);
         stubbedHealthService = TestBed.inject(HealthService) as unknown as StubHealthService;
     });
 

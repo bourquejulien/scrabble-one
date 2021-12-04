@@ -2,6 +2,8 @@
 /* eslint-disable @typescript-eslint/semi */
 /* eslint-disable dot-notation */
 import { HttpClient, HttpHandler } from '@angular/common/http';
+import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/compiler';
+import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { Router } from '@angular/router';
@@ -9,8 +11,8 @@ import { AppMaterialModule } from '@app/modules/material.module';
 import { AdminService } from '@app/services/admin/admin.service';
 import { Answer, DictionaryMetadata } from '@common';
 import { Observable, Subject } from 'rxjs';
-
 import { AdminPageComponent } from './admin-page.component';
+
 
 const dictionary: DictionaryMetadata = {
     _id: 'dictionary.json',
@@ -36,6 +38,7 @@ describe('AdminPageComponent', () => {
         eventSpyObj = jasmine.createSpyObj('Event', [], { target: new EventTarget() });
         await TestBed.configureTestingModule({
             declarations: [AdminPageComponent],
+
             imports: [AppMaterialModule, BrowserAnimationsModule],
             providers: [
                 { provide: HttpClient, useClass: HttpClient },
@@ -44,6 +47,7 @@ describe('AdminPageComponent', () => {
                 { provide: Event, useValue: eventSpyObj },
                 HttpHandler,
             ],
+            schemas: [CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA],
         }).compileComponents();
     });
 
@@ -85,7 +89,7 @@ describe('AdminPageComponent', () => {
     //     component.resetSettings();
     //     expect(spyB).toHaveBeenCalled();
     // });
-    
+
     it('ngOnInit should call notify', () => {
         const spyNotify = spyOn<any>(component, 'notify');
         const message = new Subject<Answer<string>>();

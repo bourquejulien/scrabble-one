@@ -15,20 +15,20 @@ import { BoardComponent } from './components/board/board.component';
 import { CommunicationBoxComponent } from './components/communication-box/communication-box.component';
 import { ConfirmQuitDialogComponent } from './components/confirm-quit-dialog/confirm-quit-dialog.component';
 import { EndGameComponent } from './components/end-game/end-game.component';
+import { ErrorDialogComponent } from './components/error-dialog/error-dialog.component';
 import { InitGameComponent } from './components/init-game/init-game.component';
 import { ObjectivesComponent } from './components/objectives/objectives.component';
 import { OpponentQuitComponent } from './components/opponent-quit/opponent-quit.component';
 import { RackComponent } from './components/rack/rack.component';
 import { SizeSelectorComponent } from './components/size-selector/size-selector.component';
 import { ToolbarComponent } from './components/toolbar/toolbar.component';
+import { TutorialComponent } from './components/tutorial/tutorial.component';
+import { VirtualPlayerNameComponent } from './components/virtual-player-name/virtual-player-name.component';
 import { AdminPageComponent } from './pages/admin-page/admin-page.component';
+import { ConnectionErrorComponent } from './pages/connection-error/connection-error.component';
 import { GameModePageComponent } from './pages/game-mode-page/game-mode-page.component';
 import { RoomListComponent } from './pages/room-list/room-list.component';
 import { WaitingRoomPageComponent } from './pages/waiting-room-page/waiting-room-page.component';
-import { VirtualPlayerNameComponent } from './components/virtual-player-name/virtual-player-name.component';
-import { ErrorDialogComponent } from './components/error-dialog/error-dialog.component';
-import { ConnectionErrorComponent } from './pages/connection-error/connection-error.component';
-import { TutorialComponent } from './components/tutorial/tutorial.component';
 
 /**
  * Main module that is used in main.ts.

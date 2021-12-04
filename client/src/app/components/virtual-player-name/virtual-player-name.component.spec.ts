@@ -1,5 +1,6 @@
 /* eslint-disable dot-notation */
 import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormsModule } from '@angular/forms';
 import { MatIconModule } from '@angular/material/icon';
@@ -10,12 +11,14 @@ import { AdminService } from '@app/services/admin/admin.service';
 import { VirtualPlayerLevel, VirtualPlayerName } from '@common';
 import { BehaviorSubject } from 'rxjs';
 import { VirtualPlayerNameComponent } from './virtual-player-name.component';
+
 describe('VirtualPlayerNameComponent', () => {
     let updateSubject: BehaviorSubject<VirtualPlayerName[]>;
     let adminServiceMock: AdminService;
     let component: VirtualPlayerNameComponent;
     let fixture: ComponentFixture<VirtualPlayerNameComponent>;
     let playerNameList: VirtualPlayerName[];
+
     beforeEach(async () => {
         updateSubject = new BehaviorSubject<VirtualPlayerName[]>([]);
         adminServiceMock = jasmine.createSpyObj('AdminService', ['updatePlayerName'], { onVirtualPlayerUpdate: updateSubject.asObservable() });
@@ -40,6 +43,7 @@ describe('VirtualPlayerNameComponent', () => {
             declarations: [VirtualPlayerNameComponent],
             providers: [{ provider: AdminService, useValue: adminServiceMock }],
             imports: [HttpClientTestingModule, MatSliderModule, MatListModule, MatSlideToggleModule, MatIconModule, FormsModule],
+            schemas: [CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA],
         }).compileComponents();
     });
     beforeEach(() => {
