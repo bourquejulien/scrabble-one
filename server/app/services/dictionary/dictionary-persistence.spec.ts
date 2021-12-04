@@ -9,6 +9,7 @@ import { assert, createSandbox, SinonSandbox, SinonStubbedInstance, stub } from 
 import { Collection, Db, FindCursor, InsertOneResult, ModifyResult, WithId } from 'mongodb';
 import { DictionaryPersistence } from '@app/services/dictionary/dictionary-persistence';
 import { DictionaryMetadata } from '@common';
+import path from 'path';
 
 const metadata: DictionaryMetadata = {
     _id: 'some.json',
@@ -35,11 +36,11 @@ describe('DictionaryPersistence', () => {
     let sandbox: SinonSandbox;
     let collectionStub: SinonStubbedInstance<Collection>;
     let dbStub: SinonStubbedInstance<Db>;
-    const DEFAULT_PATH = 'assets/dictionaries/dictionary.json';
+    const DEFAULT_PATH = path.join(process.cwd(), 'assets', 'dictionaries', 'dictionary.json');
     const defaultMetadata: DictionaryMetadata = {
         _id: 'dictionary.json',
         path: DEFAULT_PATH,
-        description: 'Default Dictionary',
+        description: 'Le dictionnaire par défaut',
         title: 'Dictionnaire du serveur',
         nbWords: 402503,
     };
