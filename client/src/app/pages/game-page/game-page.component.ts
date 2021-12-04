@@ -88,12 +88,6 @@ export class GamePageComponent implements OnDestroy {
                 hover: 'Passer son tour',
                 action: async () => this.commandService.parseInput('!passer'),
             },
-            {
-                color: 'primary',
-                icon: Icon.Dark,
-                hover: 'Activer le mode sombre',
-                action: () => this.toggleDarkMode(),
-            },
         ];
         this.opponentQuitSubscription = gameService.onOpponentQuit.subscribe(() => this.opponentQuit());
         this.gameEndingSubscription = gameService.onGameEnding.subscribe((winner) => this.endGame(winner));
@@ -122,15 +116,6 @@ export class GamePageComponent implements OnDestroy {
 
     private opponentQuit() {
         this.dialog.open(OpponentQuitComponent);
-    }
-
-    private toggleDarkMode(): void {
-        const darkMode = 'darkMode';
-        if (this.cssClassName === darkMode) {
-            this.cssClassName = '';
-        } else {
-            this.cssClassName = 'darkMode';
-        }
     }
 
     private confirmQuit(): void {

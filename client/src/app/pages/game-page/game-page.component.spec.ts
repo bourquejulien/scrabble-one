@@ -3,9 +3,9 @@
 /* eslint-disable dot-notation -- Need to access private properties for testing*/
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { HttpClientTestingModule } from '@angular/common/http/testing';
-import { Component, CUSTOM_ELEMENTS_SCHEMA, Injectable, NO_ERRORS_SCHEMA } from '@angular/core';
+import { Component, CUSTOM_ELEMENTS_SCHEMA, ElementRef, Injectable, NO_ERRORS_SCHEMA } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { MatDialogModule, MatDialogRef } from '@angular/material/dialog';
+import { MatDialog, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { MatToolbar } from '@angular/material/toolbar';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { Router } from '@angular/router';
@@ -20,6 +20,7 @@ import { GameService } from '@app/services/game/game.service';
 import { GameMode, GameType, SessionStats } from '@common';
 import { BehaviorSubject, Observable, of, Subject } from 'rxjs';
 import { GamePageComponent } from './game-page.component';
+import { LocationChangeEvent, LocationStrategy } from '@angular/common';
 
 @Injectable({
     providedIn: 'root',
@@ -82,16 +83,33 @@ class PlayAreaStubComponent {}
 describe('GamePageComponent', () => {
     let component: GamePageComponent;
     let fixture: ComponentFixture<GamePageComponent>;
+    let stubbedGameService: GameServiceStub;
+    let matDialog: MatDialog;
+    let locationStrategy: jasmine.SpyObj<LocationStrategy>;
+
     const routerMock = {
         navigate: jasmine.createSpy('navigate'),
     };
 
     beforeEach(async () => {
+        locationStrategy = jasmine.createSpyObj('LocationStrategy', ['onPopState']);
+        const elementRef = jasmine.createSpyObj(
+            'ElementRef',
+            {},
+            {
+                nativeElement: {
+                    offsetParent: {},
+                },
+            },
+        );
+
         await TestBed.configureTestingModule({
             declarations: [GamePageComponent, PlayAreaStubComponent, MatToolbar],
             providers: [
                 { provide: Router, useValue: routerMock },
                 { provide: GameService, useClass: GameServiceStub },
+                { provide: LocationStrategy, useValue: locationStrategy },
+                { provide: ElementRef, useValue: elementRef },
             ],
             imports: [AppMaterialModule, MatDialogModule, BrowserAnimationsModule, RouterTestingModule.withRoutes([]), HttpClientTestingModule],
             schemas: [CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA],
@@ -102,6 +120,9 @@ describe('GamePageComponent', () => {
         fixture = TestBed.createComponent(GamePageComponent);
         component = fixture.componentInstance;
         fixture.detectChanges();
+
+        matDialog = TestBed.inject(MatDialog);
+        stubbedGameService = TestBed.inject(GameService) as unknown as GameServiceStub;
     });
 
     it('should create', () => {
@@ -111,12 +132,6 @@ describe('GamePageComponent', () => {
     it('should call confirmQuit if first button is clicked', () => {
         const spy = spyOn<any>(component, 'confirmQuit');
         component['buttonConfig'][0].action();
-        expect(spy).toHaveBeenCalled();
-    });
-
-    it('should change the theme', () => {
-        const spy = spyOn<any>(component, 'toggleDarkMode');
-        component['buttonConfig'][3].action();
         expect(spy).toHaveBeenCalled();
     });
 
@@ -193,6 +208,23 @@ describe('GamePageComponent', () => {
         const spy = spyOn<any>(component.gameService, 'reset');
         component['endGame'](winner);
         expect(spy).not.toHaveBeenCalled();
+    });
+
+    it('should open quit dialog', () => {
+        const spy = spyOn(matDialog, 'open');
+        stubbedGameService.opponentQuitingSubject.next(true);
+        expect(spy).toHaveBeenCalled();
+    });
+
+    it('should call confirm quit on back button', () => {
+        const spy = spyOn(component['dialog'], 'open').and.returnValue({
+            afterClosed: () => of(true),
+        } as MatDialogRef<typeof component>);
+
+        const fn = locationStrategy.onPopState.calls.mostRecent().args[0];
+        fn({} as unknown as LocationChangeEvent);
+
+        expect(spy).toHaveBeenCalled();
     });
 
     afterAll(() => cleanStyles());
