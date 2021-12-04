@@ -119,13 +119,11 @@ describe('RoomController', () => {
 
     it('should log when receiving a disconnect message', async () => {
         controller['handleSockets']();
-
         const clientSocket = new SocketMock();
         controller['socketIdToPlayerId'].set('321', '321');
         socketServerMock.triggerEndpoint('connection', clientSocket);
         clientSocket.triggerEndpoint('disconnect');
         controller['handleSockets']();
-
         const clientSocket2 = new SocketMock();
         controller['socketIdToPlayerId'].set('123', '123');
         socketServerMock.triggerEndpoint('connection', clientSocket2);

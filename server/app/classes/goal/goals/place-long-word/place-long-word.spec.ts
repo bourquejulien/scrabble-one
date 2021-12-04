@@ -5,7 +5,6 @@ import { expect } from 'chai';
 import { BaseGoal, Goal } from '@app/classes/goal/base-goal';
 import { PlaceLongWord } from '@app/classes/goal/goals/place-long-word/place-long-word';
 import { ValidationFailed, ValidationResponse } from '@app/classes/validation/validation-response';
-import { describe } from 'mocha';
 
 describe('PlaceLongWord', () => {
     let goal: Goal;

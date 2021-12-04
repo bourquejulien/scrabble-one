@@ -7,7 +7,6 @@ import { expect } from 'chai';
 import { Goal } from '@app/classes/goal/base-goal';
 import { ManyLettersInRow } from '@app/classes/goal/goals/many-letters-in-row/many-letters-in-row';
 import { ValidationFailed, ValidationResponse } from '@app/classes/validation/validation-response';
-import { describe } from 'mocha';
 
 describe('ManyLettersInRow', () => {
     let goal: Goal;
