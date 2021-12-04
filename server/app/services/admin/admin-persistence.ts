@@ -64,12 +64,11 @@ export class AdminPersistence {
 
         const isAdded = await this.addVirtualPlayer(oldPlayer.level, newName);
 
-        if (!isAdded) {
-            logger.warn(`Cannot rename VirtualPlayer - newName: ${newName} does not exist`);
-            return null;
+        if (isAdded) {
+            return await this.deleteVirtualPlayer(oldName);
         }
-
-        return await this.deleteVirtualPlayer(oldName);
+        logger.warn(`Cannot rename VirtualPlayer - newName: ${newName} does not exist`);
+        return null;
     }
 
     async reset(): Promise<void> {
