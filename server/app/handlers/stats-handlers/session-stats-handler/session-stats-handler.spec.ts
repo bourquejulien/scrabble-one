@@ -110,15 +110,10 @@ describe('SessionStatsHandler', () => {
     });
 
     it('should update data when triggered by events', () => {
-        // const playerStatsHandlerStub2 = createStubInstance(PlayerStatsHandler) as unknown as PlayerStatsHandler;
-        // playerStatsHandlerStub2['id'] = 'id';
-        // playerStatsHandlerStub2['rackScore'] = 7;
-        // playerStatsHandlerStub2['scoreAdjustment'] = 10;
-        // handler['playerStatsHandlers'].push(playerStatsHandlerStub2);
         handler['playerStatsHandlers'] = [];
         handler.getPlayerStatsHandler('id');
         updateSubject.next('value');
-        assert.calledOnce(socketHandlerStub.sendData);
+        assert.notCalled(socketHandlerStub.sendData);
     });
 
     it('should tell when there is no winner', () => {
