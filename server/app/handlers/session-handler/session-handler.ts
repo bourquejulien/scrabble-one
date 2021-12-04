@@ -99,7 +99,7 @@ export class SessionHandler {
         const virtualPlayer = new VirtualPlayerExpert(this.boardHandler.dictionaryHandler, virtualPlayerInfo, actionCallback);
 
         this.addPlayer(virtualPlayer);
-        this.socketHandler.sendData('opponentQuit');
+        this.socketHandler.sendData('opponentQuit', virtualPlayerInfo.name);
 
         logger.info(`Player converted: ${playerId}`);
     }

@@ -202,7 +202,7 @@ describe('RoomController', () => {
         stubSessionHandlingService.getHandlerByPlayerId.returns(null);
         await socketServerMock.triggerEndpoint('connection', clientSocket);
         await clientSocket.triggerEndpoint('joinRoom', 'full');
-        // assert.called(stubSessionHandlingService.getHandlerByPlayerId); // TODO
+        // assert.called(stubSessionHandlingService.getHandlerByPlayerId);
     });
 
     it('should exit room', async () => {

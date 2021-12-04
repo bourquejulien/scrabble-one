@@ -56,7 +56,6 @@ describe('ManyLettersInRow', () => {
             description: 'error',
         };
         (goal as ManyLettersInRow).notifyPlacement(validationResponse, 'id');
-        // TODO const size = goal['consecutiveTurnCount'].size;
         // expect(size).to.eq(0);
     });
 
@@ -77,7 +76,6 @@ describe('ManyLettersInRow', () => {
             words: [{ score: 5, letters: [{ placement: { letter: 'A', position: { x: 8, y: 8 } }, isNew: true }] }],
         };
         (goal as ManyLettersInRow).notifyPlacement(validationResponse, 'id');
-        // TODO const size = goal['consecutiveTurnCount'].size;
         // expect(size).to.eq(0);
     });
 });

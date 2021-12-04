@@ -117,7 +117,6 @@ describe('SessionStatsHandler', () => {
         handler['playerStatsHandlers'].push(playerStatsHandlerStub2);
         handler['getPlayerStatsHandler']('id');
         goalUpdateSubject.next(undefined);
-        // TODO
         sandbox.restore();
     });
 
