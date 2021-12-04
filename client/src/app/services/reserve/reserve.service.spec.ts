@@ -1,6 +1,7 @@
 /* eslint-disable dot-notation -- reserve is private and we need access for the test */
 /* eslint-disable @typescript-eslint/no-magic-numbers */
 /* eslint-disable no-restricted-imports */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { fakeAsync, TestBed } from '@angular/core/testing';
 import { ReserveService } from '@app/services/reserve/reserve.service';

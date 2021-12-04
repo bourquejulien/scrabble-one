@@ -40,9 +40,8 @@ describe('MainPageComponent', () => {
     let stubbedHealthService: StubHealthService;
 
     beforeEach(async () => {
-
         await TestBed.configureTestingModule({
-            imports: [RouterTestingModule, RouterTestingModule.withRoutes([{ path: 'error', component: MainPageComponent}]), AppMaterialModule],
+            imports: [RouterTestingModule, RouterTestingModule.withRoutes([{ path: 'error', component: MainPageComponent }]), AppMaterialModule],
             declarations: [MainPageComponent],
             providers: [
                 { provide: HealthService, useClass: StubHealthService },

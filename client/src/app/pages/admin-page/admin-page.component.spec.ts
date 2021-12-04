@@ -14,7 +14,6 @@ import { Answer, DictionaryMetadata } from '@common';
 import { Subject } from 'rxjs';
 import { AdminPageComponent } from './admin-page.component';
 
-
 const dictionary: DictionaryMetadata = {
     _id: 'dictionary.json',
     path: '',
