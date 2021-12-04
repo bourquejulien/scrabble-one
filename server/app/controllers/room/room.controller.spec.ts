@@ -225,49 +225,6 @@ describe('RoomController', () => {
         assert.notCalled(gameService.convertOrDispose);
     });
 
-    // it('should not join if the room is full', async () => {
-    //     // Sorry for the copy-paste: it is the simplest way to go to change the attributes of the stub once it was created
-    //     const stubSocketService = createStubInstance(SocketService);
-    //     socketServerMock = new SocketMock();
-    //     stubSocketService['socketServer'] = socketServerMock as unknown as Server;
-//
-    //     stubSessionHandlingService = createStubInstance(SessionHandlingService, {
-    //         getSessionId: 'full',
-    //     });
-    //     controller = new RoomController(
-    //         stubSocketService,
-    //         stubSessionHandlingService as unknown as SessionHandlingService,
-    //         gameService as unknown as GameService,
-    //     );
-    //     // End of copy-paste
-    //     const stubSessionHandler = createStubInstance(SessionHandler);
-    //     stubSessionHandler['sessionInfo'] = {
-    //         id: '',
-    //         playTimeMs: 0,
-    //         gameType: GameType.SinglePlayer,
-    //     };
-    //     stubSessionHandler['statsHandler'] = {
-    //         gameMode: GameMode.Classic,
-    //     } as unknown as SessionStatsHandler;
-    //     stubSessionHandler['boardHandler'] = {
-    //         isRandomBonus: false,
-    //     } as BoardHandler;
-    //     stubSessionHandler['playerHandler'] = {
-    //         players: [{ playerInfo: { name: '' } }, { playerInfo: { name: '1' } }],
-    //     } as PlayerHandler;
-    //     stub(controller, 'sessionInfos' as any).get(() => {
-    //         return { id: 'full', gameMode: GameMode.Classic, playTimeMs: 0, waitingPlayerName: 'test', isRandomBonus: false };
-    //     });
-    //     stubSessionHandler.sessionData = { isActive: true, isStarted: false, timeLimitEpoch: 0 };
-    //     stubSessionHandlingService.getHandlerByPlayerId.returns(stubSessionHandler as unknown as SessionHandler);
-    //     controller['handleSockets']();
-    //     const clientSocket = new SocketMock();
-    //     socketServerMock.triggerEndpoint('connection', clientSocket);
-    //     const joinSpy = spy(clientSocket, 'join');
-    //     await controller['onRoomJoined'](clientSocket as unknown as Socket, 'playerId');
-    //     assert.notCalled(joinSpy);
-    // });
-
     it('should join a room', async () => {
         // Sorry for the copy-paste: it is the simplest way to go to change the attributes of the stub once it was created
         const stubSocketService = createStubInstance(SocketService);
