@@ -3,7 +3,7 @@
 /* eslint-disable max-classes-per-file -- Needs many stubbed classes in order to test*/
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Injectable } from '@angular/core';
-import { TestBed } from '@angular/core/testing';
+import { fakeAsync, TestBed } from '@angular/core/testing';
 import { EndGameWinner } from '@app/classes/end-game-winner';
 import { GameConfig } from '@app/classes/game-config';
 import { PlayerType } from '@app/classes/player/player-type';
@@ -13,7 +13,7 @@ import { PlayerService } from '@app/services/player/player.service';
 import { RackService } from '@app/services/rack/rack.service';
 import { SessionService } from '@app/services/session/session.service';
 import { SocketClientService } from '@app/services/socket-client/socket-client.service';
-import { GameMode, GameType, ServerConfig, SessionStats, DictionaryMetadata, VirtualPlayerLevel } from '@common';
+import { DictionaryMetadata, GameMode, GameType, ServerConfig, SessionStats, VirtualPlayerLevel } from '@common';
 import { Observable, Subject } from 'rxjs';
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { environmentExt } from '@environment-ext';
@@ -143,6 +143,28 @@ describe('GameService', () => {
         request.flush({ isSuccess: true, payload: { id: '' } });
     });
 
+    it('should not start single player', async () => {
+        const config = {
+            gameType: GameType.SinglePlayer,
+            gameMode: GameMode.Log2990,
+            virtualPlayerLevel: VirtualPlayerLevel.Easy,
+            playTimeMs: 1000,
+            playerName: 'Monique',
+            virtualPlayerName: 'Alphonse',
+            isRandomBonus: false,
+            dictionary,
+        };
+
+        serverConfigObservableSpyObj.toPromise.and.resolveTo(config);
+
+        service.startSinglePlayer(config).then(() => {
+            expect(socketService.join).not.toHaveBeenCalled();
+        });
+
+        const request = httpMock.expectOne(localUrl('game', 'init/single'));
+        request.flush({ isSuccess: false, payload: { id: '' } });
+    });
+
     it('should reset playerService', async () => {
         await service.reset();
         expect(playerServiceSpyObj.reset).toHaveBeenCalled();
@@ -229,7 +251,25 @@ describe('GameService', () => {
         expect(spy).toHaveBeenCalledWith(winner);
     });
 
-    it('should not call onTurn.next if currentTurn is equal to playerType', async () => {
+    it('should call observables', fakeAsync(() => {
+        service.onTurn.subscribe((param) => {
+            expect(param).toBe(PlayerType.Local);
+        });
+
+        service.onGameEnding.subscribe((param) => {
+            expect(param).toBe(EndGameWinner.Remote);
+        });
+
+        service.onOpponentQuit.subscribe((param) => {
+            expect(param).toBe('123');
+        });
+
+        service['turnSubject'].next(PlayerType.Local);
+        service['gameEndingSubject'].next(EndGameWinner.Remote);
+        service['opponentQuitingSubject'].next('123');
+    }));
+
+    it('should call onTurn.next if currentTurn is equal to playerType', async () => {
         const gameConfig = {
             gameType: GameType.SinglePlayer,
             gameMode: GameMode.Classic,
@@ -261,6 +301,38 @@ describe('GameService', () => {
 
         const spy = spyOn<any>(service['gameEndingSubject'], 'next');
         await service['start'](serverConfig);
+        spy.and.callThrough();
+        await service['onNextTurn'](id);
+        spy.and.callThrough();
+        sessionStatsObservableSpyObj.toPromise.and.resolveTo(service.stats);
+        spy.and.callThrough();
+
+        expect(spy).not.toHaveBeenCalledWith(playerType);
+    });
+
+    it('should not call onTurn.next if currentTurn is equal to playerType', async () => {
+        const gameConfig = {
+            gameType: GameType.SinglePlayer,
+            gameMode: GameMode.Classic,
+            playTime: TimeSpan.fromMinutesSeconds(1, 0),
+            firstPlayerName: 'Alphonse',
+            secondPlayerName: 'Monique',
+        };
+
+        const stats = {
+            localStats: { points: 10, rackSize: 7 },
+            remoteStats: { points: 10, rackSize: 7 },
+        };
+
+        const id = '1';
+        const playerType = PlayerType.Local;
+        session['_id'] = id;
+        session['_gameConfig'] = gameConfig;
+        service.stats = stats;
+        service['currentTurn'] = playerType;
+        service['gameRunning'] = true;
+
+        const spy = spyOn<any>(service['gameEndingSubject'], 'next');
         spy.and.callThrough();
         await service['onNextTurn'](id);
         spy.and.callThrough();
