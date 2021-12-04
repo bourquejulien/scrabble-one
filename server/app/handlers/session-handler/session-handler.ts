@@ -12,7 +12,7 @@ import { ReserveHandler } from '@app/handlers/reserve-handler/reserve-handler';
 import { SocketHandler } from '@app/handlers/socket-handler/socket-handler';
 import { PlayerStatsHandler } from '@app/handlers/stats-handlers/player-stats-handler/player-stats-handler';
 import { SessionStatsHandler } from '@app/handlers/stats-handlers/session-stats-handler/session-stats-handler';
-import { GameMode, GameType, Score, ServerConfig } from '@common';
+import { GameMode, GameType, MessageType, Score, ServerConfig, SystemMessages } from '@common';
 import { Subscription } from 'rxjs';
 import * as logger from 'winston';
 
@@ -58,6 +58,8 @@ export class SessionHandler {
         this.statsHandler.start();
         this.playerHandler.start();
 
+        this.socketHandler.sendMessage({ title: 'Commandes possibles', body: SystemMessages.HelpMessage, messageType: MessageType.System });
+
         logger.info(`Game ${this.sessionInfo.id} started`);
     }
 
@@ -97,7 +99,7 @@ export class SessionHandler {
         const virtualPlayer = new VirtualPlayerExpert(this.boardHandler.dictionaryHandler, virtualPlayerInfo, actionCallback);
 
         this.addPlayer(virtualPlayer);
-        this.socketHandler.sendData('opponentQuit');
+        this.socketHandler.sendData('opponentQuit', virtualPlayerInfo.name);
 
         logger.info(`Player converted: ${playerId}`);
     }

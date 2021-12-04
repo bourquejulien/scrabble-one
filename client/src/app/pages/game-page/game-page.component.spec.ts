@@ -135,15 +135,21 @@ describe('GamePageComponent', () => {
         expect(spy).toHaveBeenCalled();
     });
 
-    it('should call toggleDrawer if second button is clicked', () => {
-        const spy = spyOn<any>(component, 'toggleDrawer');
+    it('should call open if second button is clicked', () => {
+        const spy = spyOn<any>(matDialog, 'open');
         component['buttonConfig'][1].action();
         expect(spy).toHaveBeenCalled();
     });
 
-    it('should call parseInput if third button is clicked', async () => {
-        const spy = spyOn<any>(component['commandService'], 'parseInput');
+    it('should call toggleDrawer if third button is clicked', () => {
+        const spy = spyOn<any>(component, 'toggleDrawer');
         component['buttonConfig'][2].action();
+        expect(spy).toHaveBeenCalled();
+    });
+
+    it('should call parseInput if fourth button is clicked', async () => {
+        const spy = spyOn<any>(component['commandService'], 'parseInput');
+        component['buttonConfig'][3].action();
         spy.and.callThrough();
         expect(spy).toHaveBeenCalled();
     });

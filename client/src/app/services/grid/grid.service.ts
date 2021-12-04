@@ -8,7 +8,7 @@ const STAR_IMAGE_PATH = 'assets/img/star.svg';
 const TILE_IMAGE_PATH = '/assets/img/tile-texture.jpeg';
 const LINE_WIDTH = 3;
 const STROKE_STYLE = 'black';
-const STROKE_STYLE_SELECTION = 'red';
+const STROKE_STYLE_SELECTION = '#b60347';
 const FONT_FACE: FontFace = { font: 'BenchNine', size: 30 };
 const MIN_FONT_SIZE = 25;
 const MAX_FONT_SIZE = 35;
@@ -19,12 +19,12 @@ const COORD_CLEAR_INSIDE = 5;
 const FONT_FACE_SCALE_FACTOR = 0.75;
 const TEXT_STYLE = 'black';
 const BONUS_COLORS = new Map([
-    [Bonus.None, '#C6BDA6'],
-    [Bonus.L2, '#9ea6ff'],
-    [Bonus.L3, '#6571ff'],
-    [Bonus.W2, '#ffcccb'],
-    [Bonus.W3, '#ff7d7a'],
-    [Bonus.Star, '#ffcccb'],
+    [Bonus.None, '#e8e4d9'],
+    [Bonus.L2, '#81d4fa'],
+    [Bonus.L3, '#039be5'],
+    [Bonus.W2, '#ef9a9a'],
+    [Bonus.W3, '#ff8a65'],
+    [Bonus.Star, '#ef9a9a'],
 ]);
 
 @Injectable({

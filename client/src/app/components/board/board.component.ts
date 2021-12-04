@@ -11,6 +11,8 @@ import { RackService } from '@app/services/rack/rack.service';
 import FontFaceObserver from 'fontfaceobserver';
 import { Subscription } from 'rxjs';
 
+const RE_SCALE_FACTOR = 0.6;
+
 @Component({
     selector: 'app-board',
     templateUrl: './board.component.html',
@@ -132,6 +134,7 @@ export class BoardComponent implements OnDestroy, AfterViewInit {
         this.gridService.drawGrid(this.gridContext);
         this.gridService.drawSquares(this.squareContext);
         this.squareCanvas.nativeElement.focus();
+        this.mouseHandlingService.displaySize = this.canvasDisplaySize;
     }
 
     ngOnDestroy(): void {
@@ -157,12 +160,12 @@ export class BoardComponent implements OnDestroy, AfterViewInit {
         this.resetPlaceSelection();
     }
 
-    get width(): number {
+    get canvasDrawSize(): number {
         return Constants.GRID.CANVAS_SIZE.x;
     }
 
-    get height(): number {
-        return Constants.GRID.CANVAS_SIZE.y;
+    get canvasDisplaySize(): number {
+        return Math.floor(Math.min(window.innerWidth * RE_SCALE_FACTOR, window.innerHeight * RE_SCALE_FACTOR));
     }
 
     private refresh(): void {
@@ -212,6 +215,7 @@ export class BoardComponent implements OnDestroy, AfterViewInit {
             this.isLetter = false;
             return;
         }
+
         if (this.rackService.rack.includes(key)) {
             this.isLetter = true;
             this.letter = key;
@@ -251,8 +255,10 @@ export class BoardComponent implements OnDestroy, AfterViewInit {
         ) {
             this.placeLetterService.isLastSquare = true;
         }
+
         this.placeLetterService.nextAvailableSquare(true);
         this.gridService.cleanInsideSquare(this.squareContext, this.placeLetterService.gridPosition);
+
         if (!lastSquare && !this.placeLetterService.isLastSquare) {
             this.gridService.drawSelectionSquare(this.tempContext, this.placeLetterService.gridPosition);
             this.gridService.drawDirectionArrow(this.tempContext, this.placeLetterService.gridPosition, this.placeLetterService.isHorizontal);

@@ -1,5 +1,3 @@
 <mat-toolbar color="primary" [ngClass]="playerType" class="mat-app-background tool-bar">
-    <span>Scrabble</span>
-    <span>{{ sessionService.gameConfig.firstPlayerName }} contre {{ sessionService.gameConfig.secondPlayerName }}</span>
-    <span>Minuteur: {{ timerService.time | time }}</span>
+    <span> {{ timerService.time | time }}</span>
 </mat-toolbar>

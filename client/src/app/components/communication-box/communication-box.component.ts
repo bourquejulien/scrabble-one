@@ -61,10 +61,6 @@ export class CommunicationBoxComponent implements OnInit, OnDestroy {
         }
     }
 
-    getFontColor(message: Message): string {
-        return message.messageType === MessageType.Message ? Constants.BLACK_FONT : Constants.WHITE_FONT;
-    }
-
     getTitle(message: Message): string {
         switch (message.messageType) {
             case MessageType.Message:
@@ -80,19 +76,17 @@ export class CommunicationBoxComponent implements OnInit, OnDestroy {
         }
     }
 
-    private onMessage(message: Message) {
-        if (message.messageType === MessageType.Log && !this.messagingService.isDebug) {
-            return;
-        }
-
-        this.messages.push(message);
-        this.scroll();
-    }
-
-    private scroll(): void {
+    scroll(): void {
         this.messageContainer?.nativeElement.scroll({
             top: this.messageContainer.nativeElement.scrollHeight + this.messageContainer.nativeElement.offsetHeight,
             behavior: 'smooth',
         });
+    }
+
+    private onMessage(message: Message) {
+        if (message.messageType === MessageType.Log && !this.messagingService.isDebug) {
+            return;
+        }
+        this.messages.push(message);
     }
 }

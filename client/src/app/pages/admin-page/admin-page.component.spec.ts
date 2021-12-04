@@ -85,6 +85,7 @@ describe('AdminPageComponent', () => {
     //     component.resetSettings();
     //     expect(spyB).toHaveBeenCalled();
     // });
+    
     it('ngOnInit should call notify', () => {
         const spyNotify = spyOn<any>(component, 'notify');
         const message = new Subject<Answer<string>>();

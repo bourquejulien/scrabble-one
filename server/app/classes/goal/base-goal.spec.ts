@@ -23,6 +23,7 @@ describe('BaseGoal', () => {
             score: 50,
             name: 'Placer 5 lettres du chevalet ou plus lors de 3 tours consécutifs',
             status: GoalStatus.Pending,
+            scoreDescription: undefined,
             isGlobal: false,
         };
         expect(goal.getGoalData('id')).to.eql(goalDescription);
