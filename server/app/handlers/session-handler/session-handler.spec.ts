@@ -1,3 +1,4 @@
+/* eslint-disable max-classes-per-file */
 /* eslint-disable dot-notation,
 @typescript-eslint/no-unused-expressions,
 no-unused-expressions,
@@ -18,12 +19,13 @@ import { ReserveHandler } from '@app/handlers/reserve-handler/reserve-handler';
 import { SocketHandler } from '@app/handlers/socket-handler/socket-handler';
 import { PlayerStatsHandler } from '@app/handlers/stats-handlers/player-stats-handler/player-stats-handler';
 import { SessionStatsHandler } from '@app/handlers/stats-handlers/session-stats-handler/session-stats-handler';
-import { GameMode, GameType, ServerConfig } from '@common';
+import { GameMode, GameType, PlayerStats, ServerConfig } from '@common';
 import { expect } from 'chai';
 import { Subject } from 'rxjs';
 import Sinon, { createSandbox, createStubInstance, useFakeTimers } from 'sinon';
 import { SessionHandler } from './session-handler';
 import { Board } from '@app/classes/board/board';
+import { EndGameData } from '@app/classes/end-game-data';
 
 const TIME_MS = 120 * 1000;
 const PLAYER_INFO_A: PlayerInfo = { id: '0', name: 'tester1', isHuman: true };
@@ -37,6 +39,16 @@ class PlayerTester extends Player {
     async startTurn(): Promise<void> {
         // Does Nothing
         return new Promise<void>(() => {});
+    }
+}
+
+class PlayerStatsHandlerMock {
+    id: string;
+    constructor(id: string) {
+        this.id = id;
+    }
+    get stats(): PlayerStats {
+        return { points: 10, rackSize: 0 };
     }
 }
 
@@ -165,17 +177,6 @@ describe('SessionHandler', () => {
         expect(returnValue).to.eql(expectedServerConfig);
     });
 
-    it('endgame should call dispose and add rack to score adjustement', () => {
-        // const sandbox = createSandbox();
-        // const stubDispose = sandbox.stub(handler, 'dispose');
-        // stubReserveHandler.reserve = [];
-        // handler['socketHandler'] = socketHandler;
-        // handler['playerHandler'].players[0].playerData.rack.length = 0;
-        // handler['endGame']();
-        // expect(handler['playerHandler'].players[1].playerData.scoreAdjustment).to.not.eql(0);
-        // sandbox.assert.calledOnce(stubDispose);
-    });
-
     it('dispose should deactivate the game', () => {
         createSandbox()
             .stub(handler, 'endGameData' as any)
@@ -282,21 +283,9 @@ describe('SessionHandler', () => {
         expect(sendDataStub.called).to.be.true;
     });
 
-    it('refresh should call sendData ', () => {
-        stubSocketHandler.sendData.restore();
-        const sendDataStub = createSandbox().stub(handler['socketHandler'], 'sendData');
-        const boardStub = createStubInstance(Board);
-        createSandbox()
-            .stub(stubBoardHandler, 'immutableBoard')
-            .get(() => {
-                return boardStub;
-            });
-        createSandbox()
-            .stub(boardStub, 'boardData')
-            .get(() => {
-                return true;
-            });
-        handler['refresh']();
-        expect(sendDataStub.called).to.be.true;
+    it('should return an EndGameData', () => {
+        handler['statsHandler']['playerStatsHandlers'].push(new PlayerStatsHandlerMock('0') as PlayerStatsHandler);
+        const test: EndGameData = { scores: [], gameMode: GameMode.Classic };
+        expect(typeof handler['endGameData'] === typeof test).to.be.true;
     });
 });
