@@ -1,3 +1,5 @@
+/* eslint-disable dot-notation -- router is private and we need access for the test */
+/* eslint-disable max-classes-per-file */
 import { Injectable } from '@angular/core';
 import { ComponentFixture, fakeAsync, TestBed } from '@angular/core/testing';
 import { MatDialogRef } from '@angular/material/dialog';
