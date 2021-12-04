@@ -80,13 +80,13 @@ describe('AdminService', () => {
         expect(service.dictionaries.length).toBe(0);
     }));
 
-    it('should add to updated dictionaries', () => {
+    it('should add to updated dictionaries', fakeAsync(() => {
         expect(service['updatedDictionaries'].size).toBe(0);
         service.dictionaryUpdated(DEFAULT);
         expect(service['updatedDictionaries'].size).toBe(1);
-    });
+    }));
 
-    it('should update success', () => {
+    it('should update success', fakeAsync(() => {
         service['dictionaries'].push(OTHER);
         service.dictionaryUpdated(OTHER);
 
@@ -101,9 +101,9 @@ describe('AdminService', () => {
         const request = httpMock.expectOne(localUrl('dictionary', 'update'));
         const answer: Success<DictionaryMetadata[]> = { isSuccess: true, payload: [] };
         request.flush(answer);
-    });
+    }));
 
-    it('should update fail', () => {
+    it('should update fail', fakeAsync(() => {
         service['dictionaries'].push(OTHER);
         service.dictionaryUpdated(OTHER);
 
@@ -118,7 +118,7 @@ describe('AdminService', () => {
         const request = httpMock.expectOne(localUrl('dictionary', 'update'));
         const answer: Failure<DictionaryMetadata[]> = { isSuccess: false, payload: [] };
         request.flush(answer);
-    });
+    }));
 
     it('Should sent success event on success server status', fakeAsync(() => {
         const file = new File(['foo'], 'mydictionary.json', { type: 'application/json' });

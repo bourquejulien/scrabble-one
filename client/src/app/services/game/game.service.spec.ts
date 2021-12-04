@@ -101,27 +101,7 @@ describe('GameService', () => {
         expect(service).toBeTruthy();
     });
 
-    it('should refresh', async () => {
-        // const stats = {
-        //     localStats: { points: 10, rackSize: 7 },
-        //     remoteStats: { points: 10, rackSize: 7 },
-        // };
-        //
-        // const expectedStats = {
-        //     localStats: { points: 15, rackSize: 7 },
-        //     remoteStats: { points: 15, rackSize: 7 },
-        // };
-        //
-        // service.stats = stats;
-        // const expectedSessionStats = expectedStats;
-        // sessionStatsObservableSpyObj.toPromise.and.resolveTo(expectedSessionStats);
-        // await service['refresh']();
-        // expect(service.stats).toBe(expectedSessionStats);
-        // expect(playerServiceSpyObj.refresh).toHaveBeenCalled();
-        // expect(rackServiceSpyObj.refresh).toHaveBeenCalled();
-    });
-
-    it('should start single player', async () => {
+    it('should start single player', fakeAsync(() => {
         const config = {
             gameType: GameType.SinglePlayer,
             gameMode: GameMode.Log2990,
@@ -141,9 +121,9 @@ describe('GameService', () => {
 
         const request = httpMock.expectOne(localUrl('game', 'init/single'));
         request.flush({ isSuccess: true, payload: { id: '' } });
-    });
+    }));
 
-    it('should not start single player', async () => {
+    it('should not start single player', fakeAsync(() => {
         const config = {
             gameType: GameType.SinglePlayer,
             gameMode: GameMode.Log2990,
@@ -163,7 +143,7 @@ describe('GameService', () => {
 
         const request = httpMock.expectOne(localUrl('game', 'init/single'));
         request.flush({ isSuccess: false, payload: { id: '' } });
-    });
+    }));
 
     it('should reset playerService', async () => {
         await service.reset();
